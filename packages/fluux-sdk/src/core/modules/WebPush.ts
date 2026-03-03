@@ -1,6 +1,5 @@
 import { xml, Element } from '@xmpp/client'
 import { BaseModule } from './BaseModule'
-import { getDomain } from '../jid'
 import { generateUUID } from '../../utils/uuid'
 import { NS_P1_PUSH, NS_P1_PUSH_WEBPUSH } from '../namespaces'
 import { logInfo, logWarn } from '../logger'
@@ -50,12 +49,9 @@ export class WebPush extends BaseModule {
     const currentJid = this.deps.getCurrentJid()
     if (!currentJid) return []
 
-    const domain = getDomain(currentJid)
-    if (!domain) return []
-
     const iq = xml(
       'iq',
-      { type: 'get', to: domain, id: `webpush_svc_${generateUUID()}` },
+      { type: 'get', id: `webpush_svc_${generateUUID()}` },
       xml('services', { xmlns: NS_P1_PUSH_WEBPUSH })
     )
 
@@ -107,15 +103,12 @@ export class WebPush extends BaseModule {
     const currentJid = this.deps.getCurrentJid()
     if (!currentJid) throw new Error('Not connected')
 
-    const domain = getDomain(currentJid)
-    if (!domain) throw new Error('No server domain')
-
     // Build the notification ID as endpoint#p256dh#auth
     const notificationId = `${endpoint}#${p256dh}#${auth}`
 
     const iq = xml(
       'iq',
-      { type: 'set', to: domain, id: `webpush_reg_${generateUUID()}` },
+      { type: 'set', id: `webpush_reg_${generateUUID()}` },
       xml('push', { xmlns: NS_P1_PUSH },
         xml('body', { send: 'all', groupchat: 'true', from: 'name' }),
         xml('offline', {}, 'true'),
