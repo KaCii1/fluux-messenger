@@ -98,6 +98,10 @@ describe('WebPush Module', () => {
 
       const services = await xmppClient.webPush.queryServices()
 
+      // IQ must not include a 'to' attribute — server handles it itself
+      const sentIQ = mockXmppClientInstance.iqCaller.request.mock.calls[0][0]
+      expect(sentIQ.attrs.to).toBeUndefined()
+
       expect(services).toHaveLength(1)
       expect(services[0]).toEqual({
         vapidKey: 'BLGqpNUtQ0750nR69uYAX3vhV6fl1-gTMROiWiSTaDPh',
@@ -245,6 +249,7 @@ describe('WebPush Module', () => {
 
       const sentIQ = mockXmppClientInstance.iqCaller.request.mock.calls[0][0]
       expect(sentIQ.attrs.type).toBe('set')
+      expect(sentIQ.attrs.to).toBeUndefined()
 
       // Check push element
       const pushEl = sentIQ.children[0]
