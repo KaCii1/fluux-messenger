@@ -430,7 +430,11 @@
         "offlineNotice": "La edición del perfil no está disponible sin conexión",
         "connection": "Conexión",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "No compatible",
+        "webPush_available": "Registro pendiente",
+        "webPush_registered": "Registrado"
     },
     "console": {
         "title": "Consola XMPP",

@@ -107,6 +107,8 @@ export function useConnection() {
   const ownResources = useConnectionStore((s) => s.ownResources)
   // HTTP Upload (XEP-0363)
   const httpUploadService = useConnectionStore((s) => s.httpUploadService)
+  // Web Push (p1:push:webpush)
+  const webPushStatus = useConnectionStore((s) => s.webPushStatus)
 
   const connect = useCallback(
     async (
@@ -281,6 +283,8 @@ export function useConnection() {
       ownResources,
       // HTTP Upload (XEP-0363)
       httpUploadService,
+      // Web Push (p1:push:webpush)
+      webPushStatus,
 
       // Computed
       isConnected: status === 'online',
@@ -305,6 +309,7 @@ export function useConnection() {
       ownNickname,
       ownResources,
       httpUploadService,
+      webPushStatus,
       supportsPasswordChange,
       actions,
     ]

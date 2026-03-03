@@ -430,7 +430,11 @@
         "offlineNotice": "Prófílbreyting er ekki tiltæk þegar þú ert ónettengdur",
         "connection": "Tenging",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Ekki stutt",
+        "webPush_available": "Skráning í bið",
+        "webPush_registered": "Skráð"
     },
     "console": {
         "title": "XMPP stjórnborð",

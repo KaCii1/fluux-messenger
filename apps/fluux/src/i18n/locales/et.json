@@ -430,7 +430,11 @@
         "offlineNotice": "Profiili muutmine pole võrgust väljas olles saadaval",
         "connection": "Ühendus",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Ei toetata",
+        "webPush_available": "Registreerimine ootel",
+        "webPush_registered": "Registreeritud"
     },
     "console": {
         "title": "XMPP konsool",

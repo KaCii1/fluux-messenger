@@ -430,7 +430,11 @@
         "offlineNotice": "Níl eagarthóireacht próifíle ar fáil as líne",
         "connection": "Ceangal",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Gan tacaíocht",
+        "webPush_available": "Clárú ar feitheamh",
+        "webPush_registered": "Cláraithe"
     },
     "console": {
         "title": "Consól XMPP",

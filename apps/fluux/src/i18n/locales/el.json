@@ -430,7 +430,11 @@
         "offlineNotice": "Η επεξεργασία προφίλ δεν είναι διαθέσιμη εκτός σύνδεσης",
         "connection": "Σύνδεση",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Δεν υποστηρίζεται",
+        "webPush_available": "Εκκρεμεί εγγραφή",
+        "webPush_registered": "Εγγεγραμμένο"
     },
     "console": {
         "title": "Κονσόλα XMPP",

@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Monitor, Smartphone, Globe, Pencil, Camera, Trash2, Key, Network } from 'lucide-react'
+import { Monitor, Smartphone, Globe, Pencil, Camera, Trash2, Key, Network, Bell } from 'lucide-react'
 import { type ResourcePresence, getClientType, getLocalPart, useConnection, usePresence } from '@fluux/sdk'
 import { Avatar } from '../Avatar'
 import { APP_OFFLINE_PRESENCE_COLOR, PRESENCE_COLORS } from '@/constants/ui'
 import { getShowColor } from '@/utils/presence'
+import { isTauri } from '@/utils/tauri'
 import { AvatarCropModal } from '../AvatarCropModal'
 import { ChangePasswordModal } from '../ChangePasswordModal'
 import { Tooltip } from '../Tooltip'
@@ -15,7 +16,7 @@ import { Tooltip } from '../Tooltip'
  */
 export function ProfileSettings() {
   const { t } = useTranslation()
-  const { jid, isConnected, ownAvatar, ownNickname, ownResources, connectionMethod, authMechanism, setOwnNickname, setOwnAvatar, clearOwnAvatar, clearOwnNickname, supportsPasswordChange } = useConnection()
+  const { jid, isConnected, ownAvatar, ownNickname, ownResources, connectionMethod, authMechanism, webPushStatus, setOwnNickname, setOwnAvatar, clearOwnAvatar, clearOwnNickname, supportsPasswordChange } = useConnection()
   const { presenceStatus: presenceShow, statusMessage } = usePresence()
 
   const [isEditing, setIsEditing] = useState(false)
@@ -228,6 +229,21 @@ export function ProfileSettings() {
           </div>
         )}
         {!connectionMethod && <div className="mb-2" />}
+
+        {/* Web Push status (browser only) */}
+        {!isTauri() && isConnected && (
+          <div className="flex items-center gap-1.5 mb-3">
+            <Bell className="w-3 h-3 text-fluux-muted" />
+            <span className="text-xs text-fluux-muted">
+              {t('profile.webPush')} · {t(`profile.webPush_${webPushStatus}`)}
+            </span>
+            <div className={`w-1.5 h-1.5 rounded-full ${
+              webPushStatus === 'registered' ? 'bg-green-500'
+                : webPushStatus === 'available' ? 'bg-yellow-500'
+                : 'bg-fluux-muted'
+            }`} />
+          </div>
+        )}
 
         {/* Presence status */}
         <div className="flex items-center gap-2 mb-2">

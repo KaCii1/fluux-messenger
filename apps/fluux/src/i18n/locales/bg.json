@@ -430,7 +430,11 @@
         "offlineNotice": "Редактирането на профил не е достъпно офлайн",
         "connection": "Връзка",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Не се поддържа",
+        "webPush_available": "Очаква регистрация",
+        "webPush_registered": "Регистрирано"
     },
     "console": {
         "title": "XMPP конзола",

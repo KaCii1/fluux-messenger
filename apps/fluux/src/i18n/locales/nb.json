@@ -430,7 +430,11 @@
         "offlineNotice": "Profilredigering er utilgjengelig når du er frakoblet",
         "connection": "Tilkobling",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Ikke støttet",
+        "webPush_available": "Venter på registrering",
+        "webPush_registered": "Registrert"
     },
     "console": {
         "title": "XMPP-konsoll",

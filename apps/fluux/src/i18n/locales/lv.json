@@ -430,7 +430,11 @@
         "offlineNotice": "Profila rediģēšana nav pieejama bezsaistē",
         "connection": "Savienojums",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Nav atbalstīts",
+        "webPush_available": "Gaida reģistrāciju",
+        "webPush_registered": "Reģistrēts"
     },
     "console": {
         "title": "XMPP konsole",

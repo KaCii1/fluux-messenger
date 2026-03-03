@@ -431,7 +431,11 @@
     "offlineNotice": "Редактирование профиля недоступно в автономном режиме",
     "connection": "Соединение",
     "connectionMethod_proxy": "TCP/TLS",
-    "connectionMethod_websocket": "WebSocket"
+    "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Не поддерживается",
+        "webPush_available": "Ожидает регистрации",
+        "webPush_registered": "Зарегистрировано"
   },
   "console": {
     "title": "XMPP Консоль",

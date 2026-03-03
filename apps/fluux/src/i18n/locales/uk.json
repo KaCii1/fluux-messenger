@@ -431,7 +431,11 @@
     "offlineNotice": "Редагування профілю недоступне в режимі офлайн",
     "connection": "З'єднання",
     "connectionMethod_proxy": "TCP/TLS",
-    "connectionMethod_websocket": "WebSocket"
+    "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Не підтримується",
+        "webPush_available": "Очікує реєстрації",
+        "webPush_registered": "Зареєстровано"
   },
   "console": {
     "title": "XMPP консоль",

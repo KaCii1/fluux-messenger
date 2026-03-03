@@ -430,7 +430,11 @@
         "offlineNotice": "Urejanje profila ni na voljo brez povezave",
         "connection": "Povezava",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Ni podprto",
+        "webPush_available": "Čaka na registracijo",
+        "webPush_registered": "Registrirano"
     },
     "console": {
         "title": "XMPP konzola",

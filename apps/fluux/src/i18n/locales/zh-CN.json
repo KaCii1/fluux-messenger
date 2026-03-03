@@ -430,7 +430,11 @@
         "offlineNotice": "离线时无法编辑个人资料",
         "connection": "连接",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "不支持",
+        "webPush_available": "等待注册",
+        "webPush_registered": "已注册"
     },
     "console": {
         "title": "XMPP 控制台",

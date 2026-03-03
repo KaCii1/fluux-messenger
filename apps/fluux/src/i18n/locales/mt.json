@@ -430,7 +430,11 @@
         "offlineNotice": "L-editjar tal-profil mhux disponibbli meta tkun offline",
         "connection": "Konnessjoni",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Mhux appoġġjat",
+        "webPush_available": "Reġistrazzjoni pendenti",
+        "webPush_registered": "Reġistrat"
     },
     "console": {
         "title": "Console XMPP",

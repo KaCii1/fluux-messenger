@@ -430,7 +430,11 @@
         "offlineNotice": "Profile editing is unavailable while offline",
         "connection": "Connection",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Not supported",
+        "webPush_available": "Pending registration",
+        "webPush_registered": "Registered"
     },
     "console": {
         "title": "XMPP Console",

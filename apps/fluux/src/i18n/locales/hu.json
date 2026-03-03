@@ -430,7 +430,11 @@
         "offlineNotice": "A profil szerkesztése offline módban nem érhető el",
         "connection": "Kapcsolat",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Nem támogatott",
+        "webPush_available": "Regisztráció folyamatban",
+        "webPush_registered": "Regisztrálva"
     },
     "console": {
         "title": "XMPP konzol",

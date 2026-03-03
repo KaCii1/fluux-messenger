@@ -430,7 +430,11 @@
         "offlineNotice": "Editarea profilului este indisponibilă în modul offline",
         "connection": "Conexiune",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Nesuportat",
+        "webPush_available": "Înregistrare în așteptare",
+        "webPush_registered": "Înregistrat"
     },
     "console": {
         "title": "Consolă XMPP",

@@ -430,7 +430,11 @@
         "offlineNotice": "La modification du profil n'est pas disponible hors ligne",
         "connection": "Connexion",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Non supporté",
+        "webPush_available": "En attente d'enregistrement",
+        "webPush_registered": "Enregistré"
     },
     "console": {
         "title": "Console XMPP",

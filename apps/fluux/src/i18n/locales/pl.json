@@ -430,7 +430,11 @@
         "offlineNotice": "Edycja profilu jest niedostępna w trybie offline",
         "connection": "Połączenie",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Nieobsługiwane",
+        "webPush_available": "Oczekuje na rejestrację",
+        "webPush_registered": "Zarejestrowano"
     },
     "console": {
         "title": "Konsola XMPP",

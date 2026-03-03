@@ -431,7 +431,11 @@
     "offlineNotice": "Рэдагаванне профілю недаступнае ў аўтаномным рэжыме",
     "connection": "Падключэнне",
     "connectionMethod_proxy": "TCP/TLS",
-    "connectionMethod_websocket": "WebSocket"
+    "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Не падтрымліваецца",
+        "webPush_available": "Чакае рэгістрацыі",
+        "webPush_registered": "Зарэгістравана"
   },
   "console": {
     "title": "XMPP кансоль",

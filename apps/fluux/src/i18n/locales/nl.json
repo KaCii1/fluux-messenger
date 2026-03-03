@@ -430,7 +430,11 @@
         "offlineNotice": "Profielbewerking is niet beschikbaar terwijl u offline bent",
         "connection": "Verbinding",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Niet ondersteund",
+        "webPush_available": "Registratie in afwachting",
+        "webPush_registered": "Geregistreerd"
     },
     "console": {
         "title": "XMPP Console",

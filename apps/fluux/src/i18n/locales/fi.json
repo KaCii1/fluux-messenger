@@ -430,7 +430,11 @@
         "offlineNotice": "Profiilin muokkaus ei ole käytettävissä offline-tilassa",
         "connection": "Yhteys",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Ei tuettu",
+        "webPush_available": "Rekisteröinti odottaa",
+        "webPush_registered": "Rekisteröity"
     },
     "console": {
         "title": "XMPP-konsoli",

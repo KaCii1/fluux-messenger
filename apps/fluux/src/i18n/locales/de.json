@@ -430,7 +430,11 @@
         "offlineNotice": "Profilbearbeitung ist offline nicht verfügbar",
         "connection": "Verbindung",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Nicht unterstützt",
+        "webPush_available": "Registrierung ausstehend",
+        "webPush_registered": "Registriert"
     },
     "console": {
         "title": "XMPP-Konsole",

@@ -430,7 +430,11 @@
         "offlineNotice": "Úprava profilu není dostupná v režimu offline",
         "connection": "Připojení",
         "connectionMethod_proxy": "TCP/TLS",
-        "connectionMethod_websocket": "WebSocket"
+        "connectionMethod_websocket": "WebSocket",
+        "webPush": "Web Push",
+        "webPush_unavailable": "Nepodporováno",
+        "webPush_available": "Čeká na registraci",
+        "webPush_registered": "Registrováno"
     },
     "console": {
         "title": "Konzole XMPP",
