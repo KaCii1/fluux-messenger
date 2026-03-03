@@ -1286,6 +1286,14 @@ export class XMPPClient {
     // Only run post-session tasks if this generation is still current
     if (this.isSessionStale(generation)) return
 
+    // Write cache integrity marker (used to detect cache clear during SM resumption).
+    // Written on both fresh and resumed sessions so the marker is always refreshed.
+    try {
+      if (this.currentJid) {
+        localStorage.setItem(`fluux:cache-marker:${this.currentJid}`, Date.now().toString())
+      }
+    } catch { /* ignore storage errors */ }
+
     // Always re-discover admin commands (lightweight, no MAM)
     this.admin.discoverAdminCommands().catch(() => {})
   }
@@ -1312,6 +1320,26 @@ export class XMPPClient {
    */
   private async handleSmResumption(generation?: number): Promise<void> {
     const gen = generation ?? this.sessionGeneration
+
+    // Check if local cache was cleared (e.g., Ctrl-Shift+R on Linux clears WebKit cache).
+    // If the sentinel marker is missing, localStorage was wiped — upgrade to full sync
+    // while keeping the SM connection alive.
+    const jid = this.currentJid
+    try {
+      const cacheMarker = jid ? localStorage.getItem(`fluux:cache-marker:${jid}`) : null
+      if (!cacheMarker) {
+        logInfo('SM resumption: cache marker missing — local storage was cleared, upgrading to full sync')
+        this.stores?.console.addEvent('Cache cleared during SM session — performing full sync', 'sm')
+        this.isSmResumedSession = false
+        await this.handleFreshSession(undefined, gen)
+        // Emit 'online' so side effects (MAM sync, background sync) run their fresh session path.
+        // Connection.ts already emitted 'resumed', but side effects need 'online' to trigger.
+        if (!this.isSessionStale(gen)) {
+          this.emit('online')
+        }
+        return
+      }
+    } catch { /* ignore storage errors (e.g., SSR environments) */ }
 
     await this.roster.sendInitialPresence()
     if (this.isSessionStale(gen)) {
