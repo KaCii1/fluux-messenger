@@ -338,7 +338,12 @@ export class MAM extends BaseModule {
           const { complete, rsm } = this.parseMAMResponse(response)
 
           // Apply modifications to collected messages (full JID comparison for rooms)
-          const unresolved = this.applyModifications(collectedMessages, modifications, (msg, from) => msg.from === from)
+          // normalizeReactor extracts nick from full MUC JID for consistent reactor identifiers
+          const unresolved = this.applyModifications(
+            collectedMessages, modifications,
+            (msg, from) => msg.from === from,
+            (from) => getResource(from) || from
+          )
 
           // Emit modifications targeting messages already in the store (from prior queries/cache)
           this.emitUnresolvedRoomModifications(roomJid, unresolved)
@@ -1099,7 +1104,8 @@ export class MAM extends BaseModule {
   private applyModifications<T extends Message | RoomMessage>(
     messages: T[],
     modifications: MAMModifications,
-    senderMatches: (msg: T, from: string) => boolean
+    senderMatches: (msg: T, from: string) => boolean,
+    normalizeReactor?: (from: string) => string
   ): UnresolvedModifications {
     const unresolved: UnresolvedModifications = {
       retractions: [],
@@ -1160,6 +1166,10 @@ export class MAM extends BaseModule {
     for (const reaction of modifications.reactions) {
       const target = messages.find(m => m.id === reaction.targetId || m.stanzaId === reaction.targetId)
       if (target) {
+        // Normalize reactor identifier (e.g., extract nick from full MUC JID)
+        // to stay consistent with how the store identifies reactors for live reactions
+        const reactorId = normalizeReactor ? normalizeReactor(reaction.from) : reaction.from
+
         // Initialize reactions object if not present
         if (!target.reactions) {
           target.reactions = {}
@@ -1167,7 +1177,7 @@ export class MAM extends BaseModule {
 
         // Remove this user from all existing reactions on this message
         for (const emoji of Object.keys(target.reactions)) {
-          target.reactions[emoji] = target.reactions[emoji].filter(jid => jid !== reaction.from)
+          target.reactions[emoji] = target.reactions[emoji].filter(id => id !== reactorId)
           if (target.reactions[emoji].length === 0) {
             delete target.reactions[emoji]
           }
@@ -1178,8 +1188,8 @@ export class MAM extends BaseModule {
           if (!target.reactions[emoji]) {
             target.reactions[emoji] = []
           }
-          if (!target.reactions[emoji].includes(reaction.from)) {
-            target.reactions[emoji].push(reaction.from)
+          if (!target.reactions[emoji].includes(reactorId)) {
+            target.reactions[emoji].push(reactorId)
           }
         }
 
