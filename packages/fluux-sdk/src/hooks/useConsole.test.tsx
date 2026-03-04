@@ -1,7 +1,7 @@
 /**
  * @vitest-environment happy-dom
  */
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { useConsole } from './useConsole'
@@ -15,9 +15,19 @@ function wrapper({ children }: { children: ReactNode }) {
 
 describe('useConsole hook', () => {
   beforeEach(() => {
+    vi.useFakeTimers()
     // Reset store state before each test
     consoleStore.getState().reset()
   })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  /** Flush the batching timer so pending entries appear in the store. */
+  function flushBatch() {
+    act(() => { vi.advanceTimersByTime(200) })
+  }
 
   describe('state reactivity', () => {
     it('should reflect isOpen state from store', () => {
@@ -45,7 +55,7 @@ describe('useConsole hook', () => {
       expect(result.current.height).toBe(500)
     })
 
-    it('should reflect entries from store', () => {
+    it('should reflect entries from store after batch flush', () => {
       const { result } = renderHook(() => useConsole(), { wrapper })
 
       expect(result.current.entries).toHaveLength(0)
@@ -53,6 +63,8 @@ describe('useConsole hook', () => {
       act(() => {
         consoleStore.getState().addPacket('incoming', '<message>Hello</message>')
       })
+
+      flushBatch()
 
       expect(result.current.entries).toHaveLength(1)
       expect(result.current.entries[0].type).toBe('incoming')
@@ -141,12 +153,13 @@ describe('useConsole hook', () => {
     it('should clear all entries', () => {
       const { result } = renderHook(() => useConsole(), { wrapper })
 
-      // Add some entries
+      // Add some entries and flush
       act(() => {
         consoleStore.getState().addPacket('incoming', '<message/>')
         consoleStore.getState().addPacket('outgoing', '<iq/>')
         consoleStore.getState().addEvent('Connected', 'connection')
       })
+      flushBatch()
 
       expect(result.current.entries).toHaveLength(3)
 
@@ -165,6 +178,7 @@ describe('useConsole hook', () => {
       act(() => {
         consoleStore.getState().addPacket('incoming', '<message from="alice@example.com"/>')
       })
+      flushBatch()
 
       const entry = result.current.entries[0]
       expect(entry.type).toBe('incoming')
@@ -179,6 +193,7 @@ describe('useConsole hook', () => {
       act(() => {
         consoleStore.getState().addPacket('outgoing', '<message to="bob@example.com"/>')
       })
+      flushBatch()
 
       const entry = result.current.entries[0]
       expect(entry.type).toBe('outgoing')
@@ -191,6 +206,7 @@ describe('useConsole hook', () => {
       act(() => {
         consoleStore.getState().addEvent('Connection established', 'connection')
       })
+      flushBatch()
 
       const entry = result.current.entries[0]
       expect(entry.type).toBe('event')
@@ -207,6 +223,7 @@ describe('useConsole hook', () => {
         consoleStore.getState().addEvent('SM ack received', 'sm')
         consoleStore.getState().addEvent('Presence sent', 'presence')
       })
+      flushBatch()
 
       expect(result.current.entries[0].eventCategory).toBe('connection')
       expect(result.current.entries[1].eventCategory).toBe('error')
@@ -216,19 +233,40 @@ describe('useConsole hook', () => {
   })
 
   describe('entry limit', () => {
-    it('should limit entries to 500', () => {
+    it('should limit entries to MAX_ENTRIES (2000)', () => {
       const { result } = renderHook(() => useConsole(), { wrapper })
 
-      // Add more than 500 entries
+      // Add more than 2000 entries
       act(() => {
-        for (let i = 0; i < 510; i++) {
+        for (let i = 0; i < 2010; i++) {
           consoleStore.getState().addPacket('incoming', `<message id="${i}"/>`)
         }
       })
+      flushBatch()
 
-      expect(result.current.entries).toHaveLength(500)
+      expect(result.current.entries).toHaveLength(2000)
       // Should keep the most recent entries
-      expect(result.current.entries[499].content).toContain('id="509"')
+      expect(result.current.entries[1999].content).toContain('id="2009"')
+    })
+  })
+
+  describe('batching', () => {
+    it('should batch multiple entries into a single store update', () => {
+      const { result } = renderHook(() => useConsole(), { wrapper })
+
+      act(() => {
+        consoleStore.getState().addPacket('incoming', '<message id="1"/>')
+        consoleStore.getState().addPacket('incoming', '<message id="2"/>')
+        consoleStore.getState().addPacket('incoming', '<message id="3"/>')
+      })
+
+      // Before flush, entries should still be empty
+      expect(result.current.entries).toHaveLength(0)
+
+      flushBatch()
+
+      // After flush, all three arrive together
+      expect(result.current.entries).toHaveLength(3)
     })
   })
 

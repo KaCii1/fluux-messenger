@@ -2,15 +2,20 @@ import { createStore } from 'zustand/vanilla'
 import type { XmppPacket } from '../core'
 import { generateUUID } from '../utils/uuid'
 
-const MAX_ENTRIES = 500
+const MAX_ENTRIES = 2000
 const DEFAULT_HEIGHT = 300
+const BATCH_INTERVAL_MS = 100
 
 /**
  * Console state interface for the XMPP debug console.
  *
  * Manages the debug console visibility, height, and packet log entries.
  * Captures all incoming and outgoing XMPP stanzas for debugging purposes.
- * Entries are limited to MAX_ENTRIES (500) to prevent memory issues.
+ * Entries are limited to MAX_ENTRIES to prevent memory issues.
+ *
+ * Incoming packets and events are buffered and flushed to the store in
+ * batches (every 100ms) to avoid per-stanza array copies and re-renders
+ * during high-throughput phases like room joins.
  *
  * @remarks
  * Most applications should use the `useConsole` hook instead of accessing this
@@ -56,6 +61,29 @@ const initialState = {
   entries: [] as XmppPacket[],
 }
 
+// Batching buffer — entries accumulate here and are flushed periodically
+let pendingEntries: XmppPacket[] = []
+let flushTimer: ReturnType<typeof setTimeout> | null = null
+
+function scheduleFlush(): void {
+  if (flushTimer !== null) return
+  flushTimer = setTimeout(() => {
+    flushTimer = null
+    if (pendingEntries.length === 0) return
+    const batch = pendingEntries
+    pendingEntries = []
+    consoleStore.setState((state) => {
+      const merged = [...state.entries, ...batch]
+      return { entries: merged.length > MAX_ENTRIES ? merged.slice(-MAX_ENTRIES) : merged }
+    })
+  }, BATCH_INTERVAL_MS)
+}
+
+function enqueue(entry: XmppPacket): void {
+  pendingEntries.push(entry)
+  scheduleFlush()
+}
+
 export const consoleStore = createStore<ConsoleState>((set) => ({
   ...initialState,
 
@@ -66,43 +94,41 @@ export const consoleStore = createStore<ConsoleState>((set) => ({
   setHeight: (height) => set({ height }),
 
   addPacket: (direction, xml) => {
-    const entry: XmppPacket = {
+    enqueue({
       id: generateUUID(),
       type: direction,
       content: xml,
       timestamp: new Date(),
-    }
-
-    set((state) => {
-      const newEntries = [...state.entries, entry]
-      if (newEntries.length > MAX_ENTRIES) {
-        return { entries: newEntries.slice(-MAX_ENTRIES) }
-      }
-      return { entries: newEntries }
     })
   },
 
   addEvent: (message, category) => {
-    const entry: XmppPacket = {
+    enqueue({
       id: generateUUID(),
       type: 'event',
       content: message,
-      timestamp: new Date(),
       eventCategory: category,
-    }
-
-    set((state) => {
-      const newEntries = [...state.entries, entry]
-      if (newEntries.length > MAX_ENTRIES) {
-        return { entries: newEntries.slice(-MAX_ENTRIES) }
-      }
-      return { entries: newEntries }
+      timestamp: new Date(),
     })
   },
 
-  clearEntries: () => set({ entries: [] }),
+  clearEntries: () => {
+    pendingEntries = []
+    if (flushTimer !== null) {
+      clearTimeout(flushTimer)
+      flushTimer = null
+    }
+    set({ entries: [] })
+  },
 
-  reset: () => set(initialState),
+  reset: () => {
+    pendingEntries = []
+    if (flushTimer !== null) {
+      clearTimeout(flushTimer)
+      flushTimer = null
+    }
+    set(initialState)
+  },
 }))
 
 export type { ConsoleState }
