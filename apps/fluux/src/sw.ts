@@ -28,6 +28,7 @@ precacheAndRoute(self.__WB_MANIFEST)
 // ============================================================================
 
 self.addEventListener('push', (event) => {
+  console.log('[SW Push] Received push event, data:', event.data?.text())
   if (!event.data) return
 
   let title = 'Fluux Messenger'

@@ -32,12 +32,20 @@ export function useWebPush(): void {
 
   useEffect(() => {
     // Skip in environments without Web Push support (Tauri, tests, old browsers)
-    if (!isWebPushSupported) return
+    if (!isWebPushSupported) {
+      console.log('[WebPush] Not supported in this environment',
+        { hasSW: 'serviceWorker' in navigator, hasPM: 'PushManager' in window,
+          isTauri: '__TAURI_INTERNALS__' in window })
+      return
+    }
+    console.log('[WebPush] Hook active, subscribing to store changes')
 
     // Subscribe to webPushStatus changes to trigger registration
     const unsub = connectionStore.subscribe(
       (state) => ({ status: state.webPushStatus, services: state.webPushServices }),
       ({ status, services }) => {
+        console.log('[WebPush] Store changed: status =', status,
+          '| services =', services.length, '| registering =', registering.current)
         if (status !== 'available') return
         if (services.length === 0) return
         if (registering.current) return
@@ -49,6 +57,8 @@ export function useWebPush(): void {
 
     // Also check current state immediately (in case services were already discovered)
     const { webPushStatus, webPushServices } = connectionStore.getState()
+    console.log('[WebPush] Initial state: status =', webPushStatus,
+      '| services =', webPushServices.length)
     if (
       webPushStatus === 'available' &&
       webPushServices.length > 0 &&
@@ -62,28 +72,39 @@ export function useWebPush(): void {
 
   async function registerPush(service: WebPushService): Promise<void> {
     registering.current = true
+    console.log('[WebPush] Starting registration with service:', service)
     try {
       // Ensure notification permission
-      if (Notification.permission === 'denied') return
+      console.log('[WebPush] Notification.permission =', Notification.permission)
+      if (Notification.permission === 'denied') {
+        console.warn('[WebPush] Notification permission denied, aborting')
+        return
+      }
       if (Notification.permission === 'default') {
         const perm = await Notification.requestPermission()
+        console.log('[WebPush] Permission request result:', perm)
         if (perm !== 'granted') return
       }
 
       // Get service worker registration
+      console.log('[WebPush] Waiting for service worker ready...')
       const swReg = await navigator.serviceWorker.ready
+      console.log('[WebPush] Service worker ready, scope:', swReg.scope)
 
       // Check for existing subscription first, or create a new one
       let subscription = await swReg.pushManager.getSubscription()
+      console.log('[WebPush] Existing subscription:', subscription ? 'yes' : 'no')
 
       if (!subscription) {
         // Convert VAPID key from base64url to Uint8Array
         const vapidKeyBytes = urlBase64ToUint8Array(service.vapidKey)
+        console.log('[WebPush] Subscribing with VAPID key length:', vapidKeyBytes.length)
 
         subscription = await swReg.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: vapidKeyBytes.buffer as ArrayBuffer,
         })
+        console.log('[WebPush] New subscription created, endpoint:', subscription.endpoint)
       }
 
       // Extract subscription details
@@ -99,8 +120,10 @@ export function useWebPush(): void {
       const p256dh = arrayBufferToBase64(p256dhKey)
       const auth = arrayBufferToBase64(authKey)
 
+      console.log('[WebPush] Registering with XMPP server, endpoint:', endpoint)
       // Register with XMPP server via p1:push
       await client.webPush.registerSubscription(endpoint, p256dh, auth, service.appId)
+      console.log('[WebPush] Registration complete!')
     } catch (err) {
       console.error('[WebPush] Registration failed:', err)
     } finally {

@@ -1451,8 +1451,13 @@ export class XMPPClient {
     // Web Push service discovery is chained after server info to check for p1:push:webpush feature.
     this.discovery.fetchServerInfo().then(() => {
       const serverInfo = this.stores?.connection.getServerInfo?.()
-      if (serverInfo?.features.includes(NS_P1_PUSH_WEBPUSH)) {
-        this.webPush.queryServices().catch(() => {})
+      const hasWebPush = serverInfo?.features.includes(NS_P1_PUSH_WEBPUSH)
+      console.log('[WebPush] Server disco: p1:push:webpush feature =', hasWebPush,
+        '| All features:', serverInfo?.features)
+      if (hasWebPush) {
+        this.webPush.queryServices().catch((err) => {
+          console.warn('[WebPush] queryServices failed:', err)
+        })
       }
     }).catch(() => {})
     this.discovery.discoverHttpUploadService().catch(() => {})
