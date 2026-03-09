@@ -76,7 +76,7 @@ This document lists the XMPP Extension Protocols (XEPs) and related RFCs impleme
 |-------------------------------------------------------|-----------------------------------------------|---------------|----------------------------------------------------------------------------------------------------------------------|
 | [XEP-0060](https://xmpp.org/extensions/xep-0060.html) | Publish-Subscribe                             | ✅ Implemented | PubSub event handling for avatars, nicknames, bookmarks, and settings                                                |
 | [XEP-0163](https://xmpp.org/extensions/xep-0163.html) | Personal Eventing Protocol                    | ✅ Implemented | PEP notifications for avatars (XEP-0084), nicknames (XEP-0172), bookmarks (XEP-0402), appearance settings (XEP-0223) |
-| [XEP-0223](https://xmpp.org/extensions/xep-0223.html) | Persistent Storage of Private Data via PubSub | ✅ Implemented | Theme/appearance settings sync across devices                                                                        |
+| [XEP-0223](https://xmpp.org/extensions/xep-0223.html) | Persistent Storage of Private Data via PubSub | ✅ Implemented | Private PEP storage for appearance settings, conversation list sync, and per-room ignored users                      |
 
 ## Multi-User Chat (MUC)
 
@@ -116,11 +116,27 @@ The following XEPs are planned for future implementation:
 
 ## Custom Extensions
 
-Fluux also uses custom extensions in the `urn:xmpp:fluux:0` namespace:
+Fluux uses custom extensions across several namespaces:
+
+### Bookmark Extensions (`urn:xmpp:fluux:0`)
 
 - **Room notification preferences**: Stored in XEP-0402 bookmark extensions to enable per-room notification settings (mentions only vs. all messages)
-- **@all mentions**: Room-wide mention indicator for notifying all participants
+- **@all mentions**: Room-wide mention indicator (`urn:fluux:mentions:0`) for notifying all participants
 - **Quick chat marker**: `<quickchat xmlns="urn:xmpp:fluux:0"/>` element included in MUC invitations to indicate the room is a temporary quick chat (non-persistent, auto-destroys when empty)
+
+### Private PEP Storage (XEP-0223)
+
+| Namespace                            | Purpose                                                                                                            |
+|--------------------------------------|--------------------------------------------------------------------------------------------------------------------|
+| `urn:xmpp:fluux:appearance:0`        | Theme and appearance settings sync across devices                                                                  |
+| `urn:xmpp:fluux:conversations:0`     | Conversation list sync (active and archived 1:1 conversations) with debounced publishing and merge-on-reconnect    |
+| `urn:xmpp:fluux:ignored-users:0`     | Per-room ignored users list, stored as one PEP item per room                                                       |
+
+### Other
+
+| Namespace                | Purpose                                                           |
+|--------------------------|-------------------------------------------------------------------|
+| `urn:fluux:easter-egg:0` | Easter egg animations triggered by specific message content       |
 
 ## ejabberd Business Edition Extensions
 

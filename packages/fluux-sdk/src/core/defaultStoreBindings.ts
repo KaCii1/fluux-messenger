@@ -140,6 +140,7 @@ export function createDefaultStoreBindings(options: DefaultStoreBindingsOptions 
         }
         return result
       },
+      archiveConversation: chatStore.getState().archiveConversation,
       unarchiveConversation: chatStore.getState().unarchiveConversation,
       getLastMessage: (conversationId: string) => {
         const meta = chatStore.getState().conversationMeta.get(conversationId)

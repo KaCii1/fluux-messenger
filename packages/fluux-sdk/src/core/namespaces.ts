@@ -108,6 +108,9 @@ export const NS_APPEARANCE = 'urn:xmpp:fluux:appearance:0'
 // Custom: Fluux ignored users per-room (XEP-0223 private storage)
 export const NS_IGNORED_USERS = 'urn:xmpp:fluux:ignored-users:0'
 
+// Custom: Fluux conversation list sync (XEP-0223 private storage)
+export const NS_CONVERSATIONS = 'urn:xmpp:fluux:conversations:0'
+
 // XEP-0334: Message Processing Hints
 export const NS_HINTS = 'urn:xmpp:hints'
 

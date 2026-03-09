@@ -96,6 +96,7 @@ export interface StoreBindings {
     getAllConversations: () => Array<{ id: string; messages: Message[] }>
     // Smart MAM: archived conversation preview refresh
     getArchivedConversations?: () => Array<{ id: string; messages: Message[] }>
+    archiveConversation?: (id: string) => void
     unarchiveConversation?: (id: string) => void
     getLastMessage?: (conversationId: string) => Message | undefined
   }

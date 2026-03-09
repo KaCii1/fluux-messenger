@@ -182,6 +182,9 @@ export type { AdminStats } from './stores/adminStore'
 
 // Room ignore store types and utilities
 export type { IgnoredUser } from './stores/ignoreStore'
+
+// Conversation sync types
+export type { SyncedConversation } from './core/modules/ConversationSync'
 export { isMessageFromIgnoredUser, isReplyToIgnoredUser } from './stores/ignoreStore'
 
 // Notification state utilities (pure functions for badge computation, etc.)
@@ -467,6 +470,8 @@ export {
   // p1:push: ejabberd Push Notifications
   NS_P1_PUSH,
   NS_P1_PUSH_WEBPUSH,
+  // Custom: Fluux conversation list sync
+  NS_CONVERSATIONS,
 } from './core/namespaces'
 
 // =============================================================================

@@ -640,6 +640,7 @@ export const createMockStores = (): MockStoreBindings => ({
     updateLastMessagePreview: vi.fn(),
     getAllConversations: vi.fn().mockReturnValue([]),
     getArchivedConversations: vi.fn().mockReturnValue([]),
+    archiveConversation: vi.fn(),
     unarchiveConversation: vi.fn(),
     getLastMessage: vi.fn().mockReturnValue(undefined),
   },
