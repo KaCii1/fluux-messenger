@@ -62,7 +62,7 @@ export interface UseMessageListScrollOptions {
 
 export interface UseMessageListScrollResult {
   setScrollContainerRef: (element: HTMLDivElement | null) => void
-  contentWrapperRef: React.RefObject<HTMLDivElement>
+  contentWrapperRef: React.RefCallback<HTMLDivElement>
   handleScroll: (e: React.UIEvent<HTMLDivElement>) => void
   handleWheel: (e: React.WheelEvent<HTMLDivElement>) => void
   handleLoadEarlier: () => void
@@ -95,7 +95,8 @@ export function useMessageListScroll({
   // ==========================================================================
 
   const scrollerRef = useRef<HTMLDivElement | null>(null)
-  const contentRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement | null>(null)
+  const contentObserverRef = useRef<ResizeObserver | null>(null)
 
   // Track scroll position - always create internal ref to follow rules of hooks
   const internalIsAtBottomRef = useRef(true)
@@ -162,6 +163,96 @@ export function useMessageListScroll({
       (externalScrollerRef as React.MutableRefObject<HTMLElement | null>).current = el
     }
   }, [externalScrollerRef])
+
+  // ==========================================================================
+  // CALLBACK REF: Content wrapper (replaces useEffect + useRef pattern)
+  // ==========================================================================
+  //
+  // Using a callback ref ensures the ResizeObserver is connected as soon as
+  // the content wrapper mounts, even if it mounts after initial render
+  // (e.g., MUC rooms that show a loading state before revealing messages).
+
+  const setContentRef = useCallback((element: HTMLDivElement | null) => {
+    // Cleanup previous observer
+    if (contentObserverRef.current) {
+      contentObserverRef.current.disconnect()
+      contentObserverRef.current = null
+    }
+
+    contentRef.current = element
+
+    if (element) {
+      const scroller = scrollerRef.current
+      if (!scroller) return
+
+      // On mount: if we should be at bottom, scroll there immediately
+      if (isAtBottomRef.current) {
+        void scroller.offsetHeight // Force reflow
+        scroller.scrollTop = scroller.scrollHeight
+        requestAnimationFrame(() => {
+          if (scrollerRef.current) {
+            scrollerRef.current.scrollTop = scrollerRef.current.scrollHeight
+          }
+        })
+      }
+
+      // Set up content ResizeObserver
+      let lastHeight = scroller.scrollHeight
+
+      const observer = new ResizeObserver(() => {
+        const currentScroller = scrollerRef.current
+        if (!currentScroller) return
+
+        const newHeight = currentScroller.scrollHeight
+        const currentScrollTop = currentScroller.scrollTop
+
+        // Skip during prepend that's actively in progress (not yet restored)
+        if (prependRef.current && !prependRef.current.restored) {
+          debugLog('RESIZE SKIP (prepend in progress)', {
+            newHeight,
+            lastHeight,
+            currentScrollTop,
+          })
+          lastHeight = newHeight
+          return
+        }
+
+        // Skip during media load batch - let the debounced handler manage it
+        if (mediaLoadSnapshotRef.current) {
+          debugLog('RESIZE SKIP (media load batch in progress)', {
+            newHeight,
+            lastHeight,
+            currentScrollTop,
+          })
+          lastHeight = newHeight
+          return
+        }
+
+        // Content grew and we were at bottom -> stay at bottom
+        if (newHeight > lastHeight && isAtBottomRef.current) {
+          debugLog('RESIZE SCROLL TO BOTTOM', {
+            newHeight,
+            lastHeight,
+            isAtBottom: isAtBottomRef.current,
+            scrollTopBefore: currentScrollTop,
+          })
+          currentScroller.scrollTop = newHeight
+        } else if (newHeight !== lastHeight) {
+          debugLog('RESIZE NO SCROLL', {
+            newHeight,
+            lastHeight,
+            isAtBottom: isAtBottomRef.current,
+            currentScrollTop,
+          })
+        }
+
+        lastHeight = newHeight
+      })
+
+      observer.observe(element)
+      contentObserverRef.current = observer
+    }
+  }, [isAtBottomRef])
 
   // ==========================================================================
   // SCROLL ACTIONS
@@ -527,6 +618,7 @@ export function useMessageListScroll({
       //
       // Note: Async content loading (MAM) is handled by the separate "new message" effect
       // which triggers when messageCount changes.
+      void scroller.offsetHeight  // Force layout calculation
       scroller.scrollTop = scroller.scrollHeight
 
       requestAnimationFrame(() => {
@@ -559,6 +651,9 @@ export function useMessageListScroll({
     return () => {
       if (mediaLoadDebounceRef.current) {
         clearTimeout(mediaLoadDebounceRef.current)
+      }
+      if (contentObserverRef.current) {
+        contentObserverRef.current.disconnect()
       }
     }
   }, [])
@@ -837,70 +932,6 @@ export function useMessageListScroll({
   }, [conversationId])
 
   // ==========================================================================
-  // EFFECT: Content resize (images loading, etc.)
-  // ==========================================================================
-
-  useEffect(() => {
-    const content = contentRef.current
-    const scroller = scrollerRef.current
-    if (!content || !scroller) return
-
-    let lastHeight = scroller.scrollHeight
-
-    const observer = new ResizeObserver(() => {
-      const newHeight = scroller.scrollHeight
-      const currentScrollTop = scroller.scrollTop
-
-      // Skip during prepend that's actively in progress (not yet restored)
-      // Once restored, allow resize-triggered scroll even during cooldown
-      if (prependRef.current && !prependRef.current.restored) {
-        debugLog('RESIZE SKIP (prepend in progress)', {
-          newHeight,
-          lastHeight,
-          currentScrollTop,
-        })
-        lastHeight = newHeight
-        return
-      }
-
-      // Skip during media load batch - let the debounced handler manage it
-      // This prevents multiple scroll corrections when images load in sequence
-      if (mediaLoadSnapshotRef.current) {
-        debugLog('RESIZE SKIP (media load batch in progress)', {
-          newHeight,
-          lastHeight,
-          currentScrollTop,
-        })
-        lastHeight = newHeight
-        return
-      }
-
-      // Content grew and we were at bottom -> stay at bottom
-      if (newHeight > lastHeight && isAtBottomRef.current) {
-        debugLog('RESIZE SCROLL TO BOTTOM', {
-          newHeight,
-          lastHeight,
-          isAtBottom: isAtBottomRef.current,
-          scrollTopBefore: currentScrollTop,
-        })
-        scroller.scrollTop = newHeight
-      } else if (newHeight !== lastHeight) {
-        debugLog('RESIZE NO SCROLL', {
-          newHeight,
-          lastHeight,
-          isAtBottom: isAtBottomRef.current,
-          currentScrollTop,
-        })
-      }
-
-      lastHeight = newHeight
-    })
-
-    observer.observe(content)
-    return () => observer.disconnect()
-  }, [conversationId, isAtBottomRef])
-
-  // ==========================================================================
   // EFFECT: Keyboard shortcuts
   // ==========================================================================
 
@@ -931,7 +962,7 @@ export function useMessageListScroll({
 
   return {
     setScrollContainerRef,
-    contentWrapperRef: contentRef,
+    contentWrapperRef: setContentRef,
     handleScroll,
     handleWheel,
     handleLoadEarlier,
