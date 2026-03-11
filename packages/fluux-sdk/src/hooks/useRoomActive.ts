@@ -238,6 +238,27 @@ export function useRoomActive() {
     [client]
   )
 
+  const submitRoomConfig = useCallback(
+    async (roomJid: string, values: Record<string, string | string[]>) => {
+      await client.muc.submitRoomConfig(roomJid, values)
+    },
+    [client]
+  )
+
+  const setSubject = useCallback(
+    async (roomJid: string, subject: string) => {
+      await client.muc.setSubject(roomJid, subject)
+    },
+    [client]
+  )
+
+  const destroyRoom = useCallback(
+    async (roomJid: string, reason?: string, alternateRoomJid?: string) => {
+      await client.muc.destroyRoom(roomJid, reason, alternateRoomJid)
+    },
+    [client]
+  )
+
   /**
    * Fetch older room history (pagination) - for lazy loading on scroll up.
    */
@@ -290,6 +311,9 @@ export function useRoomActive() {
       clearFirstNewMessageId,
       updateLastSeenMessageId,
       fetchOlderHistory,
+      submitRoomConfig,
+      setSubject,
+      destroyRoom,
     }),
     [
       joinRoom,
@@ -311,6 +335,9 @@ export function useRoomActive() {
       clearFirstNewMessageId,
       updateLastSeenMessageId,
       fetchOlderHistory,
+      submitRoomConfig,
+      setSubject,
+      destroyRoom,
     ]
   )
 

@@ -479,7 +479,7 @@ export {
 // =============================================================================
 
 // XEP-0004: Data Form utilities
-export { parseDataForm, getFormFieldValue, getFormFieldValues } from './utils/dataForm'
+export { parseDataForm, getFormFieldValue, getFormFieldValues, buildDataFormSubmit } from './utils/dataForm'
 
 // XEP-0059: Result Set Management utilities
 export { parseRSMResponse, buildRSMElement } from './utils/rsm'

@@ -13,6 +13,7 @@ import { Tooltip } from '../Tooltip'
 import { useSidebarZone } from './types'
 import { formatConversationTime } from '@/utils/dateFormat'
 import { useSettingsStore } from '@/stores/settingsStore'
+import { CreateRoomModal } from '../CreateRoomModal'
 import {
   Hash,
   LogIn,
@@ -23,6 +24,7 @@ import {
   ToggleRight,
   Zap,
   Loader2,
+  Plus,
 } from 'lucide-react'
 
 export function RoomsList() {
@@ -31,6 +33,7 @@ export function RoomsList() {
   // NOTE: Use direct store subscription to avoid re-renders from activeMessages changes
   const setActiveConversation = useChatStore((s) => s.setActiveConversation)
   const [editingRoom, setEditingRoom] = useState<Room | null>(null)
+  const [showCreateRoom, setShowCreateRoom] = useState(false)
   const listRef = useRef<HTMLDivElement>(null)
   const zoneRef = useSidebarZone()
 
@@ -103,13 +106,25 @@ export function RoomsList() {
 
   if (rooms.length === 0) {
     return (
-      <div className="px-3 py-4 text-fluux-muted text-sm text-center">
-        <Hash className="w-12 h-12 mx-auto mb-3 opacity-50" />
-        <p className="mb-2">{t('rooms.noRooms')}</p>
-        <p className="text-xs opacity-75">
-          {t('rooms.noRoomsHint')}
-        </p>
-      </div>
+      <>
+        <div className="px-3 py-4 text-fluux-muted text-sm text-center">
+          <Hash className="w-12 h-12 mx-auto mb-3 opacity-50" />
+          <p className="mb-2">{t('rooms.noRooms')}</p>
+          <p className="text-xs opacity-75 mb-3">
+            {t('rooms.noRoomsHint')}
+          </p>
+          <button
+            onClick={() => setShowCreateRoom(true)}
+            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs text-fluux-brand bg-fluux-brand/10 hover:bg-fluux-brand/20 rounded-lg transition-colors"
+          >
+            <Plus className="w-3 h-3" />
+            {t('rooms.createRoom')}
+          </button>
+        </div>
+        {showCreateRoom && (
+          <CreateRoomModal onClose={() => setShowCreateRoom(false)} />
+        )}
+      </>
     )
   }
 
@@ -155,9 +170,20 @@ export function RoomsList() {
       {/* Joined rooms */}
       {joinedRooms.length > 0 && (
         <>
-          <h3 className="text-xs font-semibold text-fluux-muted uppercase px-2 mb-2">
-            {t('rooms.joined')} — {joinedRooms.length}
-          </h3>
+          <div className="flex items-center justify-between px-2 mb-2">
+            <h3 className="text-xs font-semibold text-fluux-muted uppercase">
+              {t('rooms.joined')} — {joinedRooms.length}
+            </h3>
+            <Tooltip content={t('rooms.createRoom')} position="left">
+              <button
+                onClick={() => setShowCreateRoom(true)}
+                className="p-0.5 rounded text-fluux-muted hover:text-fluux-text hover:bg-fluux-hover transition-colors"
+                aria-label={t('rooms.createRoom')}
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+            </Tooltip>
+          </div>
           {joinedRooms.map((room) => {
             const flatIndex = jidToIndex.get(room.jid) ?? -1
             const draft = drafts.get(room.jid)
@@ -237,6 +263,11 @@ export function RoomsList() {
           }}
           onClose={() => setEditingRoom(null)}
         />
+      )}
+
+      {/* Create Room Modal */}
+      {showCreateRoom && (
+        <CreateRoomModal onClose={() => setShowCreateRoom(false)} />
       )}
     </div>
   )

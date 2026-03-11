@@ -34,6 +34,7 @@ import type {
   AdminRoom,
 } from '../types'
 import { parseXMPPError, formatXMPPError } from '../../utils/xmppError'
+import { buildDataFormSubmit } from '../../utils/dataForm'
 import { logInfo, logWarn, logError as logErr } from '../logger'
 
 /**
@@ -937,49 +938,214 @@ export class MUC extends BaseModule {
   }
 
   /**
-   * Configure a room as a temporary quick chat (non-persistent, private).
+   * Submit room configuration (XEP-0045 room configuration).
+   *
+   * Sends a configuration form to the room. Only room owners can
+   * typically submit configuration changes.
+   *
+   * @param roomJid - The room JID
+   * @param values - Configuration field values as key-value pairs
+   *
+   * @example
+   * ```typescript
+   * await client.muc.submitRoomConfig('room@conference.example.com', {
+   *   'muc#roomconfig_roomname': 'New Room Name',
+   *   'muc#roomconfig_persistentroom': '1',
+   *   'muc#roomconfig_publicroom': '0',
+   * })
+   * ```
    */
-  private async configureQuickChat(roomJid: string, roomName: string, description?: string): Promise<void> {
-    // Build configuration fields
-    const fields = [
-      xml('field', { var: 'FORM_TYPE', type: 'hidden' },
-        xml('value', {}, 'http://jabber.org/protocol/muc#roomconfig')
-      ),
-      xml('field', { var: 'muc#roomconfig_persistentroom' },
-        xml('value', {}, '0')
-      ),
-      xml('field', { var: 'muc#roomconfig_roomname' },
-        xml('value', {}, roomName)
-      ),
-      xml('field', { var: 'muc#roomconfig_publicroom' },
-        xml('value', {}, '0')
-      ),
-      xml('field', { var: 'muc#roomconfig_allowinvites' },
-        xml('value', {}, '1')
-      ),
-    ]
-
-    // Add description if provided
-    if (description) {
-      fields.push(
-        xml('field', { var: 'muc#roomconfig_roomdesc' },
-          xml('value', {}, description)
-        )
-      )
-    }
+  async submitRoomConfig(
+    roomJid: string,
+    values: Record<string, string | string[]>
+  ): Promise<void> {
+    const formEl = buildDataFormSubmit(values, 'http://jabber.org/protocol/muc#roomconfig')
 
     const iq = xml(
       'iq',
       { type: 'set', to: roomJid, id: `config_${generateUUID()}` },
+      xml('query', { xmlns: NS_MUC_OWNER }, formEl)
+    )
+
+    await this.deps.sendIQ(iq)
+
+    // Emit room:updated if name changed
+    const name = typeof values['muc#roomconfig_roomname'] === 'string'
+      ? values['muc#roomconfig_roomname']
+      : undefined
+    if (name) {
+      this.deps.emitSDK('room:updated', { roomJid, updates: { name } })
+    }
+  }
+
+  /**
+   * Set the room subject/topic (XEP-0045).
+   *
+   * Sends a groupchat message with a `<subject>` element.
+   * The server will echo this back as a room subject change.
+   *
+   * @param roomJid - The room JID
+   * @param subject - The new subject text
+   *
+   * @example
+   * ```typescript
+   * await client.muc.setSubject('room@conference.example.com', 'New topic for discussion')
+   * ```
+   */
+  async setSubject(roomJid: string, subject: string): Promise<void> {
+    const msg = xml(
+      'message',
+      { to: roomJid, type: 'groupchat', id: `subject_${generateUUID()}` },
+      xml('subject', {}, subject)
+    )
+    await this.deps.sendStanza(msg)
+  }
+
+  /**
+   * Create a new persistent room with configuration.
+   *
+   * Orchestrates the full room creation flow: adds room to store,
+   * joins the room, submits configuration, sets a bookmark, and
+   * optionally sends invitations.
+   *
+   * @param roomJid - The full room JID (e.g., 'myroom@conference.example.com')
+   * @param nickname - Nickname to use in the room
+   * @param config - Room configuration options
+   * @param config.name - Display name for the room (required)
+   * @param config.description - Optional room description
+   * @param config.isPublic - Whether the room is publicly listed (default: false)
+   * @param config.membersOnly - Whether only members can join (default: false)
+   * @param config.extraFields - Additional configuration fields
+   * @param options - Optional parameters
+   * @param options.invitees - Array of JIDs to invite after creation
+   *
+   * @example
+   * ```typescript
+   * await client.muc.createRoom(
+   *   'team@conference.example.com',
+   *   'MyNick',
+   *   { name: 'Team Chat', description: 'Our team room', membersOnly: true },
+   *   { invitees: ['alice@example.com', 'bob@example.com'] }
+   * )
+   * ```
+   */
+  async createRoom(
+    roomJid: string,
+    nickname: string,
+    config: {
+      name: string
+      description?: string
+      isPublic?: boolean
+      membersOnly?: boolean
+      extraFields?: Record<string, string | string[]>
+    },
+    options?: { invitees?: string[] }
+  ): Promise<void> {
+    // 1. Add room to store
+    const room: Room = {
+      jid: roomJid,
+      name: config.name,
+      nickname,
+      joined: false,
+      isBookmarked: false,
+      occupants: new Map(),
+      messages: [],
+      unreadCount: 0,
+      mentionsCount: 0,
+      typingUsers: new Set(),
+    }
+    this.deps.emitSDK('room:added', { room })
+
+    // 2. Join room (sends presence, room auto-creates on first occupant)
+    await this.joinRoom(roomJid, nickname, { maxHistory: 0 })
+
+    // 3. Submit configuration
+    const configValues: Record<string, string | string[]> = {
+      'muc#roomconfig_roomname': config.name,
+      'muc#roomconfig_persistentroom': '1',
+      'muc#roomconfig_publicroom': config.isPublic ? '1' : '0',
+      ...(config.description ? { 'muc#roomconfig_roomdesc': config.description } : {}),
+      ...(config.membersOnly !== undefined ? { 'muc#roomconfig_membersonly': config.membersOnly ? '1' : '0' } : {}),
+      ...config.extraFields,
+    }
+    await this.submitRoomConfig(roomJid, configValues)
+
+    // 4. Set bookmark with autojoin
+    await this.setBookmark(roomJid, {
+      name: config.name,
+      nick: nickname,
+      autojoin: true,
+    })
+
+    // 5. Send invitations if any
+    if (options?.invitees && options.invitees.length > 0) {
+      await this.sendMediatedInvitations(roomJid, options.invitees)
+    }
+  }
+
+  /**
+   * Destroy a room (XEP-0045).
+   *
+   * Sends an IQ set with a `<destroy>` element to permanently remove
+   * the room. Only room owners can destroy rooms.
+   *
+   * @param roomJid - The room JID to destroy
+   * @param reason - Optional reason for destruction
+   * @param alternateRoomJid - Optional alternate room JID to redirect users to
+   *
+   * @example
+   * ```typescript
+   * await client.muc.destroyRoom('old-room@conference.example.com', 'Moving to new room')
+   * ```
+   */
+  async destroyRoom(roomJid: string, reason?: string, alternateRoomJid?: string): Promise<void> {
+    const destroyAttrs: Record<string, string> = {}
+    if (alternateRoomJid) {
+      destroyAttrs.jid = alternateRoomJid
+    }
+
+    const destroyChildren: Element[] = []
+    if (reason) {
+      destroyChildren.push(xml('reason', {}, reason))
+    }
+
+    const iq = xml(
+      'iq',
+      { type: 'set', to: roomJid, id: `destroy_${generateUUID()}` },
       xml('query', { xmlns: NS_MUC_OWNER },
-        xml('x', { xmlns: NS_DATA_FORMS, type: 'submit' }, ...fields)
+        xml('destroy', destroyAttrs, ...destroyChildren)
       )
     )
 
+    await this.deps.sendIQ(iq)
+
+    // Remove bookmark if exists
     try {
-      await this.deps.sendIQ(iq)
-      // SDK event only - binding calls store.updateRoom
-      this.deps.emitSDK('room:updated', { roomJid, updates: { name: roomName } })
+      await this.removeBookmark(roomJid)
+    } catch {
+      // Bookmark may not exist, ignore
+    }
+
+    // Emit room:removed
+    this.deps.emitSDK('room:removed', { roomJid })
+  }
+
+  /**
+   * Configure a room as a temporary quick chat (non-persistent, private).
+   */
+  private async configureQuickChat(roomJid: string, roomName: string, description?: string): Promise<void> {
+    const values: Record<string, string | string[]> = {
+      'muc#roomconfig_persistentroom': '0',
+      'muc#roomconfig_roomname': roomName,
+      'muc#roomconfig_publicroom': '0',
+      'muc#roomconfig_allowinvites': '1',
+    }
+    if (description) {
+      values['muc#roomconfig_roomdesc'] = description
+    }
+
+    try {
+      await this.submitRoomConfig(roomJid, values)
     } catch (err) {
       // Room configuration failed - log but don't throw
       // The room will still work, just won't be configured as temporary

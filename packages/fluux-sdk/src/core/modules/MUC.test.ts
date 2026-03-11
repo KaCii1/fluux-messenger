@@ -1667,4 +1667,126 @@ describe('MUC Module', () => {
       }
     })
   })
+
+  describe('submitRoomConfig', () => {
+    it('sends IQ set with data form to room', async () => {
+      mockSendIQ.mockResolvedValue(createMockElement('iq', { type: 'result' }))
+
+      await muc.submitRoomConfig('room@conference.example.com', {
+        'muc#roomconfig_roomname': 'New Name',
+        'muc#roomconfig_persistentroom': '1',
+      })
+
+      expect(mockSendIQ).toHaveBeenCalledTimes(1)
+      const iq = mockSendIQ.mock.calls[0][0]
+      expect(iq.attrs.type).toBe('set')
+      expect(iq.attrs.to).toBe('room@conference.example.com')
+
+      const query = iq.getChild('query', 'http://jabber.org/protocol/muc#owner')
+      expect(query).toBeDefined()
+
+      const form = query.getChild('x', 'jabber:x:data')
+      expect(form).toBeDefined()
+      expect(form.attrs.type).toBe('submit')
+
+      // Check FORM_TYPE
+      const formType = form.getChildren('field').find((f: { attrs: { var: string } }) => f.attrs.var === 'FORM_TYPE')
+      expect(formType).toBeDefined()
+      expect(formType.getChildText('value')).toBe('http://jabber.org/protocol/muc#roomconfig')
+    })
+
+    it('emits room:updated when name is changed', async () => {
+      mockSendIQ.mockResolvedValue(createMockElement('iq', { type: 'result' }))
+
+      await muc.submitRoomConfig('room@conference.example.com', {
+        'muc#roomconfig_roomname': 'Updated Name',
+      })
+
+      expect(mockEmitSDK).toHaveBeenCalledWith('room:updated', {
+        roomJid: 'room@conference.example.com',
+        updates: { name: 'Updated Name' },
+      })
+    })
+
+    it('does not emit room:updated when name is not in config', async () => {
+      mockSendIQ.mockResolvedValue(createMockElement('iq', { type: 'result' }))
+
+      await muc.submitRoomConfig('room@conference.example.com', {
+        'muc#roomconfig_persistentroom': '1',
+      })
+
+      expect(mockEmitSDK).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('setSubject', () => {
+    it('sends groupchat message with subject element', async () => {
+      mockSendStanza.mockResolvedValue(undefined)
+
+      await muc.setSubject('room@conference.example.com', 'New Topic')
+
+      expect(mockSendStanza).toHaveBeenCalledTimes(1)
+      const msg = mockSendStanza.mock.calls[0][0]
+      expect(msg.name).toBe('message')
+      expect(msg.attrs.to).toBe('room@conference.example.com')
+      expect(msg.attrs.type).toBe('groupchat')
+
+      const subject = msg.getChild('subject')
+      expect(subject).toBeDefined()
+      expect(subject.text()).toBe('New Topic')
+    })
+  })
+
+  describe('destroyRoom', () => {
+    it('sends IQ set with destroy element', async () => {
+      mockSendIQ.mockResolvedValue(createMockElement('iq', { type: 'result' }))
+
+      await muc.destroyRoom('room@conference.example.com', 'Moving to new room')
+
+      // First call is destroy IQ, second is removeBookmark
+      expect(mockSendIQ).toHaveBeenCalled()
+      const iq = mockSendIQ.mock.calls[0][0]
+      expect(iq.attrs.type).toBe('set')
+      expect(iq.attrs.to).toBe('room@conference.example.com')
+
+      const query = iq.getChild('query', 'http://jabber.org/protocol/muc#owner')
+      const destroy = query.getChild('destroy')
+      expect(destroy).toBeDefined()
+
+      const reason = destroy.getChild('reason')
+      expect(reason).toBeDefined()
+      expect(reason.text()).toBe('Moving to new room')
+    })
+
+    it('includes alternate room JID when provided', async () => {
+      mockSendIQ.mockResolvedValue(createMockElement('iq', { type: 'result' }))
+
+      await muc.destroyRoom('old@conference.example.com', 'Moved', 'new@conference.example.com')
+
+      const iq = mockSendIQ.mock.calls[0][0]
+      const destroy = iq.getChild('query', 'http://jabber.org/protocol/muc#owner').getChild('destroy')
+      expect(destroy.attrs.jid).toBe('new@conference.example.com')
+    })
+
+    it('emits room:removed after successful destroy', async () => {
+      mockSendIQ.mockResolvedValue(createMockElement('iq', { type: 'result' }))
+
+      await muc.destroyRoom('room@conference.example.com')
+
+      expect(mockEmitSDK).toHaveBeenCalledWith('room:removed', {
+        roomJid: 'room@conference.example.com',
+      })
+    })
+
+    it('works without reason', async () => {
+      mockSendIQ.mockResolvedValue(createMockElement('iq', { type: 'result' }))
+
+      await muc.destroyRoom('room@conference.example.com')
+
+      const iq = mockSendIQ.mock.calls[0][0]
+      const destroy = iq.getChild('query', 'http://jabber.org/protocol/muc#owner').getChild('destroy')
+      const reason = destroy.getChild('reason')
+      expect(reason).toBeUndefined()
+    })
+  })
 })
