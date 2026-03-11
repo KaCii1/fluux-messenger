@@ -221,7 +221,7 @@
         "avatarClearFailed": "Eliminarea avatarului camerei a eșuat. Doar proprietarii camerei pot elimina avatarul.",
         "inviteMember": "Invită un membru",
         "manageMembership": "Administrează membrii",
-        "kickBanMembers": "Dă afară sau banează membrii",
+        "kickBanMembers": "Gestionează roluri și permisiuni",
         "affiliationOwner": "Proprietar",
         "affiliationAdmin": "Administrator",
         "affiliationMember": "Membru",

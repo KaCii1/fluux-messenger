@@ -221,7 +221,7 @@
         "avatarClearFailed": "Huoneen avatarin poisto epäonnistui. Vain huoneen omistajat voivat poistaa avatarin.",
         "inviteMember": "Kutsu jäsen",
         "manageMembership": "Hallitse jäsenyyttä",
-        "kickBanMembers": "Potkaise tai estä jäseniä",
+        "kickBanMembers": "Hallitse rooleja ja oikeuksia",
         "affiliationOwner": "Omistaja",
         "affiliationAdmin": "Ylläpitäjä",
         "affiliationMember": "Jäsen",

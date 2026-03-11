@@ -221,7 +221,7 @@
         "avatarClearFailed": "Failed to remove room avatar. Only room owners can remove the avatar.",
         "inviteMember": "Invite Member",
         "manageMembership": "Manage Membership",
-        "kickBanMembers": "Kick or ban members",
+        "kickBanMembers": "Manage roles and permissions",
         "affiliationOwner": "Owner",
         "affiliationAdmin": "Admin",
         "affiliationMember": "Member",

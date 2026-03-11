@@ -220,7 +220,7 @@
         "avatarClearFailed": "Nie udało się usunąć awatara pokoju. Tylko właściciele pokoju mogą usuwać awatar.",
         "inviteMember": "Zaproś członka",
         "manageMembership": "Zarządzaj członkostwem",
-        "kickBanMembers": "Wyrzuć lub zablokuj członków",
+        "kickBanMembers": "Zarządzaj rolami i uprawnieniami",
         "affiliationOwner": "Właściciel",
         "affiliationAdmin": "Administrator",
         "affiliationMember": "Członek",

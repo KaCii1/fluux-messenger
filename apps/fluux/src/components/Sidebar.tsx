@@ -303,12 +303,12 @@ export function Sidebar({ onSelectContact, onStartChat, onManageUser, adminCateg
           </h1>
           {sidebarView === 'directory' && (
             <div className="relative ml-auto" ref={contactDropdownRef}>
-              <Tooltip content={t('sidebar.addContact')} position="bottom">
+              <Tooltip content={t('common.options')} position="bottom">
                 <button
                   onClick={() => setShowContactDropdown(!showContactDropdown)}
                   className="p-1 text-fluux-muted hover:text-fluux-text flex items-center"
                 >
-                  <Plus className="w-5 h-5" />
+                  <Users className="w-5 h-5" />
                   <ChevronDown className="w-3 h-3 -ml-0.5" />
                 </button>
               </Tooltip>

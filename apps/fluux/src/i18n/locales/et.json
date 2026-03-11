@@ -221,7 +221,7 @@
         "avatarClearFailed": "Toa avatari eemaldamine ebaõnnestus. Ainult toa omanikud saavad avatari eemaldada.",
         "inviteMember": "Kutsu liige",
         "manageMembership": "Halda liikmelisust",
-        "kickBanMembers": "Viska välja või blokeeri liikmeid",
+        "kickBanMembers": "Rollide ja õiguste haldamine",
         "affiliationOwner": "Omanik",
         "affiliationAdmin": "Administraator",
         "affiliationMember": "Liige",

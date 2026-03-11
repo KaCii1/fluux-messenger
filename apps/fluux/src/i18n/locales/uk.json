@@ -221,7 +221,7 @@
         "avatarClearFailed": "Не вдалося видалити аватар кімнати. Тільки власники кімнати можуть видаляти аватар.",
         "inviteMember": "Запросити учасника",
         "manageMembership": "Керування членством",
-        "kickBanMembers": "Вигнати або заблокувати учасників",
+        "kickBanMembers": "Керування ролями та дозволами",
         "affiliationOwner": "Власник",
         "affiliationAdmin": "Адміністратор",
         "affiliationMember": "Учасник",

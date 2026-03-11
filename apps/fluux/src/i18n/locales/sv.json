@@ -221,7 +221,7 @@
         "avatarClearFailed": "Kunde inte ta bort rumsavatar. Endast rumsägare kan ta bort avataren.",
         "inviteMember": "Bjud in medlem",
         "manageMembership": "Hantera medlemskap",
-        "kickBanMembers": "Sparka eller bannlys medlemmar",
+        "kickBanMembers": "Hantera roller och behörigheter",
         "affiliationOwner": "Ägare",
         "affiliationAdmin": "Administratör",
         "affiliationMember": "Medlem",

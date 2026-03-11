@@ -201,28 +201,36 @@ export function RoomMembersModal({ room, onClose }: RoomMembersModalProps) {
     <ModalShell
       title={t('rooms.manageMembership')}
       onClose={onClose}
-      width="max-w-lg"
+      width="max-w-xl"
       panelClassName="max-h-[80vh] flex flex-col"
     >
-      {/* Tab bar */}
-      <div className="flex border-b border-fluux-hover">
-        {TABS.map(tab => (
-          <button
-            key={tab}
-            onClick={() => handleTabChange(tab)}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors
-              ${activeTab === tab
-                ? 'text-fluux-brand border-b-2 border-fluux-brand'
-                : 'text-fluux-muted hover:text-fluux-text'
-              }`}
-          >
-            {getTabIcon(tab)}
-            <span>{getTabLabel(tab)}</span>
-            {getTabCount(tab) !== undefined && (
-              <span className="text-xs text-fluux-muted/70 ml-1">({getTabCount(tab)})</span>
-            )}
-          </button>
-        ))}
+      {/* Segmented control */}
+      <div className="px-4 pt-3 pb-2">
+        <div className="flex rounded-lg bg-fluux-hover/60 p-0.5">
+          {TABS.map(tab => {
+            const isActive = activeTab === tab
+            const count = getTabCount(tab)
+            return (
+              <button
+                key={tab}
+                onClick={() => handleTabChange(tab)}
+                className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded-md transition-all
+                  ${isActive
+                    ? 'bg-fluux-bg text-fluux-text shadow-sm'
+                    : 'text-fluux-muted hover:text-fluux-text'
+                  }`}
+              >
+                {getTabIcon(tab)}
+                <span className="truncate">{getTabLabel(tab)}</span>
+                {count !== undefined && (
+                  <span className={`text-[10px] ${isActive ? 'text-fluux-muted' : 'text-fluux-muted/60'}`}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {/* Search */}

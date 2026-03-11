@@ -221,7 +221,7 @@
         "avatarClearFailed": "Nepodařilo se odebrat avatar místnosti. Pouze vlastníci místnosti mohou odebrat avatar.",
         "inviteMember": "Pozvat člena",
         "manageMembership": "Spravovat členství",
-        "kickBanMembers": "Vyhodit nebo zablokovat členy",
+        "kickBanMembers": "Správa rolí a oprávnění",
         "affiliationOwner": "Vlastník",
         "affiliationAdmin": "Správce",
         "affiliationMember": "Člen",

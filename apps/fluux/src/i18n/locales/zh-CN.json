@@ -221,7 +221,7 @@
         "avatarClearFailed": "无法移除房间头像。只有房间所有者可以移除头像。",
         "inviteMember": "邀请成员",
         "manageMembership": "管理成员资格",
-        "kickBanMembers": "踢出或封禁成员",
+        "kickBanMembers": "管理角色和权限",
         "affiliationOwner": "所有者",
         "affiliationAdmin": "管理员",
         "affiliationMember": "成员",

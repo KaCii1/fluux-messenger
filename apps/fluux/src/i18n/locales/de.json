@@ -220,7 +220,7 @@
         "avatarClearFailed": "Raum-Avatar konnte nicht entfernt werden. Nur Raumeigentümer können den Avatar entfernen.",
         "inviteMember": "Mitglied einladen",
         "manageMembership": "Mitgliedschaft verwalten",
-        "kickBanMembers": "Mitglieder entfernen oder sperren",
+        "kickBanMembers": "Rollen und Berechtigungen verwalten",
         "affiliationOwner": "Eigentümer",
         "affiliationAdmin": "Administrator",
         "affiliationMember": "Mitglied",

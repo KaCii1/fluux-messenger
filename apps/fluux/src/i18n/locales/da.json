@@ -221,7 +221,7 @@
         "avatarClearFailed": "Kunne ikke fjerne rumavatar. Kun rumejere kan fjerne avataren.",
         "inviteMember": "Inviter medlem",
         "manageMembership": "Administrer medlemskab",
-        "kickBanMembers": "Spark eller udeluk medlemmer",
+        "kickBanMembers": "Administrer roller og tilladelser",
         "affiliationOwner": "Ejer",
         "affiliationAdmin": "Administrator",
         "affiliationMember": "Medlem",

@@ -220,7 +220,7 @@
         "avatarClearFailed": "Avatar verwijderen mislukt. Alleen groepseigenaren kunnen de avatar verwijderen.",
         "inviteMember": "Lid uitnodigen",
         "manageMembership": "Lidmaatschap beheren",
-        "kickBanMembers": "Leden verwijderen of verbannen",
+        "kickBanMembers": "Rollen en rechten beheren",
         "affiliationOwner": "Eigenaar",
         "affiliationAdmin": "Beheerder",
         "affiliationMember": "Lid",

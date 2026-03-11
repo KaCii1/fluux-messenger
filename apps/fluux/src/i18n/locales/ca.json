@@ -221,7 +221,7 @@
         "avatarClearFailed": "No s'ha pogut eliminar l'avatar de la sala. Només els propietaris poden eliminar l'avatar.",
         "inviteMember": "Convida un membre",
         "manageMembership": "Gestiona la pertinença",
-        "kickBanMembers": "Expulsa o baneja membres",
+        "kickBanMembers": "Gestiona rols i permisos",
         "affiliationOwner": "Propietari",
         "affiliationAdmin": "Administrador",
         "affiliationMember": "Membre",

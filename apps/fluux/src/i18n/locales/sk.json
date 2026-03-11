@@ -221,7 +221,7 @@
         "avatarClearFailed": "Nepodarilo sa odstrániť avatar miestnosti. Len vlastníci miestnosti môžu odstrániť avatar.",
         "inviteMember": "Pozvať člena",
         "manageMembership": "Spravovať členstvo",
-        "kickBanMembers": "Vyhodiť alebo zablokovať členov",
+        "kickBanMembers": "Správa rolí a oprávnení",
         "affiliationOwner": "Vlastník",
         "affiliationAdmin": "Správca",
         "affiliationMember": "Člen",

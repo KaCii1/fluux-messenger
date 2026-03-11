@@ -221,7 +221,7 @@
         "avatarClearFailed": "Nem sikerült eltávolítani a szoba profilképét. Csak a szoba tulajdonosai távolíthatják el a profilképet.",
         "inviteMember": "Tag meghívása",
         "manageMembership": "Tagság kezelése",
-        "kickBanMembers": "Tagok kirúgása vagy kitiltása",
+        "kickBanMembers": "Szerepkörök és jogosultságok kezelése",
         "affiliationOwner": "Tulajdonos",
         "affiliationAdmin": "Adminisztrátor",
         "affiliationMember": "Tag",

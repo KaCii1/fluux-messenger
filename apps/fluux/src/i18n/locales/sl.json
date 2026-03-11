@@ -221,7 +221,7 @@
         "avatarClearFailed": "Odstranjevanje avatarja sobe ni uspelo. Samo lastniki sobe lahko odstranijo avatar.",
         "inviteMember": "Povabi člana",
         "manageMembership": "Upravljaj članstvo",
-        "kickBanMembers": "Vrzi ven ali prepovej člane",
+        "kickBanMembers": "Upravljanje vlog in dovoljenj",
         "affiliationOwner": "Lastnik",
         "affiliationAdmin": "Skrbnik",
         "affiliationMember": "Član",

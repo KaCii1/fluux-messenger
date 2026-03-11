@@ -221,7 +221,7 @@
         "avatarClearFailed": "Неуспешно премахване на аватара на стаята. Само собствениците могат да премахнат аватара.",
         "inviteMember": "Покани член",
         "manageMembership": "Управление на членство",
-        "kickBanMembers": "Изгони или забрани членове",
+        "kickBanMembers": "Управление на роли и разрешения",
         "affiliationOwner": "Собственик",
         "affiliationAdmin": "Администратор",
         "affiliationMember": "Член",

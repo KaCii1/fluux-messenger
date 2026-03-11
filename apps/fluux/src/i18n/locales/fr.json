@@ -220,7 +220,7 @@
         "avatarClearFailed": "Échec de la suppression de l'avatar. Seuls les propriétaires du salon peuvent supprimer l'avatar.",
         "inviteMember": "Inviter un membre",
         "manageMembership": "Gérer les membres",
-        "kickBanMembers": "Expulser ou bannir des membres",
+        "kickBanMembers": "Gérer les rôles et les permissions",
         "affiliationOwner": "Propriétaire",
         "affiliationAdmin": "Administrateur",
         "affiliationMember": "Membre",

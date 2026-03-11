@@ -221,7 +221,7 @@
         "avatarClearFailed": "Не удалось удалить аватар конференции. Только владельцы могут удалять аватар.",
         "inviteMember": "Пригласить участника",
         "manageMembership": "Управление членством",
-        "kickBanMembers": "Кикнуть или забанить участников",
+        "kickBanMembers": "Управление ролями и правами",
         "affiliationOwner": "Владелец",
         "affiliationAdmin": "Администратор",
         "affiliationMember": "Участник",

@@ -220,7 +220,7 @@
         "avatarClearFailed": "Impossibile rimuovere l'avatar della stanza. Solo i proprietari possono rimuovere l'avatar.",
         "inviteMember": "Invita membro",
         "manageMembership": "Gestisci membri",
-        "kickBanMembers": "Espelli o bandisci membri",
+        "kickBanMembers": "Gestisci ruoli e permessi",
         "affiliationOwner": "Proprietario",
         "affiliationAdmin": "Amministratore",
         "affiliationMember": "Membro",

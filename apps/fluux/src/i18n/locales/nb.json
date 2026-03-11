@@ -221,7 +221,7 @@
         "avatarClearFailed": "Kunne ikke fjerne romavatar. Kun romeiere kan fjerne avataren.",
         "inviteMember": "Inviter medlem",
         "manageMembership": "Administrer medlemskap",
-        "kickBanMembers": "Spark eller utesteng medlemmer",
+        "kickBanMembers": "Administrer roller og tillatelser",
         "affiliationOwner": "Eier",
         "affiliationAdmin": "Administrator",
         "affiliationMember": "Medlem",

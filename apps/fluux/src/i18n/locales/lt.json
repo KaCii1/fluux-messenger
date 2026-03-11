@@ -221,7 +221,7 @@
         "avatarClearFailed": "Nepavyko pašalinti kambario avataro. Tik kambario savininkai gali pašalinti avatarą.",
         "inviteMember": "Pakviesti narį",
         "manageMembership": "Valdyti narystę",
-        "kickBanMembers": "Išmesti arba uždrausti narius",
+        "kickBanMembers": "Tvarkyti roles ir teises",
         "affiliationOwner": "Savininkas",
         "affiliationAdmin": "Administratorius",
         "affiliationMember": "Narys",

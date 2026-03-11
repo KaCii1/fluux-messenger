@@ -216,7 +216,7 @@
         "avatarClearFailed": "Error al eliminar avatar de sala. Solo los propietarios pueden eliminar el avatar.",
         "inviteMember": "Invitar Miembro",
         "manageMembership": "Gestionar Membresia",
-        "kickBanMembers": "Expulsar o banear miembros",
+        "kickBanMembers": "Gestionar roles y permisos",
         "affiliationOwner": "Propietario",
         "affiliationAdmin": "Administrador",
         "affiliationMember": "Miembro",

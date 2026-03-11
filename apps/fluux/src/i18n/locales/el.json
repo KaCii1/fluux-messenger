@@ -221,7 +221,7 @@
         "avatarClearFailed": "Αποτυχία αφαίρεσης εικόνας δωματίου. Μόνο οι ιδιοκτήτες μπορούν να αφαιρέσουν την εικόνα.",
         "inviteMember": "Πρόσκληση μέλους",
         "manageMembership": "Διαχείριση μελών",
-        "kickBanMembers": "Αποβολή ή αποκλεισμός μελών",
+        "kickBanMembers": "Διαχείριση ρόλων και δικαιωμάτων",
         "affiliationOwner": "Ιδιοκτήτης",
         "affiliationAdmin": "Διαχειριστής",
         "affiliationMember": "Μέλος",

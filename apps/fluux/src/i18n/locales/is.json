@@ -221,7 +221,7 @@
         "avatarClearFailed": "Ekki tókst að fjarlægja mynd herbergis. Aðeins eigendur herbergis geta fjarlægt myndina.",
         "inviteMember": "Bjóða meðlimi",
         "manageMembership": "Stjórna aðild",
-        "kickBanMembers": "Reka eða banna meðlimi",
+        "kickBanMembers": "Stjórna hlutverkum og heimildum",
         "affiliationOwner": "Eigandi",
         "affiliationAdmin": "Stjórnandi",
         "affiliationMember": "Meðlimur",
