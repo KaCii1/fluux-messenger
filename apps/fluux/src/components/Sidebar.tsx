@@ -14,7 +14,7 @@ import { BrowseRoomsModal } from './BrowseRoomsModal'
 import { Avatar } from './Avatar'
 import { Tooltip } from './Tooltip'
 import { AddContactModal } from './AddContactModal'
-import { JoinRoomModal } from './JoinRoomModal'
+import { CreateRoomModal } from './CreateRoomModal'
 import { CreateQuickChatModal } from './CreateQuickChatModal'
 import { SettingsSidebar, type SettingsCategory, DEFAULT_SETTINGS_CATEGORY } from './settings-components'
 import {
@@ -128,7 +128,7 @@ export function Sidebar({ onSelectContact, onStartChat, onManageUser, adminCateg
   const showPresenceMenu = modalState.presenceMenu
 
   // Local UI state (not shared)
-  const [showJoinRoom, setShowJoinRoom] = useState(false)
+  const [showCreateRoom, setShowCreateRoom] = useState(false)
   const [showBrowseRooms, setShowBrowseRooms] = useState(false)
   const [showRoomDropdown, setShowRoomDropdown] = useState(false)
   const roomDropdownRef = useRef<HTMLDivElement>(null)
@@ -327,7 +327,7 @@ export function Sidebar({ onSelectContact, onStartChat, onManageUser, adminCateg
                   </button>
                   <div className="border-t border-fluux-hover my-1" />
                   <button
-                    onClick={() => { setShowRoomDropdown(false); setShowJoinRoom(true) }}
+                    onClick={() => { setShowRoomDropdown(false); setShowCreateRoom(true) }}
                     className="w-full px-3 py-2 text-left text-sm hover:bg-fluux-hover flex items-center gap-2"
                   >
                     <Hash className="w-4 h-4 text-fluux-muted" />
@@ -480,9 +480,9 @@ export function Sidebar({ onSelectContact, onStartChat, onManageUser, adminCateg
         <AddContactModal onClose={() => modalActions.close('addContact')} />
       )}
 
-      {/* Join Room Modal */}
-      {showJoinRoom && (
-        <JoinRoomModal onClose={() => setShowJoinRoom(false)} />
+      {/* Create Room Modal */}
+      {showCreateRoom && (
+        <CreateRoomModal onClose={() => setShowCreateRoom(false)} />
       )}
 
       {/* Quick Chat Modal */}

@@ -27,7 +27,7 @@ interface CreateRoomModalProps {
 
 export function CreateRoomModal({ onClose }: CreateRoomModalProps) {
   const { t } = useTranslation()
-  const { createRoom, mucServiceJid, setActiveRoom } = useRoom()
+  const { createRoom, mucServiceJid, setActiveRoom, roomExists } = useRoom()
   const jid = useConnectionStore((s) => s.jid)
   const ownNickname = useConnectionStore((s) => s.ownNickname)
 
@@ -57,9 +57,16 @@ export function CreateRoomModal({ onClose }: CreateRoomModalProps) {
 
     const roomJid = `${roomLocal.trim()}@${mucService}`
 
-    const { isPublic, membersOnly } = ROOM_TEMPLATES[template]
-
     try {
+      const exists = await roomExists(roomJid)
+      if (exists) {
+        setError(t('rooms.roomAlreadyExists'))
+        setCreating(false)
+        return
+      }
+
+      const { isPublic, membersOnly } = ROOM_TEMPLATES[template]
+
       await createRoom(
         roomJid,
         nickname.trim(),

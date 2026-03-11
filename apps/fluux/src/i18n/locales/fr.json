@@ -274,7 +274,8 @@
         "templateUnlisted": "Non listé",
         "templateUnlistedDesc": "Caché, accès libre",
         "templateUnlistedHelp": "Le salon est masqué du répertoire, mais toute personne ayant l'adresse peut le rejoindre librement. Idéal pour partager un lien vers un salon.",
-        "createError": "Impossible de créer le salon. L'adresse est peut-être déjà utilisée."
+        "createError": "Impossible de créer le salon. L'adresse est peut-être déjà utilisée.",
+        "roomAlreadyExists": "Un salon avec cette adresse existe déjà. Veuillez choisir une adresse différente."
     },
     "events": {
         "noPendingEvents": "Aucun événement en attente",

@@ -274,7 +274,8 @@
         "templateUnlistedDesc": "Hidden, open access",
         "templatePrivateHelp": "The room is hidden from the directory. Only people you invite can join. Best for team or group conversations.",
         "templateOpenHelp": "The room is listed in the public directory. Anyone can find it and join without an invitation. Best for community channels.",
-        "templateUnlistedHelp": "The room is hidden from the directory, but anyone who has the address can join freely. Best for sharing a link to a room."
+        "templateUnlistedHelp": "The room is hidden from the directory, but anyone who has the address can join freely. Best for sharing a link to a room.",
+        "roomAlreadyExists": "A room with this address already exists. Please choose a different address."
     },
     "events": {
         "noPendingEvents": "Žiadne čakajúce udalosti",

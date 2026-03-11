@@ -704,6 +704,9 @@ export class MUC extends BaseModule {
 
           logInfo(`MUC service: ${jid} (MAM=${serviceSupportsMAM})`)
 
+          // Emit MUC service JID so the admin store can populate it
+          this.deps.emitSDK('admin:muc-service', { mucServiceJid: jid })
+
           // Emit service-level MAM support for use as fallback
           this.deps.emitSDK('admin:muc-service-mam', { supportsMAM: serviceSupportsMAM })
 
@@ -790,6 +793,43 @@ export class MUC extends BaseModule {
       // 2. Some rooms may explicitly have MAM disabled even if the service supports it
       // 3. Wrongly assuming MAM support causes UI issues (load more button when there's no MAM)
       return null
+    }
+  }
+
+  /**
+   * Check if a MUC room already exists by sending a disco#info query.
+   *
+   * Returns true if the room responds with a conference identity,
+   * false if the room returns an error (e.g. item-not-found) or times out.
+   *
+   * @param roomJid - The full room JID to check
+   */
+  async roomExists(roomJid: string): Promise<boolean> {
+    try {
+      const iq = xml(
+        'iq',
+        { type: 'get', to: roomJid, id: `disco_exists_${generateUUID()}` },
+        xml('query', { xmlns: NS_DISCO_INFO })
+      )
+
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error(`Room exists check timeout for ${roomJid}`)), DISCO_QUERY_TIMEOUT_MS)
+      })
+
+      const response = await Promise.race([
+        this.deps.sendIQ(iq),
+        timeoutPromise,
+      ])
+
+      const query = response.getChild('query', NS_DISCO_INFO)
+      if (!query) return false
+
+      const identity = query.getChildren('identity')
+        .find((i: Element) => i.attrs.category === 'conference')
+
+      return !!identity
+    } catch {
+      return false
     }
   }
 

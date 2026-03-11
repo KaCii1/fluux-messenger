@@ -1251,6 +1251,82 @@ describe('MUC Module', () => {
       expect(result).toBe('conference.example.com')
       expect(mockEmitSDK).toHaveBeenCalledWith('admin:muc-service-mam', { supportsMAM: false })
     })
+
+    it('emits admin:muc-service event with discovered JID', async () => {
+      const itemsResponse = createMockElement('iq', { type: 'result' }, [
+        {
+          name: 'query',
+          attrs: { xmlns: 'http://jabber.org/protocol/disco#items' },
+          children: [
+            { name: 'item', attrs: { jid: 'conference.example.com' } },
+          ],
+        },
+      ])
+
+      const infoResponse = createMockElement('iq', { type: 'result' }, [
+        {
+          name: 'query',
+          attrs: { xmlns: 'http://jabber.org/protocol/disco#info' },
+          children: [
+            { name: 'identity', attrs: { category: 'conference', type: 'text', name: 'MUC' } },
+            { name: 'feature', attrs: { var: 'http://jabber.org/protocol/muc' } },
+          ],
+        },
+      ])
+
+      mockSendIQ
+        .mockResolvedValueOnce(itemsResponse)
+        .mockResolvedValueOnce(infoResponse)
+
+      const result = await muc.discoverMucService()
+
+      expect(result).toBe('conference.example.com')
+      expect(mockEmitSDK).toHaveBeenCalledWith('admin:muc-service', { mucServiceJid: 'conference.example.com' })
+    })
+  })
+
+  describe('roomExists', () => {
+    it('returns true when room has conference identity', async () => {
+      const response = createMockElement('iq', { type: 'result' }, [
+        {
+          name: 'query',
+          attrs: { xmlns: 'http://jabber.org/protocol/disco#info' },
+          children: [
+            { name: 'identity', attrs: { category: 'conference', type: 'text', name: 'My Room' } },
+            { name: 'feature', attrs: { var: 'http://jabber.org/protocol/muc' } },
+          ],
+        },
+      ])
+
+      mockSendIQ.mockResolvedValueOnce(response)
+
+      const exists = await muc.roomExists('room@conference.example.com')
+      expect(exists).toBe(true)
+    })
+
+    it('returns false when disco#info returns error', async () => {
+      mockSendIQ.mockRejectedValueOnce(new Error('item-not-found'))
+
+      const exists = await muc.roomExists('nonexistent@conference.example.com')
+      expect(exists).toBe(false)
+    })
+
+    it('returns false when response has no conference identity', async () => {
+      const response = createMockElement('iq', { type: 'result' }, [
+        {
+          name: 'query',
+          attrs: { xmlns: 'http://jabber.org/protocol/disco#info' },
+          children: [
+            { name: 'identity', attrs: { category: 'account', type: 'registered' } },
+          ],
+        },
+      ])
+
+      mockSendIQ.mockResolvedValueOnce(response)
+
+      const exists = await muc.roomExists('notaroom@example.com')
+      expect(exists).toBe(false)
+    })
   })
 
   describe('joinRoom with MAM detection', () => {

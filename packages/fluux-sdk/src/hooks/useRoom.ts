@@ -401,6 +401,13 @@ export function useRoom() {
     [client]
   )
 
+  const roomExists = useCallback(
+    async (roomJid: string): Promise<boolean> => {
+      return client.muc.roomExists(roomJid)
+    },
+    [client]
+  )
+
   /**
    * Fetch older room history (pagination) - for lazy loading on scroll up.
    * First checks IndexedDB cache, then falls back to room MAM if:
@@ -472,6 +479,7 @@ export function useRoom() {
       setSubject,
       createRoom,
       destroyRoom,
+      roomExists,
     }),
     [
       joinRoom,
@@ -506,6 +514,7 @@ export function useRoom() {
       setSubject,
       createRoom,
       destroyRoom,
+      roomExists,
     ]
   )
 

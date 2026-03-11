@@ -170,20 +170,9 @@ export function RoomsList() {
       {/* Joined rooms */}
       {joinedRooms.length > 0 && (
         <>
-          <div className="flex items-center justify-between px-2 mb-2">
-            <h3 className="text-xs font-semibold text-fluux-muted uppercase">
+          <h3 className="text-xs font-semibold text-fluux-muted uppercase px-2 mb-2">
               {t('rooms.joined')} — {joinedRooms.length}
-            </h3>
-            <Tooltip content={t('rooms.createRoom')} position="left">
-              <button
-                onClick={() => setShowCreateRoom(true)}
-                className="p-0.5 rounded text-fluux-muted hover:text-fluux-text hover:bg-fluux-hover transition-colors"
-                aria-label={t('rooms.createRoom')}
-              >
-                <Plus className="w-3.5 h-3.5" />
-              </button>
-            </Tooltip>
-          </div>
+          </h3>
           {joinedRooms.map((room) => {
             const flatIndex = jidToIndex.get(room.jid) ?? -1
             const draft = drafts.get(room.jid)
