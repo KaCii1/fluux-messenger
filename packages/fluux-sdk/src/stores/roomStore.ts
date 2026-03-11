@@ -790,6 +790,12 @@ export const roomStore = createStore<RoomState>()(
       // Get the last message for both the combined room and metadata
       const lastMessage = newMessages[newMessages.length - 1]
 
+      // Update lastInteractedAt when the active room receives a message,
+      // so it moves to the top of the sidebar list
+      const newLastInteractedAt = isActive
+        ? (lastMessage.timestamp ?? existing.lastInteractedAt)
+        : existing.lastInteractedAt
+
       newRooms.set(roomJid, {
         ...existing,
         messages: newMessages,
@@ -798,6 +804,7 @@ export const roomStore = createStore<RoomState>()(
         lastReadAt: updated.lastReadAt,
         firstNewMessageId: updated.firstNewMessageId,
         lastMessage,
+        lastInteractedAt: newLastInteractedAt,
       })
 
       // Update runtime (messages)
@@ -817,6 +824,7 @@ export const roomStore = createStore<RoomState>()(
           lastReadAt: updated.lastReadAt,
           firstNewMessageId: updated.firstNewMessageId,
           lastMessage,
+          lastInteractedAt: newLastInteractedAt,
         })
       }
 

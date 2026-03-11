@@ -67,6 +67,13 @@ vi.mock('./InviteToRoomModal', () => ({
   ),
 }))
 
+// Mock RoomConfigModal
+vi.mock('./RoomConfigModal', () => ({
+  RoomConfigModal: ({ onClose }: { onClose: () => void }) => (
+    <div data-testid="room-config-modal"><button onClick={onClose}>Close</button></div>
+  ),
+}))
+
 // Mock messageStyles utility
 vi.mock('@/utils/messageStyles', () => ({
   renderTextWithLinks: (text: string) => text,
@@ -123,6 +130,9 @@ const createOccupant = (overrides: Partial<RoomOccupant> = {}): RoomOccupant => 
 const mockSetRoomNotifyAll = vi.fn().mockResolvedValue(undefined)
 const mockSetRoomAvatar = vi.fn().mockResolvedValue(undefined)
 const mockClearRoomAvatar = vi.fn().mockResolvedValue(undefined)
+const mockSubmitRoomConfig = vi.fn().mockResolvedValue(undefined)
+const mockSetSubject = vi.fn().mockResolvedValue(undefined)
+const mockDestroyRoom = vi.fn().mockResolvedValue(undefined)
 const mockOnToggleOccupants = vi.fn()
 const mockOnBack = vi.fn()
 
@@ -141,6 +151,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -156,6 +169,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -171,6 +187,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -186,6 +205,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -202,6 +224,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -222,6 +247,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -238,6 +266,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -264,6 +295,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -279,6 +313,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -296,6 +333,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -313,6 +353,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -332,6 +375,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -357,6 +403,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -374,6 +423,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -397,6 +449,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -416,6 +471,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -435,6 +493,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -454,6 +515,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -478,6 +542,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -499,6 +566,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -519,6 +589,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -539,6 +612,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -561,6 +637,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -582,6 +661,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -603,6 +685,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -628,6 +713,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
@@ -650,6 +738,9 @@ describe('RoomHeader', () => {
           setRoomNotifyAll={mockSetRoomNotifyAll}
           setRoomAvatar={mockSetRoomAvatar}
           clearRoomAvatar={mockClearRoomAvatar}
+          submitRoomConfig={mockSubmitRoomConfig}
+          setSubject={mockSetSubject}
+          destroyRoom={mockDestroyRoom}
         />
       )
 
