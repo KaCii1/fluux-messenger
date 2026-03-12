@@ -1,10 +1,11 @@
 import React, { useState, useRef, useCallback, memo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useListKeyboardNav } from '@/hooks'
+import { useListKeyboardNav, useRouteSync } from '@/hooks'
 import {
   useChat,
   useRoster,
   useRoom,
+  chatStore,
   generateConsistentColorHexSync,
   formatMessagePreview,
   type Conversation,
@@ -47,6 +48,7 @@ export function ConversationList() {
   } = useChat()
   const { setActiveRoom, getRoom } = useRoom()
   const { contacts } = useRoster()
+  const { navigateToMessages } = useRouteSync()
   const listRef = useRef<HTMLDivElement>(null)
   const zoneRef = useSidebarZone()
 
@@ -54,9 +56,12 @@ export function ConversationList() {
   const contactMap = new Map(contacts.map(c => [c.jid, c]))
 
   const handleConversationClick = useCallback((convId: string) => {
+    // Push if going from list to first item, replace if switching between items
+    const hasActive = !!chatStore.getState().activeConversationId
     void setActiveRoom(null)
     void setActiveConversation(convId)
-  }, [setActiveRoom, setActiveConversation])
+    navigateToMessages(convId, { replace: hasActive })
+  }, [setActiveRoom, setActiveConversation, navigateToMessages])
 
   // Keyboard navigation
   const { selectedIndex, isKeyboardNav, getItemProps, getItemAttribute, getContainerProps } = useListKeyboardNav({
@@ -128,15 +133,18 @@ export function ArchiveList() {
   } = useChat()
   const { setActiveRoom, getRoom } = useRoom()
   const { contacts } = useRoster()
+  const { navigateToArchive } = useRouteSync()
   const listRef = useRef<HTMLDivElement>(null)
   const zoneRef = useSidebarZone()
 
   const contactMap = new Map(contacts.map(c => [c.jid, c]))
 
   const handleConversationClick = useCallback((convId: string) => {
+    const hasActive = !!chatStore.getState().activeConversationId
     void setActiveRoom(null)
     void setActiveConversation(convId)
-  }, [setActiveRoom, setActiveConversation])
+    navigateToArchive(convId, { replace: hasActive })
+  }, [setActiveRoom, setActiveConversation, navigateToArchive])
 
   const { selectedIndex, isKeyboardNav, getItemProps, getItemAttribute, getContainerProps } = useListKeyboardNav({
     items: archivedConversations,

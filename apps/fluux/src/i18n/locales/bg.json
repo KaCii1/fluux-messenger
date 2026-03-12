@@ -119,6 +119,7 @@
         "sending": "Изпращане...",
         "contact": "Контакт",
         "startConversation": "Започни разговор",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "Свързани устройства",
         "nameCannotBeEmpty": "Името не може да е празно",
         "removeConfirm": "Премахване на {{name}} от вашите контакти?",

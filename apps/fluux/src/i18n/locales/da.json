@@ -119,6 +119,7 @@
         "sending": "Sender...",
         "contact": "Kontakt",
         "startConversation": "Start samtale",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "Tilsluttede enheder",
         "nameCannotBeEmpty": "Navnet kan ikke være tomt",
         "removeConfirm": "Fjern {{name}} fra dine kontakter?",

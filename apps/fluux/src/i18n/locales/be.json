@@ -119,6 +119,7 @@
         "sending": "Адпраўка...",
         "contact": "Кантакт",
         "startConversation": "Пачаць размову",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "Падлучаныя прылады",
         "nameCannotBeEmpty": "Імя не можа быць пустым",
         "removeConfirm": "Выдаліць {{name}} з вашых кантактаў?",

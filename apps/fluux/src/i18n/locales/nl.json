@@ -119,6 +119,7 @@
         "sending": "Verzenden...",
         "contact": "Contact",
         "startConversation": "Gesprek starten",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "Verbonden apparaten",
         "nameCannotBeEmpty": "Naam mag niet leeg zijn",
         "removeConfirm": "{{name}} verwijderen uit je contacten?",

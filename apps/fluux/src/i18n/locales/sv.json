@@ -119,6 +119,7 @@
         "sending": "Skickar...",
         "contact": "Kontakt",
         "startConversation": "Starta konversation",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "Anslutna enheter",
         "nameCannotBeEmpty": "Namnet kan inte vara tomt",
         "removeConfirm": "Ta bort {{name}} från dina kontakter?",

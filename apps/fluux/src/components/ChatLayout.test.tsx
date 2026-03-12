@@ -335,6 +335,18 @@ vi.mock('@/hooks', async (importOriginal) => {
   }
 })
 
+vi.mock('@/hooks/useWebPush', () => ({
+  useWebPush: () => {},
+}))
+
+vi.mock('@/hooks/useSDKErrorToasts', () => ({
+  useSDKErrorToasts: () => {},
+}))
+
+vi.mock('@/hooks/useDeepLink', () => ({
+  useDeepLink: () => {},
+}))
+
 vi.mock('@/hooks/useKeyboardShortcuts', () => ({
   useKeyboardShortcuts: () => [],
 }))
@@ -429,6 +441,28 @@ vi.mock('./ShortcutHelp', () => ({
 
 vi.mock('./CommandPalette', () => ({
   CommandPalette: () => null,
+}))
+
+vi.mock('./ToastContainer', () => ({
+  ToastContainer: () => null,
+}))
+
+vi.mock('@/contexts', () => ({
+  LayoutProvider: ({ children }: { children: unknown }) => children,
+  useModals: () => ({
+    state: {
+      shortcutHelp: false,
+      commandPalette: false,
+      quickChat: false,
+      addContact: false,
+      presenceMenu: false,
+    },
+    actions: {
+      open: vi.fn(),
+      close: vi.fn(),
+      toggle: vi.fn(),
+    },
+  }),
 }))
 
 describe('ChatLayout - Tab Memory', () => {

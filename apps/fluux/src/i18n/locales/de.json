@@ -119,6 +119,7 @@
         "sending": "Senden...",
         "contact": "Kontakt",
         "startConversation": "Unterhaltung starten",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "Verbundene Geräte",
         "nameCannotBeEmpty": "Name darf nicht leer sein",
         "removeConfirm": "{{name}} aus Ihren Kontakten entfernen?",

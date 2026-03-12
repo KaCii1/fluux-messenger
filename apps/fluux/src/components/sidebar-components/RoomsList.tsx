@@ -1,8 +1,9 @@
 import React, { useState, useRef, useCallback, useMemo, memo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useContextMenu, useListKeyboardNav } from '@/hooks'
+import { useContextMenu, useListKeyboardNav, useRouteSync } from '@/hooks'
 import {
   useRoom,
+  roomStore,
   generateConsistentColorHexSync,
   formatMessagePreview,
   type Room,
@@ -32,6 +33,7 @@ export function RoomsList() {
   const { allRooms: rooms, joinRoom, leaveRoom, setBookmark, removeBookmark, activeRoomJid, setActiveRoom, drafts } = useRoom()
   // NOTE: Use direct store subscription to avoid re-renders from activeMessages changes
   const setActiveConversation = useChatStore((s) => s.setActiveConversation)
+  const { navigateToRooms } = useRouteSync()
   const [editingRoom, setEditingRoom] = useState<Room | null>(null)
   const [showCreateRoom, setShowCreateRoom] = useState(false)
   const listRef = useRef<HTMLDivElement>(null)
@@ -61,13 +63,17 @@ export function RoomsList() {
     // Allow single-click to select any room (joined or bookmarked)
     // Non-joined rooms will show cached history with a "join to participate" prompt
     void isJoined // Unused now, but kept for API consistency
+    // Push if going from list to first item, replace if switching between rooms
+    const hasActive = !!roomStore.getState().activeRoomJid
     // Clear any active 1:1 conversation
     void setActiveConversation(null)
     // Set this room as active
     void setActiveRoom(roomJid)
-  }, [setActiveConversation, setActiveRoom])
+    navigateToRooms(roomJid, { replace: hasActive })
+  }, [setActiveConversation, setActiveRoom, navigateToRooms])
 
   const handleRoomDoubleClick = useCallback(async (roomJid: string, isJoined: boolean, nickname: string) => {
+    const hasActive = !!roomStore.getState().activeRoomJid
     if (isJoined) {
       // If already joined, just select it
       void setActiveConversation(null)
@@ -78,15 +84,18 @@ export function RoomsList() {
       void setActiveConversation(null)
       void setActiveRoom(roomJid)
     }
-  }, [setActiveConversation, setActiveRoom, joinRoom])
+    navigateToRooms(roomJid, { replace: hasActive })
+  }, [setActiveConversation, setActiveRoom, joinRoom, navigateToRooms])
 
   // Keyboard navigation - select room on Enter (same as single-click)
   const handleRoomSelect = useCallback((room: Room) => {
     // Select the room (joined or bookmarked) to show its content
     // Non-joined rooms will show cached history with join prompt
+    const hasActive = !!roomStore.getState().activeRoomJid
     void setActiveConversation(null)
     void setActiveRoom(room.jid)
-  }, [setActiveConversation, setActiveRoom])
+    navigateToRooms(room.jid, { replace: hasActive })
+  }, [setActiveConversation, setActiveRoom, navigateToRooms])
 
   // Keyboard navigation:
   // - Plain arrows: highlight rooms (all rooms including bookmarked)

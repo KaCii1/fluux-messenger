@@ -119,6 +119,7 @@
         "sending": "Lähetetään...",
         "contact": "Yhteystieto",
         "startConversation": "Aloita keskustelu",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "Yhdistetyt laitteet",
         "nameCannotBeEmpty": "Nimi ei voi olla tyhjä",
         "removeConfirm": "Poista {{name}} yhteystiedoistasi?",

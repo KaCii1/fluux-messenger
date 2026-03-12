@@ -119,6 +119,7 @@
         "sending": "Αποστολή...",
         "contact": "Επαφή",
         "startConversation": "Έναρξη συνομιλίας",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "Συνδεδεμένες συσκευές",
         "nameCannotBeEmpty": "Το όνομα δεν μπορεί να είναι κενό",
         "removeConfirm": "Αφαίρεση {{name}} από τις επαφές σας;",

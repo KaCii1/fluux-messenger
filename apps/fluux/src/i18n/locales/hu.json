@@ -119,6 +119,7 @@
         "sending": "Küldés...",
         "contact": "Névjegy",
         "startConversation": "Beszélgetés indítása",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "Csatlakozott eszközök",
         "nameCannotBeEmpty": "A név nem lehet üres",
         "removeConfirm": "Eltávolítja {{name}} nevű névjegyét?",

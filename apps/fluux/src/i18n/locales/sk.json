@@ -119,6 +119,7 @@
         "sending": "Odosiela sa...",
         "contact": "Kontakt",
         "startConversation": "Začať konverzáciu",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "Pripojené zariadenia",
         "nameCannotBeEmpty": "Meno nemôže byť prázdne",
         "removeConfirm": "Odstrániť {{name}} z vašich kontaktov?",

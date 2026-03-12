@@ -119,6 +119,7 @@
         "sending": "Enviant...",
         "contact": "Contacte",
         "startConversation": "Inicia una conversa",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "Dispositius connectats",
         "nameCannotBeEmpty": "El nom no pot estar buit",
         "removeConfirm": "Eliminar {{name}} dels teus contactes?",

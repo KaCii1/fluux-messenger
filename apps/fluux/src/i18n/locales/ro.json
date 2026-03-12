@@ -119,6 +119,7 @@
         "sending": "Se trimite...",
         "contact": "Contact",
         "startConversation": "Începe conversația",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "Dispozitive conectate",
         "nameCannotBeEmpty": "Numele nu poate fi gol",
         "removeConfirm": "Elimini pe {{name}} din contactele tale?",

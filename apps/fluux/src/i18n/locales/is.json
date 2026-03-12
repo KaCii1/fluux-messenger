@@ -119,6 +119,7 @@
         "sending": "Sendi...",
         "contact": "Tengiliður",
         "startConversation": "Hefja samtal",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "Tengd tæki",
         "nameCannotBeEmpty": "Nafn má ekki vera autt",
         "removeConfirm": "Fjarlægja {{name}} úr tengiliðum þínum?",

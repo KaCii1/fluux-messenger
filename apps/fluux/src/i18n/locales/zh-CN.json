@@ -119,6 +119,7 @@
         "sending": "正在发送…",
         "contact": "联系人",
         "startConversation": "开始对话",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "已连接的设备",
         "nameCannotBeEmpty": "名称不能为空",
         "removeConfirm": "是否从您的联系人中移除 {{name}}？",

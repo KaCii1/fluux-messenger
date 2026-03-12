@@ -119,6 +119,7 @@
         "sending": "Qed jintbagħat...",
         "contact": "Kuntatt",
         "startConversation": "Ibda Konversazzjoni",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "Apparat Ikkonnettjati",
         "nameCannotBeEmpty": "L-isem ma jistax ikun vojt",
         "removeConfirm": "Neħħi {{name}} mill-kuntatti tiegħek?",

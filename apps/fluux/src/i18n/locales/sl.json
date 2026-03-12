@@ -119,6 +119,7 @@
         "sending": "Pošiljanje...",
         "contact": "Stik",
         "startConversation": "Začni pogovor",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "Povezane naprave",
         "nameCannotBeEmpty": "Ime ne sme biti prazno",
         "removeConfirm": "Odstraniti {{name}} iz vaših stikov?",

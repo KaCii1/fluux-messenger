@@ -14,7 +14,7 @@ import { CommandPalette } from './CommandPalette'
 import { ToastContainer } from './ToastContainer'
 import {
   // Vanilla stores for imperative .getState() access
-  chatStore, consoleStore, adminStore, rosterStore,
+  chatStore, roomStore, consoleStore, adminStore, rosterStore,
   useRosterActions,
   type Contact, type Conversation, type AdminCategory
 } from '@fluux/sdk'
@@ -180,8 +180,8 @@ function ChatLayoutContent() {
     navigateToSettings,
   } = useViewNavigation(selectedContact)
 
-  // Get settingsCategory to determine if settings has explicit content selected
-  const { settingsCategory } = useRouteSync()
+  // Get URL-derived state for store sync and settings detection
+  const { settingsCategory, activeJid } = useRouteSync()
 
 
   // Ref for main container to enable focus for keyboard shortcuts
@@ -277,6 +277,39 @@ function ChatLayoutContent() {
       setSelectedContactJid(null)
     }
   }, [activeConversationId, activeRoomJid])
+
+  // Sync URL-derived state → store state when URL changes (handles browser back/forward/popstate).
+  // When Android edge swipe triggers history.back(), React Router re-renders with the new URL,
+  // but Zustand store state is stale. This effect closes the loop.
+  // Skip the initial render — on mount, the store is the source of truth (e.g., session restore
+  // sets store state before the URL catches up). Only react to subsequent URL changes.
+  const urlSyncInitializedRef = useRef(false)
+  useEffect(() => {
+    if (!urlSyncInitializedRef.current) {
+      urlSyncInitializedRef.current = true
+      return
+    }
+    if (sidebarView === 'messages') {
+      const currentStoreId = chatStore.getState().activeConversationId
+      if (activeJid !== currentStoreId) {
+        setActiveConversation(activeJid)
+      }
+    } else if (sidebarView === 'rooms') {
+      const currentStoreJid = roomStore.getState().activeRoomJid
+      if (activeJid !== currentStoreJid) {
+        setActiveRoom(activeJid)
+      }
+    } else if (sidebarView === 'directory') {
+      if (activeJid !== selectedContactJid) {
+        setSelectedContactJid(activeJid)
+      }
+    } else if (sidebarView === 'archive') {
+      const currentStoreId = chatStore.getState().activeConversationId
+      if (activeJid !== currentStoreId) {
+        setActiveConversation(activeJid)
+      }
+    }
+  }, [activeJid, sidebarView, setActiveConversation, setActiveRoom, selectedContactJid])
 
   // Auto-select first conversation on initial connection if none selected
   // This handles the case when app launches fresh (no session restore)
@@ -427,18 +460,22 @@ function ChatLayoutContent() {
     void requestQuit()
   }, [])
 
-  // Handler for closing contact profile (used by keyboard shortcuts)
-  const handleContactBack = () => setSelectedContactJid(null)
+  // Handler for closing contact profile (used by keyboard shortcuts and back button)
+  const handleContactBack = useCallback(() => {
+    setSelectedContactJid(null)
+    navigateToContacts(undefined, { replace: true })
+  }, [navigateToContacts])
 
   // Handle mobile back from admin view - clear category to show sidebar
   const handleAdminBack = useCallback(() => {
     clearAdminSession()
     setAdminCategory(null)
-  }, [clearAdminSession, setAdminCategory])
+    navigateToAdmin(undefined, { replace: true })
+  }, [clearAdminSession, setAdminCategory, navigateToAdmin])
 
   // Handle mobile back from settings view - go back to settings sidebar (no category selected)
   const handleSettingsBack = useCallback(() => {
-    navigateToSettings()
+    navigateToSettings(undefined, { replace: true })
   }, [navigateToSettings])
 
   const shortcuts = useKeyboardShortcuts({
@@ -474,8 +511,15 @@ function ChatLayoutContent() {
   // The XMPP connection stays active in the background for notifications.
   // Disconnect only happens via explicit user action (menu) or app quit.
 
-  const handleChatBack = () => setActiveConversation(null)
-  const handleRoomBack = () => setActiveRoom(null)
+  const handleChatBack = useCallback(() => {
+    setActiveConversation(null)
+    navigateToMessages(undefined, { replace: true })
+  }, [setActiveConversation, navigateToMessages])
+
+  const handleRoomBack = useCallback(() => {
+    setActiveRoom(null)
+    navigateToRooms(undefined, { replace: true })
+  }, [setActiveRoom, navigateToRooms])
 
   // Handle starting a conversation from contact profile or double-click
   const handleStartConversation = useCallback((contact: Contact) => {
@@ -487,6 +531,7 @@ function ChatLayoutContent() {
       handleSidebarViewChange('archive')
       setActiveConversation(contact.jid)
       setActiveRoom(null)
+      navigateToArchive(contact.jid, { replace: true })
       return
     }
 
@@ -508,8 +553,10 @@ function ChatLayoutContent() {
     handleSidebarViewChange('messages')
     setActiveConversation(contact.jid)
     setActiveRoom(null)
+    // Update URL to reflect the selected conversation (replace since tab switch already pushed/replaced)
+    navigateToMessages(contact.jid, { replace: true })
     // selectedContact will be cleared by useEffect
-  }, [addConversation, setActiveConversation, setActiveRoom, handleSidebarViewChange])
+  }, [addConversation, setActiveConversation, setActiveRoom, handleSidebarViewChange, navigateToMessages, navigateToArchive])
 
   // Handle starting a chat from a JID (e.g., from occupant panel context menu)
   const handleStartChatWithJid = useCallback((jid: string) => {
@@ -518,6 +565,7 @@ function ChatLayoutContent() {
       handleSidebarViewChange('archive')
       setActiveConversation(jid)
       setActiveRoom(null)
+      navigateToArchive(jid, { replace: true })
       return
     }
     if (!chatState.hasConversation(jid)) {
@@ -532,7 +580,8 @@ function ChatLayoutContent() {
     handleSidebarViewChange('messages')
     setActiveConversation(jid)
     setActiveRoom(null)
-  }, [addConversation, setActiveConversation, setActiveRoom, handleSidebarViewChange])
+    navigateToMessages(jid, { replace: true })
+  }, [addConversation, setActiveConversation, setActiveRoom, handleSidebarViewChange, navigateToMessages, navigateToArchive])
 
   // Handle showing user profile from occupant panel context menu
   const handleShowProfileFromRoom = useCallback((jid: string) => {
@@ -541,7 +590,8 @@ function ChatLayoutContent() {
     // Navigate first (which clears selectedContactJid), then set JID
     handleSidebarViewChange('directory')
     setSelectedContactJid(jid)
-  }, [setActiveConversation, setActiveRoom, handleSidebarViewChange])
+    navigateToContacts(jid, { replace: true })
+  }, [setActiveConversation, setActiveRoom, handleSidebarViewChange, navigateToContacts])
 
   // Handle adding a contact (subscription request)
   const handleAddContactFromProfile = useCallback(async (jid: string) => {

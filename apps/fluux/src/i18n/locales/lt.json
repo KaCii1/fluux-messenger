@@ -119,6 +119,7 @@
         "sending": "Siunčiama...",
         "contact": "Kontaktas",
         "startConversation": "Pradėti pokalbį",
+        "addToContacts": "Add to Contacts",
         "connectedDevices": "Prijungti įrenginiai",
         "nameCannotBeEmpty": "Vardas negali būti tuščias",
         "removeConfirm": "Pašalinti {{name}} iš jūsų kontaktų?",
