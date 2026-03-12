@@ -826,6 +826,10 @@ const RoomMessageBubbleWrapper = memo(function RoomMessageBubbleWrapper({
 }: RoomMessageBubbleWrapperProps) {
   const { t } = useTranslation()
 
+  // Moderation confirmation state
+  const [showModerateConfirm, setShowModerateConfirm] = useState(false)
+  const [moderateReason, setModerateReason] = useState('')
+
   // Get occupant info if available
   const occupant = room.occupants.get(message.nick)
   const myNick = room.nickname
@@ -955,53 +959,107 @@ const RoomMessageBubbleWrapper = memo(function RoomMessageBubbleWrapper({
   }, [message.nick, onNickTouchStart])
 
   return (
-    <MessageBubble
-      message={message}
-      showAvatar={showAvatar}
-      isSelected={isSelected}
-      hasKeyboardSelection={hasKeyboardSelection}
-      showToolbarForSelection={showToolbarForSelection}
-      hideToolbar={hideToolbar}
-      isLastOutgoing={isLastOutgoing}
-      isLastMessage={isLastMessage}
-      isDarkMode={isDarkMode}
-      isHovered={isHovered}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      senderName={message.nick}
-      senderColor={senderColor}
-      avatarUrl={message.isOutgoing ? (ownAvatar || undefined) : (senderAvatar || undefined)}
-      avatarIdentifier={message.nick}
-      avatarFallbackColor={senderColor}
-      avatarPresence={room.joined ? (occupant ? getPresenceFromShow(occupant.show) : 'offline') : undefined}
-      senderJid={senderBareJid}
-      senderContact={contact}
-      senderRole={occupant?.role}
-      senderAffiliation={occupant?.affiliation}
-      nickExtras={nickExtras}
-      myReactions={myReactions}
-      onReaction={room.supportsReactions !== false ? handleReaction : undefined}
-      getReactorName={getReactorName}
-      canModerate={canModerateMsg}
-      onReply={() => onReply(message)}
-      onEdit={() => onEdit(message)}
-      onDelete={async () => {
-        if (message.isOutgoing) {
-          await retractMessage(room.jid, message.id)
-        } else {
-          await moderateMessage(room.jid, message.stanzaId ?? message.id)
-        }
-      }}
-      onMediaLoad={onMediaLoad}
-      replyContext={replyContext}
-      mentions={message.mentions}
-      onNickContextMenu={!message.isOutgoing ? handleNickContextMenu : undefined}
-      onNickTouchStart={!message.isOutgoing ? handleNickTouchStart : undefined}
-      onNickTouchEnd={!message.isOutgoing ? onNickTouchEnd : undefined}
-      onReactionPickerChange={onReactionPickerChange}
-      formatTime={formatTime}
-      timeFormat={timeFormat}
-    />
+    <>
+      <MessageBubble
+        message={message}
+        showAvatar={showAvatar}
+        isSelected={isSelected}
+        hasKeyboardSelection={hasKeyboardSelection}
+        showToolbarForSelection={showToolbarForSelection}
+        hideToolbar={hideToolbar}
+        isLastOutgoing={isLastOutgoing}
+        isLastMessage={isLastMessage}
+        isDarkMode={isDarkMode}
+        isHovered={isHovered}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        senderName={message.nick}
+        senderColor={senderColor}
+        avatarUrl={message.isOutgoing ? (ownAvatar || undefined) : (senderAvatar || undefined)}
+        avatarIdentifier={message.nick}
+        avatarFallbackColor={senderColor}
+        avatarPresence={room.joined ? (occupant ? getPresenceFromShow(occupant.show) : 'offline') : undefined}
+        senderJid={senderBareJid}
+        senderContact={contact}
+        senderRole={occupant?.role}
+        senderAffiliation={occupant?.affiliation}
+        nickExtras={nickExtras}
+        myReactions={myReactions}
+        onReaction={room.supportsReactions !== false ? handleReaction : undefined}
+        getReactorName={getReactorName}
+        canModerate={canModerateMsg}
+        onReply={() => onReply(message)}
+        onEdit={() => onEdit(message)}
+        onDelete={async () => {
+          if (message.isOutgoing) {
+            await retractMessage(room.jid, message.id)
+          } else {
+            setShowModerateConfirm(true)
+          }
+        }}
+        onMediaLoad={onMediaLoad}
+        replyContext={replyContext}
+        mentions={message.mentions}
+        onNickContextMenu={!message.isOutgoing ? handleNickContextMenu : undefined}
+        onNickTouchStart={!message.isOutgoing ? handleNickTouchStart : undefined}
+        onNickTouchEnd={!message.isOutgoing ? onNickTouchEnd : undefined}
+        onReactionPickerChange={onReactionPickerChange}
+        formatTime={formatTime}
+        timeFormat={timeFormat}
+      />
+
+      {/* Moderation confirmation dialog */}
+      {showModerateConfirm && (
+        <div
+          data-modal="true"
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          onClick={(e) => { if (e.target === e.currentTarget) { setShowModerateConfirm(false); setModerateReason('') } }}
+        >
+          <div className="bg-fluux-sidebar rounded-lg p-4 max-w-sm w-full mx-4 shadow-xl">
+            <h3 className="text-lg font-semibold text-fluux-text mb-2">{t('chat.moderateMessage')}</h3>
+            <p className="text-sm text-fluux-muted mb-3">{t('chat.moderateMessageConfirm')}</p>
+            <div className="mb-4">
+              <label className="block text-xs text-fluux-muted mb-1">{t('chat.moderateReason')}</label>
+              <input
+                type="text"
+                value={moderateReason}
+                onChange={(e) => setModerateReason(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setShowModerateConfirm(false)
+                    const reason = moderateReason.trim() || undefined
+                    setModerateReason('')
+                    void moderateMessage(room.jid, message.stanzaId ?? message.id, reason)
+                  }
+                }}
+                placeholder={t('chat.moderateReasonPlaceholder')}
+                className="w-full px-3 py-1.5 text-sm bg-fluux-bg border border-fluux-border rounded-lg text-fluux-text placeholder-fluux-muted focus:outline-none focus:ring-2 focus:ring-fluux-brand/50"
+                autoFocus
+              />
+            </div>
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => { setShowModerateConfirm(false); setModerateReason('') }}
+                className="px-4 py-2 text-sm text-fluux-text bg-fluux-hover hover:bg-fluux-active rounded-lg transition-colors"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={() => {
+                  setShowModerateConfirm(false)
+                  const reason = moderateReason.trim() || undefined
+                  setModerateReason('')
+                  void moderateMessage(room.jid, message.stanzaId ?? message.id, reason)
+                }}
+                className="px-4 py-2 text-sm text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors"
+              >
+                {t('chat.moderateMessage')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 })
 
