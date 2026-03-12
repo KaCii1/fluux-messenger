@@ -4,7 +4,7 @@ import { detectRenderLoop } from '@/utils/renderLoopDetector'
 import { useRoomActive, useRoster, useRoom, getBareJid, generateConsistentColorHexSync, getPresenceFromShow, createMessageLookup, isMessageFromIgnoredUser, isReplyToIgnoredUser, canKick, canBan, canModerate, getAvailableAffiliations, getAvailableRoles, type RoomMessage, type Room, type MentionReference, type ChatStateNotification, type Contact, type FileAttachment, type RoomAffiliation, type RoomRole } from '@fluux/sdk'
 import { useConnectionStore, useIgnoreStore } from '@fluux/sdk/react'
 import { ignoreStore, type IgnoredUser } from '@fluux/sdk/stores'
-import { useMentionAutocomplete, useFileUpload, useLinkPreview, useTypeToFocus, useMessageCopy, useMode, useMessageSelection, useDragAndDrop, useConversationDraft, useTimeFormat, useContextMenu } from '@/hooks'
+import { useMentionAutocomplete, useFileUpload, useLinkPreview, useTypeToFocus, useMessageCopy, useMode, useMessageSelection, useDragAndDrop, useConversationDraft, useTimeFormat, useContextMenu, isSmallScreen } from '@/hooks'
 import { MessageBubble, MessageList, shouldShowAvatar, buildReplyContext } from './conversation'
 import { Avatar, getConsistentTextColor } from './Avatar'
 import { format } from 'date-fns'
@@ -393,8 +393,8 @@ export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = 
         )}
       </div>
 
-      {/* Occupant panel */}
-      {showOccupants && (
+      {/* Occupant panel (inline sidebar, desktop only — mobile uses full-screen in ChatLayout) */}
+      {showOccupants && !isSmallScreen() && (
         <OccupantPanel
           room={activeRoom}
           contactsByJid={contactsByJid}

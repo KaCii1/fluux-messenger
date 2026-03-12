@@ -4,6 +4,7 @@ import { detectRenderLoop } from '@/utils/renderLoopDetector'
 import { Sidebar, type SidebarView } from './Sidebar'
 import { ChatView } from './ChatView'
 import { RoomView } from './RoomView'
+import { OccupantPanel } from './OccupantPanel'
 import { ContactProfileView } from './ContactProfileView'
 import { SettingsView } from './SettingsView'
 import { AdminView } from './AdminView'
@@ -28,7 +29,7 @@ import { useEventsSoundNotification } from '@/hooks/useEventsSoundNotification'
 import { useEventsDesktopNotifications } from '@/hooks/useEventsDesktopNotifications'
 import { usePlatformState } from '@/hooks/usePlatformState'
 import { useSDKErrorToasts } from '@/hooks/useSDKErrorToasts'
-import { useFocusZones, useViewNavigation, isMobileWeb, useWindowVisibility, useRouteSync, type FocusZoneRefs } from '@/hooks'
+import { useFocusZones, useViewNavigation, isMobileWeb, isSmallScreen, useWindowVisibility, useRouteSync, type FocusZoneRefs } from '@/hooks'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useDeepLink } from '@/hooks/useDeepLink'
 import { saveViewState, getSavedViewState, type ViewStateData } from '@/hooks/useSessionPersistence'
@@ -667,6 +668,8 @@ function ChatLayoutContent() {
         <main className={`${hasActiveContent ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-fluux-chat min-w-0 min-h-0`}>
           {sidebarView === 'settings' ? (
             <SettingsView onBack={handleSettingsBack} />
+          ) : activeRoomJid && showRoomOccupants && isSmallScreen() ? (
+            <FullScreenOccupantPanel onClose={() => setShowRoomOccupants(false)} onStartChat={handleStartChatWithJid} onShowProfile={handleShowProfileFromRoom} />
           ) : activeRoomJid ? (
             <RoomView onBack={handleRoomBack} mainContentRef={focusZoneRefs.mainContent} composerRef={focusZoneRefs.composer} showOccupants={showRoomOccupants} onShowOccupantsChange={setShowRoomOccupants} onStartChat={handleStartChatWithJid} onShowProfile={handleShowProfileFromRoom} />
           ) : activeConversationId ? (
@@ -725,6 +728,45 @@ function ChatLayoutContent() {
       {/* Toast Notifications */}
       <ToastContainer />
     </div>
+  )
+}
+
+/**
+ * Full-screen occupant panel for mobile. Wraps OccupantPanel with the
+ * necessary store subscriptions isolated from ChatLayout.
+ */
+function FullScreenOccupantPanel({ onClose, onStartChat, onShowProfile }: {
+  onClose: () => void
+  onStartChat?: (jid: string) => void
+  onShowProfile?: (jid: string) => void
+}) {
+  const activeRoom = useRoomStore((s) => {
+    const jid = s.activeRoomJid
+    return jid ? s.rooms.get(jid) : undefined
+  })
+  const contacts = useRosterStore((s) => s.contacts)
+  const ownAvatar = useConnectionStore((s) => s.ownAvatar)
+
+  const contactsByJid = useMemo(() => {
+    const map = new Map<string, Contact>()
+    for (const contact of contacts.values()) {
+      map.set(contact.jid, contact)
+    }
+    return map
+  }, [contacts])
+
+  if (!activeRoom) return null
+
+  return (
+    <OccupantPanel
+      room={activeRoom}
+      contactsByJid={contactsByJid}
+      ownAvatar={ownAvatar}
+      onClose={onClose}
+      onStartChat={onStartChat}
+      onShowProfile={onShowProfile}
+      fullScreen
+    />
   )
 }
 

@@ -23,7 +23,7 @@ import { useContextMenu, useWindowDrag } from '@/hooks'
 import { useToastStore } from '@/stores/toastStore'
 import { getTranslatedShowText } from '@/utils/presence'
 import { OccupantModerationModal } from './OccupantModerationModal'
-import { Shield, Crown, UserCheck, X, MessageCircle, EyeOff, User, Settings } from 'lucide-react'
+import { Shield, Crown, UserCheck, X, ArrowLeft, MessageCircle, EyeOff, User, Settings } from 'lucide-react'
 
 // Type for grouped occupants (multiple connections from same bare JID)
 interface GroupedOccupant {
@@ -40,6 +40,8 @@ export interface OccupantPanelProps {
   onClose: () => void
   onStartChat?: (jid: string) => void
   onShowProfile?: (jid: string) => void
+  /** When true, renders as full-screen view with back arrow instead of inline sidebar */
+  fullScreen?: boolean
 }
 
 export function OccupantPanel({
@@ -49,6 +51,7 @@ export function OccupantPanel({
   onClose,
   onStartChat,
   onShowProfile,
+  fullScreen = false,
 }: OccupantPanelProps) {
   const { t } = useTranslation()
   const connectionStatus = useConnectionStore((s) => s.status)
@@ -276,18 +279,32 @@ export function OccupantPanel({
   }
 
   return (
-    <div className="w-64 border-l border-fluux-bg flex flex-col bg-fluux-sidebar">
+    <div className={`${fullScreen ? 'w-full h-full' : 'w-64 border-l border-fluux-bg'} flex flex-col bg-fluux-sidebar`}>
       {/* Panel header */}
       <div className={`h-14 ${titleBarClass} px-4 flex items-center justify-between border-b border-fluux-bg`}>
-        <h3 className="font-semibold text-fluux-text">{t('rooms.members')}</h3>
-        <Tooltip content={t('rooms.closePanel')} position="left">
-          <button
-            onClick={onClose}
-            className="p-1 rounded hover:bg-fluux-hover text-fluux-muted hover:text-fluux-text transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </Tooltip>
+        {fullScreen ? (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onClose}
+              className="p-1 rounded hover:bg-fluux-hover text-fluux-muted hover:text-fluux-text transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h3 className="font-semibold text-fluux-text">{t('rooms.members')}</h3>
+          </div>
+        ) : (
+          <>
+            <h3 className="font-semibold text-fluux-text">{t('rooms.members')}</h3>
+            <Tooltip content={t('rooms.closePanel')} position="left">
+              <button
+                onClick={onClose}
+                className="p-1 rounded hover:bg-fluux-hover text-fluux-muted hover:text-fluux-text transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </Tooltip>
+          </>
+        )}
       </div>
 
       {/* Occupant list */}
