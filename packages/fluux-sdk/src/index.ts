@@ -217,6 +217,7 @@ export type {
 
   // Roster types
   Contact,
+  VCardInfo,
   PresenceStatus,
   PresenceShow,
   ResourcePresence,

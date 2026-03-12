@@ -2,6 +2,7 @@ import { xml } from '@xmpp/client'
 import type { Element } from '@xmpp/client'
 import { BaseModule } from './BaseModule'
 import { getBareJid, getLocalPart, getDomain } from '../jid'
+import type { VCardInfo } from '../types/roster'
 import { generateUUID } from '../../utils/uuid'
 import { getCachedAvatar, getAvatarHash, cacheAvatar, saveAvatarHash, getAllAvatarHashes, hasNoAvatar, markNoAvatar, clearNoAvatar } from '../../utils/avatarCache'
 import {
@@ -152,6 +153,41 @@ export class Profile extends BaseModule {
     }
 
     return null
+  }
+
+  /**
+   * Fetch vCard profile information for a JID (XEP-0054).
+   *
+   * Returns selected fields (full name, organisation, email, country)
+   * for display in user info popovers. For room occupants in anonymous
+   * rooms, pass the full occupant JID (room@conf/nick).
+   *
+   * @param jid - The bare JID or full occupant JID to query
+   * @returns VCardInfo with available fields, or null on error
+   */
+  async fetchVCard(jid: string): Promise<VCardInfo | null> {
+    const iq = xml('iq', { type: 'get', to: jid, id: `vcard_${generateUUID()}` },
+      xml('vCard', { xmlns: NS_VCARD_TEMP })
+    )
+
+    try {
+      const result = await this.deps.sendIQ(iq)
+      const vcard = result.getChild('vCard', NS_VCARD_TEMP)
+      if (!vcard) return null
+
+      const fullName = vcard.getChildText('FN') || undefined
+      const org = vcard.getChild('ORG')?.getChildText('ORGNAME') || undefined
+      const email = vcard.getChild('EMAIL')?.getChildText('USERID') || undefined
+      const adr = vcard.getChild('ADR')
+      const country = adr?.getChildText('CTRY') || undefined
+
+      // Return null if no fields were found
+      if (!fullName && !org && !email && !country) return null
+
+      return { fullName, org, email, country }
+    } catch {
+      return null
+    }
   }
 
   async fetchVCardAvatar(jid: string): Promise<void> {

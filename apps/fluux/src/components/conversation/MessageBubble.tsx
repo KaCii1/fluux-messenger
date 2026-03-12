@@ -51,6 +51,8 @@ export interface MessageBubbleProps {
   senderRole?: RoomRole
   /** Room affiliation for MUC occupants */
   senderAffiliation?: RoomAffiliation
+  /** Occupant JID for vCard fetch in anonymous rooms (e.g. room@conf/nick) */
+  senderOccupantJid?: string
 
   // Nick header extras (for room moderator badge, hats)
   nickExtras?: ReactNode
@@ -196,6 +198,7 @@ export const MessageBubble = memo(function MessageBubble({
   senderContact,
   senderRole,
   senderAffiliation,
+  senderOccupantJid,
   nickExtras,
   myReactions,
   onReaction,
@@ -255,7 +258,7 @@ export const MessageBubble = memo(function MessageBubble({
             {formatTime(message.timestamp)}
           </span>
         ) : showAvatar ? (
-          <UserInfoPopover contact={senderContact} jid={senderJid} role={senderRole} affiliation={senderAffiliation}>
+          <UserInfoPopover contact={senderContact} jid={senderJid} occupantJid={senderOccupantJid} role={senderRole} affiliation={senderAffiliation}>
             <div className="select-none" onContextMenu={onNickContextMenu} onTouchStart={onNickTouchStart} onTouchEnd={onNickTouchEnd}>
               <Avatar
                 identifier={avatarIdentifier}
@@ -314,7 +317,7 @@ export const MessageBubble = memo(function MessageBubble({
         {/* Nick header - hidden for /me action messages (nick is shown inline) */}
         {showAvatar && !isActionMessage(message.body) && (
           <div className="flex items-baseline gap-2 pb-1 flex-wrap">
-            <UserInfoPopover contact={senderContact} jid={senderJid} role={senderRole} affiliation={senderAffiliation}>
+            <UserInfoPopover contact={senderContact} jid={senderJid} occupantJid={senderOccupantJid} role={senderRole} affiliation={senderAffiliation}>
               <span
                 className="font-medium"
                 style={{ color: senderColor }}

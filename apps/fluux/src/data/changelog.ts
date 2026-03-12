@@ -31,6 +31,7 @@ export const changelog: ChangelogEntry[] = [
           'Occupant context menu on right-click/long-press of nicknames in room messages',
           'Suppress sound and desktop notifications when presence is Do Not Disturb',
           'Open external links in Tauri webview popup instead of system browser',
+          'XEP-0054: vCard info display in contact popover (full name, organisation, email, country)',
         ],
       },
       {

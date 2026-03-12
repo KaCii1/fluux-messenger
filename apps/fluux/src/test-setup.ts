@@ -222,6 +222,20 @@ vi.mock('@fluux/sdk', async (importOriginal) => {
       unblockAll: vi.fn(),
       isBlocked: () => false,
     })),
+    useXMPP: vi.fn(() => ({
+      client: {
+        profile: {
+          fetchVCard: vi.fn().mockResolvedValue(null),
+        },
+      },
+      sendRawXml: vi.fn(),
+      onStanza: vi.fn(() => vi.fn()),
+      on: vi.fn(() => vi.fn()),
+      setPresence: vi.fn(),
+      xml: vi.fn(),
+      isConnected: () => false,
+      getJid: () => null,
+    })),
   }
 })
 

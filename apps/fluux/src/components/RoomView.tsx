@@ -993,6 +993,7 @@ const RoomMessageBubbleWrapper = memo(function RoomMessageBubbleWrapper({
         senderContact={contact}
         senderRole={occupant?.role}
         senderAffiliation={occupant?.affiliation}
+        senderOccupantJid={`${room.jid}/${message.nick}`}
         nickExtras={nickExtras}
         myReactions={myReactions}
         onReaction={room.supportsReactions !== false ? handleReaction : undefined}
