@@ -1841,7 +1841,35 @@ export class MUC extends BaseModule {
         ...commandChildren
       )
     )
-    return this.deps.sendIQ(iq)
+    const response = await this.deps.sendIQ(iq)
+
+    // Handle multi-step ad-hoc commands (XEP-0050):
+    // Some servers return status="executing" with a sessionid, expecting a
+    // second round-trip with action="complete" to finalize the command.
+    const command = response.getChild('command', NS_COMMANDS)
+    if (command?.attrs.status === 'executing' && command.attrs.sessionid) {
+      const completeChildren: Element[] = []
+      if (fields && Object.keys(fields).length > 0) {
+        completeChildren.push(
+          buildDataFormSubmit(fields, MUC.HATS_FORM_TYPE)
+        )
+      }
+      const completeIq = xml(
+        'iq',
+        { type: 'set', to: roomJid, id: `hat_${generateUUID()}` },
+        xml('command', {
+          xmlns: NS_COMMANDS,
+          action: 'complete',
+          node,
+          sessionid: command.attrs.sessionid,
+        },
+          ...completeChildren
+        )
+      )
+      return this.deps.sendIQ(completeIq)
+    }
+
+    return response
   }
 
   /**
