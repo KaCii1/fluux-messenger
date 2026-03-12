@@ -1784,7 +1784,33 @@ describe('MUC Module', () => {
       })
     })
 
-    it('does not emit room:updated when name is not in config', async () => {
+    it('updates supportsHats when enable_hats is in config', async () => {
+      mockSendIQ.mockResolvedValue(createMockElement('iq', { type: 'result' }))
+
+      await muc.submitRoomConfig('room@conference.example.com', {
+        'enable_hats': '1',
+      })
+
+      expect(mockEmitSDK).toHaveBeenCalledWith('room:updated', {
+        roomJid: 'room@conference.example.com',
+        updates: { supportsHats: true },
+      })
+    })
+
+    it('disables supportsHats when enable_hats is 0', async () => {
+      mockSendIQ.mockResolvedValue(createMockElement('iq', { type: 'result' }))
+
+      await muc.submitRoomConfig('room@conference.example.com', {
+        'enable_hats': '0',
+      })
+
+      expect(mockEmitSDK).toHaveBeenCalledWith('room:updated', {
+        roomJid: 'room@conference.example.com',
+        updates: { supportsHats: false },
+      })
+    })
+
+    it('does not emit room:updated when no relevant fields changed', async () => {
       mockSendIQ.mockResolvedValue(createMockElement('iq', { type: 'result' }))
 
       await muc.submitRoomConfig('room@conference.example.com', {

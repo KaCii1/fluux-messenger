@@ -1016,12 +1016,23 @@ export class MUC extends BaseModule {
 
     await this.deps.sendIQ(iq)
 
-    // Emit room:updated if name changed
+    // Update room state from submitted config values
+    const updates: Partial<Room> = {}
+
     const name = typeof values['muc#roomconfig_roomname'] === 'string'
       ? values['muc#roomconfig_roomname']
       : undefined
     if (name) {
-      this.deps.emitSDK('room:updated', { roomJid, updates: { name } })
+      updates.name = name
+    }
+
+    // Update hats support from the enable_hats config field
+    if ('enable_hats' in values) {
+      updates.supportsHats = values['enable_hats'] === '1'
+    }
+
+    if (Object.keys(updates).length > 0) {
+      this.deps.emitSDK('room:updated', { roomJid, updates })
     }
   }
 

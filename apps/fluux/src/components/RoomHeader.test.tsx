@@ -837,6 +837,7 @@ describe('RoomHeader', () => {
 
     it('opens hats modal when clicking "Manage Hats"', () => {
       const room = createRoom({
+        supportsHats: true,
         occupantsList: [createOccupant({ nick: 'Me', affiliation: 'owner' })],
       })
 
@@ -862,6 +863,7 @@ describe('RoomHeader', () => {
 
     it('closes the management dropdown when opening hats modal', () => {
       const room = createRoom({
+        supportsHats: true,
         occupantsList: [createOccupant({ nick: 'Me', affiliation: 'owner' })],
       })
 
