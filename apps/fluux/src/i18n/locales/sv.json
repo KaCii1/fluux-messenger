@@ -385,6 +385,7 @@
         "previewUnavailable": "Förhandsgranskning ej tillgänglig",
         "truncated": "avkortat",
         "messageDeleted": "Meddelande borttaget",
+        "messageModerated": "Meddelande borttaget av {{moderator}}",
         "deleteMessage": "Ta bort meddelande",
         "imageUnavailable": "Bilden är inte längre tillgänglig",
         "videoUnavailable": "Videon är inte längre tillgänglig",

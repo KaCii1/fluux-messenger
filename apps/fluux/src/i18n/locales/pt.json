@@ -385,6 +385,7 @@
         "previewUnavailable": "Pré-visualização indisponível",
         "truncated": "truncada",
         "messageDeleted": "Mensagem eliminada",
+        "messageModerated": "Mensagem removida por {{moderator}}",
         "deleteMessage": "Eliminar mensagem",
         "imageUnavailable": "Imagem já não disponível",
         "videoUnavailable": "Vídeo já não disponível",

@@ -232,6 +232,13 @@ export function useRoom() {
     [client]
   )
 
+  const moderateMessage = useCallback(
+    async (roomJid: string, stanzaId: string, reason?: string) => {
+      await client.muc.moderateMessage(roomJid, stanzaId, reason)
+    },
+    [client]
+  )
+
   const setBookmark = useCallback(
     async (
       roomJid: string,
@@ -561,6 +568,7 @@ export function useRoom() {
       sendReaction,
       sendCorrection,
       retractMessage,
+      moderateMessage,
       sendChatState,
       setBookmark,
       removeBookmark,
@@ -605,6 +613,7 @@ export function useRoom() {
       sendReaction,
       sendCorrection,
       retractMessage,
+      moderateMessage,
       sendChatState,
       setBookmark,
       removeBookmark,

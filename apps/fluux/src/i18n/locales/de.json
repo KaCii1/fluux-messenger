@@ -385,6 +385,7 @@
         "previewUnavailable": "Vorschau nicht verfügbar",
         "truncated": "gekürzt",
         "messageDeleted": "Nachricht gelöscht",
+        "messageModerated": "Nachricht entfernt von {{moderator}}",
         "deleteMessage": "Nachricht löschen",
         "imageUnavailable": "Bild nicht mehr verfügbar",
         "videoUnavailable": "Video nicht mehr verfügbar",

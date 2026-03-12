@@ -385,6 +385,7 @@
         "previewUnavailable": "Podgląd niedostępny",
         "truncated": "skrócone",
         "messageDeleted": "Wiadomość usunięta",
+        "messageModerated": "Wiadomość usunięta przez {{moderator}}",
         "deleteMessage": "Usuń wiadomość",
         "imageUnavailable": "Obraz już niedostępny",
         "videoUnavailable": "Film już niedostępny",

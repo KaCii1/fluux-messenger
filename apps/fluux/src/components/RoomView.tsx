@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback, memo, type RefObject } from 'react'
 import { useTranslation } from 'react-i18next'
 import { detectRenderLoop } from '@/utils/renderLoopDetector'
-import { useRoomActive, useRoster, useRoom, getBareJid, generateConsistentColorHexSync, getPresenceFromShow, createMessageLookup, isMessageFromIgnoredUser, isReplyToIgnoredUser, canKick, canBan, getAvailableAffiliations, getAvailableRoles, type RoomMessage, type Room, type MentionReference, type ChatStateNotification, type Contact, type FileAttachment, type RoomAffiliation, type RoomRole } from '@fluux/sdk'
+import { useRoomActive, useRoster, useRoom, getBareJid, generateConsistentColorHexSync, getPresenceFromShow, createMessageLookup, isMessageFromIgnoredUser, isReplyToIgnoredUser, canKick, canBan, canModerate, getAvailableAffiliations, getAvailableRoles, type RoomMessage, type Room, type MentionReference, type ChatStateNotification, type Contact, type FileAttachment, type RoomAffiliation, type RoomRole } from '@fluux/sdk'
 import { useConnectionStore, useIgnoreStore } from '@fluux/sdk/react'
 import { ignoreStore, type IgnoredUser } from '@fluux/sdk/stores'
 import { useMentionAutocomplete, useFileUpload, useLinkPreview, useTypeToFocus, useMessageCopy, useMode, useMessageSelection, useDragAndDrop, useConversationDraft, useTimeFormat, useContextMenu } from '@/hooks'
@@ -57,7 +57,7 @@ const MAX_ROOM_SIZE_FOR_TYPING = 30
 export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = false, onShowOccupantsChange, onStartChat, onShowProfile }: RoomViewProps) {
   detectRenderLoop('RoomView')
   const { t } = useTranslation()
-  const { activeRoom, activeMessages, activeTypingUsers, sendMessage, sendReaction, sendCorrection, retractMessage, sendChatState, setRoomNotifyAll, activeAnimation, sendEasterEgg, clearAnimation, clearFirstNewMessageId, updateLastSeenMessageId, joinRoom, setRoomAvatar, clearRoomAvatar, fetchOlderHistory, activeMAMState, submitRoomConfig, setSubject, destroyRoom } = useRoomActive()
+  const { activeRoom, activeMessages, activeTypingUsers, sendMessage, sendReaction, sendCorrection, retractMessage, moderateMessage, sendChatState, setRoomNotifyAll, activeAnimation, sendEasterEgg, clearAnimation, clearFirstNewMessageId, updateLastSeenMessageId, joinRoom, setRoomAvatar, clearRoomAvatar, fetchOlderHistory, activeMAMState, submitRoomConfig, setSubject, destroyRoom } = useRoomActive()
   const { contacts } = useRoster()
   // NOTE: Use focused selectors instead of useConnection() hook to avoid
   // re-renders when unrelated connection state changes (error, reconnectAttempt, etc.)
@@ -339,6 +339,7 @@ export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = 
             activeReactionPickerMessageId={activeReactionPickerMessageId}
             onReactionPickerChange={handleReactionPickerChange}
             retractMessage={retractMessage}
+            moderateMessage={moderateMessage}
             selectedMessageId={selectedMessageId}
             hasKeyboardSelection={hasKeyboardSelection}
             showToolbarForSelection={showToolbarForSelection}
@@ -564,6 +565,7 @@ const RoomMessageList = memo(function RoomMessageList({
   activeReactionPickerMessageId,
   onReactionPickerChange,
   retractMessage,
+  moderateMessage,
   selectedMessageId,
   hasKeyboardSelection,
   showToolbarForSelection,
@@ -597,6 +599,7 @@ const RoomMessageList = memo(function RoomMessageList({
   activeReactionPickerMessageId: string | null
   onReactionPickerChange: (messageId: string, isOpen: boolean) => void
   retractMessage: (roomJid: string, messageId: string) => Promise<void>
+  moderateMessage: (roomJid: string, stanzaId: string, reason?: string) => Promise<void>
   selectedMessageId: string | null
   hasKeyboardSelection: boolean
   showToolbarForSelection: boolean
@@ -711,6 +714,7 @@ const RoomMessageList = memo(function RoomMessageList({
       hideToolbar={isComposing || (activeReactionPickerMessageId !== null && activeReactionPickerMessageId !== msg.id)}
       onReactionPickerChange={(isOpen) => onReactionPickerChange(msg.id, isOpen)}
       retractMessage={retractMessage}
+      moderateMessage={moderateMessage}
       isSelected={msg.id === selectedMessageId}
       hasKeyboardSelection={hasKeyboardSelection}
       showToolbarForSelection={showToolbarForSelection}
@@ -728,7 +732,7 @@ const RoomMessageList = memo(function RoomMessageList({
   ), [
     messagesById, room, contactsByJid, ownAvatar, sendReaction, onReply, onEdit,
     lastOutgoingMessageId, lastMessageId, isComposing, activeReactionPickerMessageId,
-    onReactionPickerChange, retractMessage, selectedMessageId, hasKeyboardSelection,
+    onReactionPickerChange, retractMessage, moderateMessage, selectedMessageId, hasKeyboardSelection,
     showToolbarForSelection, isDarkMode, onMediaLoad, hoveredMessageId, handleMessageHover, handleMessageLeave,
     formatTime, effectiveTimeFormat, onNickContextMenu, onNickTouchStart, onNickTouchEnd
   ])
@@ -770,6 +774,7 @@ interface RoomMessageBubbleWrapperProps {
   hideToolbar?: boolean
   onReactionPickerChange?: (isOpen: boolean) => void
   retractMessage: (roomJid: string, messageId: string) => Promise<void>
+  moderateMessage: (roomJid: string, stanzaId: string, reason?: string) => Promise<void>
   isSelected?: boolean
   hasKeyboardSelection?: boolean
   showToolbarForSelection?: boolean
@@ -804,6 +809,7 @@ const RoomMessageBubbleWrapper = memo(function RoomMessageBubbleWrapper({
   hideToolbar,
   onReactionPickerChange,
   retractMessage,
+  moderateMessage,
   isSelected,
   hasKeyboardSelection,
   showToolbarForSelection,
@@ -823,6 +829,12 @@ const RoomMessageBubbleWrapper = memo(function RoomMessageBubbleWrapper({
   // Get occupant info if available
   const occupant = room.occupants.get(message.nick)
   const myNick = room.nickname
+
+  // Compute moderation permission for non-outgoing messages
+  const selfOccupant = myNick ? room.occupants.get(myNick) : undefined
+  const canModerateMsg = !message.isOutgoing && selfOccupant
+    ? canModerate(selfOccupant.role, selfOccupant.affiliation, occupant?.affiliation ?? 'none')
+    : false
 
   // Get avatar for message sender:
   // 1. XEP-0398 occupant avatar (fetched from MUC presence vcard-temp:x:update)
@@ -970,9 +982,16 @@ const RoomMessageBubbleWrapper = memo(function RoomMessageBubbleWrapper({
       myReactions={myReactions}
       onReaction={room.supportsReactions !== false ? handleReaction : undefined}
       getReactorName={getReactorName}
+      canModerate={canModerateMsg}
       onReply={() => onReply(message)}
       onEdit={() => onEdit(message)}
-      onDelete={async () => retractMessage(room.jid, message.id)}
+      onDelete={async () => {
+        if (message.isOutgoing) {
+          await retractMessage(room.jid, message.id)
+        } else {
+          await moderateMessage(room.jid, message.stanzaId ?? message.id)
+        }
+      }}
       onMediaLoad={onMediaLoad}
       replyContext={replyContext}
       mentions={message.mentions}

@@ -4,6 +4,7 @@ import {
   canSetRole,
   canKick,
   canBan,
+  canModerate,
   getAvailableAffiliations,
   getAvailableRoles,
 } from './mucPermissions'
@@ -179,5 +180,29 @@ describe('getAvailableRoles', () => {
   it('moderator gets empty for owner targets', () => {
     const result = getAvailableRoles('moderator', 'admin', 'moderator', 'owner')
     expect(result).toEqual([])
+  })
+})
+
+describe('canModerate', () => {
+  it('moderator can moderate participants and unaffiliated', () => {
+    expect(canModerate('moderator', 'admin', 'member')).toBe(true)
+    expect(canModerate('moderator', 'admin', 'none')).toBe(true)
+  })
+
+  it('moderator cannot moderate owners', () => {
+    expect(canModerate('moderator', 'admin', 'owner')).toBe(false)
+  })
+
+  it('moderator (non-owner) cannot moderate admins', () => {
+    expect(canModerate('moderator', 'admin', 'admin')).toBe(false)
+  })
+
+  it('owner-moderator can moderate admins', () => {
+    expect(canModerate('moderator', 'owner', 'admin')).toBe(true)
+  })
+
+  it('non-moderator cannot moderate anyone', () => {
+    expect(canModerate('participant', 'admin', 'none')).toBe(false)
+    expect(canModerate('visitor', 'member', 'none')).toBe(false)
   })
 })

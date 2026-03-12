@@ -385,6 +385,7 @@
         "previewUnavailable": "Previzualizare indisponibilă",
         "truncated": "trunchiat",
         "messageDeleted": "Mesaj șters",
+        "messageModerated": "Mesaj eliminat de {{moderator}}",
         "deleteMessage": "Șterge mesajul",
         "imageUnavailable": "Imaginea nu mai este disponibilă",
         "videoUnavailable": "Videoclipul nu mai este disponibil",

@@ -385,6 +385,7 @@
         "previewUnavailable": "Папярэдні прагляд недаступны",
         "truncated": "абрэзана",
         "messageDeleted": "Паведамленне выдалена",
+        "messageModerated": "Паведамленне выдалена мадэратарам {{moderator}}",
         "deleteMessage": "Выдаліць паведамленне",
         "imageUnavailable": "Выява больш недаступная",
         "videoUnavailable": "Відэа больш недаступнае",

@@ -419,6 +419,8 @@ export {
   NS_CORRECTION,
   // XEP-0424: Message Retraction
   NS_RETRACT,
+  // XEP-0425: Message Moderation
+  NS_MESSAGE_MODERATE,
   // XEP-0319: Last User Interaction in Presence
   NS_IDLE,
   // PubSub namespaces
@@ -496,7 +498,7 @@ export { parseXMPPError, formatXMPPError } from './utils/xmppError'
 export type { XMPPStanzaError, XMPPErrorType } from './utils/xmppError'
 
 // XEP-0045: MUC Permission Utilities
-export { canSetAffiliation, canSetRole, canKick, canBan, getAvailableAffiliations, getAvailableRoles } from './utils/mucPermissions'
+export { canSetAffiliation, canSetRole, canKick, canBan, canModerate, getAvailableAffiliations, getAvailableRoles } from './utils/mucPermissions'
 
 // XEP-0156: Discovering Alternative XMPP Connection Methods
 export { discoverWebSocket, discoverXmppEndpoints } from './utils/websocketDiscovery'

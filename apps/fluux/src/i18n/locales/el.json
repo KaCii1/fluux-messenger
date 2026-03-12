@@ -385,6 +385,7 @@
         "previewUnavailable": "Η προεπισκόπηση δεν είναι διαθέσιμη",
         "truncated": "περικομμένο",
         "messageDeleted": "Το μήνυμα διαγράφηκε",
+        "messageModerated": "Το μήνυμα αφαιρέθηκε από {{moderator}}",
         "deleteMessage": "Διαγραφή μηνύματος",
         "imageUnavailable": "Η εικόνα δεν είναι πλέον διαθέσιμη",
         "videoUnavailable": "Το βίντεο δεν είναι πλέον διαθέσιμο",

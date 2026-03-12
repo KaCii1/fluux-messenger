@@ -385,6 +385,7 @@
         "previewUnavailable": "Forhåndsvisning ikke tilgængelig",
         "truncated": "afkortet",
         "messageDeleted": "Besked slettet",
+        "messageModerated": "Besked fjernet af {{moderator}}",
         "deleteMessage": "Slet besked",
         "imageUnavailable": "Billedet er ikke længere tilgængeligt",
         "videoUnavailable": "Videoen er ikke længere tilgængelig",

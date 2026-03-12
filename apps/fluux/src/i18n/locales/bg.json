@@ -385,6 +385,7 @@
         "previewUnavailable": "Визуализацията не е налична",
         "truncated": "съкратено",
         "messageDeleted": "Съобщението е изтрито",
+        "messageModerated": "Съобщението е премахнато от {{moderator}}",
         "deleteMessage": "Изтрий съобщение",
         "imageUnavailable": "Изображението вече не е налично",
         "videoUnavailable": "Видеото вече не е налично",

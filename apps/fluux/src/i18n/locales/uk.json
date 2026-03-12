@@ -385,6 +385,7 @@
         "previewUnavailable": "Попередній перегляд недоступний",
         "truncated": "обрізано",
         "messageDeleted": "Повідомлення видалено",
+        "messageModerated": "Повідомлення видалено модератором {{moderator}}",
         "deleteMessage": "Видалити повідомлення",
         "imageUnavailable": "Зображення більше недоступне",
         "videoUnavailable": "Відео більше недоступне",

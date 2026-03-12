@@ -385,6 +385,7 @@
         "previewUnavailable": "Voorbeeld niet beschikbaar",
         "truncated": "ingekort",
         "messageDeleted": "Bericht verwijderd",
+        "messageModerated": "Bericht verwijderd door {{moderator}}",
         "deleteMessage": "Bericht verwijderen",
         "imageUnavailable": "Afbeelding niet meer beschikbaar",
         "videoUnavailable": "Video niet meer beschikbaar",

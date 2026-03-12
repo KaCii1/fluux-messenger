@@ -385,6 +385,7 @@
         "previewUnavailable": "Az előnézet nem érhető el",
         "truncated": "levágva",
         "messageDeleted": "Üzenet törölve",
+        "messageModerated": "Üzenetet eltávolította: {{moderator}}",
         "deleteMessage": "Üzenet törlése",
         "imageUnavailable": "A kép már nem érhető el",
         "videoUnavailable": "A videó már nem érhető el",

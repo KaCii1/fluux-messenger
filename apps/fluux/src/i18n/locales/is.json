@@ -385,6 +385,7 @@
         "previewUnavailable": "Forskoðun ekki tiltæk",
         "truncated": "stytt",
         "messageDeleted": "Skilaboðum eytt",
+        "messageModerated": "Skilaboð fjarlægð af {{moderator}}",
         "deleteMessage": "Eyða skilaboðum",
         "imageUnavailable": "Mynd ekki lengur tiltæk",
         "videoUnavailable": "Myndband ekki lengur tiltækt",

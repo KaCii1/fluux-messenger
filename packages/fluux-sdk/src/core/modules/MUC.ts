@@ -22,6 +22,8 @@ import {
   NS_VCARD_UPDATE,
   NS_OCCUPANT_ID,
   NS_COMMANDS,
+  NS_RETRACT,
+  NS_MESSAGE_MODERATE,
 } from '../namespaces'
 import type {
   Room,
@@ -1714,6 +1716,49 @@ export class MUC extends BaseModule {
     await this.deps.sendIQ(iq)
     logInfo(`Role set: ${nick} → ${role} in ${roomJid}`)
     this.deps.emitSDK('room:role-changed', { roomJid, nick, role })
+  }
+
+  /**
+   * Moderate (retract) another user's message in a MUC room (XEP-0425).
+   *
+   * Sends a moderation IQ to the room service. The server will broadcast
+   * a `<moderated>` notification to all occupants if successful.
+   *
+   * @param roomJid - Room JID
+   * @param stanzaId - The stanza ID (XEP-0359) of the message to retract
+   * @param reason - Optional reason for the moderation
+   *
+   * @throws If the server rejects the moderation request (e.g., insufficient permissions)
+   */
+  async moderateMessage(
+    roomJid: string,
+    stanzaId: string,
+    reason?: string
+  ): Promise<void> {
+    const moderateChildren = [
+      xml('retract', { xmlns: NS_RETRACT }),
+    ]
+    if (reason) {
+      moderateChildren.push(xml('reason', {}, reason))
+    }
+    const iq = xml(
+      'iq',
+      { type: 'set', to: roomJid, id: `moderate_${generateUUID()}` },
+      xml('moderate', { xmlns: NS_MESSAGE_MODERATE, id: stanzaId }, ...moderateChildren)
+    )
+    await this.deps.sendIQ(iq)
+    logInfo(`Message moderated: ${stanzaId} in ${roomJid}`)
+
+    // Optimistic update: mark message as retracted + moderated in the store
+    this.deps.emitSDK('room:message-updated', {
+      roomJid,
+      messageId: stanzaId,
+      updates: {
+        isRetracted: true,
+        retractedAt: new Date(),
+        isModerated: true,
+      },
+    })
   }
 
   /**

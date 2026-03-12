@@ -385,6 +385,7 @@
         "previewUnavailable": "Preview mhux disponibbli",
         "truncated": "imqassar",
         "messageDeleted": "Messaġġ imħassar",
+        "messageModerated": "Messaġġ imneħħi minn {{moderator}}",
         "deleteMessage": "Ħassar messaġġ",
         "imageUnavailable": "L-immaġni m'għadhiex disponibbli",
         "videoUnavailable": "Il-vidjo m'għadux disponibbli",

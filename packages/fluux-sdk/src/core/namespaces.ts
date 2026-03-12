@@ -59,6 +59,9 @@ export const NS_CORRECTION = 'urn:xmpp:message-correct:0'
 // XEP-0424: Message Retraction
 export const NS_RETRACT = 'urn:xmpp:message-retract:1'
 
+// XEP-0425: Message Moderation
+export const NS_MESSAGE_MODERATE = 'urn:xmpp:message-moderate:1'
+
 // XEP-0319: Last User Interaction in Presence
 export const NS_IDLE = 'urn:xmpp:idle:1'
 

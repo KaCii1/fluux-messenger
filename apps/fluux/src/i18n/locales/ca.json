@@ -385,6 +385,7 @@
         "previewUnavailable": "Previsualització no disponible",
         "truncated": "truncat",
         "messageDeleted": "Missatge eliminat",
+        "messageModerated": "Missatge eliminat per {{moderator}}",
         "deleteMessage": "Elimina el missatge",
         "imageUnavailable": "La imatge ja no està disponible",
         "videoUnavailable": "El vídeo ja no està disponible",

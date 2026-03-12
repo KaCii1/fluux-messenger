@@ -92,6 +92,25 @@ export function canKick(
 }
 
 /**
+ * Whether the actor can moderate (retract) the target's messages.
+ *
+ * XEP-0425 rules mirror kick permissions:
+ * - Only moderators can moderate messages
+ * - Cannot moderate owners' messages
+ * - Cannot moderate admins' messages (unless actor is owner)
+ */
+export function canModerate(
+  actorRole: RoomRole,
+  actorAffiliation: RoomAffiliation,
+  targetAffiliation: RoomAffiliation,
+): boolean {
+  if (actorRole !== 'moderator') return false
+  if (targetAffiliation === 'owner') return false
+  if (targetAffiliation === 'admin' && actorAffiliation !== 'owner') return false
+  return true
+}
+
+/**
  * Whether the actor can ban the target (set affiliation to 'outcast').
  */
 export function canBan(

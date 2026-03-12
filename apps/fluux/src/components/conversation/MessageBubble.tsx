@@ -80,6 +80,9 @@ export interface MessageBubbleProps {
   // Room-specific: mentions for highlighting
   mentions?: MentionReference[]
 
+  // XEP-0425: Whether the current user can moderate (retract) this message
+  canModerate?: boolean
+
   // Right-click / long-press context menu on nick/avatar (for room occupant actions)
   onNickContextMenu?: (e: React.MouseEvent) => void
   onNickTouchStart?: (e: React.TouchEvent) => void
@@ -153,6 +156,9 @@ function arePropsEqual(prev: MessageBubbleProps, next: MessageBubbleProps): bool
     if (prev.replyContext.avatarIdentifier !== next.replyContext.avatarIdentifier) return false
   }
 
+  // Moderation permission
+  if (prev.canModerate !== next.canModerate) return false
+
   // Mentions - compare by reference (parent should memoize)
   if (prev.mentions !== next.mentions) return false
 
@@ -200,6 +206,7 @@ export const MessageBubble = memo(function MessageBubble({
   onMediaLoad,
   replyContext,
   mentions,
+  canModerate,
   onNickContextMenu,
   onNickTouchStart,
   onNickTouchEnd,
@@ -289,7 +296,7 @@ export const MessageBubble = memo(function MessageBubble({
             myReactions={reactionsEnabled ? myReactions : []}
             canReply={!isLastMessage}
             canEdit={message.isOutgoing && isLastOutgoing}
-            canDelete={message.isOutgoing}
+            canDelete={message.isOutgoing || canModerate === true}
             isHidden={hideToolbar || false}
             isSelected={isSelected || false}
             hasKeyboardSelection={hasKeyboardSelection || false}
@@ -357,6 +364,9 @@ export const MessageBubble = memo(function MessageBubble({
             isEdited={message.isEdited}
             originalBody={message.originalBody}
             isRetracted={message.isRetracted}
+            isModerated={message.isModerated}
+            moderatedBy={message.moderatedBy}
+            moderationReason={message.moderationReason}
             noStyling={message.noStyling}
             senderName={senderName}
             senderColor={senderColor}

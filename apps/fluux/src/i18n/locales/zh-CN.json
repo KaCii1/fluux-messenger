@@ -385,6 +385,7 @@
         "previewUnavailable": "预览不可用",
         "truncated": "已截断",
         "messageDeleted": "消息已删除",
+        "messageModerated": "消息已被 {{moderator}} 移除",
         "deleteMessage": "删除消息",
         "imageUnavailable": "图片已不可用",
         "videoUnavailable": "视频已不可用",

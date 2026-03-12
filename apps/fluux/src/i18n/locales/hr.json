@@ -385,6 +385,7 @@
         "previewUnavailable": "Pregled nije dostupan",
         "truncated": "skraćeno",
         "messageDeleted": "Poruka obrisana",
+        "messageModerated": "Poruku uklonio/la {{moderator}}",
         "deleteMessage": "Obriši poruku",
         "imageUnavailable": "Slika više nije dostupna",
         "videoUnavailable": "Video više nije dostupan",

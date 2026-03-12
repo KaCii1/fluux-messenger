@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- XEP-0425: Message Moderation — moderators can retract other users' messages in MUC rooms, with moderator attribution and reason display
 - MUC room creation, configuration, and destruction support
 - MUC room user management: affiliation/role changes, kick, and ban
 - MUC hat management UI for room owners (XEP-0317): define, assign, and remove hats via ad-hoc commands

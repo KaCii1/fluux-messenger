@@ -385,6 +385,7 @@
         "previewUnavailable": "Eelvaade pole saadaval",
         "truncated": "kärbitud",
         "messageDeleted": "Sõnum kustutatud",
+        "messageModerated": "Sõnumi eemaldas {{moderator}}",
         "deleteMessage": "Kustuta sõnum",
         "imageUnavailable": "Pilt pole enam saadaval",
         "videoUnavailable": "Video pole enam saadaval",

@@ -1865,4 +1865,60 @@ describe('MUC Module', () => {
       expect(reason).toBeUndefined()
     })
   })
+
+  describe('moderateMessage (XEP-0425)', () => {
+    it('should send moderation IQ with correct structure', async () => {
+      mockSendIQ.mockResolvedValueOnce(createMockElement('iq', { type: 'result' }))
+
+      await muc.moderateMessage('room@conference.example.com', 'stanza-id-123', 'Spam')
+
+      expect(mockSendIQ).toHaveBeenCalledOnce()
+      const iq = mockSendIQ.mock.calls[0][0]
+      expect(iq.name).toBe('iq')
+      expect(iq.attrs.type).toBe('set')
+      expect(iq.attrs.to).toBe('room@conference.example.com')
+
+      // Find the moderate element
+      const moderateEl = iq.children.find((c: any) => c.name === 'moderate')
+      expect(moderateEl).toBeDefined()
+      expect(moderateEl.attrs.xmlns).toBe('urn:xmpp:message-moderate:1')
+      expect(moderateEl.attrs.id).toBe('stanza-id-123')
+
+      // Should contain retract child
+      const retractEl = moderateEl.children.find((c: any) => c.name === 'retract')
+      expect(retractEl).toBeDefined()
+      expect(retractEl.attrs.xmlns).toBe('urn:xmpp:message-retract:1')
+
+      // Should contain reason
+      const reasonEl = moderateEl.children.find((c: any) => c.name === 'reason')
+      expect(reasonEl).toBeDefined()
+    })
+
+    it('should send moderation IQ without reason when not provided', async () => {
+      mockSendIQ.mockResolvedValueOnce(createMockElement('iq', { type: 'result' }))
+
+      await muc.moderateMessage('room@conference.example.com', 'stanza-id-456')
+
+      const iq = mockSendIQ.mock.calls[0][0]
+      const moderateEl = iq.children.find((c: any) => c.name === 'moderate')
+      const reasonEl = moderateEl.children.find((c: any) => c.name === 'reason')
+      expect(reasonEl).toBeUndefined()
+    })
+
+    it('should emit optimistic room:message-updated event', async () => {
+      mockSendIQ.mockResolvedValueOnce(createMockElement('iq', { type: 'result' }))
+
+      await muc.moderateMessage('room@conference.example.com', 'stanza-id-789')
+
+      expect(mockEmitSDK).toHaveBeenCalledWith('room:message-updated', {
+        roomJid: 'room@conference.example.com',
+        messageId: 'stanza-id-789',
+        updates: {
+          isRetracted: true,
+          retractedAt: expect.any(Date),
+          isModerated: true,
+        },
+      })
+    })
+  })
 })

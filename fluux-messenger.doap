@@ -417,6 +417,15 @@
       </xmpp:SupportedXep>
     </implements>
 
+    <!-- XEP-0425: Message Moderation -->
+    <implements>
+      <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0425.html"/>
+        <xmpp:status>complete</xmpp:status>
+        <xmpp:note>Moderators can retract other users' messages in MUC rooms</xmpp:note>
+      </xmpp:SupportedXep>
+    </implements>
+
     <!-- XEP-0428: Fallback Indication -->
     <implements>
       <xmpp:SupportedXep>

@@ -385,6 +385,7 @@
         "previewUnavailable": "Réamhamharc gan fáil",
         "truncated": "giorraithe",
         "messageDeleted": "Teachtaireacht scriosta",
+        "messageModerated": "Teachtaireacht bainte ag {{moderator}}",
         "deleteMessage": "Scrios teachtaireacht",
         "imageUnavailable": "Níl an íomhá ar fáil a thuilleadh",
         "videoUnavailable": "Níl an físeán ar fáil a thuilleadh",

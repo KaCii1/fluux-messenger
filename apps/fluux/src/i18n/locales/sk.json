@@ -385,6 +385,7 @@
         "previewUnavailable": "Náhľad nie je dostupný",
         "truncated": "skrátené",
         "messageDeleted": "Správa vymazaná",
+        "messageModerated": "Správa odstránená používateľom {{moderator}}",
         "deleteMessage": "Vymazať správu",
         "imageUnavailable": "Obrázok už nie je dostupný",
         "videoUnavailable": "Video už nie je dostupné",

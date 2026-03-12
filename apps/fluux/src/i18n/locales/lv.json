@@ -385,6 +385,7 @@
         "previewUnavailable": "Priekšskatījums nav pieejams",
         "truncated": "saīsināts",
         "messageDeleted": "Ziņojums dzēsts",
+        "messageModerated": "Ziņojumu noņēma {{moderator}}",
         "deleteMessage": "Dzēst ziņojumu",
         "imageUnavailable": "Attēls vairs nav pieejams",
         "videoUnavailable": "Video vairs nav pieejams",

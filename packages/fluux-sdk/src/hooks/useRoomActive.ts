@@ -166,6 +166,13 @@ export function useRoomActive() {
     [client]
   )
 
+  const moderateMessage = useCallback(
+    async (roomJid: string, stanzaId: string, reason?: string) => {
+      await client.muc.moderateMessage(roomJid, stanzaId, reason)
+    },
+    [client]
+  )
+
   const setRoomNotifyAll = useCallback(
     async (roomJid: string, notifyAll: boolean, persistent: boolean = false) => {
       await client.muc.setRoomNotifyAll(roomJid, notifyAll, persistent)
@@ -298,6 +305,7 @@ export function useRoomActive() {
       sendReaction,
       sendCorrection,
       retractMessage,
+      moderateMessage,
       sendChatState,
       setRoomNotifyAll,
       sendEasterEgg,
@@ -322,6 +330,7 @@ export function useRoomActive() {
       sendReaction,
       sendCorrection,
       retractMessage,
+      moderateMessage,
       sendChatState,
       setRoomNotifyAll,
       sendEasterEgg,
