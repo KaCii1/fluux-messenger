@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Halda märgiseid",
         "manageHatsDesc": "Määratle ja määra märgiseid",
+        "hatsNotEnabled": "See ruum ei toeta seda funktsiooni",
         "hatsDefinitions": "Definitsioonid",
         "hatsAssignments": "Määramised",
         "hatTitle": "Pealkiri",

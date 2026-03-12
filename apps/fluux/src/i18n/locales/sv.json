@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Hantera märken",
         "manageHatsDesc": "Definiera och tilldela märken",
+        "hatsNotEnabled": "Stöds inte av detta rum",
         "hatsDefinitions": "Definitioner",
         "hatsAssignments": "Tilldelningar",
         "hatTitle": "Titel",

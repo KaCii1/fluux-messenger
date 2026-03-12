@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Jelvények kezelése",
         "manageHatsDesc": "Jelvények meghatározása és hozzárendelése",
+        "hatsNotEnabled": "Nem támogatott ebben a szobában",
         "hatsDefinitions": "Meghatározások",
         "hatsAssignments": "Hozzárendelések",
         "hatTitle": "Cím",

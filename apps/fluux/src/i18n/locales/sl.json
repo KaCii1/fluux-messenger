@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Upravljanje značk",
         "manageHatsDesc": "Določite in dodelite značke",
+        "hatsNotEnabled": "Ta soba ne podpira te funkcije",
         "hatsDefinitions": "Definicije",
         "hatsAssignments": "Dodelitve",
         "hatTitle": "Naslov",

@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "管理徽章",
         "manageHatsDesc": "定义和分配徽章",
+        "hatsNotEnabled": "此房间不支持此功能",
         "hatsDefinitions": "定义",
         "hatsAssignments": "分配",
         "hatTitle": "标题",

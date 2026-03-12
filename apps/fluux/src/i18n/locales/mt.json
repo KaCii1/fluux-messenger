@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Immaniġġja badges",
         "manageHatsDesc": "Iddefinixxi u assenja badges",
+        "hatsNotEnabled": "Mhux appoġġjat minn din il-kamra",
         "hatsDefinitions": "Definizzjonijiet",
         "hatsAssignments": "Assenjamenti",
         "hatTitle": "Titolu",

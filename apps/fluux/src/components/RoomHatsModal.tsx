@@ -422,35 +422,44 @@ export function RoomHatsModal({ room, onClose }: RoomHatsModalProps) {
       {/* ---- Add forms ---- */}
       {activeTab === 'definitions' && (
         <div className="px-4 py-3 border-t border-fluux-hover space-y-2">
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') void handleCreate() }}
-              placeholder={t('rooms.hatTitlePlaceholder')}
-              className="flex-1 px-3 py-1.5 text-sm bg-fluux-hover/50 rounded-lg border border-transparent
-                         focus:border-fluux-brand/50 focus:outline-none text-fluux-text placeholder-fluux-muted"
-            />
-            <input
-              type="text"
-              value={newHue}
-              onChange={(e) => setNewHue(e.target.value)}
-              placeholder={t('rooms.hatHuePlaceholder')}
-              className="w-16 px-2 py-1.5 text-sm bg-fluux-hover/50 rounded-lg border border-transparent
-                         focus:border-fluux-brand/50 focus:outline-none text-fluux-text placeholder-fluux-muted text-center"
-            />
+          <div className="flex items-end gap-2">
+            <div className="flex-1 space-y-1">
+              <label className="block text-xs text-fluux-muted">{t('rooms.hatTitle')}</label>
+              <input
+                type="text"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') void handleCreate() }}
+                placeholder={t('rooms.hatTitlePlaceholder')}
+                className="w-full px-3 py-1.5 text-sm bg-fluux-hover/50 rounded-lg border border-transparent
+                           focus:border-fluux-brand/50 focus:outline-none text-fluux-text placeholder-fluux-muted"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="block text-xs text-fluux-muted">{t('rooms.hatHue')}</label>
+              <input
+                type="text"
+                value={newHue}
+                onChange={(e) => setNewHue(e.target.value)}
+                placeholder={t('rooms.hatHuePlaceholder')}
+                className="w-16 px-2 py-1.5 text-sm bg-fluux-hover/50 rounded-lg border border-transparent
+                           focus:border-fluux-brand/50 focus:outline-none text-fluux-text placeholder-fluux-muted text-center"
+              />
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              value={newUri}
-              onChange={(e) => setNewUri(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') void handleCreate() }}
-              placeholder={t('rooms.hatUriPlaceholder')}
-              className="flex-1 px-3 py-1.5 text-sm bg-fluux-hover/50 rounded-lg border border-transparent
-                         focus:border-fluux-brand/50 focus:outline-none text-fluux-text placeholder-fluux-muted"
-            />
+          <div className="flex items-end gap-2">
+            <div className="flex-1 space-y-1">
+              <label className="block text-xs text-fluux-muted">{t('rooms.hatUri')}</label>
+              <input
+                type="text"
+                value={newUri}
+                onChange={(e) => setNewUri(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') void handleCreate() }}
+                placeholder={t('rooms.hatUriPlaceholder')}
+                className="w-full px-3 py-1.5 text-sm bg-fluux-hover/50 rounded-lg border border-transparent
+                           focus:border-fluux-brand/50 focus:outline-none text-fluux-text placeholder-fluux-muted"
+              />
+            </div>
             <button
               onClick={() => void handleCreate()}
               disabled={!newTitle.trim() || !newUri.trim() || isCreating}

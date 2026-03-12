@@ -182,6 +182,8 @@ export interface RoomEntity {
    *  False for open semi-anonymous rooms without XEP-0421 occupant-id support,
    *  where nicks can change freely making reaction attribution unreliable. */
   supportsReactions?: boolean
+  /** True if room supports XEP-0317 Hats management */
+  supportsHats?: boolean
 }
 
 /**

@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Διαχείριση σημάτων",
         "manageHatsDesc": "Ορισμός και ανάθεση σημάτων",
+        "hatsNotEnabled": "Δεν υποστηρίζεται από αυτό το δωμάτιο",
         "hatsDefinitions": "Ορισμοί",
         "hatsAssignments": "Αναθέσεις",
         "hatTitle": "Τίτλος",

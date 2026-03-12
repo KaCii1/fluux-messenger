@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Gestionează insigne",
         "manageHatsDesc": "Definește și atribuie insigne",
+        "hatsNotEnabled": "Nu este suportat de această cameră",
         "hatsDefinitions": "Definiții",
         "hatsAssignments": "Atribuiri",
         "hatTitle": "Titlu",

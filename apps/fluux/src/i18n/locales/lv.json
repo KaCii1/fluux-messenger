@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Pārvaldīt nozīmītes",
         "manageHatsDesc": "Definēt un piešķirt nozīmītes",
+        "hatsNotEnabled": "Šī istaba neatbalsta šo funkciju",
         "hatsDefinitions": "Definīcijas",
         "hatsAssignments": "Piešķīrumi",
         "hatTitle": "Nosaukums",

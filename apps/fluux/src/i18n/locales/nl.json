@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Badges beheren",
         "manageHatsDesc": "Badges definiëren en toewijzen",
+        "hatsNotEnabled": "Niet ondersteund door deze kamer",
         "hatsDefinitions": "Definities",
         "hatsAssignments": "Toewijzingen",
         "hatTitle": "Titel",

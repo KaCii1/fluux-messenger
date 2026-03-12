@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Gerir emblemas",
         "manageHatsDesc": "Definir e atribuir emblemas",
+        "hatsNotEnabled": "Não suportado por esta sala",
         "hatsDefinitions": "Definições",
         "hatsAssignments": "Atribuições",
         "hatTitle": "Título",

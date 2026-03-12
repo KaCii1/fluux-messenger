@@ -317,6 +317,7 @@
         "roomAlreadyExists": "Un salon avec cette adresse existe déjà. Veuillez choisir une adresse différente.",
         "manageHats": "Gérer les badges",
         "manageHatsDesc": "Définir et attribuer des badges",
+        "hatsNotEnabled": "Non supporté par ce salon",
         "hatsDefinitions": "Définitions",
         "hatsAssignments": "Attributions",
         "hatTitle": "Titre",

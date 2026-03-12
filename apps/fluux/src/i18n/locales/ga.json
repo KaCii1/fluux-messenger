@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Bainistigh suaitheantais",
         "manageHatsDesc": "Sainmhínigh agus sann suaitheantais",
+        "hatsNotEnabled": "Ní thacaíonn an seomra seo leis",
         "hatsDefinitions": "Sainmhínithe",
         "hatsAssignments": "Sannadh",
         "hatTitle": "Teideal",

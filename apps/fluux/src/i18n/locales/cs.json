@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Spravovat odznaky",
         "manageHatsDesc": "Definovat a přiřazovat odznaky",
+        "hatsNotEnabled": "Tato místnost nepodporuje tuto funkci",
         "hatsDefinitions": "Definice",
         "hatsAssignments": "Přiřazení",
         "hatTitle": "Název",

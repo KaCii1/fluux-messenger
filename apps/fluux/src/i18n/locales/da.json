@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Administrer badges",
         "manageHatsDesc": "Definer og tildel badges",
+        "hatsNotEnabled": "Ikke understøttet af dette rum",
         "hatsDefinitions": "Definitioner",
         "hatsAssignments": "Tildelinger",
         "hatTitle": "Titel",

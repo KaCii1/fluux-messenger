@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Tvarkyti ženklelius",
         "manageHatsDesc": "Apibrėžti ir priskirti ženklelius",
+        "hatsNotEnabled": "Šis kambarys nepalaiko šios funkcijos",
         "hatsDefinitions": "Apibrėžimai",
         "hatsAssignments": "Priskyrimai",
         "hatTitle": "Pavadinimas",

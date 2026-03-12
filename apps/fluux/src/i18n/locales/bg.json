@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Управление на значки",
         "manageHatsDesc": "Дефиниране и присвояване на значки",
+        "hatsNotEnabled": "Не се поддържа от тази стая",
         "hatsDefinitions": "Дефиниции",
         "hatsAssignments": "Присвоявания",
         "hatTitle": "Заглавие",

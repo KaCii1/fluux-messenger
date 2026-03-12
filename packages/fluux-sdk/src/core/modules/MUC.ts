@@ -430,6 +430,7 @@ export class MUC extends BaseModule {
     const roomFeatures = await this.queryRoomFeatures(roomJid)
     const supportsMAM = isQuickChat ? false : (roomFeatures?.supportsMAM ?? false)
     const supportsReactions = roomFeatures?.supportsReactions ?? true
+    const supportsHats = roomFeatures?.supportsHats ?? false
     const roomName = roomFeatures?.name || existingRoom?.name || getLocalPart(roomJid)
 
     if (!existingRoom) {
@@ -443,6 +444,7 @@ export class MUC extends BaseModule {
         isQuickChat: options?.isQuickChat,
         supportsMAM,
         supportsReactions,
+        supportsHats,
         occupants: new Map(),
         messages: [],
         unreadCount: 0,
@@ -457,6 +459,7 @@ export class MUC extends BaseModule {
         isJoining: true,
         supportsMAM,
         supportsReactions,
+        supportsHats,
         occupants: new Map() as Map<string, RoomOccupant>,
         selfOccupant: undefined,
         typingUsers: new Set() as Set<string>,
@@ -747,7 +750,7 @@ export class MUC extends BaseModule {
    *   since MAM provides a more reliable and complete archive
    * - Has a 10-second timeout to prevent hanging if remote server doesn't respond
    */
-  async queryRoomFeatures(roomJid: string): Promise<{ supportsMAM: boolean; supportsReactions: boolean; name?: string } | null> {
+  async queryRoomFeatures(roomJid: string): Promise<{ supportsMAM: boolean; supportsReactions: boolean; supportsHats: boolean; name?: string } | null> {
     try {
       const iq = xml(
         'iq',
@@ -775,6 +778,7 @@ export class MUC extends BaseModule {
 
       const supportsMAM = features.includes(NS_MAM)
       const supportsReactions = hasStableOccupantIdentity(features)
+      const supportsHats = features.includes(NS_HATS)
 
       // Parse room name from identity element
       // <identity category="conference" type="text" name="Room Name"/>
@@ -782,9 +786,9 @@ export class MUC extends BaseModule {
         .find((i: Element) => i.attrs.category === 'conference')
       const name = identity?.attrs.name as string | undefined
 
-      logInfo(`Room features: ${roomJid} MAM=${supportsMAM} reactions=${supportsReactions}`)
+      logInfo(`Room features: ${roomJid} MAM=${supportsMAM} reactions=${supportsReactions} hats=${supportsHats}`)
 
-      return { supportsMAM, supportsReactions, name }
+      return { supportsMAM, supportsReactions, supportsHats, name }
     } catch (err) {
       // Room disco#info not available - that's fine, room may not exist yet
       // or may not support disco queries, or the query timed out

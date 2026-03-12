@@ -319,6 +319,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Manage Hats",
         "manageHatsDesc": "Define and assign badges",
+        "hatsNotEnabled": "Not supported by this room",
         "hatsDefinitions": "Definitions",
         "hatsAssignments": "Assignments",
         "hatTitle": "Title",

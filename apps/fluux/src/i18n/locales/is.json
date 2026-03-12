@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Stjórna merkjum",
         "manageHatsDesc": "Skilgreina og úthluta merkjum",
+        "hatsNotEnabled": "Ekki stutt af þessu herbergi",
         "hatsDefinitions": "Skilgreiningar",
         "hatsAssignments": "Úthlutanir",
         "hatTitle": "Titill",

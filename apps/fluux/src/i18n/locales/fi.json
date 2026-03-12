@@ -316,6 +316,7 @@
         "roomAlreadyExists": "A room with this address already exists. Please choose a different address.",
         "manageHats": "Hallitse tunnuksia",
         "manageHatsDesc": "Määritä ja myönnä tunnuksia",
+        "hatsNotEnabled": "Tämä huone ei tue tätä toimintoa",
         "hatsDefinitions": "Määritelmät",
         "hatsAssignments": "Myönnöt",
         "hatTitle": "Otsikko",
