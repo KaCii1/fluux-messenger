@@ -173,7 +173,7 @@ export function UserInfoPopover({ contact, jid, occupantJid, role, affiliation, 
     }
   }
 
-  const displayJid = contact?.jid || jid
+  const displayJid = contact?.jid || jid || (occupantJid?.split('/').pop())
 
   return (
     <>
