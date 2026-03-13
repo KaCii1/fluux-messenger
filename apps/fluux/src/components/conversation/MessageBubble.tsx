@@ -282,6 +282,10 @@ export const MessageBubble = memo(function MessageBubble({
             {formatTime(message.timestamp)}
           </span>
         )}
+        {/* Reply arrow in the gutter, aligned with the quoted block in the content area */}
+        {!message.isRetracted && replyContext && (
+          <CornerUpRight className="w-3.5 h-3.5 text-fluux-muted flex-shrink-0 mt-1 self-start" />
+        )}
       </div>
 
       {/* Content */}
@@ -334,29 +338,26 @@ export const MessageBubble = memo(function MessageBubble({
 
         {/* Reply context - show what message this is replying to (hidden for retracted messages) */}
         {!message.isRetracted && replyContext && (
-          <div className="flex items-start gap-1.5">
-            <CornerUpRight className="w-3.5 h-3.5 text-fluux-muted flex-shrink-0 mt-1" />
-            <button
-              onClick={() => scrollToMessage(replyContext.messageId)}
-              className="flex items-start gap-1.5 pb-1 pl-2 border-l-2 text-left flex-1 min-w-0 hover:bg-fluux-hover/50 rounded-r transition-colors cursor-pointer select-none"
-              style={{ borderColor: replyContext.senderColor }}
-            >
-              <Avatar
-                identifier={replyContext.avatarIdentifier}
-                name={replyContext.senderName}
-                avatarUrl={replyContext.avatarUrl}
-                size="xs"
-                className="flex-shrink-0"
-              />
-              <div className="text-sm text-fluux-muted min-w-0 flex-1">
-                <span
-                  className="font-medium"
-                  style={{ color: replyContext.senderColor }}
-                >{replyContext.senderName}</span>
-                <p className="line-clamp-2 opacity-75">{replyContext.body}</p>
-              </div>
-            </button>
-          </div>
+          <button
+            onClick={() => scrollToMessage(replyContext.messageId)}
+            className="flex items-start gap-1.5 pb-1 pl-2 border-l-2 text-left min-w-0 hover:bg-fluux-hover/50 rounded-r transition-colors cursor-pointer select-none"
+            style={{ borderColor: replyContext.senderColor }}
+          >
+            <Avatar
+              identifier={replyContext.avatarIdentifier}
+              name={replyContext.senderName}
+              avatarUrl={replyContext.avatarUrl}
+              size="xs"
+              className="flex-shrink-0"
+            />
+            <div className="text-sm text-fluux-muted min-w-0 flex-1">
+              <span
+                className="font-medium"
+                style={{ color: replyContext.senderColor }}
+              >{replyContext.senderName}</span>
+              <p className="line-clamp-2 opacity-75">{replyContext.body}</p>
+            </div>
+          </button>
         )}
 
         {/* Collapsible wrapper for long messages */}

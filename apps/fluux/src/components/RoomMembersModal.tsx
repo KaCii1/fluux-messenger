@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next'
 import type { Room, RoomAffiliation } from '@fluux/sdk'
 import { useRoom, getAvailableAffiliations } from '@fluux/sdk'
 import { ModalShell } from './ModalShell'
+import { ContactSelector } from './ContactSelector'
 import { useToastStore } from '@/stores/toastStore'
 import { Crown, Shield, UserCheck, Ban, UserPlus, Loader2, Search, X, ChevronDown } from 'lucide-react'
 
@@ -50,7 +51,7 @@ export function RoomMembersModal({ room, onClose }: RoomMembersModalProps) {
   const [loadedTabs, setLoadedTabs] = useState<Set<AffiliationTab>>(new Set())
   const [loadingTabs, setLoadingTabs] = useState<Set<AffiliationTab>>(new Set())
   const [search, setSearch] = useState('')
-  const [newJid, setNewJid] = useState('')
+  const [jidSelection, setJidSelection] = useState<string[]>([])
   const [addingAffiliation, setAddingAffiliation] = useState<RoomAffiliation>('member')
   const [isAdding, setIsAdding] = useState(false)
   const [actionInProgress, setActionInProgress] = useState<string | null>(null)
@@ -128,13 +129,13 @@ export function RoomMembersModal({ room, onClose }: RoomMembersModalProps) {
   }, [room.jid, setAffiliation, queryAffiliationList, addToast, t])
 
   const handleAddMember = useCallback(async () => {
-    const jid = newJid.trim()
+    const jid = jidSelection[0]
     if (!jid || !jid.includes('@')) return
     setIsAdding(true)
     try {
       await setAffiliation(room.jid, jid, addingAffiliation)
       addToast('success', t('rooms.memberAdded'))
-      setNewJid('')
+      setJidSelection([])
       // Refresh the target tab
       if (TABS.includes(addingAffiliation as AffiliationTab)) {
         try {
@@ -149,7 +150,7 @@ export function RoomMembersModal({ room, onClose }: RoomMembersModalProps) {
     } finally {
       if (mountedRef.current) setIsAdding(false)
     }
-  }, [newJid, addingAffiliation, room.jid, setAffiliation, queryAffiliationList, addToast, t])
+  }, [jidSelection, addingAffiliation, room.jid, setAffiliation, queryAffiliationList, addToast, t])
 
   const filteredMembers = useMemo(() => {
     const list = members[activeTab] || []
@@ -196,6 +197,43 @@ export function RoomMembersModal({ room, onClose }: RoomMembersModalProps) {
   }, [selfAffiliation])
 
   const canManage = selfAffiliation === 'owner' || selfAffiliation === 'admin'
+
+  // Build extra suggestions from room occupants and affiliated members
+  const extraSuggestions = useMemo(() => {
+    const seen = new Set<string>()
+    const result: Array<{ jid: string; name?: string }> = []
+
+    // Add occupants that have a real JID
+    for (const occupant of room.occupants.values()) {
+      if (occupant.jid && !seen.has(occupant.jid)) {
+        seen.add(occupant.jid)
+        result.push({ jid: occupant.jid, name: occupant.nick })
+      }
+    }
+
+    // Add affiliated members
+    if (room.affiliatedMembers) {
+      for (const member of room.affiliatedMembers) {
+        if (!seen.has(member.jid)) {
+          seen.add(member.jid)
+          result.push({ jid: member.jid, name: member.nick })
+        }
+      }
+    }
+
+    return result
+  }, [room.occupants, room.affiliatedMembers])
+
+  // Build excludeJids from all loaded affiliation members
+  const selectorExcludeJids = useMemo(() => {
+    const jids = new Set<string>()
+    for (const tab of TABS) {
+      for (const member of members[tab]) {
+        jids.add(member.jid)
+      }
+    }
+    return Array.from(jids)
+  }, [members])
 
   return (
     <ModalShell
@@ -309,42 +347,42 @@ export function RoomMembersModal({ room, onClose }: RoomMembersModalProps) {
 
       {/* Add member form */}
       {canManage && canAddAffiliations.length > 0 && (
-        <div className="px-4 py-3 border-t border-fluux-hover flex items-center gap-2">
-          <input
-            type="text"
-            value={newJid}
-            onChange={(e) => setNewJid(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') void handleAddMember()
-            }}
-            placeholder={t('rooms.jidPlaceholder')}
-            className="flex-1 px-3 py-1.5 text-sm bg-fluux-hover/50 rounded-lg border border-transparent
-                       focus:border-fluux-brand/50 focus:outline-none text-fluux-text placeholder-fluux-muted"
-          />
-          <select
-            value={addingAffiliation}
-            onChange={(e) => setAddingAffiliation(e.target.value as RoomAffiliation)}
-            className="px-2 py-1.5 text-sm bg-fluux-hover/50 rounded-lg border border-transparent
-                       focus:border-fluux-brand/50 focus:outline-none text-fluux-text"
-          >
-            {canAddAffiliations.map(aff => (
-              <option key={aff} value={aff}>{getAffiliationLabel(aff, t)}</option>
-            ))}
-          </select>
-          <button
-            onClick={handleAddMember}
-            disabled={!newJid.trim() || !newJid.includes('@') || isAdding}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white
-                       bg-fluux-brand hover:bg-fluux-brand/80 disabled:opacity-50
-                       rounded-lg transition-colors"
-          >
-            {isAdding ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <UserPlus className="w-4 h-4" />
-            )}
-            {t('rooms.addMember')}
-          </button>
+        <div className="px-4 py-3 border-t border-fluux-hover">
+          <div className="flex items-end gap-2">
+            <div className="flex-1">
+              <ContactSelector
+                selectedContacts={jidSelection}
+                onSelectionChange={setJidSelection}
+                placeholder={t('rooms.jidPlaceholder')}
+                excludeJids={selectorExcludeJids}
+                extraSuggestions={extraSuggestions}
+              />
+            </div>
+            <select
+              value={addingAffiliation}
+              onChange={(e) => setAddingAffiliation(e.target.value as RoomAffiliation)}
+              className="px-2 py-1.5 text-sm bg-fluux-hover/50 rounded-lg border border-transparent
+                         focus:border-fluux-brand/50 focus:outline-none text-fluux-text"
+            >
+              {canAddAffiliations.map(aff => (
+                <option key={aff} value={aff}>{getAffiliationLabel(aff, t)}</option>
+              ))}
+            </select>
+            <button
+              onClick={handleAddMember}
+              disabled={jidSelection.length === 0 || isAdding}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white
+                         bg-fluux-brand hover:bg-fluux-brand/80 disabled:opacity-50
+                         rounded-lg transition-colors"
+            >
+              {isAdding ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <UserPlus className="w-4 h-4" />
+              )}
+              {t('rooms.addMember')}
+            </button>
+          </div>
         </div>
       )}
     </ModalShell>
