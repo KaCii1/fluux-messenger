@@ -107,7 +107,7 @@ export function onMessageReceived(
       unreadCount: 0,
       mentionsCount: 0,
       lastReadAt: msg.timestamp,
-      lastSeenMessageId: state.lastSeenMessageId,
+      lastSeenMessageId: msg.id,
       firstNewMessageId: undefined,
     }
   }

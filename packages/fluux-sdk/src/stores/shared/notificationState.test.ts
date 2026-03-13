@@ -67,11 +67,11 @@ describe('onMessageReceived', () => {
       expect(result.firstNewMessageId).toBeUndefined()
     })
 
-    it('preserves lastSeenMessageId', () => {
+    it('advances lastSeenMessageId to outgoing message', () => {
       const state = makeState({ lastSeenMessageId: 'seen-1' })
       const msg = makeMsg({ isOutgoing: true })
       const result = onMessageReceived(state, msg, ACTIVE_VISIBLE)
-      expect(result.lastSeenMessageId).toBe('seen-1')
+      expect(result.lastSeenMessageId).toBe(msg.id)
     })
   })
 
@@ -705,7 +705,41 @@ describe('lifecycle sequences', () => {
     expect(state.unreadCount).toBe(0)
     expect(state.mentionsCount).toBe(0)
     expect(state.firstNewMessageId).toBeUndefined()
-    expect(state.lastSeenMessageId).toBe('seen-1') // preserved
+    expect(state.lastSeenMessageId).toBe('out-1') // advanced to outgoing
+  })
+
+  it('no spurious marker after user replies to a conversation', () => {
+    // Regression: user reads messages, replies, then re-opens the conversation.
+    // The "new messages" divider must NOT appear above messages the user already saw.
+    const msgs: NotificationMessage[] = [
+      makeMsg({ id: 'msg-1', timestamp: new Date() }),
+      makeMsg({ id: 'msg-2', timestamp: new Date() }),
+      makeMsg({ id: 'reply-1', isOutgoing: true, timestamp: new Date() }),
+      makeMsg({ id: 'msg-3', timestamp: new Date() }),
+      makeMsg({ id: 'reply-2', isOutgoing: true, timestamp: new Date() }),
+    ]
+
+    // User has seen everything up to msg-2
+    let state = makeState({ lastSeenMessageId: 'msg-2' })
+
+    // User sends reply-1 → lastSeenMessageId must advance
+    state = onMessageReceived(state, msgs[2], ACTIVE_VISIBLE)
+    expect(state.lastSeenMessageId).toBe('reply-1')
+
+    // Incoming msg-3 arrives while user is viewing
+    state = onMessageReceived(state, msgs[3], ACTIVE_VISIBLE)
+    expect(state.lastSeenMessageId).toBe('msg-3')
+
+    // User sends reply-2
+    state = onMessageReceived(state, msgs[4], ACTIVE_VISIBLE)
+    expect(state.lastSeenMessageId).toBe('reply-2')
+
+    // User switches away and back
+    state = onDeactivate(state)
+    state = onActivate(state, msgs)
+
+    // No new messages after reply-2 → no marker
+    expect(state.firstNewMessageId).toBeUndefined()
   })
 
   it('switching away and back does not regress marker (stale lastSeenMessageId)', () => {
