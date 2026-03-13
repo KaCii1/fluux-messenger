@@ -206,7 +206,7 @@ export function RoomMembersModal({ room, onClose }: RoomMembersModalProps) {
     >
       {/* Segmented control */}
       <div className="px-4 pt-3 pb-2">
-        <div className="flex rounded-lg bg-fluux-hover/60 p-0.5">
+        <div className="flex flex-wrap rounded-lg bg-fluux-hover/60 p-0.5">
           {TABS.map(tab => {
             const isActive = activeTab === tab
             const count = getTabCount(tab)
@@ -214,7 +214,7 @@ export function RoomMembersModal({ room, onClose }: RoomMembersModalProps) {
               <button
                 key={tab}
                 onClick={() => handleTabChange(tab)}
-                className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded-md transition-all
+                className={`flex-1 min-w-[calc(50%-2px)] flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded-md transition-all
                   ${isActive
                     ? 'bg-fluux-bg text-fluux-text shadow-sm'
                     : 'text-fluux-muted hover:text-fluux-text'
