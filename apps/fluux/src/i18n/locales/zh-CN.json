@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "不支持",
         "webPush_available": "等待注册",
-        "webPush_registered": "已注册"
+        "webPush_registered": "已注册",
+        "addField": "添加字段",
+        "fullName": "全名",
+        "company": "公司",
+        "email": "电子邮件",
+        "country": "国家",
+        "vcardSaveError": "保存个人资料字段失败"
     },
     "console": {
         "title": "XMPP 控制台",

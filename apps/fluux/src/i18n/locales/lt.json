@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Nepalaikoma",
         "webPush_available": "Laukiama registracijos",
-        "webPush_registered": "Užregistruota"
+        "webPush_registered": "Užregistruota",
+        "addField": "Pridėti lauką",
+        "fullName": "Pilnas vardas",
+        "company": "Įmonė",
+        "email": "El. paštas",
+        "country": "Šalis",
+        "vcardSaveError": "Nepavyko išsaugoti profilio lauko"
     },
     "console": {
         "title": "XMPP konsolė",

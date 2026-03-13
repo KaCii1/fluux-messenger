@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Nicht unterstützt",
         "webPush_available": "Registrierung ausstehend",
-        "webPush_registered": "Registriert"
+        "webPush_registered": "Registriert",
+        "addField": "Feld hinzufügen",
+        "fullName": "Vollständiger Name",
+        "company": "Unternehmen",
+        "email": "E-Mail",
+        "country": "Land",
+        "vcardSaveError": "Fehler beim Speichern des Profilfelds"
     },
     "console": {
         "title": "XMPP-Konsole",

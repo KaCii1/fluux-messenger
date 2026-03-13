@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Gan tacaíocht",
         "webPush_available": "Clárú ar feitheamh",
-        "webPush_registered": "Cláraithe"
+        "webPush_registered": "Cláraithe",
+        "addField": "Cuir réimse leis",
+        "fullName": "Ainm iomlán",
+        "company": "Comhlacht",
+        "email": "Ríomhphost",
+        "country": "Tír",
+        "vcardSaveError": "Theip ar shábháil réimse próifíle"
     },
     "console": {
         "title": "Consól XMPP",

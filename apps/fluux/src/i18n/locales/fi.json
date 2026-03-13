@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Ei tuettu",
         "webPush_available": "Rekisteröinti odottaa",
-        "webPush_registered": "Rekisteröity"
+        "webPush_registered": "Rekisteröity",
+        "addField": "Lisää kenttä",
+        "fullName": "Koko nimi",
+        "company": "Yritys",
+        "email": "Sähköposti",
+        "country": "Maa",
+        "vcardSaveError": "Profiilitiedon tallennus epäonnistui"
     },
     "console": {
         "title": "XMPP-konsoli",

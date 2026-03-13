@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Non supporté",
         "webPush_available": "En attente d'enregistrement",
-        "webPush_registered": "Enregistré"
+        "webPush_registered": "Enregistré",
+        "addField": "Ajouter un champ",
+        "fullName": "Nom complet",
+        "company": "Entreprise",
+        "email": "E-mail",
+        "country": "Pays",
+        "vcardSaveError": "Échec de l'enregistrement du champ"
     },
     "console": {
         "title": "Console XMPP",

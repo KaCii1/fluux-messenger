@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Stöds inte",
         "webPush_available": "Väntar på registrering",
-        "webPush_registered": "Registrerad"
+        "webPush_registered": "Registrerad",
+        "addField": "Lägg till fält",
+        "fullName": "Fullständigt namn",
+        "company": "Företag",
+        "email": "E-post",
+        "country": "Land",
+        "vcardSaveError": "Kunde inte spara profilfältet"
     },
     "console": {
         "title": "XMPP-konsol",

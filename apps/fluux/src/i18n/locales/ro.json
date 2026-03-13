@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Nesuportat",
         "webPush_available": "Înregistrare în așteptare",
-        "webPush_registered": "Înregistrat"
+        "webPush_registered": "Înregistrat",
+        "addField": "Adaugă câmp",
+        "fullName": "Nume complet",
+        "company": "Companie",
+        "email": "E-mail",
+        "country": "Țară",
+        "vcardSaveError": "Nu s-a putut salva câmpul profilului"
     },
     "console": {
         "title": "Consolă XMPP",

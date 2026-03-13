@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Δεν υποστηρίζεται",
         "webPush_available": "Εκκρεμεί εγγραφή",
-        "webPush_registered": "Εγγεγραμμένο"
+        "webPush_registered": "Εγγεγραμμένο",
+        "addField": "Προσθήκη πεδίου",
+        "fullName": "Πλήρες όνομα",
+        "company": "Εταιρεία",
+        "email": "Email",
+        "country": "Χώρα",
+        "vcardSaveError": "Αποτυχία αποθήκευσης του πεδίου προφίλ"
     },
     "console": {
         "title": "Κονσόλα XMPP",

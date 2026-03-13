@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Mhux appoġġjat",
         "webPush_available": "Reġistrazzjoni pendenti",
-        "webPush_registered": "Reġistrat"
+        "webPush_registered": "Reġistrat",
+        "addField": "Żid qasam",
+        "fullName": "Isem sħiħ",
+        "company": "Kumpanija",
+        "email": "Email",
+        "country": "Pajjiż",
+        "vcardSaveError": "Ma rnexxiex issejvja l-qasam tal-profil"
     },
     "console": {
         "title": "Console XMPP",

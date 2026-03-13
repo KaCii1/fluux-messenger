@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Nav atbalstīts",
         "webPush_available": "Gaida reģistrāciju",
-        "webPush_registered": "Reģistrēts"
+        "webPush_registered": "Reģistrēts",
+        "addField": "Pievienot lauku",
+        "fullName": "Pilns vārds",
+        "company": "Uzņēmums",
+        "email": "E-pasts",
+        "country": "Valsts",
+        "vcardSaveError": "Neizdevās saglabāt profila lauku"
     },
     "console": {
         "title": "XMPP konsole",

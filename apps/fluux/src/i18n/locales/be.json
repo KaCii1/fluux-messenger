@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Не падтрымліваецца",
         "webPush_available": "Чакае рэгістрацыі",
-        "webPush_registered": "Зарэгістравана"
+        "webPush_registered": "Зарэгістравана",
+        "addField": "Дадаць поле",
+        "fullName": "Поўнае імя",
+        "company": "Арганізацыя",
+        "email": "Эл. пошта",
+        "country": "Краіна",
+        "vcardSaveError": "Не ўдалося захаваць поле профілю"
     },
     "console": {
         "title": "XMPP кансоль",

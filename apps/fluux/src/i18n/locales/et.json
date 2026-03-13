@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Ei toetata",
         "webPush_available": "Registreerimine ootel",
-        "webPush_registered": "Registreeritud"
+        "webPush_registered": "Registreeritud",
+        "addField": "Lisa väli",
+        "fullName": "Täisnimi",
+        "company": "Ettevõte",
+        "email": "E-post",
+        "country": "Riik",
+        "vcardSaveError": "Profiilivälja salvestamine ebaõnnestus"
     },
     "console": {
         "title": "XMPP konsool",

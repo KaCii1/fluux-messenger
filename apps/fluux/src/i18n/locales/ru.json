@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Не поддерживается",
         "webPush_available": "Ожидает регистрации",
-        "webPush_registered": "Зарегистрировано"
+        "webPush_registered": "Зарегистрировано",
+        "addField": "Добавить поле",
+        "fullName": "Полное имя",
+        "company": "Организация",
+        "email": "Эл. почта",
+        "country": "Страна",
+        "vcardSaveError": "Не удалось сохранить поле профиля"
     },
     "console": {
         "title": "XMPP Консоль",

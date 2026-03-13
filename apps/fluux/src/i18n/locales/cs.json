@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Nepodporováno",
         "webPush_available": "Čeká na registraci",
-        "webPush_registered": "Registrováno"
+        "webPush_registered": "Registrováno",
+        "addField": "Přidat pole",
+        "fullName": "Celé jméno",
+        "company": "Společnost",
+        "email": "E-mail",
+        "country": "Země",
+        "vcardSaveError": "Nepodařilo se uložit pole profilu"
     },
     "console": {
         "title": "Konzole XMPP",

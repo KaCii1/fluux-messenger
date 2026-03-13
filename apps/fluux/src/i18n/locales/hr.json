@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Nije podržano",
         "webPush_available": "Registracija na čekanju",
-        "webPush_registered": "Registrirano"
+        "webPush_registered": "Registrirano",
+        "addField": "Dodaj polje",
+        "fullName": "Puno ime",
+        "company": "Tvrtka",
+        "email": "E-pošta",
+        "country": "Država",
+        "vcardSaveError": "Spremanje polja profila nije uspjelo"
     },
     "console": {
         "title": "XMPP konzola",

@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "No compatible",
         "webPush_available": "Registre pendent",
-        "webPush_registered": "Registrat"
+        "webPush_registered": "Registrat",
+        "addField": "Afegir camp",
+        "fullName": "Nom complet",
+        "company": "Empresa",
+        "email": "Correu electrònic",
+        "country": "País",
+        "vcardSaveError": "No s'ha pogut desar el camp del perfil"
     },
     "console": {
         "title": "Consola XMPP",

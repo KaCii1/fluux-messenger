@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Ikke understøttet",
         "webPush_available": "Afventer registrering",
-        "webPush_registered": "Registreret"
+        "webPush_registered": "Registreret",
+        "addField": "Tilføj felt",
+        "fullName": "Fulde navn",
+        "company": "Virksomhed",
+        "email": "E-mail",
+        "country": "Land",
+        "vcardSaveError": "Kunne ikke gemme profilfeltet"
     },
     "console": {
         "title": "XMPP-konsol",

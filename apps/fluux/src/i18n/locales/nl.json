@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Niet ondersteund",
         "webPush_available": "Registratie in afwachting",
-        "webPush_registered": "Geregistreerd"
+        "webPush_registered": "Geregistreerd",
+        "addField": "Veld toevoegen",
+        "fullName": "Volledige naam",
+        "company": "Bedrijf",
+        "email": "E-mail",
+        "country": "Land",
+        "vcardSaveError": "Kan profielveld niet opslaan"
     },
     "console": {
         "title": "XMPP Console",

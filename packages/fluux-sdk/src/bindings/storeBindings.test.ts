@@ -61,6 +61,12 @@ describe('createStoreBindings', () => {
       expect(mockStores.connection.setOwnNickname).toHaveBeenCalledWith('Alice')
     })
 
+    it('should handle connection:own-vcard', () => {
+      const vcard = { fullName: 'Alice Smith', org: 'Acme Corp', email: 'alice@acme.com', country: 'France' }
+      mockClient.emit('connection:own-vcard', { vcard })
+      expect(mockStores.connection.setOwnVCard).toHaveBeenCalledWith(vcard)
+    })
+
     it('should handle connection:own-resource', () => {
       mockClient.emit('connection:own-resource', {
         resource: 'mobile',

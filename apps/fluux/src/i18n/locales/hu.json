@@ -544,7 +544,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Nem támogatott",
         "webPush_available": "Regisztráció folyamatban",
-        "webPush_registered": "Regisztrálva"
+        "webPush_registered": "Regisztrálva",
+        "addField": "Mező hozzáadása",
+        "fullName": "Teljes név",
+        "company": "Cég",
+        "email": "E-mail",
+        "country": "Ország",
+        "vcardSaveError": "Nem sikerült menteni a profilmezőt"
     },
     "console": {
         "title": "XMPP konzol",
