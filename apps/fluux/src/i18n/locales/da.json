@@ -444,6 +444,8 @@
         "darkDescription": "Mørk baggrund med lys tekst",
         "lightDescription": "Lys baggrund med mørk tekst",
         "systemDescription": "Følg systempræference",
+        "fontSize": "Skriftstørrelse",
+        "fontSizeDescription": "Juster tekststørrelsen i appen",
         "language": "Sprog",
         "languageAndRegion": "Sprog og region",
         "languageStreamNote": "Serversprogpræference gælder ved næste login",

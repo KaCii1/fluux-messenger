@@ -444,6 +444,8 @@
         "darkDescription": "Tmavé pozadí se světlým textem",
         "lightDescription": "Světlé pozadí s tmavým textem",
         "systemDescription": "Podle nastavení vašeho systému",
+        "fontSize": "Velikost písma",
+        "fontSizeDescription": "Upravit velikost textu v aplikaci",
         "language": "Jazyk",
         "languageAndRegion": "Jazyk a region",
         "languageStreamNote": "Jazyková preference serveru se použije při příštím přihlášení",

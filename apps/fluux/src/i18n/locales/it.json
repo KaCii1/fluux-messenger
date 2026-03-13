@@ -444,6 +444,8 @@
         "darkDescription": "Sfondo scuro con testo chiaro",
         "lightDescription": "Sfondo chiaro con testo scuro",
         "systemDescription": "Segui le preferenze di sistema",
+        "fontSize": "Dimensione carattere",
+        "fontSizeDescription": "Regola la dimensione del testo nell'app",
         "language": "Lingua",
         "languageAndRegion": "Lingua e regione",
         "languageStreamNote": "La preferenza lingua del server si applica al prossimo accesso",

@@ -444,6 +444,8 @@
         "darkDescription": "Tumšs fons ar gaišu tekstu",
         "lightDescription": "Gaišs fons ar tumšu tekstu",
         "systemDescription": "Sekot sistēmas iestatījumiem",
+        "fontSize": "Fonta lielums",
+        "fontSizeDescription": "Pielāgojiet teksta lielumu lietotnē",
         "language": "Valoda",
         "languageAndRegion": "Valoda un reģions",
         "languageStreamNote": "Servera valodas preference stājas spēkā nākamajā pieteikšanās reizē",

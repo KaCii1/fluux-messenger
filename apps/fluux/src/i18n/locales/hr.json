@@ -444,6 +444,8 @@
         "darkDescription": "Tamna pozadina sa svijetlim tekstom",
         "lightDescription": "Svijetla pozadina s tamnim tekstom",
         "systemDescription": "Prati postavke sustava",
+        "fontSize": "Veličina fonta",
+        "fontSizeDescription": "Prilagodite veličinu teksta u aplikaciji",
         "language": "Jezik",
         "languageAndRegion": "Jezik i regija",
         "languageStreamNote": "Postavka jezika poslužitelja primjenjuje se pri sljedećoj prijavi",

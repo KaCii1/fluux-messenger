@@ -444,6 +444,8 @@
         "darkDescription": "Fundal întunecat cu text luminos",
         "lightDescription": "Fundal luminos cu text întunecat",
         "systemDescription": "Urmează preferința sistemului",
+        "fontSize": "Dimensiune font",
+        "fontSizeDescription": "Ajustați dimensiunea textului în aplicație",
         "language": "Limbă",
         "languageAndRegion": "Limbă și regiune",
         "languageStreamNote": "Preferința de limbă a serverului se aplică la următoarea conectare",

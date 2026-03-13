@@ -444,6 +444,8 @@
         "darkDescription": "Fons fosc amb text clar",
         "lightDescription": "Fons clar amb text fosc",
         "systemDescription": "Segueix la preferència del sistema",
+        "fontSize": "Mida de la lletra",
+        "fontSizeDescription": "Ajusta la mida del text a l'aplicació",
         "language": "Idioma",
         "languageAndRegion": "Idioma i regió",
         "languageStreamNote": "La preferència d'idioma del servidor s'aplicarà al proper inici de sessió",

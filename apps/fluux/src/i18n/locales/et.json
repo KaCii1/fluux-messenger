@@ -444,6 +444,8 @@
         "darkDescription": "Tume taust heleda tekstiga",
         "lightDescription": "Hele taust tumeda tekstiga",
         "systemDescription": "Järgi süsteemi eelistust",
+        "fontSize": "Kirjasuurus",
+        "fontSizeDescription": "Kohanda teksti suurust rakenduses",
         "language": "Keel",
         "languageAndRegion": "Keel ja piirkond",
         "languageStreamNote": "Serveri keele eelistus rakendub järgmisel sisselogimisel",

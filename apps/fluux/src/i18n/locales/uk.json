@@ -444,6 +444,8 @@
         "darkDescription": "Темний фон зі світлим текстом",
         "lightDescription": "Світлий фон з темним текстом",
         "systemDescription": "Слідувати системним налаштуванням",
+        "fontSize": "Розмір шрифту",
+        "fontSizeDescription": "Налаштувати розмір тексту в додатку",
         "language": "Мова",
         "languageAndRegion": "Мова та регіон",
         "languageStreamNote": "Налаштування мови сервера застосуються при наступному вході",

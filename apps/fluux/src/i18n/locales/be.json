@@ -444,6 +444,8 @@
         "darkDescription": "Цёмны фон са светлым тэкстам",
         "lightDescription": "Светлы фон з цёмным тэкстам",
         "systemDescription": "Выконваць сістэмныя налады",
+        "fontSize": "Памер шрыфту",
+        "fontSizeDescription": "Наладзіць памер тэксту ў праграме",
         "language": "Мова",
         "languageAndRegion": "Мова і рэгіён",
         "languageStreamNote": "Налады мовы сервера будуць ужытыя пры наступным уваходзе",

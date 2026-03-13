@@ -444,6 +444,8 @@
         "darkDescription": "Sfond skur b'test ċar",
         "lightDescription": "Sfond ċar b'test skur",
         "systemDescription": "Segwi l-preferenza tas-sistema",
+        "fontSize": "Daqs tal-font",
+        "fontSizeDescription": "Aġġusta d-daqs tat-test fl-app",
         "language": "Lingwa",
         "languageAndRegion": "Lingwa u Reġjun",
         "languageStreamNote": "Il-preferenza tal-lingwa tas-server tieħu effett fil-login li jmiss",

@@ -444,6 +444,8 @@
         "darkDescription": "Tamsus fonas su šviesia tekstu",
         "lightDescription": "Šviesus fonas su tamsiu tekstu",
         "systemDescription": "Sekti sistemos nustatymus",
+        "fontSize": "Šrifto dydis",
+        "fontSizeDescription": "Koreguoti teksto dydį programėlėje",
         "language": "Kalba",
         "languageAndRegion": "Kalba ir regionas",
         "languageStreamNote": "Serverio kalbos nuostata įsigalios kitą kartą prisijungus",

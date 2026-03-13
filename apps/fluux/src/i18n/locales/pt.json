@@ -444,6 +444,8 @@
         "darkDescription": "Fundo escuro com texto claro",
         "lightDescription": "Fundo claro com texto escuro",
         "systemDescription": "Seguir a preferência do sistema",
+        "fontSize": "Tamanho da fonte",
+        "fontSizeDescription": "Ajustar o tamanho do texto no aplicativo",
         "language": "Idioma",
         "languageAndRegion": "Idioma e região",
         "languageStreamNote": "A preferência de idioma do servidor aplica-se no próximo login",

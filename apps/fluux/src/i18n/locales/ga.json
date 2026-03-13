@@ -444,6 +444,8 @@
         "darkDescription": "Cúlra dorcha le téacs geal",
         "lightDescription": "Cúlra geal le téacs dorcha",
         "systemDescription": "Lean rogha an chórais",
+        "fontSize": "Méid cló",
+        "fontSizeDescription": "Athraigh méid an téacs san aip",
         "language": "Teanga",
         "languageAndRegion": "Teanga & Réigiún",
         "languageStreamNote": "Cuirtear rogha teanga an fhreastalaí i bhfeidhm ar an gcéad logáil isteach eile",

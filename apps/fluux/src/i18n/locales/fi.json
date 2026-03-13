@@ -444,6 +444,8 @@
         "darkDescription": "Tumma tausta vaalealla tekstillä",
         "lightDescription": "Vaalea tausta tummalla tekstillä",
         "systemDescription": "Seuraa järjestelmäasetusta",
+        "fontSize": "Fonttikoko",
+        "fontSizeDescription": "Säädä tekstin kokoa sovelluksessa",
         "language": "Kieli",
         "languageAndRegion": "Kieli ja alue",
         "languageStreamNote": "Palvelimen kieliasetus otetaan käyttöön seuraavassa kirjautumisessa",

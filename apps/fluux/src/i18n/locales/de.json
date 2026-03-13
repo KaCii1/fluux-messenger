@@ -444,6 +444,8 @@
         "darkDescription": "Dunkler Hintergrund mit hellem Text",
         "lightDescription": "Heller Hintergrund mit dunklem Text",
         "systemDescription": "Systemeinstellung verwenden",
+        "fontSize": "Schriftgröße",
+        "fontSizeDescription": "Textgröße in der App anpassen",
         "language": "Sprache",
         "languageAndRegion": "Sprache & Region",
         "languageStreamNote": "Server-Sprachpräferenz gilt ab nächster Anmeldung",

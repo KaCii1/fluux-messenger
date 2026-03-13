@@ -445,6 +445,8 @@
         "darkDescription": "Dark background with light text",
         "lightDescription": "Light background with dark text",
         "systemDescription": "Follow your system preference",
+        "fontSize": "Font Size",
+        "fontSizeDescription": "Adjust the size of text across the app",
         "language": "Language",
         "languageAndRegion": "Language & Region",
         "languageStreamNote": "Server language preference applies on next login",

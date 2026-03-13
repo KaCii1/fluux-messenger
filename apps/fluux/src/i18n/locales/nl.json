@@ -444,6 +444,8 @@
         "darkDescription": "Donkere achtergrond met lichte tekst",
         "lightDescription": "Lichte achtergrond met donkere tekst",
         "systemDescription": "Volg je systeemvoorkeur",
+        "fontSize": "Lettergrootte",
+        "fontSizeDescription": "Pas de tekstgrootte in de app aan",
         "language": "Taal",
         "languageAndRegion": "Taal & Regio",
         "languageStreamNote": "Servertaalvoorkeur geldt bij volgende aanmelding",

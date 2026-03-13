@@ -45,6 +45,7 @@ function updateThemeColorMeta(resolved: 'light' | 'dark') {
 export function useMode() {
   const mode = useSettingsStore((s) => s.themeMode)
   const setMode = useSettingsStore((s) => s.setThemeMode)
+  const fontSize = useSettingsStore((s) => s.fontSize)
 
   useEffect(() => {
     const root = document.documentElement
@@ -83,6 +84,11 @@ export function useMode() {
       return () => mediaQuery.removeEventListener('change', handler)
     }
   }, [mode])
+
+  // Apply font size to document root
+  useEffect(() => {
+    document.documentElement.style.fontSize = `${fontSize}%`
+  }, [fontSize])
 
   const resolved = resolveMode(mode)
   return { mode, setMode, resolvedMode: resolved, isDark: resolved === 'dark' }

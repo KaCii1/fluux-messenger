@@ -444,6 +444,8 @@
         "darkDescription": "Sötét háttér világos szöveggel",
         "lightDescription": "Világos háttér sötét szöveggel",
         "systemDescription": "A rendszer beállításainak követése",
+        "fontSize": "Betűméret",
+        "fontSizeDescription": "Szövegméret módosítása az alkalmazásban",
         "language": "Nyelv",
         "languageAndRegion": "Nyelv és régió",
         "languageStreamNote": "A szerver nyelvi beállítása a következő bejelentkezésnél lép érvénybe",

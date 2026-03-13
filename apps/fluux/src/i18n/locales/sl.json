@@ -444,6 +444,8 @@
         "darkDescription": "Temno ozadje s svetlim besedilom",
         "lightDescription": "Svetlo ozadje s temnim besedilom",
         "systemDescription": "Sledi sistemskim nastavitvam",
+        "fontSize": "Velikost pisave",
+        "fontSizeDescription": "Prilagodite velikost besedila v aplikaciji",
         "language": "Jezik",
         "languageAndRegion": "Jezik in regija",
         "languageStreamNote": "Nastavitev jezika strežnika bo uporabljena ob naslednji prijavi",

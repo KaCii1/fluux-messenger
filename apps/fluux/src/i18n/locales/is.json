@@ -444,6 +444,8 @@
         "darkDescription": "Dökkur bakgrunnur með ljósum texta",
         "lightDescription": "Ljós bakgrunnur með dökkum texta",
         "systemDescription": "Fylgja kerfisval",
+        "fontSize": "Leturstærð",
+        "fontSizeDescription": "Stilla texastærð í appinu",
         "language": "Tungumál",
         "languageAndRegion": "Tungumál og svæði",
         "languageStreamNote": "Tungumálaval þjóns tekur gildi við næstu innskráningu",
