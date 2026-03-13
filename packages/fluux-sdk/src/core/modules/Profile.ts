@@ -549,6 +549,76 @@ export class Profile extends BaseModule {
   }
 
   /**
+   * Fetch own vCard (XEP-0054 vcard-temp).
+   * Emits `connection:own-vcard` event so the store picks it up.
+   */
+  async fetchOwnVCard(): Promise<VCardInfo | null> {
+    const currentJid = this.deps.getCurrentJid()
+    if (!currentJid) return null
+
+    const bareJid = getBareJid(currentJid)
+    const vcard = await this.fetchVCard(bareJid)
+    this.deps.emitSDK('connection:own-vcard', { vcard })
+    return vcard
+  }
+
+  /**
+   * Publish own vCard fields (XEP-0054 vcard-temp).
+   *
+   * Fetches the current vCard first to preserve fields we don't edit (e.g. PHOTO),
+   * then merges the provided fields and sends `<iq type="set">`.
+   */
+  async publishOwnVCard(info: VCardInfo): Promise<void> {
+    if (!this.deps.getCurrentJid()) throw new Error('Not connected')
+
+    // Fetch current vCard to preserve PHOTO and other unmanaged fields
+    const bareJid = getBareJid(this.deps.getCurrentJid()!)
+    let existingVCardEl: import('@xmpp/client').Element | null = null
+    try {
+      const getIq = xml('iq', { type: 'get', to: bareJid, id: `vcard_get_${generateUUID()}` },
+        xml('vCard', { xmlns: NS_VCARD_TEMP })
+      )
+      const result = await this.deps.sendIQ(getIq)
+      existingVCardEl = result.getChild('vCard', NS_VCARD_TEMP) ?? null
+    } catch {
+      // No existing vCard, we'll create a fresh one
+    }
+
+    // Build new vCard, preserving children we don't manage
+    const managedTags = new Set(['FN', 'ORG', 'EMAIL', 'ADR'])
+    const children: ReturnType<typeof xml>[] = []
+
+    // Preserve unmanaged children (e.g. PHOTO)
+    if (existingVCardEl) {
+      for (const child of existingVCardEl.children) {
+        if (typeof child === 'object' && 'name' in child && !managedTags.has(child.name)) {
+          children.push(child as ReturnType<typeof xml>)
+        }
+      }
+    }
+
+    // Add managed fields
+    if (info.fullName) {
+      children.push(xml('FN', {}, info.fullName))
+    }
+    if (info.org) {
+      children.push(xml('ORG', {}, xml('ORGNAME', {}, info.org)))
+    }
+    if (info.email) {
+      children.push(xml('EMAIL', {}, xml('USERID', {}, info.email)))
+    }
+    if (info.country) {
+      children.push(xml('ADR', {}, xml('CTRY', {}, info.country)))
+    }
+
+    const setIq = xml('iq', { type: 'set', id: `vcard_set_${generateUUID()}` },
+      xml('vCard', { xmlns: NS_VCARD_TEMP }, ...children)
+    )
+    await this.deps.sendIQ(setIq)
+    this.deps.emitSDK('connection:own-vcard', { vcard: info })
+  }
+
+  /**
    * Fetch appearance settings from private PEP storage (XEP-0223).
    */
   async fetchAppearance(): Promise<{ mode: string } | null> {
@@ -624,6 +694,7 @@ export class Profile extends BaseModule {
     await Promise.allSettled([
       this.fetchOwnAvatar(),
       this.fetchOwnNickname(),
+      this.fetchOwnVCard(),
     ])
   }
 

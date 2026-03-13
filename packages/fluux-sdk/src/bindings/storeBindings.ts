@@ -119,6 +119,11 @@ export function createStoreBindings(
     stores.connection.setOwnNickname(nickname)
   })
 
+  on('connection:own-vcard', ({ vcard }) => {
+    const stores = getStores()
+    stores.connection.setOwnVCard(vcard)
+  })
+
   on('connection:own-resource', (payload) => {
     const stores = getStores()
     stores.connection.updateOwnResource(

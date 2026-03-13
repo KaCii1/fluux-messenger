@@ -112,7 +112,7 @@ function ChatLayoutContent() {
   // NOTE: Don't use useRoster() hook here - it subscribes to ALL contacts and triggers
   // re-renders when ANY contact's presence changes. Use useRosterActions() for actions
   // without state subscription, and focused selectors for specific contact state.
-  const { addContact, removeContact, renameContact, fetchContactNickname } = useRosterActions()
+  const { addContact, removeContact, renameContact, fetchContactNickname, fetchVCard } = useRosterActions()
   // NOTE: Don't use useConnection() hook - it subscribes to MANY state values (jid, error,
   // reconnectAttempt, ownAvatar, etc.) and re-renders when ANY changes. We only need status.
   const status = useConnectionStore((s) => s.status)
@@ -617,6 +617,11 @@ function ChatLayoutContent() {
     return fetchContactNickname(jid)
   }, [fetchContactNickname])
 
+  // Handle fetching contact vCard (XEP-0054)
+  const handleFetchVCard = useCallback(async (jid: string) => {
+    return fetchVCard(jid)
+  }, [fetchVCard])
+
   // Handle admin category change from sidebar
   const handleAdminCategoryChange = useCallback((category: AdminCategory | null) => {
     // Clear any active admin session when changing category
@@ -684,6 +689,7 @@ function ChatLayoutContent() {
               onRemoveContact={() => handleRemoveContact(selectedContact.jid)}
               onRenameContact={(name) => handleRenameContact(selectedContact.jid, name)}
               onFetchNickname={handleFetchContactNickname}
+              onFetchVCard={handleFetchVCard}
               onBack={handleContactBack}
             />
           ) : (adminSession || adminCategory) ? (

@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MessageCircle, Trash2, Pencil, Monitor, Smartphone, Globe, ArrowLeft, Ban, UserPlus } from 'lucide-react'
+import { MessageCircle, Trash2, Pencil, Monitor, Smartphone, Globe, ArrowLeft, Ban, UserPlus, Building2, Mail, MapPin, User } from 'lucide-react'
 import { Tooltip } from './Tooltip'
-import { type Contact, getClientType, useBlocking } from '@fluux/sdk'
+import { type Contact, type VCardInfo, getClientType, useBlocking } from '@fluux/sdk'
 import { useConnectionStore, useBlockingStore } from '@fluux/sdk/react'
 import { Avatar } from './Avatar'
 import { APP_OFFLINE_PRESENCE_COLOR, PRESENCE_COLORS } from '@/constants/ui'
@@ -16,6 +16,7 @@ interface ContactProfileViewProps {
   onRemoveContact: () => void
   onRenameContact: (name: string) => Promise<void>
   onFetchNickname: (jid: string) => Promise<string | null>
+  onFetchVCard?: (jid: string) => Promise<VCardInfo | null>
   onAddContact?: () => void
   onBack?: () => void
   /** Whether the contact is in the user's roster (enables rename/remove actions) */
@@ -29,6 +30,7 @@ export function ContactProfileView({
   onRenameContact,
   onAddContact,
   onFetchNickname,
+  onFetchVCard,
   onBack,
   isInRoster = true,
 }: ContactProfileViewProps) {
@@ -43,6 +45,7 @@ export function ContactProfileView({
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false)
   const [showBlockConfirm, setShowBlockConfirm] = useState(false)
   const [pepNickname, setPepNickname] = useState<string | null>(null)
+  const [vcard, setVcard] = useState<VCardInfo | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const { blockJid, unblockJid } = useBlocking()
   const isBlocked = useBlockingStore((s) => s.blockedJids.has(contact.jid))
@@ -66,6 +69,7 @@ export function ContactProfileView({
     setShowRemoveConfirm(false)
     setShowBlockConfirm(false)
     setPepNickname(null)
+    setVcard(null)
   }, [contact.jid, contact.name])
 
   // Lazily fetch PEP nickname when contact view opens
@@ -82,6 +86,22 @@ export function ContactProfileView({
       })
     return () => { cancelled = true }
   }, [contact.jid, contact.name, onFetchNickname])
+
+  // Lazily fetch vCard when contact view opens
+  useEffect(() => {
+    if (!onFetchVCard) return
+    let cancelled = false
+    void onFetchVCard(contact.jid)
+      .then((result) => {
+        if (!cancelled && result) {
+          setVcard(result)
+        }
+      })
+      .catch(() => {
+        // Ignore vCard fetch errors
+      })
+    return () => { cancelled = true }
+  }, [contact.jid, onFetchVCard])
 
   const handleStartEdit = () => {
     setEditName(contact.name)
@@ -218,6 +238,38 @@ export function ContactProfileView({
                   {group}
                 </span>
               ))}
+            </div>
+          )}
+
+          {/* vCard info */}
+          {vcard && (
+            <div className="w-full max-w-xs mb-3">
+              <div className="space-y-1">
+                {vcard.fullName && (
+                  <div className="flex items-center gap-2 px-3 py-1.5">
+                    <User className="w-4 h-4 text-fluux-muted flex-shrink-0" />
+                    <span className="text-sm text-fluux-text">{vcard.fullName}</span>
+                  </div>
+                )}
+                {vcard.org && (
+                  <div className="flex items-center gap-2 px-3 py-1.5">
+                    <Building2 className="w-4 h-4 text-fluux-muted flex-shrink-0" />
+                    <span className="text-sm text-fluux-text">{vcard.org}</span>
+                  </div>
+                )}
+                {vcard.email && (
+                  <div className="flex items-center gap-2 px-3 py-1.5">
+                    <Mail className="w-4 h-4 text-fluux-muted flex-shrink-0" />
+                    <span className="text-sm text-fluux-text">{vcard.email}</span>
+                  </div>
+                )}
+                {vcard.country && (
+                  <div className="flex items-center gap-2 px-3 py-1.5">
+                    <MapPin className="w-4 h-4 text-fluux-muted flex-shrink-0" />
+                    <span className="text-sm text-fluux-text">{vcard.country}</span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

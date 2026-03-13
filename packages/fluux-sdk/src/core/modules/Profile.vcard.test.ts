@@ -1,10 +1,12 @@
 /**
  * XMPPClient vCard Tests
  *
- * Tests for fetchVCard() method (XEP-0054 vcard-temp):
+ * Tests for fetchVCard(), fetchOwnVCard(), and publishOwnVCard() (XEP-0054 vcard-temp):
  * - Parsing full name, organisation, email, country
  * - Handling missing fields
  * - Handling errors
+ * - Own vCard fetch emits event
+ * - Publish preserves PHOTO and other unmanaged fields
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { XMPPClient } from '../XMPPClient'
@@ -202,5 +204,163 @@ describe('XMPPClient fetchVCard', () => {
 
     // Verify IQ was sent
     expect(mockXmppClientInstance.iqCaller.request).toHaveBeenCalled()
+  })
+})
+
+describe('XMPPClient fetchOwnVCard', () => {
+  let xmppClient: XMPPClient
+  let mockStores: MockStoreBindings
+  let emitSDKSpy: ReturnType<typeof vi.spyOn>
+
+  beforeEach(async () => {
+    vi.useFakeTimers()
+    mockXmppClientInstance = createMockXmppClient()
+    mockClientFactory.mockClear()
+    mockClientFactory._setInstance(mockXmppClientInstance)
+
+    mockStores = createMockStores()
+    xmppClient = new XMPPClient({ debug: false })
+    xmppClient.bindStores(mockStores)
+    emitSDKSpy = vi.spyOn(xmppClient, 'emitSDK')
+
+    const connectPromise = xmppClient.connect({
+      jid: 'user@example.com',
+      password: 'secret',
+      server: 'example.com',
+      skipDiscovery: true,
+    })
+    mockXmppClientInstance._emit('online', { jid: { toString: () => 'user@example.com/resource' } })
+    await connectPromise
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.clearAllMocks()
+  })
+
+  it('should emit connection:own-vcard with vCard data', async () => {
+    const vcardResponse = createMockElement('iq', { type: 'result' }, [
+      {
+        name: 'vCard',
+        attrs: { xmlns: 'vcard-temp' },
+        children: [
+          { name: 'FN', text: 'My Name' },
+          {
+            name: 'ORG',
+            children: [{ name: 'ORGNAME', text: 'My Company' }],
+          },
+        ],
+      },
+    ])
+
+    mockXmppClientInstance.iqCaller.request.mockResolvedValue(vcardResponse)
+
+    const result = await xmppClient.profile.fetchOwnVCard()
+
+    expect(result).toEqual({
+      fullName: 'My Name',
+      org: 'My Company',
+      email: undefined,
+      country: undefined,
+    })
+    expect(emitSDKSpy).toHaveBeenCalledWith('connection:own-vcard', {
+      vcard: { fullName: 'My Name', org: 'My Company', email: undefined, country: undefined },
+    })
+  })
+
+  it('should emit connection:own-vcard with null when no vCard exists', async () => {
+    mockXmppClientInstance.iqCaller.request.mockResolvedValue(
+      createMockElement('iq', { type: 'result' })
+    )
+
+    const result = await xmppClient.profile.fetchOwnVCard()
+
+    expect(result).toBeNull()
+    expect(emitSDKSpy).toHaveBeenCalledWith('connection:own-vcard', { vcard: null })
+  })
+})
+
+describe('XMPPClient publishOwnVCard', () => {
+  let xmppClient: XMPPClient
+  let mockStores: MockStoreBindings
+  let emitSDKSpy: ReturnType<typeof vi.spyOn>
+
+  beforeEach(async () => {
+    vi.useFakeTimers()
+    mockXmppClientInstance = createMockXmppClient()
+    mockClientFactory.mockClear()
+    mockClientFactory._setInstance(mockXmppClientInstance)
+
+    mockStores = createMockStores()
+    xmppClient = new XMPPClient({ debug: false })
+    xmppClient.bindStores(mockStores)
+    emitSDKSpy = vi.spyOn(xmppClient, 'emitSDK')
+
+    const connectPromise = xmppClient.connect({
+      jid: 'user@example.com',
+      password: 'secret',
+      server: 'example.com',
+      skipDiscovery: true,
+    })
+    mockXmppClientInstance._emit('online', { jid: { toString: () => 'user@example.com/resource' } })
+    await connectPromise
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.clearAllMocks()
+  })
+
+  it('should preserve PHOTO when publishing vCard fields', async () => {
+    // Existing vCard with PHOTO
+    const existingVCard = createMockElement('iq', { type: 'result' }, [
+      {
+        name: 'vCard',
+        attrs: { xmlns: 'vcard-temp' },
+        children: [
+          { name: 'FN', text: 'Old Name' },
+          {
+            name: 'PHOTO',
+            children: [
+              { name: 'TYPE', text: 'image/png' },
+              { name: 'BINVAL', text: 'base64photodata' },
+            ],
+          },
+        ],
+      },
+    ])
+
+    // First call: GET existing vCard; second call: SET new vCard
+    const requestsBefore = mockXmppClientInstance.iqCaller.request.mock.calls.length
+    mockXmppClientInstance.iqCaller.request
+      .mockResolvedValueOnce(existingVCard)
+      .mockResolvedValueOnce(createMockElement('iq', { type: 'result' }))
+
+    await xmppClient.profile.publishOwnVCard({ fullName: 'New Name', email: 'me@test.com' })
+
+    // Verify two IQ calls were made (GET + SET)
+    expect(mockXmppClientInstance.iqCaller.request.mock.calls.length - requestsBefore).toBe(2)
+
+    // Verify the xml calls include vCard construction with PHOTO preserved
+    const vcardCalls = mockXmlFn.mock.calls.filter((c: unknown[]) => c[0] === 'vCard')
+    expect(vcardCalls.length).toBeGreaterThan(0)
+
+    // Verify event emitted with new data
+    expect(emitSDKSpy).toHaveBeenCalledWith('connection:own-vcard', {
+      vcard: { fullName: 'New Name', email: 'me@test.com' },
+    })
+  })
+
+  it('should emit connection:own-vcard after successful publish', async () => {
+    // No existing vCard
+    mockXmppClientInstance.iqCaller.request
+      .mockRejectedValueOnce(new Error('item-not-found'))
+      .mockResolvedValueOnce(createMockElement('iq', { type: 'result' }))
+
+    await xmppClient.profile.publishOwnVCard({ org: 'Acme Corp', country: 'France' })
+
+    expect(emitSDKSpy).toHaveBeenCalledWith('connection:own-vcard', {
+      vcard: { org: 'Acme Corp', country: 'France' },
+    })
   })
 })

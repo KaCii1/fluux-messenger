@@ -545,7 +545,13 @@
         "webPush": "Web Push",
         "webPush_unavailable": "Not supported",
         "webPush_available": "Pending registration",
-        "webPush_registered": "Registered"
+        "webPush_registered": "Registered",
+        "addField": "Add field",
+        "fullName": "Full name",
+        "company": "Company",
+        "email": "Email",
+        "country": "Country",
+        "vcardSaveError": "Failed to save profile field"
     },
     "console": {
         "title": "XMPP Console",

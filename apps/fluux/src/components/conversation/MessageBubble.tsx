@@ -335,20 +335,21 @@ export const MessageBubble = memo(function MessageBubble({
         {/* Reply context - show what message this is replying to (hidden for retracted messages) */}
         {!message.isRetracted && replyContext && (
           <div className={`flex items-start gap-4 ${timeFormat === '12h' ? '-ml-16' : '-ml-14'}`}>
-            <div className={`${timeFormat === '12h' ? 'w-12' : 'w-10'} flex-shrink-0 flex justify-center pt-0.5`}>
-              <Avatar
-                identifier={replyContext.avatarIdentifier}
-                name={replyContext.senderName}
-                avatarUrl={replyContext.avatarUrl}
-                size="xs"
-              />
+            <div className={`${timeFormat === '12h' ? 'w-12' : 'w-10'} flex-shrink-0 flex justify-center pt-1`}>
+              <CornerUpRight className="w-3.5 h-3.5 text-fluux-muted" />
             </div>
             <button
               onClick={() => scrollToMessage(replyContext.messageId)}
               className="flex items-start gap-1.5 pb-1 pl-2 border-l-2 text-left flex-1 min-w-0 hover:bg-fluux-hover/50 rounded-r transition-colors cursor-pointer select-none"
               style={{ borderColor: replyContext.senderColor }}
             >
-              <CornerUpRight className="w-3.5 h-3.5 text-fluux-muted flex-shrink-0 mt-0.5" />
+              <Avatar
+                identifier={replyContext.avatarIdentifier}
+                name={replyContext.senderName}
+                avatarUrl={replyContext.avatarUrl}
+                size="xs"
+                className="flex-shrink-0"
+              />
               <div className="text-sm text-fluux-muted min-w-0 flex-1">
                 <span
                   className="font-medium"
