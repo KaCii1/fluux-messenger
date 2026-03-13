@@ -193,7 +193,7 @@ export function RoomHeader({
 
         {/* Dropdown menu */}
         {showNotifyMenu && (
-          <div className="absolute right-0 top-full mt-1 w-56 bg-fluux-bg border border-fluux-hover rounded-lg shadow-lg z-30 py-1">
+          <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-1 w-56 bg-fluux-bg border border-fluux-hover rounded-lg shadow-lg z-30 py-1">
             {/* Mentions only */}
             <button
               onClick={() => handleSelectMode('mentions')}
@@ -275,7 +275,7 @@ export function RoomHeader({
 
           {/* Room management dropdown menu */}
           {showOwnerMenu && (
-            <div className="absolute right-0 top-full mt-1 w-56 bg-fluux-bg border border-fluux-hover rounded-lg shadow-lg z-30 py-1">
+            <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-1 w-56 bg-fluux-bg border border-fluux-hover rounded-lg shadow-lg z-30 py-1">
               {/* Room Settings */}
               <button
                 onClick={() => {

@@ -387,9 +387,10 @@ function ChatLayoutContent() {
     setActiveConversation(null)
     setActiveRoom(null)
     setSelectedContactJid(contact.jid)
+    navigateToContacts(contact.jid, { replace: true })
     clearAdminSession()
     setAdminCategory(null)
-  }, [setActiveConversation, setActiveRoom, clearAdminSession, setAdminCategory])
+  }, [setActiveConversation, setActiveRoom, navigateToContacts, clearAdminSession, setAdminCategory])
 
   // On mobile, show main content area only when there's actual content to display
   // For admin: only 'users' and 'rooms' categories have main view content
