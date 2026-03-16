@@ -404,7 +404,11 @@
             "many": "{{name1}}, {{name2}} i još {{count}} tipkaju..."
         },
         "showMore": "Prikaži više",
-        "showLess": "Prikaži manje"
+        "showLess": "Prikaži manje",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "Danas",

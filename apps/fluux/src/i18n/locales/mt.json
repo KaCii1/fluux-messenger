@@ -404,7 +404,11 @@
             "many": "{{name1}}, {{name2}}, u {{count}} oħrajn qed jiktbu..."
         },
         "showMore": "Uri aktar",
-        "showLess": "Uri inqas"
+        "showLess": "Uri inqas",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "Illum",

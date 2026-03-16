@@ -1930,6 +1930,7 @@ describe('XMPPClient Message', () => {
         from: 'contact@example.com',
         to: 'user@example.com',
         type: 'error',
+        id: 'msg-123',
       }, [
         { name: 'body', text: 'Hello' },
         {
@@ -1944,6 +1945,95 @@ describe('XMPPClient Message', () => {
       mockXmppClientInstance._emit('stanza', errorStanza)
 
       expect(emitSDKSpy).not.toHaveBeenCalledWith('room:invite-error', expect.anything())
+      // Should emit chat:message-error instead
+      expect(emitSDKSpy).toHaveBeenCalledWith('chat:message-error', {
+        conversationId: 'contact@example.com',
+        messageId: 'msg-123',
+        error: { type: 'cancel', condition: 'service-unavailable', text: undefined },
+      })
+    })
+
+    it('should emit chat:message-error for delivery failure with server text', async () => {
+      await connectClient()
+
+      const errorStanza = createMockElement('message', {
+        from: 'contact@example.com',
+        to: 'user@example.com',
+        type: 'error',
+        id: 'msg-456',
+      }, [
+        { name: 'body', text: 'Hello' },
+        {
+          name: 'error',
+          attrs: { type: 'cancel' },
+          children: [
+            { name: 'remote-server-not-found', attrs: { xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas' } },
+            { name: 'text', attrs: { xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas' }, text: 'Server-to-server connection failed' },
+          ],
+        },
+      ])
+
+      mockXmppClientInstance._emit('stanza', errorStanza)
+
+      expect(emitSDKSpy).toHaveBeenCalledWith('chat:message-error', {
+        conversationId: 'contact@example.com',
+        messageId: 'msg-456',
+        error: { type: 'cancel', condition: 'remote-server-not-found', text: 'Server-to-server connection failed' },
+      })
+    })
+
+    it('should not emit chat:message-error when message has no id', async () => {
+      await connectClient()
+
+      const errorStanza = createMockElement('message', {
+        from: 'contact@example.com',
+        to: 'user@example.com',
+        type: 'error',
+        // no id attribute
+      }, [
+        {
+          name: 'error',
+          attrs: { type: 'wait' },
+          children: [
+            { name: 'resource-constraint', attrs: { xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas' } },
+          ],
+        },
+      ])
+
+      mockXmppClientInstance._emit('stanza', errorStanza)
+
+      expect(emitSDKSpy).not.toHaveBeenCalledWith('chat:message-error', expect.anything())
+    })
+
+    it('should not emit chat:message-error for MUC invitation errors (room:invite-error takes precedence)', async () => {
+      await connectClient()
+
+      const errorStanza = createMockElement('message', {
+        from: 'room@conference.example.com',
+        to: 'user@example.com',
+        type: 'error',
+        id: 'invite-msg-1',
+      }, [
+        {
+          name: 'x',
+          attrs: { xmlns: 'http://jabber.org/protocol/muc#user' },
+          children: [
+            { name: 'invite', attrs: { to: 'target@example.com' } },
+          ],
+        },
+        {
+          name: 'error',
+          attrs: { type: 'auth' },
+          children: [
+            { name: 'forbidden', attrs: { xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas' } },
+          ],
+        },
+      ])
+
+      mockXmppClientInstance._emit('stanza', errorStanza)
+
+      expect(emitSDKSpy).toHaveBeenCalledWith('room:invite-error', expect.anything())
+      expect(emitSDKSpy).not.toHaveBeenCalledWith('chat:message-error', expect.anything())
     })
 
     it('should silently handle error messages with no error element', async () => {
@@ -2044,6 +2134,52 @@ describe('XMPPClient Message', () => {
         condition: 'forbidden',
         errorType: 'auth',
       })
+    })
+  })
+
+  describe('resendMessage', () => {
+    it('should send stanza with same message ID and not emit chat:message event', async () => {
+      await connectClient()
+
+      await xmppClient.chat.resendMessage('contact@example.com', 'Hello again', 'original-msg-id')
+
+      // Verify the stanza was sent with the same ID
+      expect(mockXmppClientInstance.send).toHaveBeenCalledTimes(1)
+      const sentStanza = mockXmppClientInstance.send.mock.calls[0][0]
+      expect(sentStanza.attrs.to).toBe('contact@example.com')
+      expect(sentStanza.attrs.type).toBe('chat')
+      expect(sentStanza.attrs.id).toBe('original-msg-id')
+
+      // Should NOT emit chat:message (message already in store)
+      expect(emitSDKSpy).not.toHaveBeenCalledWith('chat:message', expect.anything())
+    })
+
+    it('should include OOB attachment in resent message', async () => {
+      await connectClient()
+
+      const attachment = {
+        url: 'https://upload.example.com/file.pdf',
+        name: 'document.pdf',
+        size: 12345,
+        mimeType: 'application/pdf',
+      }
+
+      await xmppClient.chat.resendMessage('contact@example.com', 'Check this', 'msg-with-file', attachment)
+
+      const sentStanza = mockXmppClientInstance.send.mock.calls[0][0]
+      expect(sentStanza.attrs.id).toBe('msg-with-file')
+
+      // Verify OOB element is present — check for x child with OOB namespace
+      const oobChild = sentStanza.children?.find(
+        (c: any) => c.name === 'x' && c.attrs?.xmlns === 'jabber:x:oob'
+      )
+      expect(oobChild).toBeDefined()
+
+      // Verify fallback element
+      const fallbackChild = sentStanza.children?.find(
+        (c: any) => c.name === 'fallback' && c.attrs?.xmlns === 'urn:xmpp:fallback:0'
+      )
+      expect(fallbackChild).toBeDefined()
     })
   })
 

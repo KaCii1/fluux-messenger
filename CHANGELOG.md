@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Font size setting in appearance preferences
 - PEP-based conversation list synchronisation (ConversationSync module)
 - XEP-0202: Entity Time — display contact local time in chat header and contact popover
+- Display message delivery errors, and offer the options to retry sending the mesage
 
 ### Changed
 

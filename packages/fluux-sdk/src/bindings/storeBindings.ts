@@ -191,6 +191,11 @@ export function createStoreBindings(
     stores.chat.updateMessage(conversationId, messageId, updates)
   })
 
+  on('chat:message-error', ({ conversationId, messageId, error }) => {
+    const stores = getStores()
+    stores.chat.updateMessage(conversationId, messageId, { deliveryError: error })
+  })
+
   on('chat:animation', ({ conversationId, animation }) => {
     const stores = getStores()
     stores.chat.triggerAnimation(conversationId, animation)

@@ -445,6 +445,68 @@ export class Chat extends BaseModule {
   }
 
   /**
+   * Resend a previously failed message.
+   *
+   * Re-creates the message stanza from stored message data and sends it
+   * without emitting a new `chat:message` event (the message already
+   * exists in the store). The caller should clear the `deliveryError`
+   * on the message before calling this.
+   *
+   * @param to - Recipient bare JID
+   * @param body - Message body text
+   * @param messageId - The original message ID to reuse
+   * @param attachment - Optional file attachment to re-include
+   */
+  async resendMessage(
+    to: string,
+    body: string,
+    messageId: string,
+    attachment?: FileAttachment
+  ): Promise<void> {
+    const recipient = getBareJid(to)
+
+    let fullBody = body
+    // Reconstruct OOB fallback if attachment present
+    let oobFallbackStart = 0
+    let oobFallbackEnd = 0
+    if (attachment) {
+      if (fullBody.length === 0 || fullBody === attachment.url) {
+        fullBody = attachment.url
+        oobFallbackStart = 0
+      } else {
+        oobFallbackStart = fullBody.length + 1
+        fullBody = fullBody + '\n' + attachment.url
+      }
+      oobFallbackEnd = fullBody.length
+    }
+
+    const children = [
+      xml('body', {}, fullBody),
+      xml('active', { xmlns: NS_CHATSTATES })
+    ]
+
+    if (attachment) {
+      const oobChildren = [xml('url', {}, attachment.url)]
+      if (attachment.thumbnail) {
+        oobChildren.push(xml('thumbnail', {
+          xmlns: NS_THUMBS,
+          uri: attachment.thumbnail.uri,
+          'media-type': attachment.thumbnail.mediaType,
+          width: String(attachment.thumbnail.width),
+          height: String(attachment.thumbnail.height),
+        }))
+      }
+      children.push(xml('x', { xmlns: NS_OOB }, ...oobChildren))
+      children.push(xml('fallback', { xmlns: NS_FALLBACK, for: NS_OOB },
+        xml('body', { start: String(oobFallbackStart), end: String(oobFallbackEnd) })
+      ))
+    }
+
+    const message = xml('message', { to: recipient, type: 'chat', id: messageId }, ...children)
+    await this.deps.sendStanza(message)
+  }
+
+  /**
    * Send a chat state notification (typing indicator).
    *
    * Implements XEP-0085 Chat State Notifications to inform the other party
@@ -877,10 +939,13 @@ export class Chat extends BaseModule {
   // --- Internal Message Processing (Migrated from MessageHandler) ---
 
   /**
-   * Handle error-type messages (e.g., MUC invitation rejections).
+   * Handle error-type messages (e.g., MUC invitation rejections, delivery failures).
    *
    * XMPP servers send `<message type="error">` when a stanza cannot be
-   * delivered. For MUC mediated invitations, the original `<x xmlns="muc#user">`
+   * delivered. The original message's `id` attribute is echoed back, letting
+   * us correlate the error with the sent message.
+   *
+   * For MUC mediated invitations, the original `<x xmlns="muc#user">`
    * element is echoed back inside the error stanza, letting us detect the
    * specific failure and surface it to the UI.
    */
@@ -900,6 +965,17 @@ export class Chat extends BaseModule {
         error: formatXMPPError(error),
         condition: error.condition,
         errorType: error.type,
+      })
+      return
+    }
+
+    // Chat message delivery error — correlate via the echoed message ID
+    const messageId = stanza.attrs.id
+    if (messageId) {
+      this.deps.emitSDK('chat:message-error', {
+        conversationId: bareFrom,
+        messageId,
+        error,
       })
     }
   }

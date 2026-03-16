@@ -404,7 +404,11 @@
             "many": "{{name1}}, {{name2}} et {{count}} autres sont en train d'écrire..."
         },
         "showMore": "Afficher plus",
-        "showLess": "Afficher moins"
+        "showLess": "Afficher moins",
+        "deliveryFailed": "Message non délivré",
+        "viewError": "Voir l'erreur",
+        "retry": "Réessayer",
+        "errorDetails": "Erreur : {{error}}"
     },
     "dates": {
         "today": "Aujourd'hui",

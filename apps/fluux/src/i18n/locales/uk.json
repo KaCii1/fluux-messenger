@@ -404,7 +404,11 @@
             "many": "{{name1}}, {{name2}} і ще {{count}} друкують..."
         },
         "showMore": "Показати більше",
-        "showLess": "Показати менше"
+        "showLess": "Показати менше",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "Сьогодні",

@@ -8,6 +8,7 @@
 import type { FileAttachment } from './upload'
 import type { LinkPreview } from './media'
 import type { ReplyInfo } from './chat'
+import type { XMPPStanzaError } from '../../utils/xmppError'
 
 /**
  * Base interface for all message types.
@@ -77,4 +78,10 @@ export interface BaseMessage {
    * Automatically set for messages in Quick Chat (transient) rooms.
    */
   noStore?: boolean
+  /**
+   * Delivery error received from the server for this message.
+   * Set when the server returns a `<message type="error">` stanza,
+   * indicating the message could not be delivered to the recipient.
+   */
+  deliveryError?: XMPPStanzaError
 }

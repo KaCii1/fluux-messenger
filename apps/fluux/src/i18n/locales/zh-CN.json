@@ -404,7 +404,11 @@
             "many": "{{name1}}、{{name2}} 和其他 {{count}} 人正在输入…"
         },
         "showMore": "展开更多",
-        "showLess": "收起"
+        "showLess": "收起",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "今天",

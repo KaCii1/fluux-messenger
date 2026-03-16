@@ -404,7 +404,11 @@
             "many": "{{name1}}, {{name2}} un vēl {{count}} raksta..."
         },
         "showMore": "Rādīt vairāk",
-        "showLess": "Rādīt mazāk"
+        "showLess": "Rādīt mazāk",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "Šodien",

@@ -404,7 +404,11 @@
             "many": "{{name1}}, {{name2}} и още {{count}} пишат..."
         },
         "showMore": "Покажи повече",
-        "showLess": "Покажи по-малко"
+        "showLess": "Покажи по-малко",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "Днес",

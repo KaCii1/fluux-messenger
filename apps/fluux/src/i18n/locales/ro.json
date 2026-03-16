@@ -404,7 +404,11 @@
             "many": "{{name1}}, {{name2}} și alți {{count}} scriu..."
         },
         "showMore": "Arată mai mult",
-        "showLess": "Arată mai puțin"
+        "showLess": "Arată mai puțin",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "Astăzi",

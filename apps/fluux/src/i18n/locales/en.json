@@ -405,7 +405,11 @@
             "many": "{{name1}}, {{name2}}, and {{count}} others are typing..."
         },
         "showMore": "Show more",
-        "showLess": "Show less"
+        "showLess": "Show less",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "Today",

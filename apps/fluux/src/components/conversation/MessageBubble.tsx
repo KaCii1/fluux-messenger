@@ -5,8 +5,9 @@
  * the common bubble structure.
  */
 import { useState, memo, type ReactNode } from 'react'
-import { CornerUpRight } from 'lucide-react'
-import { formatMessagePreview, type BaseMessage, type MentionReference, type Contact, type ContactIdentity, type RoomRole, type RoomAffiliation } from '@fluux/sdk'
+import { useTranslation } from 'react-i18next'
+import { CornerUpRight, AlertCircle, RefreshCw } from 'lucide-react'
+import { formatMessagePreview, formatXMPPError, type BaseMessage, type MentionReference, type Contact, type ContactIdentity, type RoomRole, type RoomAffiliation } from '@fluux/sdk'
 import { Avatar } from '../Avatar'
 import { AvatarLightbox } from '../AvatarLightbox'
 import { MessageToolbar } from './MessageToolbar'
@@ -68,6 +69,7 @@ export interface MessageBubbleProps {
   onReply: () => void
   onEdit: () => void
   onDelete: () => Promise<void>
+  onRetry?: () => void
   onMediaLoad?: () => void
 
   // Reply context (view-specific rendering)
@@ -112,6 +114,7 @@ function arePropsEqual(prev: MessageBubbleProps, next: MessageBubbleProps): bool
   if (prev.message.isEdited !== next.message.isEdited) return false
   if (prev.message.isRetracted !== next.message.isRetracted) return false
   if (prev.message.isOutgoing !== next.message.isOutgoing) return false
+  if (prev.message.deliveryError !== next.message.deliveryError) return false
 
   // Reactions - compare stringified since object reference will differ
   const prevReactions = JSON.stringify(prev.message.reactions ?? {})
@@ -207,6 +210,7 @@ export const MessageBubble = memo(function MessageBubble({
   onReply,
   onEdit,
   onDelete,
+  onRetry,
   onMediaLoad,
   replyContext,
   mentions,
@@ -218,9 +222,11 @@ export const MessageBubble = memo(function MessageBubble({
   formatTime,
   timeFormat,
 }: MessageBubbleProps) {
+  const { t } = useTranslation()
   const [showReactionPicker, setShowReactionPickerState] = useState(false)
   const [showMoreMenu, setShowMoreMenu] = useState(false)
   const [showAvatarLightbox, setShowAvatarLightbox] = useState(false)
+  const [showErrorDetails, setShowErrorDetails] = useState(false)
 
   // Whether reactions are enabled for this message (room has stable occupant identity)
   const reactionsEnabled = onReaction !== undefined
@@ -390,6 +396,40 @@ export const MessageBubble = memo(function MessageBubble({
           getReactorName={getReactorName}
           isRetracted={message.isRetracted}
         />
+
+        {/* Delivery error indicator */}
+        {message.deliveryError && (
+          <div className="flex flex-col gap-1 pt-1">
+            <div className="flex items-center gap-1.5 text-red-500">
+              <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="text-xs font-medium">{t('chat.deliveryFailed')}</span>
+              <span className="text-xs text-fluux-muted">—</span>
+              <button
+                onClick={() => setShowErrorDetails(!showErrorDetails)}
+                className="text-xs text-fluux-muted hover:text-fluux-text cursor-pointer underline"
+              >
+                {t('chat.viewError')}
+              </button>
+              {onRetry && (
+                <>
+                  <span className="text-xs text-fluux-muted">·</span>
+                  <button
+                    onClick={onRetry}
+                    className="text-xs text-fluux-link hover:text-fluux-link-hover cursor-pointer underline flex items-center gap-1"
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                    {t('chat.retry')}
+                  </button>
+                </>
+              )}
+            </div>
+            {showErrorDetails && (
+              <div className="text-xs text-fluux-muted pl-5 py-1 bg-red-500/5 rounded">
+                {t('chat.errorDetails', { error: formatXMPPError(message.deliveryError) })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Avatar lightbox overlay */}

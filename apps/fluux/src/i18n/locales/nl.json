@@ -404,7 +404,11 @@
             "many": "{{name1}}, {{name2}} en {{count}} anderen zijn aan het typen..."
         },
         "showMore": "Meer weergeven",
-        "showLess": "Minder weergeven"
+        "showLess": "Minder weergeven",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "Vandaag",

@@ -404,7 +404,11 @@
             "many": "Ο/Η {{name1}}, ο/η {{name2}} και {{count}} ακόμα πληκτρολογούν..."
         },
         "showMore": "Εμφάνιση περισσότερων",
-        "showLess": "Εμφάνιση λιγότερων"
+        "showLess": "Εμφάνιση λιγότερων",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "Σήμερα",

@@ -404,7 +404,11 @@
             "many": "{{name1}}, {{name2}} и ещё {{count}} печатают..."
         },
         "showMore": "Показать больше",
-        "showLess": "Показать меньше"
+        "showLess": "Показать меньше",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "Сегодня",

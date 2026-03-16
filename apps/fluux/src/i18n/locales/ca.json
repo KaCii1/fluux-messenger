@@ -404,7 +404,11 @@
             "many": "{{name1}}, {{name2}} i {{count}} més estan escrivint..."
         },
         "showMore": "Mostra més",
-        "showLess": "Mostra menys"
+        "showLess": "Mostra menys",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "Avui",

@@ -404,7 +404,11 @@
             "many": "{{name1}}, {{name2}} ja veel {{count}} kirjutavad..."
         },
         "showMore": "Näita rohkem",
-        "showLess": "Näita vähem"
+        "showLess": "Näita vähem",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "Täna",

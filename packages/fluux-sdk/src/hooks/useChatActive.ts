@@ -196,6 +196,19 @@ export function useChatActive() {
     [client]
   )
 
+  const retryMessage = useCallback(
+    async (conversationId: string, messageId: string) => {
+      const message = chatStore.getState().getMessage(conversationId, messageId)
+      if (!message || !message.deliveryError) return
+
+      // Clear the error before resending
+      chatStore.getState().updateMessage(conversationId, messageId, { deliveryError: undefined })
+
+      await client.chat.resendMessage(conversationId, message.body, messageId, message.attachment)
+    },
+    [client]
+  )
+
   const sendEasterEgg = useCallback(
     async (to: string, type: 'chat' | 'groupchat', animation: string) => {
       await client.chat.sendEasterEgg(to, type, animation)
@@ -323,6 +336,7 @@ export function useChatActive() {
       sendReaction,
       sendCorrection,
       retractMessage,
+      retryMessage,
       sendEasterEgg,
       clearAnimation,
       setDraft,
@@ -336,7 +350,7 @@ export function useChatActive() {
     [
       sendMessage, setActiveConversation, addConversation, deleteConversation,
       markAsRead, archiveConversation, unarchiveConversation, isArchived,
-      sendChatState, sendReaction, sendCorrection, retractMessage,
+      sendChatState, sendReaction, sendCorrection, retractMessage, retryMessage,
       sendEasterEgg, clearAnimation, setDraft, getDraft, clearDraft,
       clearFirstNewMessageId, updateLastSeenMessageId, fetchHistory, fetchOlderHistory,
     ]

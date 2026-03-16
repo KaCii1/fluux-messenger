@@ -19,7 +19,7 @@ import type { AdminCommand, AdminSession } from './admin'
 import type { RSMResponse } from './pagination'
 import type { MAMQueryDirection } from '../../stores/shared/mamState'
 import type { SystemNotificationType } from './events'
-import type { XMPPErrorType } from '../../utils/xmppError'
+import type { XMPPErrorType, XMPPStanzaError } from '../../utils/xmppError'
 
 // ============================================================================
 // Connection Events
@@ -136,6 +136,13 @@ export interface ChatEvents {
     conversationId: string
     messageId: string
     updates: Partial<Message>
+  }
+
+  /** Message delivery error received from server */
+  'chat:message-error': {
+    conversationId: string
+    messageId: string
+    error: XMPPStanzaError
   }
 
   /** Animation triggered (easter egg) */

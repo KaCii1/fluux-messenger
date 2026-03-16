@@ -404,7 +404,11 @@
             "many": "{{name1}}, {{name2}} és még {{count}} személy gépel..."
         },
         "showMore": "Több megjelenítése",
-        "showLess": "Kevesebb megjelenítése"
+        "showLess": "Kevesebb megjelenítése",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "Ma",

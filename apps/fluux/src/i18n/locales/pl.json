@@ -404,7 +404,11 @@
             "many": "{{name1}}, {{name2}} i {{count}} innych pisze..."
         },
         "showMore": "Pokaż więcej",
-        "showLess": "Pokaż mniej"
+        "showLess": "Pokaż mniej",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "Dzisiaj",

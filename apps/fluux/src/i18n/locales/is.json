@@ -404,7 +404,11 @@
             "many": "{{name1}}, {{name2}}, og {{count}} aðrir eru að skrifa..."
         },
         "showMore": "Sýna meira",
-        "showLess": "Sýna minna"
+        "showLess": "Sýna minna",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "Í dag",

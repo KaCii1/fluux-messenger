@@ -404,7 +404,11 @@
             "many": "{{name1}}, {{name2}} og {{count}} andre skriver..."
         },
         "showMore": "Vis mer",
-        "showLess": "Vis mindre"
+        "showLess": "Vis mindre",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "I dag",

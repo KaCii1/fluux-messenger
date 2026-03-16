@@ -26,7 +26,7 @@ export function ChatView({ onBack, onSwitchToMessages, mainContentRef, composerR
   const { t } = useTranslation()
   // Use useChatActive instead of useChat to avoid subscribing to the conversation list.
   // This prevents re-renders during background MAM sync of other conversations.
-  const { activeConversation, activeMessages, activeTypingUsers, sendReaction, sendCorrection, retractMessage, activeAnimation, sendEasterEgg, clearAnimation, clearFirstNewMessageId, updateLastSeenMessageId, activeMAMState, fetchOlderHistory } = useChatActive()
+  const { activeConversation, activeMessages, activeTypingUsers, sendReaction, sendCorrection, retractMessage, retryMessage, activeAnimation, sendEasterEgg, clearAnimation, clearFirstNewMessageId, updateLastSeenMessageId, activeMAMState, fetchOlderHistory } = useChatActive()
   // Use useContactIdentities instead of useRoster() to avoid re-renders on
   // presence changes. ChatView only needs contact names and avatars for display.
   const contactsByJid = useContactIdentities()
@@ -275,6 +275,7 @@ export function ChatView({ onBack, onSwitchToMessages, mainContentRef, composerR
           activeReactionPickerMessageId={activeReactionPickerMessageId}
           onReactionPickerChange={handleReactionPickerChange}
           retractMessage={retractMessage}
+          retryMessage={retryMessage}
           selectedMessageId={selectedMessageId}
           hasKeyboardSelection={hasKeyboardSelection}
           showToolbarForSelection={showToolbarForSelection}
@@ -349,6 +350,7 @@ const ChatMessageList = memo(function ChatMessageList({
   activeReactionPickerMessageId,
   onReactionPickerChange,
   retractMessage,
+  retryMessage,
   selectedMessageId,
   hasKeyboardSelection,
   showToolbarForSelection,
@@ -381,6 +383,7 @@ const ChatMessageList = memo(function ChatMessageList({
   activeReactionPickerMessageId: string | null
   onReactionPickerChange: (messageId: string, isOpen: boolean) => void
   retractMessage: (conversationId: string, messageId: string) => Promise<void>
+  retryMessage: (conversationId: string, messageId: string) => Promise<void>
   selectedMessageId: string | null
   hasKeyboardSelection: boolean
   showToolbarForSelection: boolean
@@ -467,6 +470,7 @@ const ChatMessageList = memo(function ChatMessageList({
       hideToolbar={isComposing || (activeReactionPickerMessageId !== null && activeReactionPickerMessageId !== msg.id)}
       onReactionPickerChange={(isOpen) => onReactionPickerChange(msg.id, isOpen)}
       retractMessage={retractMessage}
+      retryMessage={retryMessage}
       isSelected={msg.id === selectedMessageId}
       hasKeyboardSelection={hasKeyboardSelection}
       showToolbarForSelection={showToolbarForSelection}
@@ -481,7 +485,7 @@ const ChatMessageList = memo(function ChatMessageList({
   ), [
     ownAvatar, contactsByJid, ownNickname, conversationId, conversationType,
     sendReaction, myBareJid, messagesById, onReply, onEdit, lastOutgoingMessageId, lastMessageId,
-    isComposing, activeReactionPickerMessageId, onReactionPickerChange, retractMessage,
+    isComposing, activeReactionPickerMessageId, onReactionPickerChange, retractMessage, retryMessage,
     selectedMessageId, hasKeyboardSelection, showToolbarForSelection, isDarkMode,
     hoveredMessageId, handleMessageHover, handleMessageLeave, formatTime, effectiveTimeFormat
   ])
@@ -533,6 +537,7 @@ interface ChatMessageBubbleProps {
   hideToolbar?: boolean
   onReactionPickerChange?: (isOpen: boolean) => void
   retractMessage: (conversationId: string, messageId: string) => Promise<void>
+  retryMessage: (conversationId: string, messageId: string) => Promise<void>
   isSelected?: boolean
   hasKeyboardSelection?: boolean
   showToolbarForSelection?: boolean
@@ -567,6 +572,7 @@ const ChatMessageBubble = memo(function ChatMessageBubble({
   hideToolbar,
   onReactionPickerChange,
   retractMessage,
+  retryMessage,
   isSelected,
   hasKeyboardSelection,
   showToolbarForSelection,
@@ -690,6 +696,7 @@ const ChatMessageBubble = memo(function ChatMessageBubble({
       onReply={() => onReply(message)}
       onEdit={() => onEdit(message)}
       onDelete={async () => retractMessage(conversationId, message.id)}
+      onRetry={message.deliveryError ? () => { void retryMessage(conversationId, message.id) } : undefined}
       onMediaLoad={onMediaLoad}
       replyContext={replyContext}
       onReactionPickerChange={onReactionPickerChange}

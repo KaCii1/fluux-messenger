@@ -404,7 +404,11 @@
             "many": "{{name1}}, {{name2}} a {{count}} dalších píše..."
         },
         "showMore": "Zobrazit více",
-        "showLess": "Zobrazit méně"
+        "showLess": "Zobrazit méně",
+        "deliveryFailed": "Message not delivered",
+        "viewError": "View error",
+        "retry": "Retry",
+        "errorDetails": "Error: {{error}}"
     },
     "dates": {
         "today": "Dnes",
