@@ -20,6 +20,7 @@ This document lists the XMPP Extension Protocols (XEPs) and related RFCs impleme
 | [XEP-0156](https://xmpp.org/extensions/xep-0156.html) | Discovering Alternative XMPP Connection Methods | ✅ Implemented | Auto-discovers WebSocket endpoint via host-meta (HTTPS-only for security)                                   |
 | [XEP-0198](https://xmpp.org/extensions/xep-0198.html) | Stream Management                               | ✅ Implemented | Session resumption, message delivery reliability, ack tracking                                              |
 | [XEP-0199](https://xmpp.org/extensions/xep-0199.html) | XMPP Ping                                       | ✅ Implemented | Responds to server/contact pings, uses ping for connection liveness checks                                  |
+| [XEP-0202](https://xmpp.org/extensions/xep-0202.html) | Entity Time                                     | ✅ Implemented | Responds to entity time queries with local timezone offset and UTC time                                     |
 | [XEP-0280](https://xmpp.org/extensions/xep-0280.html) | Message Carbons                                 | ✅ Implemented | Sync messages across multiple connected clients                                                             |
 | [XEP-0368](https://xmpp.org/extensions/xep-0368.html) | SRV Records for XMPP over TLS                   | ✅ Implemented | Desktop: SRV lookup for `_xmpps-client._tcp` (direct TLS) and `_xmpp-client._tcp` (STARTTLS) via Rust proxy |
 
