@@ -12,6 +12,7 @@ import {
 import { useConnectionStore, useChatStore, useRoomStore, useEventsStore, useAdminStore } from '@fluux/sdk/react'
 import { AdminDashboard } from './AdminDashboard'
 import { BrowseRoomsModal } from './BrowseRoomsModal'
+import { JoinRoomModal } from './JoinRoomModal'
 import { Avatar } from './Avatar'
 import { Tooltip } from './Tooltip'
 import { AddContactModal } from './AddContactModal'
@@ -31,6 +32,7 @@ import {
   Wrench,
   Zap,
   Search,
+  LogIn,
   Ban,
   UserPlus,
 } from 'lucide-react'
@@ -133,6 +135,7 @@ export function Sidebar({ onSelectContact, onStartChat, onManageUser, adminCateg
   // Local UI state (not shared)
   const [showCreateRoom, setShowCreateRoom] = useState(false)
   const [showBrowseRooms, setShowBrowseRooms] = useState(false)
+  const [showJoinRoom, setShowJoinRoom] = useState(false)
   const [showRoomDropdown, setShowRoomDropdown] = useState(false)
   const roomDropdownRef = useRef<HTMLDivElement>(null)
   const [showContactDropdown, setShowContactDropdown] = useState(false)
@@ -362,6 +365,14 @@ export function Sidebar({ onSelectContact, onStartChat, onManageUser, adminCateg
                     <Hash className="w-4 h-4 text-fluux-muted" />
                     <span>{t('rooms.permanentRoom')}</span>
                   </button>
+                  <div className="border-t border-fluux-hover my-1" />
+                  <button
+                    onClick={() => { setShowRoomDropdown(false); setShowJoinRoom(true) }}
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-fluux-hover flex items-center gap-2"
+                  >
+                    <LogIn className="w-4 h-4 text-fluux-muted" />
+                    <span>{t('rooms.joinRoom')}</span>
+                  </button>
                   <button
                     onClick={() => { setShowRoomDropdown(false); setShowBrowseRooms(true) }}
                     className="w-full px-3 py-2 text-left text-sm hover:bg-fluux-hover flex items-center gap-2"
@@ -521,6 +532,11 @@ export function Sidebar({ onSelectContact, onStartChat, onManageUser, adminCateg
       {/* Quick Chat Modal */}
       {showQuickChat && (
         <CreateQuickChatModal onClose={() => modalActions.close('quickChat')} />
+      )}
+
+      {/* Join Room Modal */}
+      {showJoinRoom && (
+        <JoinRoomModal onClose={() => setShowJoinRoom(false)} />
       )}
 
       {/* Browse Rooms Modal */}

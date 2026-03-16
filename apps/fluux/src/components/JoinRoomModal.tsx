@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useConnection, useRoom } from '@fluux/sdk'
+import { useChatStore } from '@fluux/sdk/react'
 import { useModalInput } from '@/hooks'
 import { ModalShell } from './ModalShell'
 
@@ -10,8 +11,9 @@ interface JoinRoomModalProps {
 
 export function JoinRoomModal({ onClose }: JoinRoomModalProps) {
   const { t } = useTranslation()
-  const { jid: userJid } = useConnection()
-  const { joinRoom } = useRoom()
+  const { jid: userJid, ownNickname } = useConnection()
+  const { joinRoom, setActiveRoom } = useRoom()
+  const setActiveConversation = useChatStore((s) => s.setActiveConversation)
   const [roomJid, setRoomJid] = useState('')
   const [nickname, setNickname] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -19,13 +21,18 @@ export function JoinRoomModal({ onClose }: JoinRoomModalProps) {
   const inputRef = useModalInput<HTMLInputElement>()
   const nicknameInitialized = useRef(false)
 
-  // Default nickname from user JID (only once)
+  // Default nickname from PEP nickname or user JID (only once)
   useEffect(() => {
-    if (userJid && !nicknameInitialized.current) {
-      setNickname(userJid.split('@')[0])
-      nicknameInitialized.current = true
+    if (!nicknameInitialized.current) {
+      if (ownNickname) {
+        setNickname(ownNickname)
+        nicknameInitialized.current = true
+      } else if (userJid) {
+        setNickname(userJid.split('@')[0])
+        nicknameInitialized.current = true
+      }
     }
-  }, [userJid])
+  }, [ownNickname, userJid])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -53,6 +60,8 @@ export function JoinRoomModal({ onClose }: JoinRoomModalProps) {
     setJoining(true)
     try {
       await joinRoom(trimmedRoomJid, trimmedNickname)
+      void setActiveConversation(null)
+      void setActiveRoom(trimmedRoomJid)
       onClose()
     } catch (err) {
       setError(err instanceof Error ? err.message : t('rooms.failedToJoinRoom'))

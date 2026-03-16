@@ -4,14 +4,26 @@ import { JoinRoomModal } from './JoinRoomModal'
 
 // Mock the SDK hooks
 const mockJoinRoom = vi.fn()
+const mockSetActiveRoom = vi.fn()
+const mockSetActiveConversation = vi.fn()
 let mockUserJid = 'testuser@example.com'
+let mockOwnNickname: string | null = null
 
 vi.mock('@fluux/sdk', () => ({
   useConnection: () => ({
     jid: mockUserJid,
+    ownNickname: mockOwnNickname,
   }),
   useRoom: () => ({
     joinRoom: mockJoinRoom,
+    setActiveRoom: mockSetActiveRoom,
+  }),
+}))
+
+vi.mock('@fluux/sdk/react', () => ({
+  useChatStore: vi.fn((selector: (s: Record<string, unknown>) => unknown) => {
+    const state = { setActiveConversation: mockSetActiveConversation }
+    return selector ? selector(state) : state
   }),
 }))
 
@@ -33,6 +45,7 @@ describe('JoinRoomModal', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockUserJid = 'testuser@example.com'
+    mockOwnNickname = null
   })
 
   describe('rendering', () => {
@@ -81,6 +94,15 @@ describe('JoinRoomModal', () => {
       const nicknameInput = screen.getByLabelText('rooms.nickname')
       // split('@')[0] gives 'bob.smith'
       expect(nicknameInput).toHaveValue('bob.smith')
+    })
+
+    it('should prefer PEP nickname over JID local part', () => {
+      mockUserJid = 'alice@chat.example.com'
+      mockOwnNickname = 'Alice Wonder'
+      render(<JoinRoomModal onClose={mockOnClose} />)
+
+      const nicknameInput = screen.getByLabelText('rooms.nickname')
+      expect(nicknameInput).toHaveValue('Alice Wonder')
     })
 
     it('should allow user to change the default nickname', () => {
