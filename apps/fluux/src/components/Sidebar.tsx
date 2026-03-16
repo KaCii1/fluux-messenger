@@ -5,6 +5,7 @@ import { useClickOutside, useWindowDrag, useRouteSync } from '@/hooks'
 import { useModals } from '@/contexts'
 import {
   useXMPP,
+  connectionStore,
   type Contact,
   type AdminCategory,
 } from '@fluux/sdk'
@@ -472,6 +473,10 @@ export function Sidebar({ onSelectContact, onStartChat, onManageUser, adminCateg
                   // clearLocalData() clears session at the end of cleanup.
                   await clearLocalData().catch(() => {})
                 } else {
+                  // Reset connection store so App re-renders and routes to LoginScreen.
+                  // (clearLocalData already resets stores in the clean path.)
+                  connectionStore.getState().reset()
+
                   const keychainSettled = await Promise.race([
                     deleteCredentials().then(() => 'done' as const).catch(() => 'error' as const),
                     new Promise<'timeout'>((resolve) => {
