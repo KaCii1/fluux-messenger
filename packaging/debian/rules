@@ -52,5 +52,7 @@ override_dh_auto_test:
 	# Skip tests during package build
 
 override_dh_shlibdeps:
-	# Use correct library paths for cross-compilation
-	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
+	# Skip automatic shared library dependency detection entirely.
+	# The build host (Ubuntu 22.04) generates version constraints too strict
+	# for older distros (e.g., libglib2.0-0 >= 2.72 fails on Linux Mint 20).
+	# All runtime dependencies are listed explicitly in debian/control instead.

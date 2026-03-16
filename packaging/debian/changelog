@@ -1,7 +1,10 @@
-fluux-messenger (0.11.2-1) unstable; urgency=medium
+fluux-messenger (0.14.0-1) unstable; urgency=medium
 
-  * Add reply arrow and avatar to quoted message context
-  * Keyboard shortcut improvements
-  * Increase thumbnail resolution
+  * MUC room creation, configuration, destruction, and user management
+  * XEP-0425 Message Moderation support
+  * XEP-0054 vCard display and editing
+  * Per-room ignored user management
+  * Font size setting and mobile layout improvements
+  * Fix deb dependency detection for older Linux distros
 
- -- ProcessOne <contact@process-one.net>  Fri, 31 Jan 2026 12:00:00 +0000
+ -- ProcessOne <contact@process-one.net>  Sun, 16 Mar 2026 12:00:00 +0000

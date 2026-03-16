@@ -1,5 +1,5 @@
 Name:           fluux-messenger
-Version:        0.12.1
+Version:        0.14.0
 Release:        1%{?dist}
 Summary:        Modern XMPP desktop client
 
@@ -10,6 +10,7 @@ Source0:        fluux-messenger-%{version}.tar.gz
 # Runtime dependencies
 Requires:       webkit2gtk4.1
 Requires:       gtk3
+Requires:       glib2
 Requires:       libappindicator-gtk3
 
 # Disable automatic dependency generation (we use pre-built binary)
@@ -53,5 +54,9 @@ install -Dm644 icons/256x256.png %{buildroot}%{_datadir}/icons/hicolor/256x256/a
 %{_datadir}/icons/hicolor/*/apps/fluux-messenger.png
 
 %changelog
+* Sun Mar 16 2026 ProcessOne <contact@process-one.net> - 0.14.0-1
+- MUC room management, message moderation, vCard support
+- Fix dependency compatibility for older distros
+
 * Tue Feb 11 2025 ProcessOne <contact@process-one.net> - 0.12.1-1
 - See https://github.com/processone/fluux-messenger/blob/main/CHANGELOG.md

@@ -90,6 +90,11 @@
   </content_rating>
 
   <releases>
+    <release version="0.14.0" date="2026-03-16">
+      <description>
+        <p>MUC room management, message moderation, vCard support, and dependency fixes for older Linux distros.</p>
+      </description>
+    </release>
     <release version="0.12.1" date="2026-02-11">
       <description>
         <p>Linux packaging improvements and bug fixes.</p>
