@@ -157,6 +157,7 @@ vi.mock('@fluux/sdk/react', () => ({
     mockContacts.forEach((c: Contact) => contactsMap.set(c.jid, c))
     return selector({ contacts: contactsMap })
   },
+  useContactTime: () => null,
 }))
 
 // Mock app hooks

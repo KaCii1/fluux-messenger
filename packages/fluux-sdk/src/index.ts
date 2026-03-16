@@ -103,6 +103,7 @@ export { useSystemState } from './hooks/useSystemState'
 export type { UseSystemStateReturn, SystemState } from './hooks/useSystemState'
 export { useNotificationEvents } from './hooks/useNotificationEvents'
 export type { NotificationEventHandlers } from './hooks/useNotificationEvents'
+export { useContactTime } from './hooks/useContactTime'
 
 // Fine-grained metadata subscription hooks (Phase 6)
 export {
@@ -468,6 +469,8 @@ export {
   NS_HATS,
   // XEP-0199: XMPP Ping
   NS_PING,
+  // XEP-0202: Entity Time
+  NS_TIME,
   // XEP-0191: Blocking Command
   NS_BLOCKING,
   // p1:push: ejabberd Push Notifications

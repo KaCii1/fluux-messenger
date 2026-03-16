@@ -96,6 +96,7 @@ import { Blocking } from './modules/Blocking'
 import { Ignore } from './modules/Ignore'
 import { ConversationSync, type SyncedConversation } from './modules/ConversationSync'
 import { WebPush } from './modules/WebPush'
+import { EntityTime } from './modules/EntityTime'
 import { MAM } from './modules/MAM'
 import { NS_CARBONS, NS_MAM, NS_P1_PUSH_WEBPUSH } from './namespaces'
 import { createDefaultStoreBindings, type DefaultStoreBindingsOptions } from './defaultStoreBindings'
@@ -243,6 +244,12 @@ export class XMPPClient {
    * Handles VAPID-based push notification registration with ejabberd Business Edition.
    */
   public webPush!: WebPush
+
+  /**
+   * Entity Time module (XEP-0202).
+   * Queries contacts for their local time and caches timezone offsets.
+   */
+  public entityTime!: EntityTime
 
   /**
    * Message Archive Management module (XEP-0313).
@@ -560,6 +567,7 @@ export class XMPPClient {
     this.ignore = new Ignore(moduleDeps)
     this.conversationSync = new ConversationSync(moduleDeps)
     this.webPush = new WebPush(moduleDeps)
+    this.entityTime = new EntityTime(moduleDeps)
 
     // Set up post-connection handler
     this.connection.setConnectionSuccessHandler(async (isResumption, previouslyJoinedRooms) => {
@@ -875,6 +883,7 @@ export class XMPPClient {
     this.currentJid = null
     // Clear session-scoped tracking data
     this.xep0084AvatarChecked.clear()
+    this.entityTime?.clearCache()
     return this.connection.disconnect()
   }
 

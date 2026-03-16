@@ -351,4 +351,5 @@ vi.mock('@fluux/sdk/react', () => ({
     }
     return selector ? selector(state) : state
   }),
+  useContactTime: vi.fn(() => null),
 }))

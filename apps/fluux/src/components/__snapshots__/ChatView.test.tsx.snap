@@ -23,11 +23,15 @@ exports[`ChatView > Snapshots > should match snapshot with messages 1`] = `
         >
           Alice Smith
         </h2>
-        <p
-          class="text-xs text-fluux-muted truncate"
+        <div
+          class="flex items-center gap-1.5"
         >
-          Online
-        </p>
+          <p
+            class="text-xs text-fluux-muted truncate"
+          >
+            Online
+          </p>
+        </div>
       </div>
     </header>
     <div
@@ -428,11 +432,15 @@ exports[`ChatView > Snapshots > should match snapshot with typing indicator 1`] 
         >
           Alice Smith
         </h2>
-        <p
-          class="text-xs text-fluux-muted truncate"
+        <div
+          class="flex items-center gap-1.5"
         >
-          Online
-        </p>
+          <p
+            class="text-xs text-fluux-muted truncate"
+          >
+            Online
+          </p>
+        </div>
       </div>
     </header>
     <div

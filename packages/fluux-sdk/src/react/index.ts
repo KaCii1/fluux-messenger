@@ -54,6 +54,7 @@ export { useSystemState } from '../hooks/useSystemState'
 export type { UseSystemStateReturn, SystemState } from '../hooks/useSystemState'
 export { useNotificationEvents } from '../hooks/useNotificationEvents'
 export type { NotificationEventHandlers } from '../hooks/useNotificationEvents'
+export { useContactTime } from '../hooks/useContactTime'
 
 // Fine-grained metadata subscription hooks
 export {
