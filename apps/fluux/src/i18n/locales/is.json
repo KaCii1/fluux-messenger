@@ -74,7 +74,8 @@
         "yesterday": "í gær",
         "daysAgo": "{{count}} d síðan",
         "weeksAgo": "{{count}} v síðan",
-        "changeStatus": "Breyta stöðu"
+        "changeStatus": "Breyta stöðu",
+        "localTime": "Staðartími tengiliðs"
     },
     "status": {
         "reconnecting": "Endurtengist...",

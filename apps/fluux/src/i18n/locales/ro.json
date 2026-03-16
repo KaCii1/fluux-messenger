@@ -74,7 +74,8 @@
         "yesterday": "ieri",
         "daysAgo": "acum {{count}}z",
         "weeksAgo": "acum {{count}}s",
-        "changeStatus": "Schimbă starea"
+        "changeStatus": "Schimbă starea",
+        "localTime": "Ora locală a contactului"
     },
     "status": {
         "reconnecting": "Se reconectează...",

@@ -74,7 +74,8 @@
         "yesterday": "вчора",
         "daysAgo": "{{count}} дн тому",
         "weeksAgo": "{{count}} тиж тому",
-        "changeStatus": "Змінити статус"
+        "changeStatus": "Змінити статус",
+        "localTime": "Місцевий час контакту"
     },
     "status": {
         "reconnecting": "Перепідключення...",

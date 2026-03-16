@@ -74,7 +74,8 @@
         "yesterday": "vakar",
         "daysAgo": "pirms {{count}} d",
         "weeksAgo": "pirms {{count}} ned",
-        "changeStatus": "Mainīt statusu"
+        "changeStatus": "Mainīt statusu",
+        "localTime": "Kontaktpersonas vietējais laiks"
     },
     "status": {
         "reconnecting": "Atkārtoti savienojas...",

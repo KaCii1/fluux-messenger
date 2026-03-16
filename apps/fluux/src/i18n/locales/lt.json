@@ -74,7 +74,8 @@
         "yesterday": "vakar",
         "daysAgo": "prieš {{count}}d",
         "weeksAgo": "prieš {{count}}sav",
-        "changeStatus": "Keisti būseną"
+        "changeStatus": "Keisti būseną",
+        "localTime": "Kontakto vietinis laikas"
     },
     "status": {
         "reconnecting": "Jungiamasi iš naujo...",

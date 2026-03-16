@@ -74,7 +74,8 @@
         "yesterday": "eilen",
         "daysAgo": "{{count}}pv sitten",
         "weeksAgo": "{{count}}vk sitten",
-        "changeStatus": "Vaihda tila"
+        "changeStatus": "Vaihda tila",
+        "localTime": "Yhteystiedon paikallinen aika"
     },
     "status": {
         "reconnecting": "Yhdistetään uudelleen...",

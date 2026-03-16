@@ -74,7 +74,8 @@
         "yesterday": "hier",
         "daysAgo": "il y a {{count}}j",
         "weeksAgo": "il y a {{count}}sem",
-        "changeStatus": "Changer le statut"
+        "changeStatus": "Changer le statut",
+        "localTime": "Heure locale du contact"
     },
     "status": {
         "reconnecting": "Reconnexion...",

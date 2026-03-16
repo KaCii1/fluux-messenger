@@ -74,7 +74,8 @@
         "yesterday": "ahir",
         "daysAgo": "fa {{count}}d",
         "weeksAgo": "fa {{count}}s",
-        "changeStatus": "Canvia l'estat"
+        "changeStatus": "Canvia l'estat",
+        "localTime": "Hora local del contacte"
     },
     "status": {
         "reconnecting": "Reconnectant...",

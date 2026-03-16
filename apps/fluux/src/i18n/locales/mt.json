@@ -74,7 +74,8 @@
         "yesterday": "ilbieraħ",
         "daysAgo": "{{count}}j ilu",
         "weeksAgo": "{{count}}ġ ilu",
-        "changeStatus": "Ibdel l-istatus"
+        "changeStatus": "Ibdel l-istatus",
+        "localTime": "Il-ħin lokali tal-kuntatt"
     },
     "status": {
         "reconnecting": "Qed jerġa' jikkonnettja...",

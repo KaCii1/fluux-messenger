@@ -74,7 +74,8 @@
         "yesterday": "včera",
         "daysAgo": "před {{count}} dny",
         "weeksAgo": "před {{count}} týd",
-        "changeStatus": "Změnit stav"
+        "changeStatus": "Změnit stav",
+        "localTime": "Místní čas kontaktu"
     },
     "status": {
         "reconnecting": "Opětovné připojování...",

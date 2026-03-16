@@ -74,7 +74,8 @@
         "yesterday": "gisteren",
         "daysAgo": "{{count}}d geleden",
         "weeksAgo": "{{count}}w geleden",
-        "changeStatus": "Status wijzigen"
+        "changeStatus": "Status wijzigen",
+        "localTime": "Lokale tijd van contact"
     },
     "status": {
         "reconnecting": "Opnieuw verbinden...",

@@ -241,7 +241,7 @@ export function UserInfoPopover({ contact, jid, occupantJid, role, affiliation, 
           {contactTime && (
             <div className="flex items-center gap-1.5 text-xs text-fluux-muted mb-2">
               <Clock className="w-3 h-3 shrink-0" />
-              <span>{t('Local time')}: {contactTime}</span>
+              <span>{t('presence.localTime')}: {contactTime}</span>
             </div>
           )}
 

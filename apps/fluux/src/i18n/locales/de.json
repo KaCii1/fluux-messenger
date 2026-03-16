@@ -74,7 +74,8 @@
         "yesterday": "gestern",
         "daysAgo": "vor {{count}} Tagen",
         "weeksAgo": "vor {{count}} Wochen",
-        "changeStatus": "Status ändern"
+        "changeStatus": "Status ändern",
+        "localTime": "Ortszeit des Kontakts"
     },
     "status": {
         "reconnecting": "Verbindung wird wiederhergestellt...",

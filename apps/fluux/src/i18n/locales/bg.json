@@ -74,7 +74,8 @@
         "yesterday": "вчера",
         "daysAgo": "преди {{count}}д",
         "weeksAgo": "преди {{count}}с",
-        "changeStatus": "Промени статус"
+        "changeStatus": "Промени статус",
+        "localTime": "Местно време на контакта"
     },
     "status": {
         "reconnecting": "Повторно свързване...",

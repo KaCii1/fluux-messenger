@@ -74,7 +74,8 @@
         "yesterday": "inné",
         "daysAgo": "{{count}}l ó shin",
         "weeksAgo": "{{count}}s ó shin",
-        "changeStatus": "Athraigh stádas"
+        "changeStatus": "Athraigh stádas",
+        "localTime": "Am áitiúil an teagmhálaí"
     },
     "status": {
         "reconnecting": "Ag athcheangal...",

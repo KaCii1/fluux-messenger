@@ -74,7 +74,8 @@
         "yesterday": "tegnap",
         "daysAgo": "{{count}} napja",
         "weeksAgo": "{{count}} hete",
-        "changeStatus": "Állapot módosítása"
+        "changeStatus": "Állapot módosítása",
+        "localTime": "A kapcsolat helyi ideje"
     },
     "status": {
         "reconnecting": "Újracsatlakozás...",

@@ -10,7 +10,8 @@ import { useRosterStore, useContactTime } from '@fluux/sdk/react'
 import { Avatar } from './Avatar'
 import { useWindowDrag } from '@/hooks'
 import { getTranslatedStatusText } from '@/utils/statusText'
-import { ArrowLeft, Hash } from 'lucide-react'
+import { Tooltip } from './Tooltip'
+import { ArrowLeft, Clock, Hash } from 'lucide-react'
 
 export interface ChatHeaderProps {
   name: string
@@ -75,9 +76,11 @@ export function ChatHeader({
               {fullContact ? getTranslatedStatusText(fullContact, t) : jid}
             </p>
             {contactTime && (
-              <span className="text-xs text-fluux-muted flex-shrink-0">
-                · {contactTime}
-              </span>
+              <Tooltip content={t('presence.localTime')} position="bottom" className="inline-flex items-center">
+                <span className="text-xs text-fluux-muted flex-shrink-0 flex items-center gap-1">
+                  · <Clock className="w-3 h-3" />{contactTime}
+                </span>
+              </Tooltip>
             )}
           </div>
         )}
