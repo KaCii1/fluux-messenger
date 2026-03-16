@@ -230,7 +230,6 @@
         "addMember": "Añadir",
         "jidPlaceholder": "user@example.com",
         "removeAffiliation": "Eliminar afiliación",
-        "unban": "Desbanear",
         "kick": "Expulsar",
         "ban": "Banear",
         "grantVoice": "Conceder voz",
@@ -283,14 +282,9 @@
             "visitor": "Visitante"
         },
         "sendPrivateMessage": "Send private message",
-        "copyJid": "Copy JID",
-        "jidCopied": "JID copied",
         "ignoreUser": "Ignore in this room",
         "stopIgnoring": "Stop ignoring",
-        "blockUser": "Block user",
-        "ignored": "ignored",
         "subject": "Subject",
-        "subjectPlaceholder": "Room subject or topic",
         "saveSettings": "Save Settings",
         "savingSettings": "Saving...",
         "fetchConfigError": "Failed to load room configuration. You may not have owner permissions.",
@@ -520,7 +514,6 @@
         "copyVersionInfo": "Copiar info de version"
     },
     "profile": {
-        "title": "Mi Perfil",
         "changeAvatar": "Cambiar avatar",
         "removeAvatar": "Eliminar avatar",
         "removingAvatar": "Eliminando...",
