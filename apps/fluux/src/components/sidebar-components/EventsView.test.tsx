@@ -68,6 +68,7 @@ vi.mock('@fluux/sdk/react', () => ({
     selector({ setActiveRoom: mockSetActiveRoom }),
   useConnectionStore: (selector: (state: { status: string }) => unknown) =>
     selector({ status: 'online' }),
+  useContactTime: () => null,
 }))
 
 // Mock react-i18next

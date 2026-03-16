@@ -8,10 +8,10 @@ import { useTranslation } from 'react-i18next'
 import { createPortal } from 'react-dom'
 import type { Contact, ContactIdentity, RoomAffiliation, RoomRole, VCardInfo } from '@fluux/sdk'
 import { useXMPP } from '@fluux/sdk'
-import { useConnectionStore } from '@fluux/sdk/react'
+import { useConnectionStore, useContactTime } from '@fluux/sdk/react'
 import { useClickOutside } from '@/hooks'
 import { getTranslatedShowText } from '@/utils/presence'
-import { Monitor, Smartphone, Tablet, Globe, HelpCircle, Shield, Crown, UserCheck, Building2, Mail, MapPin, Loader2 } from 'lucide-react'
+import { Monitor, Smartphone, Tablet, Globe, HelpCircle, Shield, Crown, UserCheck, Building2, Mail, MapPin, Clock, Loader2 } from 'lucide-react'
 
 export interface UserInfoPopoverProps {
   /** The contact to show info for (Contact has device info, ContactIdentity is identity-only) */
@@ -173,7 +173,12 @@ export function UserInfoPopover({ contact, jid, occupantJid, role, affiliation, 
     }
   }
 
-  const displayJid = contact?.jid || jid || (occupantJid?.split('/').pop())
+  // Query entity time using the real JID (not occupant nick JID)
+  // Only query when the popover is open to avoid unnecessary traffic
+  const realJid = contact?.jid || jid
+  const contactTime = useContactTime(isOpen && realJid ? realJid : null)
+
+  const displayJid = realJid || (occupantJid?.split('/').pop())
 
   return (
     <>
@@ -229,6 +234,14 @@ export function UserInfoPopover({ contact, jid, occupantJid, role, affiliation, 
                   <span className="truncate">{vcard.country}</span>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Local time (XEP-0202) */}
+          {contactTime && (
+            <div className="flex items-center gap-1.5 text-xs text-fluux-muted mb-2">
+              <Clock className="w-3 h-3 shrink-0" />
+              <span>{t('Local time')}: {contactTime}</span>
             </div>
           )}
 
