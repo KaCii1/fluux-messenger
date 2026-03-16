@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback, memo, type RefObject } from 'react'
 import { useTranslation } from 'react-i18next'
 import { detectRenderLoop } from '@/utils/renderLoopDetector'
-import { useRoomActive, useRoster, useRoom, getBareJid, generateConsistentColorHexSync, getPresenceFromShow, createMessageLookup, isMessageFromIgnoredUser, isReplyToIgnoredUser, canKick, canBan, canModerate, getAvailableAffiliations, getAvailableRoles, type RoomMessage, type Room, type MentionReference, type ChatStateNotification, type Contact, type FileAttachment, type RoomAffiliation, type RoomRole } from '@fluux/sdk'
+import { useRoomActive, useRoster, getBareJid, generateConsistentColorHexSync, getPresenceFromShow, createMessageLookup, isMessageFromIgnoredUser, isReplyToIgnoredUser, canKick, canBan, canModerate, getAvailableAffiliations, getAvailableRoles, type RoomMessage, type Room, type MentionReference, type ChatStateNotification, type Contact, type FileAttachment, type RoomAffiliation, type RoomRole } from '@fluux/sdk'
 import { useConnectionStore, useIgnoreStore } from '@fluux/sdk/react'
 import { ignoreStore, type IgnoredUser } from '@fluux/sdk/stores'
 import { useMentionAutocomplete, useFileUpload, useLinkPreview, useTypeToFocus, useMessageCopy, useMode, useMessageSelection, useDragAndDrop, useConversationDraft, useTimeFormat, useContextMenu, isSmallScreen } from '@/hooks'
@@ -57,7 +57,7 @@ const MAX_ROOM_SIZE_FOR_TYPING = 30
 export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = false, onShowOccupantsChange, onStartChat, onShowProfile }: RoomViewProps) {
   detectRenderLoop('RoomView')
   const { t } = useTranslation()
-  const { activeRoom, activeMessages, activeTypingUsers, sendMessage, sendReaction, sendCorrection, retractMessage, moderateMessage, sendChatState, setRoomNotifyAll, activeAnimation, sendEasterEgg, clearAnimation, clearFirstNewMessageId, updateLastSeenMessageId, joinRoom, setRoomAvatar, clearRoomAvatar, fetchOlderHistory, activeMAMState, submitRoomConfig, setSubject, destroyRoom } = useRoomActive()
+  const { activeRoom, activeMessages, activeTypingUsers, sendMessage, sendReaction, sendCorrection, retractMessage, moderateMessage, sendChatState, setRoomNotifyAll, activeAnimation, sendEasterEgg, clearAnimation, clearFirstNewMessageId, updateLastSeenMessageId, joinRoom, setRoomAvatar, clearRoomAvatar, fetchOlderHistory, activeMAMState, submitRoomConfig, setSubject, destroyRoom, setAffiliation, setRole } = useRoomActive()
   const { contacts } = useRoster()
   // NOTE: Use focused selectors instead of useConnection() hook to avoid
   // re-renders when unrelated connection state changes (error, reconnectAttempt, etc.)
@@ -138,7 +138,8 @@ export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = 
   const nickMenu = useContextMenu()
   const [nickMenuTarget, setNickMenuTarget] = useState<string | null>(null) // nick string
   const [nickModerationTarget, setNickModerationTarget] = useState<string | null>(null)
-  const { setAffiliation, setRole } = useRoom()
+  // setAffiliation and setRole are now from useRoomActive() to avoid subscribing
+  // to list-level selectors that cause render loops when other rooms update
   const addToast = useToastStore((s) => s.addToast)
 
   const handleNickContextMenu = useCallback((nick: string, e: React.MouseEvent) => {
@@ -355,6 +356,7 @@ export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = 
             onNickContextMenu={handleNickContextMenu}
             onNickTouchStart={handleNickTouchStart}
             onNickTouchEnd={handleNickTouchEnd}
+            setAffiliation={setAffiliation}
           />
         </div>
 
@@ -581,6 +583,7 @@ const RoomMessageList = memo(function RoomMessageList({
   onNickContextMenu,
   onNickTouchStart,
   onNickTouchEnd,
+  setAffiliation,
 }: {
   messages: RoomMessage[]
   messagesById: Map<string, RoomMessage>
@@ -615,6 +618,7 @@ const RoomMessageList = memo(function RoomMessageList({
   onNickContextMenu?: (nick: string, e: React.MouseEvent) => void
   onNickTouchStart?: (nick: string, e: React.TouchEvent) => void
   onNickTouchEnd?: () => void
+  setAffiliation: (roomJid: string, userJid: string, affiliation: RoomAffiliation, reason?: string) => Promise<void>
 }) {
   const { t } = useTranslation()
   const { formatTime, effectiveTimeFormat } = useTimeFormat()
@@ -728,13 +732,14 @@ const RoomMessageList = memo(function RoomMessageList({
       onNickContextMenu={onNickContextMenu}
       onNickTouchStart={onNickTouchStart}
       onNickTouchEnd={onNickTouchEnd}
+      setAffiliation={setAffiliation}
     />
   ), [
     messagesById, room, contactsByJid, ownAvatar, sendReaction, onReply, onEdit,
     lastOutgoingMessageId, lastMessageId, isComposing, activeReactionPickerMessageId,
     onReactionPickerChange, retractMessage, moderateMessage, selectedMessageId, hasKeyboardSelection,
     showToolbarForSelection, isDarkMode, onMediaLoad, hoveredMessageId, handleMessageHover, handleMessageLeave,
-    formatTime, effectiveTimeFormat, onNickContextMenu, onNickTouchStart, onNickTouchEnd
+    formatTime, effectiveTimeFormat, onNickContextMenu, onNickTouchStart, onNickTouchEnd, setAffiliation
   ])
 
   return (
@@ -792,6 +797,8 @@ interface RoomMessageBubbleWrapperProps {
   onNickContextMenu?: (nick: string, e: React.MouseEvent) => void
   onNickTouchStart?: (nick: string, e: React.TouchEvent) => void
   onNickTouchEnd?: () => void
+  // Affiliation action (passed from parent to avoid useRoom() subscription)
+  setAffiliation: (roomJid: string, userJid: string, affiliation: RoomAffiliation, reason?: string) => Promise<void>
 }
 
 const RoomMessageBubbleWrapper = memo(function RoomMessageBubbleWrapper({
@@ -823,9 +830,9 @@ const RoomMessageBubbleWrapper = memo(function RoomMessageBubbleWrapper({
   onNickContextMenu,
   onNickTouchStart,
   onNickTouchEnd,
+  setAffiliation,
 }: RoomMessageBubbleWrapperProps) {
   const { t } = useTranslation()
-  const { setAffiliation } = useRoom()
 
   // Moderation confirmation state
   const [showModerateConfirm, setShowModerateConfirm] = useState(false)

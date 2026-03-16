@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { roomStore } from '../stores'
 import { useRoomStore } from '../react/storeHooks'
 import { useXMPPContext } from '../provider'
-import type { Room, RoomMessage, MentionReference, ChatStateNotification, FileAttachment, MAMQueryState } from '../core/types'
+import type { Room, RoomMessage, MentionReference, ChatStateNotification, FileAttachment, MAMQueryState, RoomAffiliation, RoomRole } from '../core/types'
 import { createFetchOlderHistory } from './shared'
 
 /**
@@ -266,6 +266,20 @@ export function useRoomActive() {
     [client]
   )
 
+  const setAffiliation = useCallback(
+    async (roomJid: string, userJid: string, affiliation: RoomAffiliation, reason?: string) => {
+      await client.muc.setAffiliation(roomJid, userJid, affiliation, reason)
+    },
+    [client]
+  )
+
+  const setRole = useCallback(
+    async (roomJid: string, nick: string, role: RoomRole, reason?: string) => {
+      await client.muc.setRole(roomJid, nick, role, reason)
+    },
+    [client]
+  )
+
   /**
    * Fetch older room history (pagination) - for lazy loading on scroll up.
    */
@@ -322,6 +336,8 @@ export function useRoomActive() {
       submitRoomConfig,
       setSubject,
       destroyRoom,
+      setAffiliation,
+      setRole,
     }),
     [
       joinRoom,
@@ -347,6 +363,8 @@ export function useRoomActive() {
       submitRoomConfig,
       setSubject,
       destroyRoom,
+      setAffiliation,
+      setRole,
     ]
   )
 
