@@ -76,20 +76,26 @@ export function useContactTime(bareJid: string | null): string | null {
     }
 
     const computeTime = () => {
-      const now = new Date()
-      // Compute the contact's local time using their UTC offset
-      // Date.now() is UTC epoch, contact's local time = UTC + their offset
-      const contactUtcMs = now.getTime() + now.getTimezoneOffset() * 60000
-      const contactLocalMs = contactUtcMs + offsetMinutes * 60000
+      // Contact's local time = UTC + their offset (in minutes)
+      const contactLocalMs = Date.now() + offsetMinutes * 60000
       const contactDate = new Date(contactLocalMs)
 
-      setTime(
-        contactDate.toLocaleTimeString(undefined, {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: undefined, // Use locale default
-        })
-      )
+      // Use UTC methods to read the already-adjusted time,
+      // avoiding any double-application of browser timezone
+      const hours = contactDate.getUTCHours()
+      const minutes = contactDate.getUTCMinutes()
+
+      // Respect locale's 12h/24h preference
+      // Check if locale uses 12h format by formatting a known time
+      const probe = new Intl.DateTimeFormat(undefined, { hour: 'numeric' }).format(new Date(2000, 0, 1, 15))
+      const use12h = probe.includes('3')
+      if (use12h) {
+        const h12 = hours % 12 || 12
+        const ampm = hours < 12 ? 'AM' : 'PM'
+        setTime(`${h12}:${minutes.toString().padStart(2, '0')} ${ampm}`)
+      } else {
+        setTime(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`)
+      }
     }
 
     computeTime()
