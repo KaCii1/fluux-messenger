@@ -35,5 +35,8 @@
   },
   "dependencies": {
     "@tauri-apps/plugin-deep-link": "^2.4.5"
+  },
+  "overrides": {
+    "serialize-javascript": "^7.0.4"
   }
 }
