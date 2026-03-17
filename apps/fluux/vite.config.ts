@@ -117,6 +117,7 @@ export default defineConfig({
     exclude: ['@fluux/sdk'], // Don't pre-bundle local SDK so changes are picked up
   },
   build: {
+    modulePreload: false,
     rollupOptions: {
       onwarn(warning, warn) {
         // Suppress warnings about Node.js modules being externalized for browser compatibility
