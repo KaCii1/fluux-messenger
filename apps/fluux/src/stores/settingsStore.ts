@@ -20,7 +20,7 @@ const TIME_FORMAT_KEY = 'fluux-time-format'
 const FONT_SIZE_KEY = 'fluux-font-size'
 
 /**
- * Get initial theme mode from localStorage, default to 'dark'
+ * Get initial theme mode from localStorage, default to 'system'
  */
 function getInitialMode(): ThemeMode {
   try {
@@ -31,7 +31,7 @@ function getInitialMode(): ThemeMode {
   } catch {
     // localStorage not available
   }
-  return 'dark'
+  return 'system'
 }
 
 /**

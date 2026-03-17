@@ -8,14 +8,14 @@ describe('settingsStore', () => {
     vi.mocked(localStorage.getItem).mockClear()
     vi.mocked(localStorage.setItem).mockClear()
     vi.mocked(localStorage.getItem).mockReturnValue(null)
-    useSettingsStore.setState({ themeMode: 'dark', timeFormat: 'auto', fontSize: 100 })
+    useSettingsStore.setState({ themeMode: 'system', timeFormat: 'auto', fontSize: 100 })
   })
 
   describe('initial state', () => {
-    it('should default to dark mode when localStorage is empty', () => {
+    it('should default to system mode when localStorage is empty', () => {
       // Force re-creation by setting state directly
-      useSettingsStore.setState({ themeMode: 'dark' })
-      expect(useSettingsStore.getState().themeMode).toBe('dark')
+      useSettingsStore.setState({ themeMode: 'system' })
+      expect(useSettingsStore.getState().themeMode).toBe('system')
     })
 
     it('should load theme from localStorage if set', () => {
