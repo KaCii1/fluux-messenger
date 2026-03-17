@@ -122,12 +122,12 @@ const EMMA_MESSAGES: Message[] = (() => {
     {
       type: 'chat', id: 'demo-emma-2', from: conv, body: 'Yes! The new sidebar looks fantastic 🎨',
       timestamp: minutesAgo(43), isOutgoing: false, conversationId: conv,
-      reactions: { '🔥': [SELF_JID] },
+      reactions: { '🔥': [SELF_JID] } as Record<string, string[]>,
     },
     {
       type: 'chat', id: 'demo-emma-3', from: SELF_JID, body: 'Great — I was thinking we could ship it in the next beta',
       timestamp: minutesAgo(42), isOutgoing: true, conversationId: conv,
-      reactions: { '🚀': [conv], '👍': [conv] },
+      reactions: { '🚀': [conv], '👍': [conv] } as Record<string, string[]>,
     },
     {
       type: 'chat', id: 'demo-emma-4', from: conv, body: 'Sounds good. I\'ll update the design tokens this afternoon',
