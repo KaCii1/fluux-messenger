@@ -3,7 +3,6 @@ import { BaseModule, type ModuleDependencies } from './BaseModule'
 import { getBareJid, getLocalPart, getResource, isQuickChatJid } from '../jid'
 import { isMucJid } from '../../utils/xmppUri'
 import { generateUUID, generateStableMessageId } from '../../utils/uuid'
-import { isEntireBodyFallback } from '../../utils/fallbackUtils'
 import {
   NS_CHATSTATES,
   NS_CARBONS,
@@ -188,9 +187,9 @@ export class Chat extends BaseModule {
     const reactionsEl = stanza.getChild('reactions', NS_REACTIONS)
     if (reactionsEl) {
       this.handleIncomingReaction(reactionsEl, from, bareFrom, bareTo, type, isSentCarbon)
-      // Pure reaction: no body, or body is entirely fallback for reactions
-      // (body exists only for legacy clients that don't support XEP-0444)
-      if (!body || isEntireBodyFallback(stanza, NS_REACTIONS)) return { handled: true }
+      // Always treat reaction stanzas as handled — any body is fallback for legacy clients
+      // (some clients may not include <fallback for="urn:xmpp:reactions:0"> indication)
+      return { handled: true }
     }
 
     // Fastenings (Link Previews)
