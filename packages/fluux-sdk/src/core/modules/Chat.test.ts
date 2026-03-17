@@ -1051,10 +1051,9 @@ describe('XMPPClient Message', () => {
 
       // Should handle the reaction
       expect(emitSDKSpy).toHaveBeenCalledWith('chat:reactions', expect.anything())
-      // Without fallback indication, body is treated as a regular message too
-      expect(emitSDKSpy).toHaveBeenCalledWith('chat:message', expect.objectContaining({
-        message: expect.objectContaining({ body: '👍' }),
-      }))
+      // Reaction stanzas are always treated as handled — body is assumed to be
+      // fallback for legacy clients even without explicit fallback indication
+      expect(emitSDKSpy).not.toHaveBeenCalledWith('chat:message', expect.anything())
     })
 
     it('should handle groupchat reaction with body and reactions fallback', async () => {
