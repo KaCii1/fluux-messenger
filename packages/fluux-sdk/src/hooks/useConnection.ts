@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from 'react'
 import { connectionStore } from '../stores'
 import { useConnectionStore } from '../react/storeHooks'
 import { useXMPPContext } from '../provider'
@@ -110,89 +111,113 @@ export function useConnection() {
   // Web Push (p1:push:webpush)
   const webPushStatus = useConnectionStore((s) => s.webPushStatus)
 
-  const connect = async (
-    jid: string,
-    password: string,
-    server: string,
-    smState?: { id: string; inbound: number },
-    resource?: string,
-    lang?: string,
-    disableSmKeepalive?: boolean
-  ) => {
-    connectionStore.getState().setStatus('connecting')
-    connectionStore.getState().setError(null)
-    try {
-      await client.connect({ jid, password, server, resource, smState, lang, disableSmKeepalive })
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Connection failed'
-      connectionStore.getState().setStatus('error')
-      connectionStore.getState().setError(message)
-      throw err
-    }
-  }
+  const connect = useCallback(
+    async (
+      jid: string,
+      password: string,
+      server: string,
+      smState?: { id: string; inbound: number },
+      resource?: string,
+      lang?: string,
+      disableSmKeepalive?: boolean
+    ) => {
+      connectionStore.getState().setStatus('connecting')
+      connectionStore.getState().setError(null)
+      try {
+        await client.connect({ jid, password, server, resource, smState, lang, disableSmKeepalive })
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Connection failed'
+        connectionStore.getState().setStatus('error')
+        connectionStore.getState().setError(message)
+        throw err
+      }
+    },
+    [client]
+  )
 
-  const getStreamManagementState = () => {
+  const getStreamManagementState = useCallback(() => {
     return client.getStreamManagementState()
-  }
+  }, [client])
 
-  const disconnect = async () => {
+  const disconnect = useCallback(async () => {
     await client.disconnect()
-  }
+  }, [client])
 
-  const cancelReconnect = () => {
+  const cancelReconnect = useCallback(() => {
     client.cancelReconnect()
     connectionStore.getState().setStatus('disconnected')
     connectionStore.getState().setReconnectState(0, null)
-  }
+  }, [client])
 
 
-  const setOwnNickname = async (nickname: string) => {
-    await client.profile.publishOwnNickname(nickname)
-  }
+  const setOwnNickname = useCallback(
+    async (nickname: string) => {
+      await client.profile.publishOwnNickname(nickname)
+    },
+    [client]
+  )
 
-  const setOwnAvatar = async (imageData: Uint8Array, mimeType: string, width: number, height: number) => {
-    // Convert Uint8Array to base64 data URL
-    const base64 = btoa(String.fromCharCode(...Array.from(imageData)))
-    const dataUrl = `data:${mimeType};base64,${base64}`
-    await client.profile.publishOwnAvatar(dataUrl, mimeType, width, height)
-  }
+  const setOwnAvatar = useCallback(
+    async (imageData: Uint8Array, mimeType: string, width: number, height: number) => {
+      // Convert Uint8Array to base64 data URL
+      const base64 = btoa(String.fromCharCode(...Array.from(imageData)))
+      const dataUrl = `data:${mimeType};base64,${base64}`
+      await client.profile.publishOwnAvatar(dataUrl, mimeType, width, height)
+    },
+    [client]
+  )
 
-  const clearOwnAvatar = async () => {
+  const clearOwnAvatar = useCallback(async () => {
     await client.profile.clearOwnAvatar()
-  }
+  }, [client])
 
-  const clearOwnNickname = async () => {
+  const clearOwnNickname = useCallback(async () => {
     await client.profile.clearOwnNickname()
-  }
+  }, [client])
 
-  const fetchOwnVCard = async () => {
+  const fetchOwnVCard = useCallback(async () => {
     return client.profile.fetchOwnVCard()
-  }
+  }, [client])
 
-  const setOwnVCard = async (info: VCardInfo) => {
-    await client.profile.publishOwnVCard(info)
-  }
+  const setOwnVCard = useCallback(
+    async (info: VCardInfo) => {
+      await client.profile.publishOwnVCard(info)
+    },
+    [client]
+  )
 
-  const restoreOwnAvatarFromCache = async (avatarHash: string) => {
-    return client.profile.restoreOwnAvatarFromCache(avatarHash)
-  }
+  const restoreOwnAvatarFromCache = useCallback(
+    async (avatarHash: string) => {
+      return client.profile.restoreOwnAvatarFromCache(avatarHash)
+    },
+    [client]
+  )
 
-  const changePassword = async (newPassword: string): Promise<void> => {
-    await client.profile.changePassword(newPassword)
-  }
+  const changePassword = useCallback(
+    async (newPassword: string): Promise<void> => {
+      await client.profile.changePassword(newPassword)
+    },
+    [client]
+  )
 
-  const requestUploadSlot = async (filename: string, size: number, contentType: string) => {
-    return client.discovery.requestUploadSlot(filename, size, contentType)
-  }
+  const requestUploadSlot = useCallback(
+    async (filename: string, size: number, contentType: string) => {
+      return client.discovery.requestUploadSlot(filename, size, contentType)
+    },
+    [client]
+  )
 
-  const sendLinkPreview = async (
-    to: string,
-    originalMessageId: string,
-    preview: LinkPreview,
-    type: 'chat' | 'groupchat' = 'chat'
-  ) => {
-    await client.chat.sendLinkPreview(to, originalMessageId, preview, type)
-  }
+  const sendLinkPreview = useCallback(
+    async (
+      to: string,
+      originalMessageId: string,
+      preview: LinkPreview,
+      type: 'chat' | 'groupchat' = 'chat'
+    ) => {
+      await client.chat.sendLinkPreview(to, originalMessageId, preview, type)
+    },
+    [client]
+  )
 
   /**
    * Notify the SDK of a system state change.
@@ -203,55 +228,108 @@ export function useConnection() {
    *
    * @param state - 'awake' | 'sleeping' | 'visible' | 'hidden'
    */
-  const notifySystemState = async (state: 'awake' | 'sleeping' | 'visible' | 'hidden') => {
-    await client.notifySystemState(state)
-  }
+  const notifySystemState = useCallback(
+    async (state: 'awake' | 'sleeping' | 'visible' | 'hidden') => {
+      await client.notifySystemState(state)
+    },
+    [client]
+  )
 
   // Check if server supports password change via XEP-0077 In-Band Registration
-  const supportsPasswordChange = serverInfo?.features?.includes(NS_REGISTER) ?? false
+  const supportsPasswordChange = useMemo(() => {
+    return serverInfo?.features?.includes(NS_REGISTER) ?? false
+  }, [serverInfo?.features])
 
-  return {
-    // State
-    status,
-    jid,
-    error,
-    reconnectAttempt,
-    reconnectTargetTime,
-    serverInfo,
-    connectionMethod,
-    authMechanism,
-    // Own profile state
-    ownAvatar,
-    ownAvatarHash,
-    ownNickname,
-    ownVCard,
-    ownResources,
-    // HTTP Upload (XEP-0363)
-    httpUploadService,
-    // Web Push (p1:push:webpush)
-    webPushStatus,
+  // Memoize actions object to prevent re-renders when only state changes
+  const actions = useMemo(
+    () => ({
+      connect,
+      disconnect,
+      cancelReconnect,
+      setOwnNickname,
+      setOwnAvatar,
+      clearOwnNickname,
+      clearOwnAvatar,
+      fetchOwnVCard,
+      setOwnVCard,
+      restoreOwnAvatarFromCache,
+      changePassword,
+      getStreamManagementState,
+      requestUploadSlot,
+      sendLinkPreview,
+      notifySystemState,
+    }),
+    [
+      connect,
+      disconnect,
+      cancelReconnect,
+      setOwnNickname,
+      setOwnAvatar,
+      clearOwnNickname,
+      clearOwnAvatar,
+      fetchOwnVCard,
+      setOwnVCard,
+      restoreOwnAvatarFromCache,
+      changePassword,
+      getStreamManagementState,
+      requestUploadSlot,
+      sendLinkPreview,
+      notifySystemState,
+    ]
+  )
 
-    // Computed
-    isConnected: status === 'online',
-    isConnecting: status === 'connecting',
-    isReconnecting: status === 'reconnecting',
-    supportsPasswordChange,
+  // Memoize the entire return value to prevent render loops
+  // Components that destructure specific properties will still re-render
+  // only when their selected properties change, but object identity is stable
+  return useMemo(
+    () => ({
+      // State
+      status,
+      jid,
+      error,
+      reconnectAttempt,
+      reconnectTargetTime,
+      serverInfo,
+      connectionMethod,
+      authMechanism,
+      // Own profile state
+      ownAvatar,
+      ownAvatarHash,
+      ownNickname,
+      ownVCard,
+      ownResources,
+      // HTTP Upload (XEP-0363)
+      httpUploadService,
+      // Web Push (p1:push:webpush)
+      webPushStatus,
 
-    // Actions
-    connect,
-    disconnect,
-    cancelReconnect,
-    setOwnNickname,
-    setOwnAvatar,
-    clearOwnNickname,
-    clearOwnAvatar,
-    fetchOwnVCard,
-    setOwnVCard,
-    restoreOwnAvatarFromCache,
-    changePassword,
-    getStreamManagementState,
-    requestUploadSlot,
-    sendLinkPreview,
-    notifySystemState,
-  }
+      // Computed
+      isConnected: status === 'online',
+      isConnecting: status === 'connecting',
+      isReconnecting: status === 'reconnecting',
+      supportsPasswordChange,
+
+      // Actions (spread memoized actions)
+      ...actions,
+    }),
+    [
+      status,
+      jid,
+      error,
+      reconnectAttempt,
+      reconnectTargetTime,
+      serverInfo,
+      connectionMethod,
+      authMechanism,
+      ownAvatar,
+      ownAvatarHash,
+      ownNickname,
+      ownVCard,
+      ownResources,
+      httpUploadService,
+      webPushStatus,
+      supportsPasswordChange,
+      actions,
+    ]
+  )
 }

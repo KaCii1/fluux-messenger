@@ -32,7 +32,7 @@ export function useMessageCopyFormatter({
     if (containerRef.current !== container) {
       setContainer(containerRef.current)
     }
-  })
+  }, [containerRef, container])
 
   useEffect(() => {
     if (!container) return

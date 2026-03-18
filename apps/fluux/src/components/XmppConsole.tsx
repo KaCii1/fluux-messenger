@@ -302,7 +302,7 @@ export function XmppConsole() {
     if (isOpen && autoScroll && packetsEndRef.current) {
       packetsEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
-  }, [entries, autoScroll])
+  }, [entries, autoScroll, isOpen])
 
   // Scroll to bottom instantly when console opens and focus the log area
   useEffect(() => {

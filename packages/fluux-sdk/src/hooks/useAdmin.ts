@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from 'react'
 import { adminStore } from '../stores'
 import { useAdminStore } from '../react/storeHooks'
 import { useXMPPContext } from '../provider'
@@ -150,104 +151,120 @@ export function useAdmin() {
   const mucServiceJid = useAdminStore((s) => s.mucServiceJid)
 
   // Group commands by category
-  const grouped: Record<AdminCommandCategory, AdminCommand[]> = {
-    user: [],
-    stats: [],
-    announcement: [],
-    other: [],
-  }
+  const commandsByCategory = useMemo(() => {
+    const grouped: Record<AdminCommandCategory, AdminCommand[]> = {
+      user: [],
+      stats: [],
+      announcement: [],
+      other: [],
+    }
 
-  for (const cmd of commands) {
-    grouped[cmd.category].push(cmd)
-  }
+    for (const cmd of commands) {
+      grouped[cmd.category].push(cmd)
+    }
 
-  const commandsByCategory = grouped
+    return grouped
+  }, [commands])
 
   // Commands that can be executed on a specific user (shown in contact profile)
-  const userCommands = commands.filter(cmd => USER_COMMANDS.has(cmd.node))
+  const userCommands = useMemo(() => {
+    return commands.filter(cmd => USER_COMMANDS.has(cmd.node))
+  }, [commands])
 
   // Execute a command
-  const executeCommand = async (node: string) => {
-    return client.admin.executeAdminCommand(node, 'execute')
-  }
+  const executeCommand = useCallback(
+    async (node: string) => {
+      return client.admin.executeAdminCommand(node, 'execute')
+    },
+    [client]
+  )
 
   // Submit form data for current session
-  const submitForm = async (formData: Record<string, string | string[]>) => {
-    const session = adminStore.getState().currentSession
-    if (!session) {
-      throw new Error('No active session')
-    }
+  const submitForm = useCallback(
+    async (formData: Record<string, string | string[]>) => {
+      const session = adminStore.getState().currentSession
+      if (!session) {
+        throw new Error('No active session')
+      }
 
-    // Determine action based on session state and available actions
-    let action: 'complete' | 'next' = 'complete'
-    if (session.actions?.includes('next')) {
-      action = 'next'
-    }
+      // Determine action based on session state and available actions
+      let action: 'complete' | 'next' = 'complete'
+      if (session.actions?.includes('next')) {
+        action = 'next'
+      }
 
-    return client.admin.executeAdminCommand(session.node, action, session.sessionId, formData)
-  }
+      return client.admin.executeAdminCommand(session.node, action, session.sessionId, formData)
+    },
+    [client]
+  )
 
   // Go to previous step in multi-step command
-  const previousStep = async () => {
+  const previousStep = useCallback(async () => {
     const session = adminStore.getState().currentSession
     if (!session || !session.actions?.includes('prev')) {
       throw new Error('Cannot go to previous step')
     }
 
     return client.admin.executeAdminCommand(session.node, 'prev', session.sessionId)
-  }
+  }, [client])
 
   // Cancel current command
-  const cancelCommand = async () => {
+  const cancelCommand = useCallback(async () => {
     await client.admin.cancelAdminCommand()
-  }
+  }, [client])
 
   // Clear current session (for closing result views)
-  const clearSession = () => {
+  const clearSession = useCallback(() => {
     adminStore.getState().setCurrentSession(null)
     adminStore.getState().setTargetJid(null)
-  }
+  }, [])
 
   // Execute a command for a specific user (pre-fills accountjid)
-  const executeCommandForUser = async (node: string, jid: string) => {
-    // Store the target JID for form pre-fill
-    adminStore.getState().setTargetJid(jid)
-    return client.admin.executeAdminCommand(node, 'execute')
-  }
+  const executeCommandForUser = useCallback(
+    async (node: string, jid: string) => {
+      // Store the target JID for form pre-fill
+      adminStore.getState().setTargetJid(jid)
+      return client.admin.executeAdminCommand(node, 'execute')
+    },
+    [client]
+  )
 
   // Add a new user
-  const addUser = async (username: string, password: string) => {
-    const vhost = adminStore.getState().selectedVhost
-    if (!vhost) {
-      throw new Error('No virtual host selected')
-    }
-    const jid = `${username}@${vhost}`
-    // Execute add-user command with form data directly
-    return client.admin.executeAdminCommand(
-      'http://jabber.org/protocol/admin#add-user',
-      'execute',
-      undefined,
-      {
-        accountjid: jid,
-        password: password,
-        'password-verify': password,
+  const addUser = useCallback(
+    async (username: string, password: string) => {
+      const vhost = adminStore.getState().selectedVhost
+      if (!vhost) {
+        throw new Error('No virtual host selected')
       }
-    )
-  }
+      const jid = `${username}@${vhost}`
+      // Execute add-user command with form data directly
+      return client.admin.executeAdminCommand(
+        'http://jabber.org/protocol/admin#add-user',
+        'execute',
+        undefined,
+        {
+          accountjid: jid,
+          password: password,
+          'password-verify': password,
+        }
+      )
+    },
+    [client]
+  )
 
   // Clear target JID
-  const clearTargetJid = () => {
+  const clearTargetJid = useCallback(() => {
     adminStore.getState().setTargetJid(null)
-  }
+  }, [])
 
   // Clear pending selected user JID
-  const clearPendingSelectedUserJid = () => {
+  const clearPendingSelectedUserJid = useCallback(() => {
     adminStore.getState().setPendingSelectedUserJid(null)
-  }
+  }, [])
 
   // Navigate to admin user management for a specific user
   // Returns the vhost if admin has rights, null otherwise
-  const navigateToUserAdmin = (userJid: string): string | null => {
+  const navigateToUserAdmin = useCallback((userJid: string): string | null => {
     const store = adminStore.getState()
     // Extract domain from JID
     const domain = userJid.split('@')[1]?.split('/')[0]
@@ -266,10 +283,10 @@ export function useAdmin() {
     store.setActiveCategory('users')
 
     return domain
-  }
+  }, [])
 
   // Check if admin can manage a specific user (based on vhost rights)
-  const canManageUser = (userJid: string): boolean => {
+  const canManageUser = useCallback((userJid: string): boolean => {
     const store = adminStore.getState()
     const domain = userJid.split('@')[1]?.split('/')[0]
     if (!domain) return false
@@ -279,199 +296,266 @@ export function useAdmin() {
     if (adminVhosts.length === 0) return store.isAdmin
 
     return adminVhosts.includes(domain)
-  }
+  }, [])
 
   // Set selected virtual host
-  const setSelectedVhost = (vhost: string | null) => {
+  const setSelectedVhost = useCallback((vhost: string | null) => {
     adminStore.getState().setSelectedVhost(vhost)
-  }
+  }, [])
 
   // Set active category for entity list display
-  const setActiveCategory = (category: AdminCategory | null) => {
+  const setActiveCategory = useCallback((category: AdminCategory | null) => {
     adminStore.getState().setActiveCategory(category)
-  }
+  }, [])
 
   // Fetch entity counts for sidebar badges
-  const fetchEntityCounts = async () => {
+  const fetchEntityCounts = useCallback(async () => {
     return client.admin.fetchEntityCounts()
-  }
+  }, [client])
 
   // Fetch available virtual hosts
-  const fetchVhosts = async () => {
+  const fetchVhosts = useCallback(async () => {
     return client.admin.fetchVhosts()
-  }
+  }, [client])
 
   // Fetch user list with pagination
-  const fetchUsers = async (rsm?: RSMRequest) => {
-    const store = adminStore.getState()
-    store.setUserList({ isLoading: true, error: null })
+  const fetchUsers = useCallback(
+    async (rsm?: RSMRequest) => {
+      const store = adminStore.getState()
+      store.setUserList({ isLoading: true, error: null })
 
-    try {
-      // Use selected vhost or fall back to default
-      const vhost = store.selectedVhost || undefined
-      const result = await client.admin.fetchUserList(vhost, rsm)
-      if (rsm?.after) {
-        // Appending to existing list
-        store.appendUserList(result.users, result.pagination)
-      } else {
-        // Fresh fetch
+      try {
+        // Use selected vhost or fall back to default
+        const vhost = store.selectedVhost || undefined
+        const result = await client.admin.fetchUserList(vhost, rsm)
+        if (rsm?.after) {
+          // Appending to existing list
+          store.appendUserList(result.users, result.pagination)
+        } else {
+          // Fresh fetch
+          store.setUserList({
+            items: result.users,
+            pagination: result.pagination,
+            isLoading: false,
+            hasFetched: true,
+          })
+        }
+        return result
+      } catch (error) {
         store.setUserList({
-          items: result.users,
-          pagination: result.pagination,
           isLoading: false,
+          error: error instanceof Error ? error.message : 'Failed to fetch users',
           hasFetched: true,
         })
+        throw error
       }
-      return result
-    } catch (error) {
-      store.setUserList({
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch users',
-        hasFetched: true,
-      })
-      throw error
-    }
-  }
+    },
+    [client]
+  )
 
   // Load more users (pagination helper)
-  const loadMoreUsers = async () => {
+  const loadMoreUsers = useCallback(async () => {
     const { pagination, isLoading } = adminStore.getState().userList
     if (isLoading || !pagination.last) return
 
     return fetchUsers({ after: pagination.last })
-  }
+  }, [fetchUsers])
 
   // Search users
-  const searchUsers = async (query: string) => {
-    const store = adminStore.getState()
-    store.setUserList({ searchQuery: query })
-    // Reset and fetch - search will be applied server-side if supported
-    return fetchUsers()
-  }
+  const searchUsers = useCallback(
+    async (query: string) => {
+      const store = adminStore.getState()
+      store.setUserList({ searchQuery: query })
+      // Reset and fetch - search will be applied server-side if supported
+      return fetchUsers()
+    },
+    [fetchUsers]
+  )
 
   // Reset user list
-  const resetUserList = () => {
+  const resetUserList = useCallback(() => {
     adminStore.getState().resetUserList()
-  }
+  }, [])
 
   // Discover MUC service
-  const discoverMucService = async () => {
+  const discoverMucService = useCallback(async () => {
     return client.admin.discoverMucService()
-  }
+  }, [client])
 
   // Fetch room list with pagination
-  const fetchRooms = async (rsm?: RSMRequest) => {
-    const store = adminStore.getState()
-    store.setRoomList({ isLoading: true, error: null })
+  const fetchRooms = useCallback(
+    async (rsm?: RSMRequest) => {
+      const store = adminStore.getState()
+      store.setRoomList({ isLoading: true, error: null })
 
-    try {
-      const result = await client.admin.fetchRoomList(undefined, rsm)
-      if (rsm?.after) {
-        // Appending to existing list
-        store.appendRoomList(result.rooms, result.pagination)
-      } else {
-        // Fresh fetch
+      try {
+        const result = await client.admin.fetchRoomList(undefined, rsm)
+        if (rsm?.after) {
+          // Appending to existing list
+          store.appendRoomList(result.rooms, result.pagination)
+        } else {
+          // Fresh fetch
+          store.setRoomList({
+            items: result.rooms,
+            pagination: result.pagination,
+            isLoading: false,
+            hasFetched: true,
+          })
+        }
+        return result
+      } catch (error) {
         store.setRoomList({
-          items: result.rooms,
-          pagination: result.pagination,
           isLoading: false,
+          error: error instanceof Error ? error.message : 'Failed to fetch rooms',
           hasFetched: true,
         })
+        throw error
       }
-      return result
-    } catch (error) {
-      store.setRoomList({
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch rooms',
-        hasFetched: true,
-      })
-      throw error
-    }
-  }
+    },
+    [client]
+  )
 
   // Load more rooms (pagination helper)
-  const loadMoreRooms = async () => {
+  const loadMoreRooms = useCallback(async () => {
     const { pagination, isLoading } = adminStore.getState().roomList
     if (isLoading || !pagination.last) return
 
     return fetchRooms({ after: pagination.last })
-  }
+  }, [fetchRooms])
 
   // Reset room list
-  const resetRoomList = () => {
+  const resetRoomList = useCallback(() => {
     adminStore.getState().resetRoomList()
-  }
+  }, [])
 
   // Get room options/configuration
-  const getRoomOptions = async (roomJid: string) => {
+  const getRoomOptions = useCallback(async (roomJid: string) => {
     return client.admin.fetchRoomOptions(roomJid)
-  }
+  }, [client])
 
   // Check if a specific admin command is available
-  const hasCommand = (commandName: string) => {
+  const hasCommand = useCallback((commandName: string) => {
     return commands.some(cmd =>
       cmd.node === `api-commands/${commandName}` ||
       cmd.node.endsWith(`#${commandName}`)
     )
-  }
+  }, [commands])
 
-  return {
-    // State
-    isAdmin,
-    commands,
-    commandsByCategory,
-    userCommands,
-    currentSession,
-    isDiscovering,
-    isExecuting,
-    targetJid,
-    pendingSelectedUserJid,
-    stats,
-    users,
-    vhosts,
-    selectedVhost,
+  // Memoize actions object to prevent re-renders when only state changes
+  const actions = useMemo(
+    () => ({
+      executeCommand,
+      executeCommandForUser,
+      addUser,
+      submitForm,
+      previousStep,
+      cancelCommand,
+      clearSession,
+      clearTargetJid,
+      clearPendingSelectedUserJid,
+      navigateToUserAdmin,
+      canManageUser,
+      setSelectedVhost,
+      setActiveCategory,
+      fetchEntityCounts,
+      fetchVhosts,
+      fetchUsers,
+      loadMoreUsers,
+      searchUsers,
+      resetUserList,
+      discoverMucService,
+      fetchRooms,
+      loadMoreRooms,
+      resetRoomList,
+      getRoomOptions,
+      hasCommand,
+    }),
+    [
+      executeCommand,
+      executeCommandForUser,
+      addUser,
+      submitForm,
+      previousStep,
+      cancelCommand,
+      clearSession,
+      clearTargetJid,
+      clearPendingSelectedUserJid,
+      navigateToUserAdmin,
+      canManageUser,
+      setSelectedVhost,
+      setActiveCategory,
+      fetchEntityCounts,
+      fetchVhosts,
+      fetchUsers,
+      loadMoreUsers,
+      searchUsers,
+      resetUserList,
+      discoverMucService,
+      fetchRooms,
+      loadMoreRooms,
+      resetRoomList,
+      getRoomOptions,
+      hasCommand,
+    ]
+  )
 
-    // Entity list state
-    activeCategory,
-    entityCounts,
-    userList,
-    roomList,
-    mucServiceJid,
+  // Memoize the entire return value to prevent render loops
+  return useMemo(
+    () => ({
+      // State
+      isAdmin,
+      commands,
+      commandsByCategory,
+      userCommands,
+      currentSession,
+      isDiscovering,
+      isExecuting,
+      targetJid,
+      pendingSelectedUserJid,
+      stats,
+      users,
+      vhosts,
+      selectedVhost,
 
-    // Computed
-    hasCommands: commands.length > 0,
-    hasUserCommands: userCommands.length > 0,
-    isSessionActive: currentSession !== null && currentSession.status === 'executing',
-    canGoBack: currentSession?.actions?.includes('prev') ?? false,
-    canGoNext: currentSession?.actions?.includes('next') ?? false,
-    hasMoreUsers: Boolean(userList.pagination.last),
-    hasMoreRooms: Boolean(roomList.pagination.last),
+      // Entity list state
+      activeCategory,
+      entityCounts,
+      userList,
+      roomList,
+      mucServiceJid,
 
-    // Actions
-    executeCommand,
-    executeCommandForUser,
-    addUser,
-    submitForm,
-    previousStep,
-    cancelCommand,
-    clearSession,
-    clearTargetJid,
-    clearPendingSelectedUserJid,
-    navigateToUserAdmin,
-    canManageUser,
-    setSelectedVhost,
-    setActiveCategory,
-    fetchEntityCounts,
-    fetchVhosts,
-    fetchUsers,
-    loadMoreUsers,
-    searchUsers,
-    resetUserList,
-    discoverMucService,
-    fetchRooms,
-    loadMoreRooms,
-    resetRoomList,
-    getRoomOptions,
-    hasCommand,
-  }
+      // Computed
+      hasCommands: commands.length > 0,
+      hasUserCommands: userCommands.length > 0,
+      isSessionActive: currentSession !== null && currentSession.status === 'executing',
+      canGoBack: currentSession?.actions?.includes('prev') ?? false,
+      canGoNext: currentSession?.actions?.includes('next') ?? false,
+      hasMoreUsers: Boolean(userList.pagination.last),
+      hasMoreRooms: Boolean(roomList.pagination.last),
+
+      // Actions (spread memoized actions)
+      ...actions,
+    }),
+    [
+      isAdmin,
+      commands,
+      commandsByCategory,
+      userCommands,
+      currentSession,
+      isDiscovering,
+      isExecuting,
+      targetJid,
+      pendingSelectedUserJid,
+      stats,
+      users,
+      vhosts,
+      selectedVhost,
+      activeCategory,
+      entityCounts,
+      userList,
+      roomList,
+      mucServiceJid,
+      actions,
+    ]
+  )
 }

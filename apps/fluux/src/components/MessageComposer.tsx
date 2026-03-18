@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, type ReactNode, type RefObject, type Ref, useImperativeHandle } from 'react'
+import React, { useState, useRef, useEffect, useCallback, type ReactNode, type RefObject, type Ref, useImperativeHandle } from 'react'
 import { useTranslation } from 'react-i18next'
 import { detectRenderLoop } from '@/utils/renderLoopDetector'
 import { Send, Smile, Paperclip, Reply, X, Pencil, Loader2, Image, FileText, Trash2 } from 'lucide-react'
@@ -162,13 +162,17 @@ export function MessageComposer({
   // Internal state for uncontrolled mode
   const [internalText, setInternalText] = useState('')
   const text = controlledValue !== undefined ? controlledValue : internalText
-  const setText = (t: string) => {
+  const setTextRef = useRef((_t: string) => {})
+  setTextRef.current = (t: string) => {
     if (controlledValue !== undefined) {
       onValueChange?.(t)
     } else {
       setInternalText(t)
     }
   }
+  const setText = useCallback((t: string) => {
+    setTextRef.current(t)
+  }, [])
 
   const [sending, setSending] = useState(false)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)

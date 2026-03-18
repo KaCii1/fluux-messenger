@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from 'react'
 import { rosterStore } from '../stores'
 import { useXMPPContext } from '../provider'
 import type { Contact } from '../core'
@@ -49,74 +50,112 @@ import type { Contact } from '../core'
 export function useRosterActions() {
   const { client } = useXMPPContext()
 
-  const removeContact = async (jid: string) => {
-    await client.roster.removeContact(jid)
-  }
+  const removeContact = useCallback(
+    async (jid: string) => {
+      await client.roster.removeContact(jid)
+    },
+    [client]
+  )
 
-  const addContact = async (jid: string, nick?: string) => {
-    await client.roster.addContact(jid, nick)
-  }
+  const addContact = useCallback(
+    async (jid: string, nick?: string) => {
+      await client.roster.addContact(jid, nick)
+    },
+    [client]
+  )
 
-  const renameContact = async (jid: string, name: string) => {
-    await client.roster.renameContact(jid, name)
-  }
+  const renameContact = useCallback(
+    async (jid: string, name: string) => {
+      await client.roster.renameContact(jid, name)
+    },
+    [client]
+  )
 
   /**
    * Get a contact by JID from the store.
    * This is a direct store read, not a subscription.
    */
-  const getContact = (jid: string): Contact | undefined => {
+  const getContact = useCallback((jid: string): Contact | undefined => {
     return rosterStore.getState().getContact(jid)
-  }
+  }, [])
 
   /**
    * Fetch the contact's published nickname (XEP-0172 User Nickname).
    * Note: This is the nickname the contact publishes for themselves,
    * NOT the name you've given them in your roster.
    */
-  const fetchContactNickname = async (jid: string) => {
-    return client.profile.fetchContactNickname(jid)
-  }
+  const fetchContactNickname = useCallback(
+    async (jid: string) => {
+      return client.profile.fetchContactNickname(jid)
+    },
+    [client]
+  )
 
   /**
    * Fetch a contact's vCard (XEP-0054 vcard-temp).
    */
-  const fetchVCard = async (jid: string) => {
-    return client.profile.fetchVCard(jid)
-  }
+  const fetchVCard = useCallback(
+    async (jid: string) => {
+      return client.profile.fetchVCard(jid)
+    },
+    [client]
+  )
 
   /**
    * Restore a contact's avatar from cache.
    * Useful when contacts have avatarHash but no blob URL (e.g., after app restart).
    */
-  const restoreContactAvatarFromCache = async (jid: string, avatarHash: string) => {
-    return client.profile.restoreContactAvatarFromCache(jid, avatarHash)
-  }
+  const restoreContactAvatarFromCache = useCallback(
+    async (jid: string, avatarHash: string) => {
+      return client.profile.restoreContactAvatarFromCache(jid, avatarHash)
+    },
+    [client]
+  )
 
   /**
    * Accept a subscription request from another user.
    * This allows them to see your presence.
    */
-  const acceptSubscription = async (jid: string) => {
-    await client.roster.acceptSubscription(jid)
-  }
+  const acceptSubscription = useCallback(
+    async (jid: string) => {
+      await client.roster.acceptSubscription(jid)
+    },
+    [client]
+  )
 
   /**
    * Reject a subscription request from another user.
    */
-  const rejectSubscription = async (jid: string) => {
-    await client.roster.rejectSubscription(jid)
-  }
+  const rejectSubscription = useCallback(
+    async (jid: string) => {
+      await client.roster.rejectSubscription(jid)
+    },
+    [client]
+  )
 
-  return {
-    addContact,
-    removeContact,
-    renameContact,
-    getContact,
-    fetchContactNickname,
-    fetchVCard,
-    restoreContactAvatarFromCache,
-    acceptSubscription,
-    rejectSubscription,
-  }
+  // Memoize the entire return value to maintain referential stability
+  return useMemo(
+    () => ({
+      addContact,
+      removeContact,
+      renameContact,
+      getContact,
+      fetchContactNickname,
+      fetchVCard,
+      restoreContactAvatarFromCache,
+      acceptSubscription,
+      rejectSubscription,
+    }),
+    [
+      addContact,
+      removeContact,
+      renameContact,
+      getContact,
+      fetchContactNickname,
+      fetchVCard,
+      restoreContactAvatarFromCache,
+      acceptSubscription,
+      rejectSubscription,
+    ]
+  )
 }

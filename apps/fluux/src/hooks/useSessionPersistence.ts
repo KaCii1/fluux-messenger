@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { connectionStore, rosterStore, roomStore, useXMPPContext, getBareJid } from '@fluux/sdk'
 import { useRosterStore, useConnectionStore, useRoomStore } from '@fluux/sdk/react'
@@ -470,7 +470,7 @@ export function useSessionPersistence(): void {
   const autoReconnectCheckedRef = useRef(false)
   const isResumptionRef = useRef(false)
 
-  const connect = async (
+  const connect = useCallback(async (
     jid: string,
     password: string,
     server: string,
@@ -489,15 +489,15 @@ export function useSessionPersistence(): void {
       connectionStore.getState().setError(message)
       throw err
     }
-  }
+  }, [client])
 
   // Note: SM state is now managed by SDK's storage adapter.
   // The SDK automatically loads SM state on connect and persists it on enable/resume.
 
   // Restore avatar from cache without subscribing to store
-  const restoreOwnAvatarFromCache = async (avatarHash: string) => {
+  const restoreOwnAvatarFromCache = useCallback(async (avatarHash: string) => {
     return client.profile.restoreOwnAvatarFromCache(avatarHash)
-  }
+  }, [client])
 
   // Auto-reconnect on page reload
   useEffect(() => {
@@ -575,7 +575,7 @@ export function useSessionPersistence(): void {
         isResumptionRef.current = false
       })
     }
-  }, [status, connect, setContacts, i18n.language])
+  }, [status, connect, setContacts, i18n.language, addRoom, restoreOwnAvatarFromCache, setHttpUploadService, setOwnNickname, setServerInfo, updateOwnResource])
 
   // Note: Presence sync is now handled automatically by XState's native persistence
   // in XMPPProvider. The machine state is restored from sessionStorage on init.

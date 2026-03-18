@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 import { useXMPPContext } from '../provider'
 import { xml } from '@xmpp/client'
 import type { Element } from '@xmpp/client'
@@ -84,24 +85,36 @@ import type { Element } from '@xmpp/client'
 export function useXMPP() {
   const { client } = useXMPPContext()
 
-  const sendRawXml = async (xmlString: string) => {
-    await client.sendRawXml(xmlString)
-  }
+  const sendRawXml = useCallback(
+    async (xmlString: string) => {
+      await client.sendRawXml(xmlString)
+    },
+    [client]
+  )
 
-  const onStanza = (handler: (stanza: Element) => void) => {
-    return client.onStanza(handler)
-  }
+  const onStanza = useCallback(
+    (handler: (stanza: Element) => void) => {
+      return client.onStanza(handler)
+    },
+    [client]
+  )
 
-  const setPresence = async (show?: 'away' | 'dnd' | 'xa', status?: string) => {
-    await client.roster.setPresence(show || 'online', status)
-  }
+  const setPresence = useCallback(
+    async (show?: 'away' | 'dnd' | 'xa', status?: string) => {
+      await client.roster.setPresence(show || 'online', status)
+    },
+    [client]
+  )
 
-  const on = <K extends keyof import('../core/types').XMPPClientEvents>(
-    event: K,
-    handler: import('../core/types').XMPPClientEvents[K]
-  ) => {
-    return client.on(event, handler)
-  }
+  const on = useCallback(
+    <K extends keyof import('../core/types').XMPPClientEvents>(
+      event: K,
+      handler: import('../core/types').XMPPClientEvents[K]
+    ) => {
+      return client.on(event, handler)
+    },
+    [client]
+  )
 
   return {
     /**

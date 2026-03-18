@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { blockingStore } from '../stores'
 import { useBlockingStore } from '../react/storeHooks'
@@ -61,25 +62,31 @@ export function useBlocking() {
   const { client } = useXMPPContext()
   const blockedJids = useBlockingStore(useShallow((s) => s.getBlockedJids()))
 
-  const fetchBlocklist = async () => {
+  const fetchBlocklist = useCallback(async () => {
     return client.blocking.fetchBlocklist()
-  }
+  }, [client])
 
-  const blockJid = async (jids: string | string[]) => {
-    await client.blocking.blockJid(jids)
-  }
+  const blockJid = useCallback(
+    async (jids: string | string[]) => {
+      await client.blocking.blockJid(jids)
+    },
+    [client]
+  )
 
-  const unblockJid = async (jids: string | string[]) => {
-    await client.blocking.unblockJid(jids)
-  }
+  const unblockJid = useCallback(
+    async (jids: string | string[]) => {
+      await client.blocking.unblockJid(jids)
+    },
+    [client]
+  )
 
-  const unblockAll = async () => {
+  const unblockAll = useCallback(async () => {
     await client.blocking.unblockAll()
-  }
+  }, [client])
 
-  const isBlocked = (jid: string): boolean => {
+  const isBlocked = useCallback((jid: string): boolean => {
     return blockingStore.getState().isBlocked(jid)
-  }
+  }, [])
 
   return {
     // State

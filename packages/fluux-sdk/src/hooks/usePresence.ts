@@ -7,6 +7,7 @@
  * @module Hooks/usePresence
  * @category Hooks
  */
+import { useCallback, useMemo } from 'react'
 import { useSelector } from '@xstate/react'
 import { usePresenceContext } from '../provider/PresenceContext'
 import {
@@ -139,79 +140,106 @@ export function usePresence(): UsePresenceReturn {
   const autoAwayConfig = useSelector(presenceActor, (state) => state.context.autoAwayConfig)
 
   // Derive values from state
-  const presenceStatus = getPresenceStatusFromState(stateValue)
-  const presenceShow = getPresenceShowFromState(stateValue)
-  const isAutoAway = isAutoAwayState(stateValue)
-  const stateName = getConnectedStateName(stateValue)
+  const presenceStatus = useMemo(
+    () => getPresenceStatusFromState(stateValue),
+    [stateValue]
+  )
+
+  const presenceShow = useMemo(
+    () => getPresenceShowFromState(stateValue),
+    [stateValue]
+  )
+
+  const isAutoAway = useMemo(
+    () => isAutoAwayState(stateValue),
+    [stateValue]
+  )
+
+  const stateName = useMemo(
+    () => getConnectedStateName(stateValue),
+    [stateValue]
+  )
 
   // Actions that send events to the machine
-  const setPresence = (show: UserPresenceShow, status?: string) => {
+  const setPresence = useCallback((show: UserPresenceShow, status?: string) => {
     presenceActor.send({ type: 'SET_PRESENCE', show, status })
-  }
+  }, [presenceActor])
 
-  const setOnline = (status?: string) => {
+  const setOnline = useCallback((status?: string) => {
     presenceActor.send({ type: 'SET_PRESENCE', show: 'online', status })
-  }
+  }, [presenceActor])
 
-  const setAway = (status?: string) => {
+  const setAway = useCallback((status?: string) => {
     presenceActor.send({ type: 'SET_PRESENCE', show: 'away', status })
-  }
+  }, [presenceActor])
 
-  const setDnd = (status?: string) => {
+  const setDnd = useCallback((status?: string) => {
     presenceActor.send({ type: 'SET_PRESENCE', show: 'dnd', status })
-  }
+  }, [presenceActor])
 
-  const connect = () => {
+  const connect = useCallback(() => {
     presenceActor.send({ type: 'CONNECT' })
-  }
+  }, [presenceActor])
 
-  const disconnect = () => {
+  const disconnect = useCallback(() => {
     presenceActor.send({ type: 'DISCONNECT' })
-  }
+  }, [presenceActor])
 
-  const idleDetected = (since: Date) => {
+  const idleDetected = useCallback((since: Date) => {
     presenceActor.send({ type: 'IDLE_DETECTED', since })
-  }
+  }, [presenceActor])
 
-  const activityDetected = () => {
+  const activityDetected = useCallback(() => {
     presenceActor.send({ type: 'ACTIVITY_DETECTED' })
-  }
+  }, [presenceActor])
 
-  const sleepDetected = () => {
+  const sleepDetected = useCallback(() => {
     presenceActor.send({ type: 'SLEEP_DETECTED' })
-  }
+  }, [presenceActor])
 
-  const wakeDetected = () => {
+  const wakeDetected = useCallback(() => {
     presenceActor.send({ type: 'WAKE_DETECTED' })
-  }
+  }, [presenceActor])
 
-  const setAutoAwayConfig = (config: Partial<AutoAwayConfig>) => {
+  const setAutoAwayConfig = useCallback((config: Partial<AutoAwayConfig>) => {
     presenceActor.send({ type: 'SET_AUTO_AWAY_CONFIG', config })
-  }
+  }, [presenceActor])
 
-  return {
-    // State
-    presenceStatus,
-    presenceShow,
-    statusMessage,
-    isAutoAway,
-    preAutoAwayState,
-    lastUserPreference,
-    stateName,
-    idleSince,
-    autoAwayConfig,
+  // Memoize actions object to prevent re-renders when only state changes
+  const actions = useMemo(
+    () => ({
+      setOnline,
+      setAway,
+      setDnd,
+      setPresence,
+      setAutoAwayConfig,
+      connect,
+      disconnect,
+      idleDetected,
+      activityDetected,
+      sleepDetected,
+      wakeDetected,
+    }),
+    [setOnline, setAway, setDnd, setPresence, setAutoAwayConfig, connect, disconnect, idleDetected, activityDetected, sleepDetected, wakeDetected]
+  )
 
-    // Actions
-    setOnline,
-    setAway,
-    setDnd,
-    setPresence,
-    setAutoAwayConfig,
-    connect,
-    disconnect,
-    idleDetected,
-    activityDetected,
-    sleepDetected,
-    wakeDetected,
-  }
+  // Memoize the entire return value to prevent render loops
+  return useMemo(
+    () => ({
+      // State
+      presenceStatus,
+      presenceShow,
+      statusMessage,
+      isAutoAway,
+      preAutoAwayState,
+      lastUserPreference,
+      stateName,
+      idleSince,
+      autoAwayConfig,
+
+      // Actions (spread memoized actions)
+      ...actions,
+    }),
+    [presenceStatus, presenceShow, statusMessage, isAutoAway, preAutoAwayState, lastUserPreference, stateName, idleSince, autoAwayConfig, actions]
+  )
 }

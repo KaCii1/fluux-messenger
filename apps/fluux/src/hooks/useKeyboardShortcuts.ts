@@ -471,15 +471,10 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): Shor
   ]
 
   const shortcutsRef = useRef<ShortcutDefinition[]>(shortcuts)
+  shortcutsRef.current = shortcuts
+
   const isCommandPaletteOpenRef = useRef(escapeHierarchy?.isCommandPaletteOpen ?? false)
-
-  useEffect(() => {
-    shortcutsRef.current = shortcuts
-  }, [shortcuts])
-
-  useEffect(() => {
-    isCommandPaletteOpenRef.current = escapeHierarchy?.isCommandPaletteOpen ?? false
-  }, [escapeHierarchy?.isCommandPaletteOpen])
+  isCommandPaletteOpenRef.current = escapeHierarchy?.isCommandPaletteOpen ?? false
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

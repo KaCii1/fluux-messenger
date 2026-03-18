@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { X, Upload, ZoomIn, ZoomOut, RotateCcw, Camera, Video, VideoOff } from 'lucide-react'
 import { Tooltip } from './Tooltip'
@@ -46,14 +46,19 @@ export function AvatarCropModal({ isOpen, onClose, onSave }: AvatarCropModalProp
     }
   }, [imageUrl])
 
-  // Stop webcam when modal closes or when switching modes
-  const stopWebcam = () => {
+  // Stop webcam helper (used by both reset effect and mode switching)
+  const stopWebcamRef = useRef(() => {})
+  stopWebcamRef.current = () => {
     if (webcamStream) {
       webcamStream.getTracks().forEach(track => track.stop())
       setWebcamStream(null)
     }
     setWebcamReady(false)
   }
+
+  const stopWebcam = useCallback(() => {
+    stopWebcamRef.current()
+  }, [])
 
   // Reset state when modal closes
   useEffect(() => {
