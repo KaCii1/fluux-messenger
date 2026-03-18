@@ -1398,8 +1398,8 @@ describe('XMPPClient Message', () => {
       const sentStanza = mockXmppClientInstance.send.mock.calls[0][0]
       const replyEl = sentStanza.children.find((c: any) => c.name === 'reply')
       expect(replyEl).toBeDefined()
-      // For chat type, stanzaId is also preferred when available
-      expect(replyEl.attrs.id).toBe('server-stanza-id')
+      // For chat type, client message id must be used (not stanzaId) per XEP-0461
+      expect(replyEl.attrs.id).toBe('client-msg-id')
     })
   })
 

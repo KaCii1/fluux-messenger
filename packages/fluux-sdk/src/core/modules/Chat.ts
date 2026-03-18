@@ -1047,11 +1047,10 @@ export class Chat extends BaseModule {
    * identifier that other clients will also reference.
    */
   private getMessageReferenceId(entityId: string, messageId: string, type: 'chat' | 'groupchat'): string {
+    // Per XEP-0461: only groupchat messages should use stanza-id for reply references.
+    // Chat-type messages must use the message id or origin-id.
     if (type === 'groupchat') {
       const msg = this.deps.stores?.room.getMessage(entityId, messageId)
-      if (msg?.stanzaId) return msg.stanzaId
-    } else {
-      const msg = this.deps.stores?.chat.getMessage(entityId, messageId)
       if (msg?.stanzaId) return msg.stanzaId
     }
     return messageId
