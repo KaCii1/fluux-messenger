@@ -36,7 +36,7 @@ interface UseMessageSelectionOptions {
 export function useMessageSelection<T extends MessageLike>(
   messages: T[],
   scrollRef: RefObject<HTMLElement | null>,
-  isAtBottomRef: RefObject<boolean>,
+  _isAtBottomRef?: RefObject<boolean>,
   options?: UseMessageSelectionOptions
 ) {
   const { onReachedFirstMessage, isLoadingOlder, isHistoryComplete, onKeyboardNavigate } = options ?? {}
