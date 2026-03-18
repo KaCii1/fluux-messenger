@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import react, { reactCompilerPreset } from '@vitejs/plugin-react'
+import babel from '@rolldown/plugin-babel'
 import { VitePWA } from 'vite-plugin-pwa'
 import { execSync } from 'child_process'
 import { readFileSync, rmSync } from 'fs'
@@ -30,10 +31,9 @@ const appVersion = getVersion()
 export default defineConfig({
   base: './',
   plugins: [
-    react({
-      babel: {
-        plugins: ['babel-plugin-react-compiler'],
-      },
+    react(),
+    babel({
+      presets: [reactCompilerPreset()],
     }),
     // Remove demo assets (public/demo/, demo.html) from production builds
     {
@@ -133,7 +133,7 @@ export default defineConfig({
   },
   build: {
     modulePreload: false,
-    rollupOptions: {
+    rolldownOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
       },
@@ -146,64 +146,33 @@ export default defineConfig({
         warn(warning)
       },
       output: {
-        manualChunks(id) {
-          // Skip non-node_modules for vendor chunks
-          if (!id.includes('node_modules/')) {
-            // SDK chunks - only match source files, not node_modules
+        codeSplitting: {
+          groups: [
+            // SDK chunks (source paths only, not node_modules)
+            // SDK Core first (higher priority) so react layer doesn't pull in core deps
+            { name: 'sdk-core', test: /fluux-sdk\/src\/(core|stores|types|utils|bindings)\//, priority: 20 },
             // SDK React layer (provider, hooks - depends on React + stores)
-            if (
-              id.includes('fluux-sdk/src/provider/') ||
-              id.includes('fluux-sdk/src/hooks/') ||
-              id.includes('fluux-sdk/src/react/')
-            ) {
-              return 'sdk-react'
-            }
-            // SDK Core (XMPPClient, modules, stores, types, utils - no React dependency)
-            if (id.includes('fluux-sdk/src/')) {
-              return 'sdk-core'
-            }
-            // Let app code go to default chunk
-            return
-          }
-
-          // Vendor chunks - all from node_modules
-          // React core (very stable, good for long-term caching)
-          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
-            return 'vendor-react'
-          }
-          // Zustand + use-sync-external-store (React state management)
-          if (id.includes('node_modules/zustand/') || id.includes('node_modules/use-sync-external-store/')) {
-            return 'vendor-zustand'
-          }
-          // XMPP protocol libraries
-          if (id.includes('node_modules/@xmpp/') || id.includes('node_modules/ltx/')) {
-            return 'vendor-xmpp'
-          }
-          // Date formatting
-          if (id.includes('node_modules/date-fns/')) {
-            return 'vendor-date-fns'
-          }
-          // Tauri plugins
-          if (id.includes('node_modules/@tauri-apps/')) {
-            return 'vendor-tauri'
-          }
-          // i18next core (no React dependency)
-          if (id.includes('node_modules/i18next/') || id.includes('node_modules/i18next-browser-languagedetector/')) {
-            return 'vendor-i18n'
-          }
-          // react-i18next (depends on React + i18next)
-          if (id.includes('node_modules/react-i18next/')) {
-            return 'vendor-react-i18n'
-          }
-          // XState (state machine library)
-          if (id.includes('node_modules/xstate/')) {
-            return 'vendor-xstate'
-          }
-          // Icons
-          if (id.includes('node_modules/lucide-react/')) {
-            return 'vendor-icons'
-          }
-          // Other node_modules go to default chunk
+            { name: 'sdk-react', test: /fluux-sdk\/src\/(provider|hooks|react)\//, priority: 15 },
+            // Vendor chunks - all from node_modules
+            // React core (very stable, good for long-term caching)
+            { name: 'vendor-react', test: /node_modules\/(react|react-dom)\//, priority: 20 },
+            // Zustand + use-sync-external-store (React state management)
+            { name: 'vendor-zustand', test: /node_modules\/(zustand|use-sync-external-store)\//, priority: 18 },
+            // XMPP protocol libraries
+            { name: 'vendor-xmpp', test: /node_modules\/(@xmpp|ltx)\//, priority: 18 },
+            // Date formatting
+            { name: 'vendor-date-fns', test: /node_modules\/date-fns\//, priority: 18 },
+            // Tauri plugins
+            { name: 'vendor-tauri', test: /node_modules\/@tauri-apps\//, priority: 18 },
+            // i18next core (no React dependency)
+            { name: 'vendor-i18n', test: /node_modules\/(i18next|i18next-browser-languagedetector)\//, priority: 16 },
+            // react-i18next (depends on React + i18next)
+            { name: 'vendor-react-i18n', test: /node_modules\/react-i18next\//, priority: 16 },
+            // XState (state machine library)
+            { name: 'vendor-xstate', test: /node_modules\/xstate\//, priority: 16 },
+            // Icons
+            { name: 'vendor-icons', test: /node_modules\/lucide-react\//, priority: 16 },
+          ],
         },
       },
     },

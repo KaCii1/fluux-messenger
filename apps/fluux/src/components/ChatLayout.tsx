@@ -1,15 +1,17 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { detectRenderLoop } from '@/utils/renderLoopDetector'
 import { Sidebar, type SidebarView } from './Sidebar'
 import { ChatView } from './ChatView'
 import { RoomView } from './RoomView'
 import { OccupantPanel } from './OccupantPanel'
-import { ContactProfileView } from './ContactProfileView'
-import { SettingsView } from './SettingsView'
-import { AdminView } from './AdminView'
 import { MemberList } from './MemberList'
-import { XmppConsole } from './XmppConsole'
+
+// Lazy-loaded views (not on critical path — preloaded after initial render)
+const ContactProfileView = lazy(() => import('./ContactProfileView').then(m => ({ default: m.ContactProfileView })))
+const SettingsView = lazy(() => import('./SettingsView').then(m => ({ default: m.SettingsView })))
+const AdminView = lazy(() => import('./AdminView').then(m => ({ default: m.AdminView })))
+const XmppConsole = lazy(() => import('./XmppConsole').then(m => ({ default: m.XmppConsole })))
 import { ShortcutHelp } from './ShortcutHelp'
 import { CommandPalette } from './CommandPalette'
 import { ToastContainer } from './ToastContainer'
@@ -93,9 +95,30 @@ function GlobalEffects() {
   return null
 }
 
+/** Lightweight skeleton fallback for lazy-loaded views to prevent layout shift */
+function ViewLoadingFallback() {
+  return (
+    <div className="h-full flex flex-col bg-fluux-chat">
+      <div className="h-12 px-4 flex items-center border-b border-fluux-bg" />
+      <div className="flex-1" />
+    </div>
+  )
+}
+
 function ChatLayoutContent() {
   // Detect render loops before they freeze the UI
   detectRenderLoop('ChatLayout')
+
+  // Preload lazy-loaded view chunks after initial paint so they're cached before navigation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void import('./SettingsView')
+      void import('./AdminView')
+      void import('./ContactProfileView')
+      void import('./XmppConsole')
+    }, 2000)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Modal management from context
   const { state: modalState, actions: modalActions } = useModals()
@@ -677,7 +700,9 @@ function ChatLayoutContent() {
         {/* Hidden on mobile when no conversation/room selected */}
         <main className={`${hasActiveContent ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-fluux-chat min-w-0 min-h-0`}>
           {sidebarView === 'settings' ? (
-            <SettingsView onBack={handleSettingsBack} />
+            <Suspense fallback={<ViewLoadingFallback />}>
+              <SettingsView onBack={handleSettingsBack} />
+            </Suspense>
           ) : activeRoomJid && showRoomOccupants && isSmallScreen() ? (
             <FullScreenOccupantPanel onClose={() => setShowRoomOccupants(false)} onStartChat={handleStartChatWithJid} onShowProfile={handleShowProfileFromRoom} />
           ) : activeRoomJid ? (
@@ -685,19 +710,23 @@ function ChatLayoutContent() {
           ) : activeConversationId ? (
             <ChatView onBack={handleChatBack} onSwitchToMessages={(conversationId) => navigateToMessages(conversationId)} mainContentRef={focusZoneRefs.mainContent} composerRef={focusZoneRefs.composer} />
           ) : selectedContact ? (
-            <ContactProfileView
-              contact={selectedContact}
-              isInRoster={isSelectedContactInRoster}
-              onStartConversation={() => handleStartConversation(selectedContact)}
-              onAddContact={() => handleAddContactFromProfile(selectedContact.jid)}
-              onRemoveContact={() => handleRemoveContact(selectedContact.jid)}
-              onRenameContact={(name) => handleRenameContact(selectedContact.jid, name)}
-              onFetchNickname={handleFetchContactNickname}
-              onFetchVCard={handleFetchVCard}
-              onBack={handleContactBack}
-            />
+            <Suspense fallback={<ViewLoadingFallback />}>
+              <ContactProfileView
+                contact={selectedContact}
+                isInRoster={isSelectedContactInRoster}
+                onStartConversation={() => handleStartConversation(selectedContact)}
+                onAddContact={() => handleAddContactFromProfile(selectedContact.jid)}
+                onRemoveContact={() => handleRemoveContact(selectedContact.jid)}
+                onRenameContact={(name) => handleRenameContact(selectedContact.jid, name)}
+                onFetchNickname={handleFetchContactNickname}
+                onFetchVCard={handleFetchVCard}
+                onBack={handleContactBack}
+              />
+            </Suspense>
           ) : (adminSession || adminCategory) ? (
-            <AdminView activeCategory={adminCategory} onBack={handleAdminBack} />
+            <Suspense fallback={<ViewLoadingFallback />}>
+              <AdminView activeCategory={adminCategory} onBack={handleAdminBack} />
+            </Suspense>
           ) : sidebarView === 'admin' ? (
             <AdminEmptyState />
           ) : (
@@ -710,7 +739,9 @@ function ChatLayoutContent() {
       </div>
 
       {/* XMPP Console Panel */}
-      <XmppConsole />
+      <Suspense fallback={null}>
+        <XmppConsole />
+      </Suspense>
 
       {/* Keyboard Shortcuts Help Overlay */}
       {showShortcutHelp && (
