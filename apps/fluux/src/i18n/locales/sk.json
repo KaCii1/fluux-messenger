@@ -77,7 +77,8 @@
         "changeStatus": "Zmeniť stav",
         "localTime": "Miestny čas kontaktu",
         "monthsAgo": "pred {{count}} mes",
-        "yearsAgo": "pred {{count}} rokmi"
+        "yearsAgo": "pred {{count}} rokmi",
+        "yearsAgo_one": "pred {{count}} rokom"
     },
     "status": {
         "reconnecting": "Znovu sa pripája...",

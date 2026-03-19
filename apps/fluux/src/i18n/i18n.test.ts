@@ -17,6 +17,13 @@ for (const [path, mod] of Object.entries(localeModules)) {
 
 const languageCodes = Object.keys(locales).sort()
 
+// i18next plural suffixes — these keys are language-specific and don't need
+// to match the English key set (e.g. French has yearsAgo_one, English doesn't).
+const PLURAL_SUFFIXES = ['_zero', '_one', '_two', '_few', '_many', '_other']
+function isPluralVariant(key: string): boolean {
+  return PLURAL_SUFFIXES.some(suffix => key.endsWith(suffix))
+}
+
 // Build i18next resources from eager-loaded locales
 const resources: Record<string, { translation: Record<string, unknown> }> = {}
 for (const [code, translations] of Object.entries(locales)) {
@@ -75,17 +82,13 @@ describe('i18n', () => {
   describe('translation key parity', () => {
     const nonEnglish = languageCodes.filter(code => code !== 'en')
 
-    it.each(nonEnglish)('%s should have the same number of keys as English', (code) => {
-      expect(keysByLang[code].length).toBe(enKeys.length)
-    })
-
     it.each(nonEnglish)('%s should have all English keys', (code) => {
       const missing = enKeys.filter(key => !keysByLang[code].includes(key))
       expect(missing).toEqual([])
     })
 
-    it.each(nonEnglish)('%s should not have extra keys beyond English', (code) => {
-      const extra = keysByLang[code].filter(key => !enKeys.includes(key))
+    it.each(nonEnglish)('%s should not have extra keys beyond English (excluding plural variants)', (code) => {
+      const extra = keysByLang[code].filter(key => !enKeys.includes(key) && !isPluralVariant(key))
       expect(extra).toEqual([])
     })
 
@@ -113,6 +116,52 @@ describe('i18n', () => {
     it('should interpolate nickname in room tooltip', () => {
       const result = testI18n.t('rooms.asNickname', { nickname: 'TestUser' })
       expect(result).toBe('as TestUser')
+    })
+  })
+
+  describe('plural forms for months/years ago', () => {
+    it('should use singular form for French years', async () => {
+      await testI18n.changeLanguage('fr')
+      expect(testI18n.t('presence.yearsAgo', { count: 1 })).toBe('il y a 1 an')
+      expect(testI18n.t('presence.yearsAgo', { count: 3 })).toBe('il y a 3 ans')
+    })
+
+    it('should use singular form for German months and years', async () => {
+      await testI18n.changeLanguage('de')
+      expect(testI18n.t('presence.monthsAgo', { count: 1 })).toBe('vor 1 Monat')
+      expect(testI18n.t('presence.monthsAgo', { count: 6 })).toBe('vor 6 Monaten')
+      expect(testI18n.t('presence.yearsAgo', { count: 1 })).toBe('vor 1 Jahr')
+      expect(testI18n.t('presence.yearsAgo', { count: 2 })).toBe('vor 2 Jahren')
+    })
+
+    it('should use singular form for Spanish months and years', async () => {
+      await testI18n.changeLanguage('es')
+      expect(testI18n.t('presence.monthsAgo', { count: 1 })).toBe('hace 1 mes')
+      expect(testI18n.t('presence.monthsAgo', { count: 5 })).toBe('hace 5 meses')
+      expect(testI18n.t('presence.yearsAgo', { count: 1 })).toBe('hace 1 año')
+      expect(testI18n.t('presence.yearsAgo', { count: 3 })).toBe('hace 3 años')
+    })
+
+    it('should use correct Polish plural forms for years', async () => {
+      await testI18n.changeLanguage('pl')
+      expect(testI18n.t('presence.yearsAgo', { count: 1 })).toBe('1 rok temu')
+      expect(testI18n.t('presence.yearsAgo', { count: 2 })).toBe('2 lata temu')
+      expect(testI18n.t('presence.yearsAgo', { count: 5 })).toBe('5 lat temu')
+    })
+
+    it('should use correct Czech plural forms for years', async () => {
+      await testI18n.changeLanguage('cs')
+      expect(testI18n.t('presence.yearsAgo', { count: 1 })).toBe('před 1 rokem')
+      expect(testI18n.t('presence.yearsAgo', { count: 3 })).toBe('před 3 roky')
+      expect(testI18n.t('presence.yearsAgo', { count: 5 })).toBe('před 5 lety')
+    })
+
+    it('should use abbreviated form for English (no plural distinction)', async () => {
+      await testI18n.changeLanguage('en')
+      expect(testI18n.t('presence.monthsAgo', { count: 1 })).toBe('1mo ago')
+      expect(testI18n.t('presence.monthsAgo', { count: 6 })).toBe('6mo ago')
+      expect(testI18n.t('presence.yearsAgo', { count: 1 })).toBe('1y ago')
+      expect(testI18n.t('presence.yearsAgo', { count: 3 })).toBe('3y ago')
     })
   })
 

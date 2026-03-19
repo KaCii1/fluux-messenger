@@ -77,7 +77,8 @@
         "changeStatus": "Mainīt statusu",
         "localTime": "Kontaktpersonas vietējais laiks",
         "monthsAgo": "pirms {{count}} mēn",
-        "yearsAgo": "pirms {{count}} gadiem"
+        "yearsAgo": "pirms {{count}} gadiem",
+        "yearsAgo_one": "pirms {{count}} gada"
     },
     "status": {
         "reconnecting": "Atkārtoti savienojas...",

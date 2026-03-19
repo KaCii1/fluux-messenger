@@ -77,7 +77,9 @@
         "changeStatus": "Zmień status",
         "localTime": "Czas lokalny kontaktu",
         "monthsAgo": "{{count}} mies. temu",
-        "yearsAgo": "{{count}} lat temu"
+        "yearsAgo": "{{count}} lat temu",
+        "yearsAgo_one": "{{count}} rok temu",
+        "yearsAgo_few": "{{count}} lata temu"
     },
     "status": {
         "reconnecting": "Ponowne łączenie...",

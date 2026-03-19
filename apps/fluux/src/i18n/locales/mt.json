@@ -77,7 +77,9 @@
         "changeStatus": "Ibdel l-istatus",
         "localTime": "Il-ħin lokali tal-kuntatt",
         "monthsAgo": "{{count}} xhur ilu",
-        "yearsAgo": "{{count}} snin ilu"
+        "yearsAgo": "{{count}} snin ilu",
+        "monthsAgo_one": "{{count}} xahar ilu",
+        "yearsAgo_one": "{{count}} sena ilu"
     },
     "status": {
         "reconnecting": "Qed jerġa' jikkonnettja...",

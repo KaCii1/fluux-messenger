@@ -77,7 +77,9 @@
         "changeStatus": "Cambiar estado",
         "localTime": "Hora local del contacto",
         "monthsAgo": "hace {{count}} meses",
-        "yearsAgo": "hace {{count}} años"
+        "yearsAgo": "hace {{count}} años",
+        "monthsAgo_one": "hace {{count}} mes",
+        "yearsAgo_one": "hace {{count}} año"
     },
     "status": {
         "reconnecting": "Reconectando...",

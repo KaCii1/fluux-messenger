@@ -77,7 +77,8 @@
         "changeStatus": "Αλλαγή κατάστασης",
         "localTime": "Τοπική ώρα επαφής",
         "monthsAgo": "{{count}} μήν πριν",
-        "yearsAgo": "{{count}} έτη πριν"
+        "yearsAgo": "{{count}} έτη πριν",
+        "yearsAgo_one": "{{count}} έτος πριν"
     },
     "status": {
         "reconnecting": "Επανασύνδεση...",
