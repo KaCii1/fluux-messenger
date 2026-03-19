@@ -6,7 +6,7 @@
  */
 import { useTranslation } from 'react-i18next'
 import type { ContactIdentity } from '@fluux/sdk'
-import { useRosterStore, useContactTime } from '@fluux/sdk/react'
+import { useRosterStore, useContactTime, useLastActivity } from '@fluux/sdk/react'
 import { Avatar } from './Avatar'
 import { useWindowDrag } from '@/hooks'
 import { getTranslatedStatusText } from '@/utils/statusText'
@@ -37,6 +37,7 @@ export function ChatHeader({
   // this specific contact changes, not when other contacts update.
   const fullContact = useRosterStore((s) => jid ? s.contacts.get(jid) : undefined)
   const contactTime = useContactTime(!isGroupChat ? jid : null)
+  useLastActivity(!isGroupChat ? jid : null)
 
   return (
     <header className={`h-14 ${titleBarClass} px-4 flex items-center border-b border-fluux-bg shadow-sm gap-3`} {...dragRegionProps}>

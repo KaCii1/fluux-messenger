@@ -101,6 +101,7 @@ import { Ignore } from './modules/Ignore'
 import { ConversationSync, type SyncedConversation } from './modules/ConversationSync'
 import { WebPush } from './modules/WebPush'
 import { EntityTime } from './modules/EntityTime'
+import { LastActivity } from './modules/LastActivity'
 import { MAM } from './modules/MAM'
 import { NS_CARBONS, NS_MAM, NS_P1_PUSH_WEBPUSH } from './namespaces'
 import { createDefaultStoreBindings, type DefaultStoreBindingsOptions } from './defaultStoreBindings'
@@ -254,6 +255,12 @@ export class XMPPClient {
    * Queries contacts for their local time and caches timezone offsets.
    */
   public entityTime!: EntityTime
+
+  /**
+   * Last Activity module (XEP-0012).
+   * Queries the server for when an offline contact was last active.
+   */
+  public lastActivity!: LastActivity
 
   /**
    * Message Archive Management module (XEP-0313).
@@ -572,6 +579,7 @@ export class XMPPClient {
     this.conversationSync = new ConversationSync(moduleDeps)
     this.webPush = new WebPush(moduleDeps)
     this.entityTime = new EntityTime(moduleDeps)
+    this.lastActivity = new LastActivity(moduleDeps)
 
     // Set up post-connection handler
     this.connection.setConnectionSuccessHandler(async (isResumption, previouslyJoinedRooms) => {
@@ -595,7 +603,7 @@ export class XMPPClient {
       // Route to modules (order matters - first handler to return true wins)
       // PubSub before Chat so PubSub events aren't treated as chat messages
       // Blocking before Roster so blocklist pushes are handled correctly
-      const modules = [this.pubsub, this.blocking, this.chat, this.roster, this.muc, this.profile, this.discovery]
+      const modules = [this.pubsub, this.blocking, this.chat, this.roster, this.muc, this.profile, this.discovery, this.lastActivity]
       for (const module of modules) {
         if (module.handle(stanza)) break
       }
@@ -888,6 +896,7 @@ export class XMPPClient {
     // Clear session-scoped tracking data
     this.xep0084AvatarChecked.clear()
     this.entityTime?.clearCache()
+    this.lastActivity?.clearCache()
     return this.connection.disconnect()
   }
 

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { createPortal } from 'react-dom'
 import type { Contact, ContactIdentity, RoomAffiliation, RoomRole, VCardInfo } from '@fluux/sdk'
 import { useXMPP } from '@fluux/sdk'
-import { useConnectionStore, useContactTime } from '@fluux/sdk/react'
+import { useConnectionStore, useContactTime, useLastActivity } from '@fluux/sdk/react'
 import { useClickOutside } from '@/hooks'
 import { getTranslatedShowText } from '@/utils/presence'
 import { Monitor, Smartphone, Tablet, Globe, HelpCircle, Shield, Crown, UserCheck, Building2, Mail, MapPin, Clock, Loader2 } from 'lucide-react'
@@ -177,6 +177,7 @@ export function UserInfoPopover({ contact, jid, occupantJid, role, affiliation, 
   // Only query when the popover is open to avoid unnecessary traffic
   const realJid = contact?.jid || jid
   const contactTime = useContactTime(isOpen && realJid ? realJid : null)
+  useLastActivity(isOpen && realJid ? realJid : null)
 
   const displayJid = realJid || (occupantJid?.split('/').pop())
 

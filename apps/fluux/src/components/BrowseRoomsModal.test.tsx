@@ -31,7 +31,7 @@ vi.mock('@fluux/sdk/react', () => ({
     selector({ setActiveConversation: mockSetActiveConversation }),
   useConnectionStore: (selector: (state: { status: string }) => unknown) =>
     selector({ status: 'online' }),
-  useContactTime: () => null,
+  useContactTime: () => null, useLastActivity: vi.fn(),
 }))
 
 // Mock hooks

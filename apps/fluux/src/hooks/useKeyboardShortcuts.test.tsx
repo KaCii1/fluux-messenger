@@ -69,7 +69,7 @@ vi.mock('@fluux/sdk/react', () => ({
   ),
   useConnectionStore: (selector: (s: { status: string }) => unknown) =>
     selector({ status: 'online' }),
-  useContactTime: () => null,
+  useContactTime: () => null, useLastActivity: vi.fn(),
 }))
 
 describe('useKeyboardShortcuts', () => {

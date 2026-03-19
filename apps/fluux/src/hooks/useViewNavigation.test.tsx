@@ -86,7 +86,7 @@ vi.mock('@fluux/sdk/react', () => ({
   ),
   useConnectionStore: (selector: (state: { status: string }) => unknown) =>
     selector({ status: 'online' }),
-  useContactTime: () => null,
+  useContactTime: () => null, useLastActivity: vi.fn(),
 }))
 
 // Track location changes

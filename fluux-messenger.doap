@@ -58,6 +58,15 @@
       </xmpp:SupportedXep>
     </implements>
 
+    <!-- XEP-0012: Last Activity -->
+    <implements>
+      <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0012.html"/>
+        <xmpp:status>complete</xmpp:status>
+        <xmpp:note>Lazy query of offline contact last activity with caching and auto-invalidation</xmpp:note>
+      </xmpp:SupportedXep>
+    </implements>
+
     <!-- XEP-0030: Service Discovery -->
     <implements>
       <xmpp:SupportedXep>
@@ -485,6 +494,24 @@
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0461.html"/>
         <xmpp:status>complete</xmpp:status>
         <xmpp:note>Reply-to with quoted preview and fallback body</xmpp:note>
+      </xmpp:SupportedXep>
+    </implements>
+
+    <!-- XEP-0398: User Avatar to vCard-Based Avatars Conversion -->
+    <implements>
+      <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0398.html"/>
+        <xmpp:status>complete</xmpp:status>
+        <xmpp:note>MUC occupant avatars via vCard conversion</xmpp:note>
+      </xmpp:SupportedXep>
+    </implements>
+
+    <!-- XEP-0421: Anonymous Unique Occupant Identifiers for MUCs -->
+    <implements>
+      <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0421.html"/>
+        <xmpp:status>complete</xmpp:status>
+        <xmpp:note>Stable occupant identifiers for anonymous MUC rooms</xmpp:note>
       </xmpp:SupportedXep>
     </implements>
 

@@ -53,7 +53,7 @@ vi.mock('@/utils/renderLoopDetector', () => ({
 vi.mock('@fluux/sdk/react', () => ({
   useConnectionStore: (selector: (state: { status: string }) => string) =>
     selector({ status: mockConnectionStatus.current }),
-  useContactTime: () => null,
+  useContactTime: () => null, useLastActivity: vi.fn(),
 }))
 
 vi.mock('@fluux/sdk', () => ({

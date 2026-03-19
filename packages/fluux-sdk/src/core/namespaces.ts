@@ -153,6 +153,9 @@ export const NS_PING = 'urn:xmpp:ping'
 // XEP-0202: Entity Time
 export const NS_TIME = 'urn:xmpp:time'
 
+// XEP-0012: Last Activity
+export const NS_LAST = 'jabber:iq:last'
+
 // XEP-0191: Blocking Command
 export const NS_BLOCKING = 'urn:xmpp:blocking'
 

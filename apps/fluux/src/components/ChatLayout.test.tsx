@@ -289,7 +289,7 @@ vi.mock('@fluux/sdk/react', () => ({
       }),
     }
   ),
-  useContactTime: () => null,
+  useContactTime: () => null, useLastActivity: vi.fn(),
 }))
 
 // Mock app hooks

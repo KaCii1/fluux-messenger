@@ -2823,8 +2823,8 @@ describe('XMPPClient Connection', () => {
      * method to use (token vs password) and reports the method to the store.
      */
     function getCredentialsCallback(): Function {
-      const call = mockClientFactory.mock.calls[mockClientFactory.mock.calls.length - 1]
-      return call[0].credentials
+      const call = mockClientFactory.mock.calls[mockClientFactory.mock.calls.length - 1] as unknown[]
+      return (call[0] as { credentials: Function }).credentials
     }
 
     it('should wire FAST storage methods on the mock client fast module', async () => {

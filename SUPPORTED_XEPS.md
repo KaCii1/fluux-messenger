@@ -48,6 +48,7 @@ This document lists the XMPP Extension Protocols (XEPs) and related RFCs impleme
 | [XEP-0153](https://xmpp.org/extensions/xep-0153.html) | vCard-Based Avatars               | ✅ Implemented | Legacy avatar support with SHA-1 hash caching                                     |
 | [XEP-0172](https://xmpp.org/extensions/xep-0172.html) | User Nickname                     | ✅ Implemented | Publish, retrieve, and clear own nickname via PEP                                 |
 | [XEP-0191](https://xmpp.org/extensions/xep-0191.html) | Blocking Command                  | ✅ Implemented | Block/unblock JIDs, fetch blocklist, push notifications                           |
+| [XEP-0012](https://xmpp.org/extensions/xep-0012.html) | Last Activity                     | ✅ Implemented | Lazy query of offline contact last activity with caching, negative caching, and auto-invalidation on presence |
 | [XEP-0319](https://xmpp.org/extensions/xep-0319.html) | Last User Interaction in Presence | ✅ Implemented | Idle time display and publishing                                                  |
 
 ## Messaging
@@ -92,7 +93,9 @@ This document lists the XMPP Extension Protocols (XEPs) and related RFCs impleme
 | [XEP-0392](https://xmpp.org/extensions/xep-0392.html) | Consistent Color Generation | ✅ Implemented | Deterministic colors for avatars, nicknames, and hat badges based on identifier                             |
 | [XEP-0249](https://xmpp.org/extensions/xep-0249.html) | Direct MUC Invitations      | ✅ Implemented | Receive room invitations with Accept/Decline in Events view                                                 |
 | [XEP-0372](https://xmpp.org/extensions/xep-0372.html) | References                  | ✅ Implemented | @mention notifications with position-based highlighting                                                     |
+| [XEP-0398](https://xmpp.org/extensions/xep-0398.html) | User Avatar to vCard-Based Avatars Conversion | ✅ Implemented | MUC occupant avatars via vCard conversion                                                     |
 | [XEP-0402](https://xmpp.org/extensions/xep-0402.html) | PEP Native Bookmarks        | ✅ Implemented | Room bookmarks with autojoin, custom extensions for notification preferences                                |
+| [XEP-0421](https://xmpp.org/extensions/xep-0421.html) | Anonymous Unique Occupant Identifiers | ✅ Implemented | Stable occupant identifiers for anonymous MUC rooms                                             |
 
 ## Administration
 
