@@ -419,26 +419,7 @@ export class Roster extends BaseModule {
 
     const presence = xml('presence', {}, ...children)
 
-    // Send regular presence broadcast (for contacts)
     await this.deps.sendStanza(presence)
-
-    // Also send directed presence to all joined MUC rooms
-    // XEP-0045: Room presence must be sent separately as directed presence
-    const joinedRooms = this.deps.stores?.room.joinedRooms() || []
-    for (const room of joinedRooms) {
-      if (room.joined && room.nickname) {
-        // Build room presence children (show + status only, no caps/priority needed for MUC)
-        const roomPresenceChildren: Element[] = []
-        if (show !== 'online') roomPresenceChildren.push(xml('show', {}, show))
-        if (status) roomPresenceChildren.push(xml('status', {}, status))
-
-        const roomPresence = xml('presence', {
-          to: `${room.jid}/${room.nickname}`,
-        }, ...roomPresenceChildren)
-
-        await this.deps.sendStanza(roomPresence)
-      }
-    }
 
     // NOTE: Do NOT call setPresenceState() here!
     // The presence machine is the authoritative source of presence state.
