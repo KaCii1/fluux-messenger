@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, Suspense, lazy, type ReactNode, type RefObject, type Ref, useImperativeHandle } from 'react'
 import { useTranslation } from 'react-i18next'
 import { detectRenderLoop } from '@/utils/renderLoopDetector'
-import { Send, Smile, Paperclip, Reply, X, Pencil, Loader2, Image, FileText, Trash2 } from 'lucide-react'
+import { Send, Smile, Paperclip, Reply, X, Pencil, Loader2, Image, FileText, Trash2, BarChart3 } from 'lucide-react'
 import { useClickOutside, useSlashCommands } from '@/hooks'
 import { Tooltip } from './Tooltip'
 
@@ -92,6 +92,8 @@ interface MessageComposerProps {
   onSend: (text: string) => Promise<boolean>
   /** Send easter egg animation */
   onSendEasterEgg?: (animation: string) => void
+  /** Callback to open poll creator — when set, shows a poll button in the toolbar */
+  onCreatePoll?: () => void
   /** Send typing notification */
   onSendTypingState?: (state: 'composing' | 'paused') => void
   /** Whether typing notifications are enabled (e.g., disabled for large rooms) */
@@ -144,6 +146,7 @@ export function MessageComposer({
   onComposingChange,
   onSend,
   onSendEasterEgg,
+  onCreatePoll,
   onSendTypingState,
   typingNotificationsEnabled = true,
   renderInput,
@@ -728,6 +731,19 @@ export function MessageComposer({
             )}
           </button>
         </Tooltip>
+
+        {/* Poll button (only shown for rooms) */}
+        {onCreatePoll && (
+          <Tooltip content={t('poll.create', 'Create Poll')} position="top">
+            <button
+              type="button"
+              onClick={onCreatePoll}
+              className="p-3 transition-colors text-fluux-muted hover:text-fluux-text"
+            >
+              <BarChart3 className="w-5 h-5" />
+            </button>
+          </Tooltip>
+        )}
 
         {/* Text input - either custom or default */}
         {renderInput ? (

@@ -11,6 +11,60 @@ import type { ReplyInfo } from './chat'
 import type { XMPPStanzaError } from '../../utils/xmppError'
 
 /**
+ * A single option within a poll.
+ * @category Poll
+ */
+export interface PollOption {
+  /** The numbered emoji for this option (e.g., "1️⃣", "2️⃣") */
+  emoji: string
+  /** The option text */
+  label: string
+}
+
+/**
+ * Poll voting settings.
+ * @category Poll
+ */
+export interface PollSettings {
+  /** Whether voters can select multiple options (default: false = single vote) */
+  allowMultiple: boolean
+}
+
+/**
+ * Poll data embedded in a message.
+ *
+ * When present on a message, indicates this message is a poll.
+ * Voting is done via XEP-0444 reactions — each option maps to a numbered emoji.
+ *
+ * @category Poll
+ */
+export interface PollData {
+  /** The poll question */
+  question: string
+  /** 2-4 options, each mapped to a numbered emoji */
+  options: PollOption[]
+  /** Voting settings */
+  settings: PollSettings
+  /** Occupant ID or nick of the poll creator (for MUC rooms) */
+  creatorId?: string
+}
+
+/**
+ * Frozen results published when a poll is closed by its creator.
+ * This is embedded in a separate `poll-closed` message, referencing the original poll.
+ *
+ * @category Poll
+ */
+export interface PollClosedData {
+  /** The poll question (for display without needing the original message) */
+  question: string
+  /** The original poll message ID */
+  pollMessageId: string
+  /** Frozen results: emoji → vote count */
+  results: { emoji: string; count: number }[]
+}
+
+/**
  * Base interface for all message types.
  *
  * Contains fields shared between 1:1 chat messages ({@link Message}) and
@@ -84,4 +138,14 @@ export interface BaseMessage {
    * indicating the message could not be delivered to the recipient.
    */
   deliveryError?: XMPPStanzaError
+  /**
+   * Poll data — when present, this message is a poll.
+   * Voting is done via XEP-0444 reactions mapped to option emojis.
+   */
+  poll?: PollData
+  /**
+   * Poll closed data — when present, this message announces frozen poll results.
+   * Sent by the poll creator when they close the poll.
+   */
+  pollClosed?: PollClosedData
 }

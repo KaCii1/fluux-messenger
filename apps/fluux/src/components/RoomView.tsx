@@ -14,6 +14,7 @@ import { MessageComposer, type ReplyInfo, type EditInfo, type MessageComposerHan
 import { RoomHeader } from './RoomHeader'
 import { OccupantPanel } from './OccupantPanel'
 import { OccupantModerationModal } from './OccupantModerationModal'
+import { PollCreator } from './PollCreator'
 import { MenuButton, MenuDivider } from './sidebar-components/SidebarListMenu'
 import { useToastStore } from '@/stores/toastStore'
 import { findLastEditableMessage, findLastEditableMessageId } from '@/utils/messageUtils'
@@ -58,7 +59,7 @@ const MAX_ROOM_SIZE_FOR_TYPING = 30
 export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = false, onShowOccupantsChange, onStartChat, onShowProfile }: RoomViewProps) {
   detectRenderLoop('RoomView')
   const { t } = useTranslation()
-  const { activeRoom, activeMessages, activeTypingUsers, sendMessage, sendReaction, sendCorrection, retractMessage, moderateMessage, sendChatState, setRoomNotifyAll, activeAnimation, sendEasterEgg, clearAnimation, clearFirstNewMessageId, updateLastSeenMessageId, joinRoom, setRoomAvatar, clearRoomAvatar, fetchOlderHistory, activeMAMState, submitRoomConfig, setSubject, destroyRoom, setAffiliation, setRole } = useRoomActive()
+  const { activeRoom, activeMessages, activeTypingUsers, sendMessage, sendReaction, sendPoll, sendCorrection, retractMessage, moderateMessage, sendChatState, setRoomNotifyAll, activeAnimation, sendEasterEgg, clearAnimation, clearFirstNewMessageId, updateLastSeenMessageId, joinRoom, setRoomAvatar, clearRoomAvatar, fetchOlderHistory, activeMAMState, submitRoomConfig, setSubject, destroyRoom, setAffiliation, setRole } = useRoomActive()
   const { contacts } = useRoster()
   // NOTE: Use focused selectors instead of useConnection() hook to avoid
   // re-renders when unrelated connection state changes (error, reconnectAttempt, etc.)
@@ -371,6 +372,7 @@ export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = 
             retractMessage={retractMessage}
             sendChatState={sendChatState}
             sendEasterEgg={sendEasterEgg}
+            sendPoll={sendPoll}
             onMessageSent={scrollToBottom}
             onInputResize={handleInputResize}
             replyingTo={replyingTo}
@@ -1136,6 +1138,7 @@ interface RoomMessageInputProps {
   retractMessage: (roomJid: string, messageId: string) => Promise<void>
   sendChatState: (roomJid: string, state: ChatStateNotification) => Promise<void>
   sendEasterEgg: (roomJid: string, animation: string) => Promise<void>
+  sendPoll: (roomJid: string, question: string, options: string[], settings?: Partial<import('@fluux/sdk').PollSettings>) => Promise<string>
   onMessageSent?: () => void
   onInputResize?: () => void
   replyingTo: RoomMessage | null
@@ -1162,6 +1165,7 @@ function RoomMessageInput({
   retractMessage,
   sendChatState,
   sendEasterEgg,
+  sendPoll,
   onMessageSent,
   onInputResize,
   replyingTo,
@@ -1182,6 +1186,7 @@ function RoomMessageInput({
 }: RoomMessageInputProps & { ref?: React.Ref<MessageComposerHandle> }) {
   const { t } = useTranslation()
   const { setDraft, getDraft, clearDraft, clearFirstNewMessageId } = useRoomActive()
+  const [showPollCreator, setShowPollCreator] = useState(false)
 
   // Mention state
   const [cursorPosition, setCursorPosition] = useState(0)
@@ -1533,6 +1538,15 @@ function RoomMessageInput({
   }
 
   return (
+    <>
+    {showPollCreator && (
+      <PollCreator
+        onClose={() => setShowPollCreator(false)}
+        onCreatePoll={async (question, options, allowMultiple) => {
+          await sendPoll(room.jid, question, options, { allowMultiple })
+        }}
+      />
+    )}
     <MessageComposer
       ref={composerRef}
       textareaRef={textareaRef}
@@ -1547,6 +1561,7 @@ function RoomMessageInput({
       onInputResize={onInputResize}
       onSend={handleSend}
       onSendEasterEgg={(animation) => sendEasterEgg(room.jid, animation)}
+      onCreatePoll={() => setShowPollCreator(true)}
       onSendTypingState={handleTypingState}
       typingNotificationsEnabled={shouldSendTypingNotifications}
       renderInput={renderMentionInput}
@@ -1562,6 +1577,7 @@ function RoomMessageInput({
       disabled={!isConnected}
       onEditLastMessage={onEditLastMessage}
     />
+    </>
   )
 }
 

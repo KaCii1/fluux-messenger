@@ -126,6 +126,9 @@ export const NS_XHTML = 'http://www.w3.org/1999/xhtml'
 // Custom: Easter Egg animations
 export const NS_EASTER_EGG = 'urn:fluux:easter-egg:0'
 
+// Custom: Fluux Polls (reaction-based voting)
+export const NS_POLL = 'urn:fluux:poll:0'
+
 // XEP-0050: Ad-Hoc Commands
 export const NS_COMMANDS = 'http://jabber.org/protocol/commands'
 

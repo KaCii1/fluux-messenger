@@ -820,6 +820,11 @@ export const createMockXMPPClientForHooks = () => ({
   discovery: {
     requestUploadSlot: vi.fn(),
   },
+  poll: {
+    sendPoll: vi.fn(),
+    vote: vi.fn(),
+    closePoll: vi.fn(),
+  },
 })
 
 export type MockXMPPClientForHooks = ReturnType<typeof createMockXMPPClientForHooks>

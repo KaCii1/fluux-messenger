@@ -261,6 +261,12 @@ export type {
   // Link preview types (XEP-0422 + OGP)
   LinkPreview,
 
+  // Poll types (reaction-based voting)
+  PollData,
+  PollOption,
+  PollSettings,
+  PollClosedData,
+
   // Client types
   XMPPClientConfig,
   XMPPClientEvents,
@@ -334,6 +340,17 @@ export { getPresenceRank, getBestPresenceShow, getPresenceFromShow } from './uti
 
 // Message lookup utilities
 export { createMessageLookup, findMessageById } from './utils/messageLookup'
+
+// Poll utilities
+export {
+  POLL_OPTION_EMOJIS,
+  MAX_POLL_OPTIONS,
+  tallyPollResults,
+  getTotalVoters,
+  hasVotedOnPoll,
+  getPollOptionEmojis,
+} from './core/poll'
+export type { PollTally } from './core/poll'
 
 // JID utilities
 export {

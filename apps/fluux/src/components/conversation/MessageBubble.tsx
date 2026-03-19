@@ -18,6 +18,8 @@ import { MessageAttachments } from '../MessageAttachments'
 import { LinkPreviewCard } from '../LinkPreviewCard'
 import { UserInfoPopover } from './UserInfoPopover'
 import { CollapsibleContent } from './CollapsibleContent'
+import { PollCard } from './PollCard'
+import { PollClosedCard } from './PollClosedCard'
 
 export interface MessageBubbleProps {
   // Core message data (using BaseMessage interface)
@@ -386,6 +388,22 @@ export const MessageBubble = memo(function MessageBubble({
 
           {/* Link preview - hidden for retracted */}
           {!message.isRetracted && message.linkPreview && <LinkPreviewCard preview={message.linkPreview} onLoad={onMediaLoad} />}
+
+          {/* Poll display - hidden for retracted */}
+          {!message.isRetracted && message.poll && (
+            <PollCard
+              poll={message.poll}
+              reactions={message.reactions ?? {}}
+              myReactions={myReactions}
+              onVote={handleReaction}
+              getReactorName={getReactorName}
+            />
+          )}
+
+          {/* Poll closed result display */}
+          {!message.isRetracted && message.pollClosed && (
+            <PollClosedCard pollClosed={message.pollClosed} />
+          )}
         </CollapsibleContent>
 
         {/* Reactions display */}

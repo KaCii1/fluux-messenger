@@ -3,7 +3,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { roomStore } from '../stores'
 import { useRoomStore, useAdminStore } from '../react/storeHooks'
 import { useXMPPContext } from '../provider'
-import type { MentionReference, ChatStateNotification, FileAttachment, RSMRequest, AdminRoom, RSMResponse, MAMQueryState, RoomAffiliation, RoomRole } from '../core/types'
+import type { MentionReference, ChatStateNotification, FileAttachment, RSMRequest, AdminRoom, RSMResponse, MAMQueryState, RoomAffiliation, RoomRole, PollData, PollSettings } from '../core/types'
 import { createFetchOlderHistory } from './shared'
 
 /**
@@ -214,6 +214,27 @@ export function useRoom() {
   const sendReaction = useCallback(
     async (roomJid: string, messageId: string, emojis: string[]) => {
       await client.chat.sendReaction(roomJid, messageId, emojis, 'groupchat')
+    },
+    [client]
+  )
+
+  const sendPoll = useCallback(
+    async (roomJid: string, question: string, options: string[], settings?: Partial<PollSettings>) => {
+      return await client.poll.sendPoll(roomJid, question, options, settings)
+    },
+    [client]
+  )
+
+  const votePoll = useCallback(
+    async (roomJid: string, messageId: string, optionEmoji: string, currentMyReactions: string[], poll: PollData) => {
+      await client.poll.vote(roomJid, messageId, optionEmoji, currentMyReactions, poll)
+    },
+    [client]
+  )
+
+  const closePoll = useCallback(
+    async (roomJid: string, messageId: string) => {
+      return await client.poll.closePoll(roomJid, messageId)
     },
     [client]
   )
@@ -566,6 +587,9 @@ export function useRoom() {
       markAsRead,
       sendMessage,
       sendReaction,
+      sendPoll,
+      votePoll,
+      closePoll,
       sendCorrection,
       retractMessage,
       moderateMessage,
@@ -611,6 +635,9 @@ export function useRoom() {
       markAsRead,
       sendMessage,
       sendReaction,
+      sendPoll,
+      votePoll,
+      closePoll,
       sendCorrection,
       retractMessage,
       moderateMessage,

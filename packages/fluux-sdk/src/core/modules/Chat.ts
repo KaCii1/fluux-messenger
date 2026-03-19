@@ -25,6 +25,7 @@ import {
   NS_FLUUX,
   NS_OCCUPANT_ID,
   NS_MESSAGE_MODERATE,
+  NS_POLL,
 } from '../namespaces'
 import type {
   Message,
@@ -38,6 +39,7 @@ import type {
   RoomMAMResult,
 } from '../types'
 import { parseMessageContent, parseOgpFastening, applyRetraction, applyCorrection } from './messagingUtils'
+import { parsePollElement, parsePollClosedElement } from '../poll'
 import { parseXMPPError, formatXMPPError } from '../../utils/xmppError'
 import type { MAM } from './MAM'
 
@@ -1326,6 +1328,26 @@ export class Chat extends BaseModule {
       ...(parsed.attachment && { attachment: parsed.attachment }),
       ...(isCorrection && { isEdited: true }),
       ...(occupantId && { occupantId }),
+    }
+
+    // Poll detection: check for <poll> or <poll-closed> elements
+    const pollEl = stanza.getChild('poll', NS_POLL)
+    if (pollEl) {
+      const pollData = parsePollElement(pollEl)
+      if (pollData) {
+        message.poll = pollData
+        // Set creator ID from occupant-id if available
+        if (occupantId) {
+          message.poll.creatorId = occupantId
+        }
+      }
+    }
+    const pollClosedEl = stanza.getChild('poll-closed', NS_POLL)
+    if (pollClosedEl) {
+      const pollClosedData = parsePollClosedElement(pollClosedEl)
+      if (pollClosedData) {
+        message.pollClosed = pollClosedData
+      }
     }
 
     // Mentions logic

@@ -209,7 +209,15 @@ export function stripReplyQuote(body: string): string {
  * // 'My reply'
  * ```
  */
-export function formatMessagePreview(message: Pick<BaseMessage, 'body' | 'attachment' | 'replyTo'>): string {
+export function formatMessagePreview(message: Pick<BaseMessage, 'body' | 'attachment' | 'replyTo' | 'poll' | 'pollClosed'>): string {
+  // Poll messages: show question with poll emoji
+  if (message.poll) {
+    return `📊 ${message.poll.question}`
+  }
+  if (message.pollClosed) {
+    return `📊 Poll closed: ${message.pollClosed.question}`
+  }
+
   const { body, attachment, replyTo } = message as { body: string; attachment?: FileAttachment; replyTo?: ReplyInfo }
 
   // For replies, strip any quote prefix that may still be in the body

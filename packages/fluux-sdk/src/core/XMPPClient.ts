@@ -103,6 +103,7 @@ import { WebPush } from './modules/WebPush'
 import { EntityTime } from './modules/EntityTime'
 import { LastActivity } from './modules/LastActivity'
 import { MAM } from './modules/MAM'
+import { Poll } from './modules/Poll'
 import { NS_CARBONS, NS_MAM, NS_P1_PUSH_WEBPUSH } from './namespaces'
 import { createDefaultStoreBindings, type DefaultStoreBindingsOptions } from './defaultStoreBindings'
 import { logInfo } from './logger'
@@ -237,6 +238,12 @@ export class XMPPClient {
    * Manages per-room ignored user lists via PEP (XEP-0223 private storage).
    */
   public ignore!: Ignore
+
+  /**
+   * Poll module.
+   * Manages reaction-based polls in MUC rooms.
+   */
+  public poll!: Poll
 
   /**
    * Conversation sync module.
@@ -569,6 +576,7 @@ export class XMPPClient {
     this.pubsub = new PubSub(moduleDeps)
     this.mam = new MAM(moduleDeps)
     this.chat = new Chat(moduleDeps, this.mam)
+    this.poll = new Poll(moduleDeps, this.chat)
     this.roster = new Roster(moduleDeps)
     this.muc = new MUC(moduleDeps)
     this.admin = new Admin(moduleDeps)
@@ -603,7 +611,7 @@ export class XMPPClient {
       // Route to modules (order matters - first handler to return true wins)
       // PubSub before Chat so PubSub events aren't treated as chat messages
       // Blocking before Roster so blocklist pushes are handled correctly
-      const modules = [this.pubsub, this.blocking, this.chat, this.roster, this.muc, this.profile, this.discovery, this.lastActivity]
+      const modules = [this.pubsub, this.blocking, this.poll, this.chat, this.roster, this.muc, this.profile, this.discovery, this.lastActivity]
       for (const module of modules) {
         if (module.handle(stanza)) break
       }
