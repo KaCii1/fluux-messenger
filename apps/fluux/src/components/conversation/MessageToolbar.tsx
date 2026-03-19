@@ -1,4 +1,4 @@
-import { useRef, memo, Suspense, lazy } from 'react'
+import { useRef, useState, memo, Suspense, lazy, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SmilePlus, Pencil, Forward, MoreHorizontal, Reply, Trash2 } from 'lucide-react'
 import { useClickOutside } from '@/hooks'
@@ -80,6 +80,19 @@ export const MessageToolbar = memo(function MessageToolbar({
   const { t } = useTranslation()
   const toolbarRef = useRef<HTMLDivElement>(null)
   const moreMenuRef = useRef<HTMLDivElement>(null)
+  const reactionButtonRef = useRef<HTMLButtonElement>(null)
+  const [pickerDropUp, setPickerDropUp] = useState(false)
+
+  // When the reaction picker opens, decide if it should drop up or down
+  // based on available viewport space below the button
+  useEffect(() => {
+    if (showReactionPicker && reactionButtonRef.current) {
+      const rect = reactionButtonRef.current.getBoundingClientRect()
+      const spaceBelow = window.innerHeight - rect.bottom
+      // emoji-mart picker is ~435px tall
+      setPickerDropUp(spaceBelow < 450)
+    }
+  }, [showReactionPicker])
 
   // Close reaction picker
   const closeReactionPicker = () => setShowReactionPicker(false)
@@ -148,6 +161,7 @@ export const MessageToolbar = memo(function MessageToolbar({
       {handleReaction && (
       <div className="relative">
         <button
+          ref={reactionButtonRef}
           onClick={() => setShowReactionPicker(!showReactionPicker)}
           className={`p-1.5 transition-colors ${showReactionPicker || showMoreMenu ? '' : 'hover:bg-fluux-hover'}`}
           aria-label={t('chat.moreReactions')}
@@ -157,7 +171,7 @@ export const MessageToolbar = memo(function MessageToolbar({
 
         {/* Full emoji picker for reactions */}
         {showReactionPicker && (
-          <div className="absolute top-full right-0 mt-1 z-30">
+          <div className={`absolute right-0 z-30 ${pickerDropUp ? 'bottom-full mb-1' : 'top-full mt-1'}`}>
             <Suspense fallback={null}>
               <EmojiPicker
                 onSelect={(emoji) => handleReaction(emoji)}
