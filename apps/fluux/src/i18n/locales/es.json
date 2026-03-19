@@ -73,7 +73,7 @@
         "hoursAgo": "hace {{count}}h",
         "yesterday": "ayer",
         "daysAgo": "hace {{count}}d",
-        "weeksAgo": "hace {{count}}sem",
+        "weeksAgo": "hace {{count}} sem",
         "changeStatus": "Cambiar estado",
         "localTime": "Hora local del contacto"
     },

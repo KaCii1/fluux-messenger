@@ -69,7 +69,7 @@
         "idle": "Neaktiven",
         "lastSeen": "Nazadnje viden {{time}}",
         "justNow": "pravkar",
-        "minutesAgo": "pred {{count}}min",
+        "minutesAgo": "pred {{count}} min",
         "hoursAgo": "pred {{count}}h",
         "yesterday": "včeraj",
         "daysAgo": "pred {{count}}d",

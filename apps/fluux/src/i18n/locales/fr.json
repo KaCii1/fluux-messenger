@@ -73,7 +73,7 @@
         "hoursAgo": "il y a {{count}}h",
         "yesterday": "hier",
         "daysAgo": "il y a {{count}}j",
-        "weeksAgo": "il y a {{count}}sem",
+        "weeksAgo": "il y a {{count}} sem",
         "changeStatus": "Changer le statut",
         "localTime": "Heure locale du contact"
     },
