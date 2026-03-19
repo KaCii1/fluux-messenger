@@ -41,7 +41,6 @@ import { client as xmppClientFactory } from '@xmpp/client'
 describe('Poll module', () => {
   let xmppClient: XMPPClient
   let mockStores: MockStoreBindings
-  let emitSDKSpy: ReturnType<typeof vi.spyOn>
 
   beforeEach(() => {
     vi.useFakeTimers()
@@ -51,7 +50,6 @@ describe('Poll module', () => {
     mockStores = createMockStores()
     xmppClient = new XMPPClient({ debug: false })
     xmppClient.bindStores(mockStores)
-    emitSDKSpy = vi.spyOn(xmppClient, 'emitSDK')
   })
 
   afterEach(() => {

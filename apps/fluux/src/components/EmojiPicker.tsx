@@ -41,14 +41,13 @@ export function EmojiPicker({ onSelect, onClose }: EmojiPickerProps) {
     })
 
     pickerRef.current = picker
-    containerRef.current.appendChild(picker as unknown as Node)
+    const container = containerRef.current
+    container.appendChild(picker as unknown as Node)
 
     return () => {
       pickerRef.current = null
       // Clean up: remove the picker element
-      if (containerRef.current) {
-        containerRef.current.replaceChildren()
-      }
+      container.replaceChildren()
     }
     // Re-create picker when theme or locale changes
   }, [theme, i18n.language, onSelect])

@@ -18,7 +18,6 @@ import {
   NS_THUMBS,
   NS_FILE_METADATA,
   NS_STANZA_ID,
-  NS_CORRECTION,
   NS_XHTML,
   NS_FASTEN,
 } from '../namespaces'

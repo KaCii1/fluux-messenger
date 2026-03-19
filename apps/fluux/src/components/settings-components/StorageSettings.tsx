@@ -17,7 +17,7 @@ export function StorageSettings() {
   }, [])
 
   useEffect(() => {
-    loadCacheSize()
+    void loadCacheSize()
   }, [loadCacheSize])
 
   const handleClear = async () => {

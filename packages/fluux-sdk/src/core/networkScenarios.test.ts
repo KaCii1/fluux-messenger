@@ -53,7 +53,6 @@ import {
   simulateFreshSessionWithRejoin,
   snapshotRoomStates,
   settle,
-  setupAllSideEffects,
   type ScenarioMockClient,
 } from './networkScenario.testHelpers'
 import { setupRoomSideEffects } from './roomSideEffects'
