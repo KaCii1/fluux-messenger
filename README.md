@@ -56,7 +56,7 @@
 
 - **Modern XMPP Client** - React-based UI with TypeScript
 - **Cross-platform** - Available on web and desktop (Tauri-based)
-- **Extensive XMPP Protocol Support** - 40+ XEPs implemented, including MAM, MUC, HTTP File Upload, message carbons, and reactions (and more to come)
+- **Extensive XMPP Protocol Support** - 50+ XEPs implemented, including MAM, MUC, HTTP File Upload, message carbons, reactions, and FAST authentication (and more to come)
 - **Built-in XMPP Console** - Debug interface for developers and power users
 - **Multi-user Chat** - Complete MUC support with roles, affiliations, hats, @mentions, and bookmarks
 - **File Sharing** - HTTP uploads with thumbnails, progress indicators, and previews

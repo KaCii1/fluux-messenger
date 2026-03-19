@@ -23,6 +23,8 @@ This document lists the XMPP Extension Protocols (XEPs) and related RFCs impleme
 | [XEP-0202](https://xmpp.org/extensions/xep-0202.html) | Entity Time                                     | ✅ Implemented | Responds to queries; queries contacts and displays local time in chat header and contact popover            |
 | [XEP-0280](https://xmpp.org/extensions/xep-0280.html) | Message Carbons                                 | ✅ Implemented | Sync messages across multiple connected clients                                                             |
 | [XEP-0368](https://xmpp.org/extensions/xep-0368.html) | SRV Records for XMPP over TLS                   | ✅ Implemented | Desktop: SRV lookup for `_xmpps-client._tcp` (direct TLS) and `_xmpp-client._tcp` (STARTTLS) via Rust proxy |
+| [XEP-0388](https://xmpp.org/extensions/xep-0388.html) | Extensible SASL Profile (SASL2)                  | ✅ Implemented | Modern authentication with inline features (bind2, FAST). Falls back to SASL1 if server doesn't support it  |
+| [XEP-0484](https://xmpp.org/extensions/xep-0484.html) | Fast Authentication Streamlining Tokens (FAST)   | ✅ Implemented | Token-based reconnection without password (web: 14-day localStorage persistence, HT-SHA-256-NONE mechanism) |
 
 ## Service Discovery
 

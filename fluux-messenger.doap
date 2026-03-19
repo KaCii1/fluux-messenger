@@ -237,6 +237,15 @@
       </xmpp:SupportedXep>
     </implements>
 
+    <!-- XEP-0388: Extensible SASL Profile (SASL2) -->
+    <implements>
+      <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0388.html"/>
+        <xmpp:status>complete</xmpp:status>
+        <xmpp:note>Modern authentication with inline features (bind2, FAST), fallback to SASL1</xmpp:note>
+      </xmpp:SupportedXep>
+    </implements>
+
     <!-- XEP-0202: Entity Time -->
     <implements>
       <xmpp:SupportedXep>
@@ -476,6 +485,15 @@
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0461.html"/>
         <xmpp:status>complete</xmpp:status>
         <xmpp:note>Reply-to with quoted preview and fallback body</xmpp:note>
+      </xmpp:SupportedXep>
+    </implements>
+
+    <!-- XEP-0484: Fast Authentication Streamlining Tokens -->
+    <implements>
+      <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0484.html"/>
+        <xmpp:status>complete</xmpp:status>
+        <xmpp:note>Token-based reconnection without password (14-day persistence on web)</xmpp:note>
       </xmpp:SupportedXep>
     </implements>
 
