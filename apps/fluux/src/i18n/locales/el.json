@@ -778,11 +778,39 @@
         "mam": "Ενεργοποίηση αρχείου μηνυμάτων (MAM) ώστε οι εφαρμογές να μπορούν να ανακτούν παλαιότερα μηνύματα κατά τη σύνδεση ή επανασύνδεση. Αυτό είναι το ιστορικό που βλέπουν οι συμμετέχοντες στην εφαρμογή συνομιλίας τους."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Το Fluux είναι ήδη ανοιχτό σε άλλη καρτέλα",
+        "alreadyOpenDescription": "Μόνο μία καρτέλα μπορεί να είναι συνδεδεμένη τη φορά για αποφυγή συγκρούσεων μηνυμάτων.",
+        "useHere": "Χρήση εδώ",
+        "takenOver": "Η συνεδρία μεταφέρθηκε σε άλλη καρτέλα",
+        "takenOverDescription": "Αυτή η καρτέλα αποσυνδέθηκε επειδή το Fluux άνοιξε σε άλλη καρτέλα.",
+        "reconnectHere": "Επανασύνδεση εδώ"
+    },
+    "poll": {
+        "create": "Δημιουργία ψηφοφορίας",
+        "title": "Τίτλος",
+        "titlePlaceholder": "Κάντε μια ερώτηση...",
+        "description": "Περιγραφή",
+        "descriptionPlaceholder": "Προσθέστε πλαίσιο ή λεπτομέρειες...",
+        "options": "Επιλογές",
+        "changeEmoji": "Κλικ για αλλαγή emoji",
+        "optionPlaceholder": "Επιλογή {{number}}",
+        "removeOption": "Αφαίρεση επιλογής",
+        "addOption": "Προσθήκη επιλογής",
+        "allowMultiple": "Επιτρέπονται πολλαπλές ψήφοι",
+        "hideResultsBeforeVote": "Απόκρυψη αποτελεσμάτων μέχρι την ψηφοφορία",
+        "deadline": "Προθεσμία",
+        "send": "Αποστολή ψηφοφορίας",
+        "multipleAllowed": "Επιλέξτε πολλαπλές επιλογές",
+        "expired": "Η ψηφοφορία έληξε",
+        "voteToSeeResults": "Ψηφίστε για να δείτε τα αποτελέσματα",
+        "noVotes": "Δεν υπάρχουν ψήφοι ακόμα",
+        "totalVotes": "{{count}} ψήφος/οι",
+        "deadlineDisplay": "Λήγει {{date}}",
+        "tapToChange": "Πατήστε για αλλαγή ψήφου",
+        "close": "Κλείσιμο ψηφοφορίας",
+        "closed": "Ψηφοφορία κλεισμένη",
+        "bannerSingle": "📊 {{title}} — πατήστε για να ψηφίσετε",
+        "bannerMultiple": "📊 {{count}} αναπάντητες ψηφοφορίες — πατήστε για να δείτε την τελευταία",
+        "dismissBanner": "Απόρριψη"
     }
 }

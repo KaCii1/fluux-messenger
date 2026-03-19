@@ -779,11 +779,39 @@
         "mam": "Luba sõnumiarhiiv (MAM), et kliendid saaksid liitumisel või taasühendumisel varasemaid sõnumeid tuua. See on ajalugu, mida osalejad oma vestlusrakenduses näevad."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux on juba teises vahekaardil avatud",
+        "alreadyOpenDescription": "Korraga saab ühendatud olla ainult üks vahekaart, et vältida sõnumite konflikte.",
+        "useHere": "Kasuta siin",
+        "takenOver": "Seanss viidi teisele vahekaardile",
+        "takenOverDescription": "See vahekaart ühendati lahti, kuna Fluux avati teises vahekaardis.",
+        "reconnectHere": "Ühenda siin uuesti"
+    },
+    "poll": {
+        "create": "Loo küsitlus",
+        "title": "Pealkiri",
+        "titlePlaceholder": "Esita küsimus...",
+        "description": "Kirjeldus",
+        "descriptionPlaceholder": "Lisa kontekst või üksikasjad...",
+        "options": "Valikud",
+        "changeEmoji": "Klõpsa emoji muutmiseks",
+        "optionPlaceholder": "Valik {{number}}",
+        "removeOption": "Eemalda valik",
+        "addOption": "Lisa valik",
+        "allowMultiple": "Luba mitu häält",
+        "hideResultsBeforeVote": "Peida tulemused kuni hääletamiseni",
+        "deadline": "Tähtaeg",
+        "send": "Saada küsitlus",
+        "multipleAllowed": "Vali mitu valikut",
+        "expired": "Küsitlus lõppenud",
+        "voteToSeeResults": "Hääleta tulemuste nägemiseks",
+        "noVotes": "Hääli veel pole",
+        "totalVotes": "{{count}} hääl(t)",
+        "deadlineDisplay": "Lõpeb {{date}}",
+        "tapToChange": "Puuduta hääle muutmiseks",
+        "close": "Sulge küsitlus",
+        "closed": "Küsitlus suletud",
+        "bannerSingle": "📊 {{title}} — puuduta hääletamiseks",
+        "bannerMultiple": "📊 {{count}} vastamata küsitlust — puuduta viimase nägemiseks",
+        "dismissBanner": "Sulge"
     }
 }

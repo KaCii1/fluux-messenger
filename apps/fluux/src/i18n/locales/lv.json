@@ -778,11 +778,39 @@
         "mam": "Iespējot ziņojumu arhīvu (MAM), lai klienti varētu iegūt iepriekšējos ziņojumus pievienojoties vai atkārtoti pieslēdzoties. Šī ir vēsture, ko dalībnieki redz savā tērzēšanas lietotnē."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux jau ir atvērts citā cilnē",
+        "alreadyOpenDescription": "Vienlaicīgi var būt pieslēgta tikai viena cilne, lai izvairītos no ziņojumu konfliktiem.",
+        "useHere": "Lietot šeit",
+        "takenOver": "Sesija pārvietota uz citu cilni",
+        "takenOverDescription": "Šī cilne tika atvienota, jo Fluux tika atvērts citā cilnē.",
+        "reconnectHere": "Atkārtoti pieslēgties šeit"
+    },
+    "poll": {
+        "create": "Izveidot aptauju",
+        "title": "Virsraksts",
+        "titlePlaceholder": "Uzdodiet jautājumu...",
+        "description": "Apraksts",
+        "descriptionPlaceholder": "Pievienojiet kontekstu vai detaļas...",
+        "options": "Varianti",
+        "changeEmoji": "Noklikšķiniet, lai mainītu emoji",
+        "optionPlaceholder": "Variants {{number}}",
+        "removeOption": "Noņemt variantu",
+        "addOption": "Pievienot variantu",
+        "allowMultiple": "Atļaut vairākas balsis",
+        "hideResultsBeforeVote": "Slēpt rezultātus līdz balsošanai",
+        "deadline": "Termiņš",
+        "send": "Nosūtīt aptauju",
+        "multipleAllowed": "Izvēlieties vairākus variantus",
+        "expired": "Aptauja beigusies",
+        "voteToSeeResults": "Balsojiet, lai redzētu rezultātus",
+        "noVotes": "Vēl nav balsu",
+        "totalVotes": "{{count}} balss(-is)",
+        "deadlineDisplay": "Beidzas {{date}}",
+        "tapToChange": "Pieskarieties, lai mainītu balsi",
+        "close": "Aizvērt aptauju",
+        "closed": "Aptauja aizvērta",
+        "bannerSingle": "📊 {{title}} — pieskarieties, lai balsotu",
+        "bannerMultiple": "📊 {{count}} neatbildētas aptaujas — pieskarieties, lai redzētu jaunāko",
+        "dismissBanner": "Noraidīt"
     }
 }

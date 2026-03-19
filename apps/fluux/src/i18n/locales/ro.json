@@ -779,11 +779,39 @@
         "mam": "Activează arhiva de mesaje (MAM) pentru ca clienții să poată obține mesajele anterioare la alăturare sau reconectare. Acesta este istoricul pe care participanții îl văd în aplicația lor de chat."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux este deja deschis într-un alt tab",
+        "alreadyOpenDescription": "Doar un singur tab poate fi conectat la un moment dat pentru a preveni conflictele de mesaje.",
+        "useHere": "Folosește aici în schimb",
+        "takenOver": "Sesiunea a fost mutată într-un alt tab",
+        "takenOverDescription": "Acest tab a fost deconectat deoarece Fluux a fost deschis într-un alt tab.",
+        "reconnectHere": "Reconectează-te aici"
+    },
+    "poll": {
+        "create": "Creează sondaj",
+        "title": "Titlu",
+        "titlePlaceholder": "Pune o întrebare...",
+        "description": "Descriere",
+        "descriptionPlaceholder": "Adaugă context sau detalii...",
+        "options": "Opțiuni",
+        "changeEmoji": "Clic pentru a schimba emoji-ul",
+        "optionPlaceholder": "Opțiunea {{number}}",
+        "removeOption": "Elimină opțiunea",
+        "addOption": "Adaugă opțiune",
+        "allowMultiple": "Permite voturi multiple",
+        "hideResultsBeforeVote": "Ascunde rezultatele până la vot",
+        "deadline": "Termen limită",
+        "send": "Trimite sondajul",
+        "multipleAllowed": "Selectează opțiuni multiple",
+        "expired": "Sondajul s-a încheiat",
+        "voteToSeeResults": "Votează pentru a vedea rezultatele",
+        "noVotes": "Niciun vot încă",
+        "totalVotes": "{{count}} vot(uri)",
+        "deadlineDisplay": "Se încheie {{date}}",
+        "tapToChange": "Apasă pentru a schimba votul",
+        "close": "Închide sondajul",
+        "closed": "Sondaj închis",
+        "bannerSingle": "📊 {{title}} — apasă pentru a vota",
+        "bannerMultiple": "📊 {{count}} sondaje fără răspuns — apasă pentru a vedea ultimul",
+        "dismissBanner": "Respinge"
     }
 }

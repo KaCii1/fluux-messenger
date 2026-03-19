@@ -777,11 +777,39 @@
         "mam": "Ota käyttöön viestiarkisto (MAM), jotta sovellukset voivat hakea aiempia viestejä liittyessään tai yhdistäessään uudelleen. Tämä on historia, jonka osallistujat näkevät chat-sovelluksessaan."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux on jo auki toisessa välilehdessä",
+        "alreadyOpenDescription": "Vain yksi välilehti voi olla yhdistettynä kerrallaan viestiristiriitojen välttämiseksi.",
+        "useHere": "Käytä täällä sen sijaan",
+        "takenOver": "Istunto siirretty toiseen välilehteen",
+        "takenOverDescription": "Tämä välilehti katkaistiin, koska Fluux avattiin toisessa välilehdessä.",
+        "reconnectHere": "Yhdistä uudelleen täällä"
+    },
+    "poll": {
+        "create": "Luo äänestys",
+        "title": "Otsikko",
+        "titlePlaceholder": "Esitä kysymys...",
+        "description": "Kuvaus",
+        "descriptionPlaceholder": "Lisää kontekstia tai yksityiskohtia...",
+        "options": "Vaihtoehdot",
+        "changeEmoji": "Napsauta vaihtaaksesi emoji",
+        "optionPlaceholder": "Vaihtoehto {{number}}",
+        "removeOption": "Poista vaihtoehto",
+        "addOption": "Lisää vaihtoehto",
+        "allowMultiple": "Salli useita ääniä",
+        "hideResultsBeforeVote": "Piilota tulokset ennen äänestämistä",
+        "deadline": "Määräaika",
+        "send": "Lähetä äänestys",
+        "multipleAllowed": "Valitse useita vaihtoehtoja",
+        "expired": "Äänestys päättynyt",
+        "voteToSeeResults": "Äänestä nähdäksesi tulokset",
+        "noVotes": "Ei vielä ääniä",
+        "totalVotes": "{{count}} ääni/ääntä",
+        "deadlineDisplay": "Päättyy {{date}}",
+        "tapToChange": "Napauta vaihtaaksesi ääntä",
+        "close": "Sulje äänestys",
+        "closed": "Äänestys suljettu",
+        "bannerSingle": "📊 {{title}} — napauta äänestääksesi",
+        "bannerMultiple": "📊 {{count}} vastaamatonta äänestystä — napauta nähdäksesi viimeisin",
+        "dismissBanner": "Sulje"
     }
 }

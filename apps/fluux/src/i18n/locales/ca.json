@@ -779,11 +779,39 @@
         "mam": "Activa l'arxiu de missatges (MAM) perquè els clients puguin obtenir missatges anteriors en unir-se o reconnectar-se. Aquest és l'historial que els participants veuen a la seva aplicació de xat."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux ja està obert en una altra pestanya",
+        "alreadyOpenDescription": "Només una pestanya pot estar connectada alhora per evitar conflictes de missatges.",
+        "useHere": "Utilitza aquí en lloc d'allà",
+        "takenOver": "Sessió moguda a una altra pestanya",
+        "takenOverDescription": "Aquesta pestanya s'ha desconnectat perquè Fluux s'ha obert en una altra pestanya.",
+        "reconnectHere": "Reconnecta aquí"
+    },
+    "poll": {
+        "create": "Crea enquesta",
+        "title": "Títol",
+        "titlePlaceholder": "Fes una pregunta...",
+        "description": "Descripció",
+        "descriptionPlaceholder": "Afegeix context o detalls...",
+        "options": "Opcions",
+        "changeEmoji": "Clica per canviar l'emoji",
+        "optionPlaceholder": "Opció {{number}}",
+        "removeOption": "Elimina opció",
+        "addOption": "Afegeix opció",
+        "allowMultiple": "Permet múltiples vots",
+        "hideResultsBeforeVote": "Amaga els resultats fins a votar",
+        "deadline": "Data límit",
+        "send": "Envia enquesta",
+        "multipleAllowed": "Selecciona múltiples opcions",
+        "expired": "Enquesta finalitzada",
+        "voteToSeeResults": "Vota per veure els resultats",
+        "noVotes": "Encara no hi ha vots",
+        "totalVotes": "{{count}} vot(s)",
+        "deadlineDisplay": "Acaba {{date}}",
+        "tapToChange": "Toca per canviar el vot",
+        "close": "Tanca enquesta",
+        "closed": "Enquesta tancada",
+        "bannerSingle": "📊 {{title}} — toca per votar",
+        "bannerMultiple": "📊 {{count}} enquestes sense resposta — toca per veure l'última",
+        "dismissBanner": "Descarta"
     }
 }

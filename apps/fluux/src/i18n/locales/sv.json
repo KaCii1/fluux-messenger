@@ -777,11 +777,39 @@
         "mam": "Aktivera meddelandearkiv (MAM) så att klienter kan hämta tidigare meddelanden vid anslutning eller återanslutning. Detta är historiken som deltagare ser i sin chattapp."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux är redan öppen i en annan flik",
+        "alreadyOpenDescription": "Bara en flik kan vara ansluten åt gången för att undvika meddelandekonflikter.",
+        "useHere": "Använd här istället",
+        "takenOver": "Sessionen flyttades till en annan flik",
+        "takenOverDescription": "Den här fliken kopplades från eftersom Fluux öppnades i en annan flik.",
+        "reconnectHere": "Återanslut här"
+    },
+    "poll": {
+        "create": "Skapa omröstning",
+        "title": "Titel",
+        "titlePlaceholder": "Ställ en fråga...",
+        "description": "Beskrivning",
+        "descriptionPlaceholder": "Lägg till sammanhang eller detaljer...",
+        "options": "Alternativ",
+        "changeEmoji": "Klicka för att ändra emoji",
+        "optionPlaceholder": "Alternativ {{number}}",
+        "removeOption": "Ta bort alternativ",
+        "addOption": "Lägg till alternativ",
+        "allowMultiple": "Tillåt flera röster",
+        "hideResultsBeforeVote": "Dölj resultat tills du har röstat",
+        "deadline": "Tidsgräns",
+        "send": "Skicka omröstning",
+        "multipleAllowed": "Välj flera alternativ",
+        "expired": "Omröstningen avslutad",
+        "voteToSeeResults": "Rösta för att se resultat",
+        "noVotes": "Inga röster ännu",
+        "totalVotes": "{{count}} röst(er)",
+        "deadlineDisplay": "Slutar {{date}}",
+        "tapToChange": "Tryck för att ändra röst",
+        "close": "Avsluta omröstning",
+        "closed": "Omröstningen stängd",
+        "bannerSingle": "📊 {{title}} — tryck för att rösta",
+        "bannerMultiple": "📊 {{count}} obesvarade omröstningar — tryck för att se senaste",
+        "dismissBanner": "Avfärda"
     }
 }

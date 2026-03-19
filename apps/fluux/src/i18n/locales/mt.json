@@ -779,11 +779,39 @@
         "mam": "Attiva l-arkivju tal-messaġġi (MAM) biex il-klijenti jkunu jistgħu jiġbru messaġġi ta' qabel meta jingħaqdu jew jerġgħu jikkonnettjaw. Din hija l-istorja li l-parteċipanti jaraw fl-app taċ-chat tagħhom."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux diġà miftuħ f'tab ieħor",
+        "alreadyOpenDescription": "Tab wieħed biss jista' jkun konness f'daqqa biex jiġu evitati kunflitti tal-messaġġi.",
+        "useHere": "Uża hawn minflok",
+        "takenOver": "Is-sessjoni ġiet trasferita għal tab ieħor",
+        "takenOverDescription": "Dan it-tab ġie skonnettjat għax Fluux infetaħ f'tab ieħor.",
+        "reconnectHere": "Erġa' qabbad hawn"
+    },
+    "poll": {
+        "create": "Oħloq stħarriġ",
+        "title": "Titlu",
+        "titlePlaceholder": "Staqsi mistoqsija...",
+        "description": "Deskrizzjoni",
+        "descriptionPlaceholder": "Żid kuntest jew dettalji...",
+        "options": "Għażliet",
+        "changeEmoji": "Ikklikkja biex tibdel l-emoji",
+        "optionPlaceholder": "Għażla {{number}}",
+        "removeOption": "Neħħi għażla",
+        "addOption": "Żid għażla",
+        "allowMultiple": "Ippermetti voti multipli",
+        "hideResultsBeforeVote": "Aħbi r-riżultati sakemm tivvota",
+        "deadline": "Skadenza",
+        "send": "Ibgħat stħarriġ",
+        "multipleAllowed": "Agħżel għażliet multipli",
+        "expired": "L-istħarriġ spiċċa",
+        "voteToSeeResults": "Ivvota biex tara r-riżultati",
+        "noVotes": "Għad m'hemmx voti",
+        "totalVotes": "{{count}} vot(i)",
+        "deadlineDisplay": "Jintemm {{date}}",
+        "tapToChange": "Tektek biex tibdel il-vot",
+        "close": "Agħlaq l-istħarriġ",
+        "closed": "L-istħarriġ magħluq",
+        "bannerSingle": "📊 {{title}} — tektek biex tivvota",
+        "bannerMultiple": "📊 {{count}} stħarriġiet mhux imwieġba — tektek biex tara l-aħħar wieħed",
+        "dismissBanner": "Warrab"
     }
 }

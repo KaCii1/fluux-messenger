@@ -778,11 +778,39 @@
         "mam": "Activer l'archive de messages (MAM) pour que les clients puissent récupérer les messages passés en rejoignant le salon ou en se reconnectant. C'est l'historique que les participants voient dans leur application."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux est déjà ouvert dans un autre onglet",
+        "alreadyOpenDescription": "Un seul onglet peut être connecté à la fois pour éviter les conflits de messages.",
+        "useHere": "Utiliser ici",
+        "takenOver": "Session transférée vers un autre onglet",
+        "takenOverDescription": "Cet onglet a été déconnecté car Fluux a été ouvert dans un autre onglet.",
+        "reconnectHere": "Se reconnecter ici"
+    },
+    "poll": {
+        "create": "Créer un sondage",
+        "title": "Titre",
+        "titlePlaceholder": "Posez une question...",
+        "description": "Description",
+        "descriptionPlaceholder": "Ajoutez du contexte ou des détails...",
+        "options": "Options",
+        "changeEmoji": "Cliquez pour changer l'emoji",
+        "optionPlaceholder": "Option {{number}}",
+        "removeOption": "Supprimer l'option",
+        "addOption": "Ajouter une option",
+        "allowMultiple": "Autoriser les votes multiples",
+        "hideResultsBeforeVote": "Masquer les résultats avant de voter",
+        "deadline": "Date limite",
+        "send": "Envoyer le sondage",
+        "multipleAllowed": "Sélection multiple possible",
+        "expired": "Sondage terminé",
+        "voteToSeeResults": "Votez pour voir les résultats",
+        "noVotes": "Aucun vote",
+        "totalVotes": "{{count}} vote(s)",
+        "deadlineDisplay": "Se termine le {{date}}",
+        "tapToChange": "Appuyez pour changer de vote",
+        "close": "Clôturer le sondage",
+        "closed": "Sondage clôturé",
+        "bannerSingle": "📊 {{title}} — appuyez pour voter",
+        "bannerMultiple": "📊 {{count}} sondages sans réponse — appuyez pour voir le dernier",
+        "dismissBanner": "Ignorer"
     }
 }

@@ -779,11 +779,39 @@
         "mam": "Nachrichtenarchiv (MAM) aktivieren, damit Clients vergangene Nachrichten beim Beitreten oder Wiederverbinden abrufen können. Dies ist der Verlauf, den Teilnehmer in ihrer Chat-App sehen."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux ist bereits in einem anderen Tab geöffnet",
+        "alreadyOpenDescription": "Es kann jeweils nur ein Tab verbunden sein, um Nachrichtenkonflikte zu vermeiden.",
+        "useHere": "Stattdessen hier verwenden",
+        "takenOver": "Sitzung in einen anderen Tab verschoben",
+        "takenOverDescription": "Dieser Tab wurde getrennt, weil Fluux in einem anderen Tab geöffnet wurde.",
+        "reconnectHere": "Hier erneut verbinden"
+    },
+    "poll": {
+        "create": "Umfrage erstellen",
+        "title": "Titel",
+        "titlePlaceholder": "Stelle eine Frage...",
+        "description": "Beschreibung",
+        "descriptionPlaceholder": "Kontext oder Details hinzufügen...",
+        "options": "Optionen",
+        "changeEmoji": "Klicken, um Emoji zu ändern",
+        "optionPlaceholder": "Option {{number}}",
+        "removeOption": "Option entfernen",
+        "addOption": "Option hinzufügen",
+        "allowMultiple": "Mehrfachauswahl erlauben",
+        "hideResultsBeforeVote": "Ergebnisse bis zur Abstimmung ausblenden",
+        "deadline": "Frist",
+        "send": "Umfrage senden",
+        "multipleAllowed": "Mehrere Optionen auswählen",
+        "expired": "Umfrage beendet",
+        "voteToSeeResults": "Abstimmen, um Ergebnisse zu sehen",
+        "noVotes": "Noch keine Stimmen",
+        "totalVotes": "{{count}} Stimme(n)",
+        "deadlineDisplay": "Endet {{date}}",
+        "tapToChange": "Tippen, um Stimme zu ändern",
+        "close": "Umfrage schließen",
+        "closed": "Umfrage geschlossen",
+        "bannerSingle": "📊 {{title}} — tippen zum Abstimmen",
+        "bannerMultiple": "📊 {{count}} unbeantwortete Umfragen — tippen für die neueste",
+        "dismissBanner": "Verwerfen"
     }
 }

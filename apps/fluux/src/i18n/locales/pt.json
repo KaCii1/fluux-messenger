@@ -779,11 +779,39 @@
         "mam": "Ativar o arquivo de mensagens (MAM) para que os clientes possam obter mensagens anteriores ao entrar ou reconectar. Este é o histórico que os participantes veem na sua aplicação de chat."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "O Fluux já está aberto noutro separador",
+        "alreadyOpenDescription": "Apenas um separador pode estar ligado de cada vez para evitar conflitos de mensagens.",
+        "useHere": "Usar aqui em vez disso",
+        "takenOver": "Sessão movida para outro separador",
+        "takenOverDescription": "Este separador foi desligado porque o Fluux foi aberto noutro separador.",
+        "reconnectHere": "Reconectar aqui"
+    },
+    "poll": {
+        "create": "Criar sondagem",
+        "title": "Título",
+        "titlePlaceholder": "Faça uma pergunta...",
+        "description": "Descrição",
+        "descriptionPlaceholder": "Adicione contexto ou detalhes...",
+        "options": "Opções",
+        "changeEmoji": "Clique para alterar o emoji",
+        "optionPlaceholder": "Opção {{number}}",
+        "removeOption": "Remover opção",
+        "addOption": "Adicionar opção",
+        "allowMultiple": "Permitir votos múltiplos",
+        "hideResultsBeforeVote": "Ocultar resultados até votar",
+        "deadline": "Prazo",
+        "send": "Enviar sondagem",
+        "multipleAllowed": "Selecionar várias opções",
+        "expired": "Sondagem terminada",
+        "voteToSeeResults": "Vote para ver os resultados",
+        "noVotes": "Ainda sem votos",
+        "totalVotes": "{{count}} voto(s)",
+        "deadlineDisplay": "Termina {{date}}",
+        "tapToChange": "Toque para alterar o voto",
+        "close": "Fechar sondagem",
+        "closed": "Sondagem fechada",
+        "bannerSingle": "📊 {{title}} — toque para votar",
+        "bannerMultiple": "📊 {{count}} sondagens por responder — toque para ver a mais recente",
+        "dismissBanner": "Fechar"
     }
 }

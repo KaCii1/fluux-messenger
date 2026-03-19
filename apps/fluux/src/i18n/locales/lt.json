@@ -777,11 +777,39 @@
         "mam": "Įjungti žinučių archyvą (MAM), kad klientai galėtų gauti ankstesnes žinutes prisijungiant ar vėl prisijungiant. Tai istorija, kurią dalyviai mato savo pokalbių programėlėje."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux jau atidarytas kitame skirtuke",
+        "alreadyOpenDescription": "Vienu metu gali būti prijungtas tik vienas skirtukas, kad būtų išvengta pranešimų konfliktų.",
+        "useHere": "Naudoti čia",
+        "takenOver": "Sesija perkelta į kitą skirtuką",
+        "takenOverDescription": "Šis skirtukas buvo atjungtas, nes Fluux buvo atidarytas kitame skirtuke.",
+        "reconnectHere": "Prisijungti iš naujo čia"
+    },
+    "poll": {
+        "create": "Sukurti apklausą",
+        "title": "Pavadinimas",
+        "titlePlaceholder": "Užduokite klausimą...",
+        "description": "Aprašymas",
+        "descriptionPlaceholder": "Pridėkite kontekstą ar detales...",
+        "options": "Variantai",
+        "changeEmoji": "Spustelėkite, kad pakeistumėte emoji",
+        "optionPlaceholder": "Variantas {{number}}",
+        "removeOption": "Pašalinti variantą",
+        "addOption": "Pridėti variantą",
+        "allowMultiple": "Leisti kelis balsus",
+        "hideResultsBeforeVote": "Slėpti rezultatus iki balsavimo",
+        "deadline": "Terminas",
+        "send": "Siųsti apklausą",
+        "multipleAllowed": "Pasirinkite kelis variantus",
+        "expired": "Apklausa baigėsi",
+        "voteToSeeResults": "Balsuokite, kad matytumėte rezultatus",
+        "noVotes": "Dar nėra balsų",
+        "totalVotes": "{{count}} balsas(-ų)",
+        "deadlineDisplay": "Baigiasi {{date}}",
+        "tapToChange": "Palieskite, kad pakeistumėte balsą",
+        "close": "Uždaryti apklausą",
+        "closed": "Apklausa uždaryta",
+        "bannerSingle": "📊 {{title}} — palieskite, kad balsuotumėte",
+        "bannerMultiple": "📊 {{count}} neatsakytų apklausų — palieskite, kad matytumėte naujausią",
+        "dismissBanner": "Atmesti"
     }
 }

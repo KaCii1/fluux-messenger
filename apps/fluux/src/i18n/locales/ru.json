@@ -777,11 +777,39 @@
         "mam": "Включить архив сообщений (MAM), чтобы клиенты могли получать прошлые сообщения при входе или переподключении. Это история, которую участники видят в своем чат-приложении."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux уже открыт в другой вкладке",
+        "alreadyOpenDescription": "Одновременно может быть подключена только одна вкладка, чтобы избежать конфликтов сообщений.",
+        "useHere": "Использовать здесь",
+        "takenOver": "Сессия перенесена в другую вкладку",
+        "takenOverDescription": "Эта вкладка была отключена, так как Fluux был открыт в другой вкладке.",
+        "reconnectHere": "Переподключиться здесь"
+    },
+    "poll": {
+        "create": "Создать опрос",
+        "title": "Заголовок",
+        "titlePlaceholder": "Задайте вопрос...",
+        "description": "Описание",
+        "descriptionPlaceholder": "Добавьте контекст или подробности...",
+        "options": "Варианты",
+        "changeEmoji": "Нажмите, чтобы изменить эмодзи",
+        "optionPlaceholder": "Вариант {{number}}",
+        "removeOption": "Удалить вариант",
+        "addOption": "Добавить вариант",
+        "allowMultiple": "Разрешить несколько голосов",
+        "hideResultsBeforeVote": "Скрыть результаты до голосования",
+        "deadline": "Срок",
+        "send": "Отправить опрос",
+        "multipleAllowed": "Выберите несколько вариантов",
+        "expired": "Опрос завершён",
+        "voteToSeeResults": "Проголосуйте, чтобы увидеть результаты",
+        "noVotes": "Пока нет голосов",
+        "totalVotes": "{{count}} голос(ов)",
+        "deadlineDisplay": "Завершается {{date}}",
+        "tapToChange": "Нажмите, чтобы изменить голос",
+        "close": "Закрыть опрос",
+        "closed": "Опрос закрыт",
+        "bannerSingle": "📊 {{title}} — нажмите, чтобы проголосовать",
+        "bannerMultiple": "📊 {{count}} неотвеченных опросов — нажмите, чтобы увидеть последний",
+        "dismissBanner": "Скрыть"
     }
 }

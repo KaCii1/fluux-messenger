@@ -777,11 +777,39 @@
         "mam": "Virkja skilaboðageymslu (MAM) svo biðlarar geti sótt eldri skilaboð þegar þeir taka þátt eða endurtengjast. Þetta er sagan sem þátttakendur sjá í spjallforritinu sínu."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux er þegar opið í öðrum flipa",
+        "alreadyOpenDescription": "Aðeins einn flipi getur verið tengdur í einu til að koma í veg fyrir árekstra skilaboða.",
+        "useHere": "Nota hér í staðinn",
+        "takenOver": "Seta flutt í annan flipa",
+        "takenOverDescription": "Þessi flipi var aftengdur vegna þess að Fluux var opnað í öðrum flipa.",
+        "reconnectHere": "Endurtengja hér"
+    },
+    "poll": {
+        "create": "Búa til könnun",
+        "title": "Titill",
+        "titlePlaceholder": "Spyrðu spurningar...",
+        "description": "Lýsing",
+        "descriptionPlaceholder": "Bættu við samhengi eða smáatriðum...",
+        "options": "Valkostir",
+        "changeEmoji": "Smelltu til að breyta emoji",
+        "optionPlaceholder": "Valkostur {{number}}",
+        "removeOption": "Fjarlægja valkost",
+        "addOption": "Bæta við valkosti",
+        "allowMultiple": "Leyfa mörg atkvæði",
+        "hideResultsBeforeVote": "Fela niðurstöður þar til kosið er",
+        "deadline": "Frestur",
+        "send": "Senda könnun",
+        "multipleAllowed": "Veldu marga valkosti",
+        "expired": "Könnun lokið",
+        "voteToSeeResults": "Greiddu atkvæði til að sjá niðurstöður",
+        "noVotes": "Engin atkvæði enn",
+        "totalVotes": "{{count}} atkvæði",
+        "deadlineDisplay": "Lýkur {{date}}",
+        "tapToChange": "Ýttu til að breyta atkvæði",
+        "close": "Loka könnun",
+        "closed": "Könnun lokað",
+        "bannerSingle": "📊 {{title}} — ýttu til að kjósa",
+        "bannerMultiple": "📊 {{count}} ósvaraðar kannanir — ýttu til að sjá nýjustu",
+        "dismissBanner": "Hunsa"
     }
 }

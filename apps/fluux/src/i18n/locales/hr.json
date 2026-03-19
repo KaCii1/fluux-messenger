@@ -777,11 +777,39 @@
         "mam": "Omogući arhivu poruka (MAM) kako bi klijenti mogli dohvatiti prošle poruke prilikom pridruživanja ili ponovnog povezivanja. To je povijest koju sudionici vide u svojoj aplikaciji za razgovor."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux je već otvoren u drugoj kartici",
+        "alreadyOpenDescription": "Samo jedna kartica može biti povezana istovremeno kako bi se izbjegli sukobi poruka.",
+        "useHere": "Koristi ovdje umjesto toga",
+        "takenOver": "Sesija premještena u drugu karticu",
+        "takenOverDescription": "Ova kartica je odspojenja jer je Fluux otvoren u drugoj kartici.",
+        "reconnectHere": "Ponovno se poveži ovdje"
+    },
+    "poll": {
+        "create": "Kreiraj anketu",
+        "title": "Naslov",
+        "titlePlaceholder": "Postavi pitanje...",
+        "description": "Opis",
+        "descriptionPlaceholder": "Dodaj kontekst ili detalje...",
+        "options": "Opcije",
+        "changeEmoji": "Klikni za promjenu emojija",
+        "optionPlaceholder": "Opcija {{number}}",
+        "removeOption": "Ukloni opciju",
+        "addOption": "Dodaj opciju",
+        "allowMultiple": "Dopusti višestruke glasove",
+        "hideResultsBeforeVote": "Sakrij rezultate do glasanja",
+        "deadline": "Rok",
+        "send": "Pošalji anketu",
+        "multipleAllowed": "Odaberi više opcija",
+        "expired": "Anketa završena",
+        "voteToSeeResults": "Glasaj za prikaz rezultata",
+        "noVotes": "Još nema glasova",
+        "totalVotes": "{{count}} glas(ova)",
+        "deadlineDisplay": "Završava {{date}}",
+        "tapToChange": "Dodirni za promjenu glasa",
+        "close": "Zatvori anketu",
+        "closed": "Anketa zatvorena",
+        "bannerSingle": "📊 {{title}} — dodirni za glasanje",
+        "bannerMultiple": "📊 {{count}} neodgovorenih anketa — dodirni za najnoviju",
+        "dismissBanner": "Odbaci"
     }
 }

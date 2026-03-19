@@ -777,11 +777,39 @@
         "mam": "Aktiver meldingsarkiv (MAM) slik at klienter kan hente tidligere meldinger ved tilkobling eller gjenoppkobling. Dette er historikken deltakere ser i chat-appen sin."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux er allerede åpen i en annen fane",
+        "alreadyOpenDescription": "Bare én fane kan være tilkoblet om gangen for å unngå meldingskonflikter.",
+        "useHere": "Bruk her i stedet",
+        "takenOver": "Økten ble flyttet til en annen fane",
+        "takenOverDescription": "Denne fanen ble frakoblet fordi Fluux ble åpnet i en annen fane.",
+        "reconnectHere": "Koble til på nytt her"
+    },
+    "poll": {
+        "create": "Opprett avstemning",
+        "title": "Tittel",
+        "titlePlaceholder": "Still et spørsmål...",
+        "description": "Beskrivelse",
+        "descriptionPlaceholder": "Legg til kontekst eller detaljer...",
+        "options": "Alternativer",
+        "changeEmoji": "Klikk for å endre emoji",
+        "optionPlaceholder": "Alternativ {{number}}",
+        "removeOption": "Fjern alternativ",
+        "addOption": "Legg til alternativ",
+        "allowMultiple": "Tillat flere stemmer",
+        "hideResultsBeforeVote": "Skjul resultater til du har stemt",
+        "deadline": "Frist",
+        "send": "Send avstemning",
+        "multipleAllowed": "Velg flere alternativer",
+        "expired": "Avstemningen er avsluttet",
+        "voteToSeeResults": "Stem for å se resultater",
+        "noVotes": "Ingen stemmer ennå",
+        "totalVotes": "{{count}} stemme(r)",
+        "deadlineDisplay": "Avsluttes {{date}}",
+        "tapToChange": "Trykk for å endre stemme",
+        "close": "Avslutt avstemning",
+        "closed": "Avstemningen er lukket",
+        "bannerSingle": "📊 {{title}} — trykk for å stemme",
+        "bannerMultiple": "📊 {{count}} ubesvarte avstemninger — trykk for å se siste",
+        "dismissBanner": "Avvis"
     }
 }

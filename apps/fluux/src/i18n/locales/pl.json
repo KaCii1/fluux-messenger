@@ -779,11 +779,39 @@
         "mam": "Włącz archiwum wiadomości (MAM), aby klienty mogły pobierać wcześniejsze wiadomości przy dołączaniu lub ponownym łączeniu. To historia, którą uczestnicy widzą w swojej aplikacji do czatowania."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux jest już otwarty w innej karcie",
+        "alreadyOpenDescription": "Tylko jedna karta może być połączona naraz, aby uniknąć konfliktów wiadomości.",
+        "useHere": "Użyj tutaj zamiast tego",
+        "takenOver": "Sesja przeniesiona do innej karty",
+        "takenOverDescription": "Ta karta została rozłączona, ponieważ Fluux został otwarty w innej karcie.",
+        "reconnectHere": "Połącz ponownie tutaj"
+    },
+    "poll": {
+        "create": "Utwórz ankietę",
+        "title": "Tytuł",
+        "titlePlaceholder": "Zadaj pytanie...",
+        "description": "Opis",
+        "descriptionPlaceholder": "Dodaj kontekst lub szczegóły...",
+        "options": "Opcje",
+        "changeEmoji": "Kliknij, aby zmienić emoji",
+        "optionPlaceholder": "Opcja {{number}}",
+        "removeOption": "Usuń opcję",
+        "addOption": "Dodaj opcję",
+        "allowMultiple": "Zezwól na wiele głosów",
+        "hideResultsBeforeVote": "Ukryj wyniki do czasu głosowania",
+        "deadline": "Termin",
+        "send": "Wyślij ankietę",
+        "multipleAllowed": "Wybierz wiele opcji",
+        "expired": "Ankieta zakończona",
+        "voteToSeeResults": "Zagłosuj, aby zobaczyć wyniki",
+        "noVotes": "Brak głosów",
+        "totalVotes": "{{count}} głos(ów)",
+        "deadlineDisplay": "Kończy się {{date}}",
+        "tapToChange": "Dotknij, aby zmienić głos",
+        "close": "Zamknij ankietę",
+        "closed": "Ankieta zamknięta",
+        "bannerSingle": "📊 {{title}} — dotknij, aby zagłosować",
+        "bannerMultiple": "📊 {{count}} nieodpowiedzianych ankiet — dotknij, aby zobaczyć najnowszą",
+        "dismissBanner": "Odrzuć"
     }
 }

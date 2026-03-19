@@ -777,11 +777,39 @@
         "mam": "启用消息归档（MAM），以便客户端在加入或重新连接时获取过去的消息。这是参与者在聊天应用中看到的历史记录。"
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux 已在另一个标签页中打开",
+        "alreadyOpenDescription": "为避免消息冲突，一次只能连接一个标签页。",
+        "useHere": "改为在此处使用",
+        "takenOver": "会话已移至另一个标签页",
+        "takenOverDescription": "由于 Fluux 已在另一个标签页中打开，此标签页已断开连接。",
+        "reconnectHere": "在此处重新连接"
+    },
+    "poll": {
+        "create": "创建投票",
+        "title": "标题",
+        "titlePlaceholder": "提出一个问题...",
+        "description": "描述",
+        "descriptionPlaceholder": "添加背景或详情...",
+        "options": "选项",
+        "changeEmoji": "点击更换表情",
+        "optionPlaceholder": "选项 {{number}}",
+        "removeOption": "移除选项",
+        "addOption": "添加选项",
+        "allowMultiple": "允许多选",
+        "hideResultsBeforeVote": "投票前隐藏结果",
+        "deadline": "截止时间",
+        "send": "发送投票",
+        "multipleAllowed": "选择多个选项",
+        "expired": "投票已结束",
+        "voteToSeeResults": "投票后查看结果",
+        "noVotes": "暂无投票",
+        "totalVotes": "{{count}} 票",
+        "deadlineDisplay": "截止于 {{date}}",
+        "tapToChange": "点击更改投票",
+        "close": "关闭投票",
+        "closed": "投票已关闭",
+        "bannerSingle": "📊 {{title}} — 点击投票",
+        "bannerMultiple": "📊 {{count}} 个未回答的投票 — 点击查看最新",
+        "dismissBanner": "忽略"
     }
 }

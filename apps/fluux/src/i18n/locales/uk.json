@@ -777,11 +777,39 @@
         "mam": "Увімкнути архів повідомлень (MAM), щоб клієнти могли отримувати минулі повідомлення при приєднанні або перепідключенні. Це історія, яку учасники бачать у своєму чат-додатку."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux вже відкритий в іншій вкладці",
+        "alreadyOpenDescription": "Лише одна вкладка може бути підключена одночасно, щоб уникнути конфліктів повідомлень.",
+        "useHere": "Використовувати тут натомість",
+        "takenOver": "Сеанс переміщено до іншої вкладки",
+        "takenOverDescription": "Цю вкладку було від'єднано, оскільки Fluux було відкрито в іншій вкладці.",
+        "reconnectHere": "Перепідключитися тут"
+    },
+    "poll": {
+        "create": "Створити опитування",
+        "title": "Заголовок",
+        "titlePlaceholder": "Поставте запитання...",
+        "description": "Опис",
+        "descriptionPlaceholder": "Додайте контекст або деталі...",
+        "options": "Варіанти",
+        "changeEmoji": "Натисніть, щоб змінити емодзі",
+        "optionPlaceholder": "Варіант {{number}}",
+        "removeOption": "Видалити варіант",
+        "addOption": "Додати варіант",
+        "allowMultiple": "Дозволити кілька голосів",
+        "hideResultsBeforeVote": "Приховати результати до голосування",
+        "deadline": "Термін",
+        "send": "Надіслати опитування",
+        "multipleAllowed": "Оберіть кілька варіантів",
+        "expired": "Опитування завершено",
+        "voteToSeeResults": "Проголосуйте, щоб побачити результати",
+        "noVotes": "Голосів ще немає",
+        "totalVotes": "{{count}} голос(ів)",
+        "deadlineDisplay": "Закінчується {{date}}",
+        "tapToChange": "Натисніть, щоб змінити голос",
+        "close": "Закрити опитування",
+        "closed": "Опитування закрито",
+        "bannerSingle": "📊 {{title}} — натисніть, щоб проголосувати",
+        "bannerMultiple": "📊 {{count}} опитувань без відповіді — натисніть, щоб побачити останнє",
+        "dismissBanner": "Відхилити"
     }
 }

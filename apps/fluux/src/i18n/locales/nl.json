@@ -777,11 +777,39 @@
         "mam": "Berichtenarchief (MAM) inschakelen zodat clients eerdere berichten kunnen ophalen bij het deelnemen of opnieuw verbinden. Dit is de geschiedenis die deelnemers zien in hun chat-app."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux is al geopend in een ander tabblad",
+        "alreadyOpenDescription": "Er kan slechts één tabblad tegelijk verbonden zijn om berichtconflicten te voorkomen.",
+        "useHere": "Hier gebruiken",
+        "takenOver": "Sessie verplaatst naar een ander tabblad",
+        "takenOverDescription": "Dit tabblad is losgekoppeld omdat Fluux in een ander tabblad is geopend.",
+        "reconnectHere": "Hier opnieuw verbinden"
+    },
+    "poll": {
+        "create": "Peiling maken",
+        "title": "Titel",
+        "titlePlaceholder": "Stel een vraag...",
+        "description": "Beschrijving",
+        "descriptionPlaceholder": "Voeg context of details toe...",
+        "options": "Opties",
+        "changeEmoji": "Klik om emoji te wijzigen",
+        "optionPlaceholder": "Optie {{number}}",
+        "removeOption": "Optie verwijderen",
+        "addOption": "Optie toevoegen",
+        "allowMultiple": "Meerdere stemmen toestaan",
+        "hideResultsBeforeVote": "Resultaten verbergen tot na stemming",
+        "deadline": "Deadline",
+        "send": "Peiling verzenden",
+        "multipleAllowed": "Selecteer meerdere opties",
+        "expired": "Peiling beëindigd",
+        "voteToSeeResults": "Stem om resultaten te zien",
+        "noVotes": "Nog geen stemmen",
+        "totalVotes": "{{count}} stem(men)",
+        "deadlineDisplay": "Eindigt {{date}}",
+        "tapToChange": "Tik om stem te wijzigen",
+        "close": "Peiling sluiten",
+        "closed": "Peiling gesloten",
+        "bannerSingle": "📊 {{title}} — tik om te stemmen",
+        "bannerMultiple": "📊 {{count}} onbeantwoorde peilingen — tik om de laatste te zien",
+        "dismissBanner": "Sluiten"
     }
 }

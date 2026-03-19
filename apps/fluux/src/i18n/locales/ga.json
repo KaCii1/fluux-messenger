@@ -777,11 +777,39 @@
         "mam": "Cumasaigh cartlann teachtaireachtaí (MAM) ionas gur féidir le cliaint teachtaireachtaí roimhe seo a fháil agus iad ag dul isteach nó ag athcheangal. Seo an stair a fheiceann rannpháirtithe ina n-aip chomhrá."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Tá Fluux oscailte cheana i gcluaisín eile",
+        "alreadyOpenDescription": "Ní féidir ach cluaisín amháin a bheith nasctha ag aon am amháin chun coinbhleachtaí teachtaireachtaí a sheachaint.",
+        "useHere": "Úsáid anseo ina ionad",
+        "takenOver": "Seisiún bogtha go cluaisín eile",
+        "takenOverDescription": "Dínascadh an cluaisín seo toisc gur osclaíodh Fluux i gcluaisín eile.",
+        "reconnectHere": "Athcheangail anseo"
+    },
+    "poll": {
+        "create": "Cruthaigh vótáil",
+        "title": "Teideal",
+        "titlePlaceholder": "Cuir ceist...",
+        "description": "Cur síos",
+        "descriptionPlaceholder": "Cuir comhthéacs nó sonraí leis...",
+        "options": "Roghanna",
+        "changeEmoji": "Cliceáil chun emoji a athrú",
+        "optionPlaceholder": "Rogha {{number}}",
+        "removeOption": "Bain rogha",
+        "addOption": "Cuir rogha leis",
+        "allowMultiple": "Ceadaigh vótaí iolracha",
+        "hideResultsBeforeVote": "Folaigh torthaí go dtí go vótáiltear",
+        "deadline": "Spriocdháta",
+        "send": "Seol vótáil",
+        "multipleAllowed": "Roghnaigh roghanna iolracha",
+        "expired": "Vótáil críochnaithe",
+        "voteToSeeResults": "Vótáil chun torthaí a fheiceáil",
+        "noVotes": "Níl aon vótaí fós",
+        "totalVotes": "{{count}} vóta(í)",
+        "deadlineDisplay": "Críochnaíonn {{date}}",
+        "tapToChange": "Tapáil chun vóta a athrú",
+        "close": "Dún vótáil",
+        "closed": "Vótáil dúnta",
+        "bannerSingle": "📊 {{title}} — tapáil chun vótáil",
+        "bannerMultiple": "📊 {{count}} vótálacha gan freagra — tapáil chun an ceann is déanaí a fheiceáil",
+        "dismissBanner": "Díbir"
     }
 }

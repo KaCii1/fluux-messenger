@@ -777,11 +777,39 @@
         "mam": "Уключыць архіў паведамленняў (MAM), каб кліенты маглі атрымліваць мінулыя паведамленні пры далучэнні або пераподключэнні. Гэта гісторыя, якую ўдзельнікі бачаць у сваім чат-дадатку."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux ужо адкрыты ў іншай укладцы",
+        "alreadyOpenDescription": "Толькі адна ўкладка можа быць падключана адначасова, каб пазбегнуць канфліктаў паведамленняў.",
+        "useHere": "Выкарыстоўваць тут",
+        "takenOver": "Сесія перанесена ў іншую ўкладку",
+        "takenOverDescription": "Гэтая ўкладка была адключана, бо Fluux быў адкрыты ў іншай укладцы.",
+        "reconnectHere": "Перападключыцца тут"
+    },
+    "poll": {
+        "create": "Стварыць апытанне",
+        "title": "Загаловак",
+        "titlePlaceholder": "Задайце пытанне...",
+        "description": "Апісанне",
+        "descriptionPlaceholder": "Дадайце кантэкст або падрабязнасці...",
+        "options": "Варыянты",
+        "changeEmoji": "Націсніце, каб змяніць эмодзі",
+        "optionPlaceholder": "Варыянт {{number}}",
+        "removeOption": "Выдаліць варыянт",
+        "addOption": "Дадаць варыянт",
+        "allowMultiple": "Дазволіць некалькі галасоў",
+        "hideResultsBeforeVote": "Схаваць вынікі да галасавання",
+        "deadline": "Тэрмін",
+        "send": "Адправіць апытанне",
+        "multipleAllowed": "Абярыце некалькі варыянтаў",
+        "expired": "Апытанне завершана",
+        "voteToSeeResults": "Прагаласуйце, каб убачыць вынікі",
+        "noVotes": "Пакуль няма галасоў",
+        "totalVotes": "{{count}} голас(аў)",
+        "deadlineDisplay": "Завяршаецца {{date}}",
+        "tapToChange": "Націсніце, каб змяніць голас",
+        "close": "Закрыць апытанне",
+        "closed": "Апытанне закрыта",
+        "bannerSingle": "📊 {{title}} — націсніце, каб прагаласаваць",
+        "bannerMultiple": "📊 {{count}} неадказаных апытанняў — націсніце, каб убачыць апошняе",
+        "dismissBanner": "Схаваць"
     }
 }

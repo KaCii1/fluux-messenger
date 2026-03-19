@@ -783,5 +783,33 @@
         "takenOver": "Session moved to another tab",
         "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
         "reconnectHere": "Reconnect here"
+    },
+    "poll": {
+        "create": "Create Poll",
+        "title": "Title",
+        "titlePlaceholder": "Ask a question...",
+        "description": "Description",
+        "descriptionPlaceholder": "Add context or details...",
+        "options": "Options",
+        "changeEmoji": "Click to change emoji",
+        "optionPlaceholder": "Option {{number}}",
+        "removeOption": "Remove option",
+        "addOption": "Add option",
+        "allowMultiple": "Allow multiple votes",
+        "hideResultsBeforeVote": "Hide results until voted",
+        "deadline": "Deadline",
+        "send": "Send Poll",
+        "multipleAllowed": "Select multiple options",
+        "expired": "Poll ended",
+        "voteToSeeResults": "Vote to see results",
+        "noVotes": "No votes yet",
+        "totalVotes": "{{count}} vote(s)",
+        "deadlineDisplay": "Ends {{date}}",
+        "tapToChange": "Tap to change vote",
+        "close": "Close poll",
+        "closed": "Poll closed",
+        "bannerSingle": "📊 {{title}} — tap to vote",
+        "bannerMultiple": "📊 {{count}} unanswered polls — tap to see latest",
+        "dismissBanner": "Dismiss"
     }
 }

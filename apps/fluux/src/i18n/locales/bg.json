@@ -777,11 +777,39 @@
         "mam": "Включване на архив на съобщения (MAM), за да могат клиентите да извличат минали съобщения при присъединяване или повторно свързване. Това е историята, която участниците виждат в чат приложението си."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux вече е отворен в друг раздел",
+        "alreadyOpenDescription": "Само един раздел може да бъде свързан едновременно, за да се избегнат конфликти на съобщения.",
+        "useHere": "Използвай тук вместо това",
+        "takenOver": "Сесията е преместена в друг раздел",
+        "takenOverDescription": "Този раздел беше прекъснат, защото Fluux беше отворен в друг раздел.",
+        "reconnectHere": "Свържи се отново тук"
+    },
+    "poll": {
+        "create": "Създай анкета",
+        "title": "Заглавие",
+        "titlePlaceholder": "Задайте въпрос...",
+        "description": "Описание",
+        "descriptionPlaceholder": "Добавете контекст или подробности...",
+        "options": "Варианти",
+        "changeEmoji": "Щракнете, за да промените емоджи",
+        "optionPlaceholder": "Вариант {{number}}",
+        "removeOption": "Премахни вариант",
+        "addOption": "Добави вариант",
+        "allowMultiple": "Разреши множество гласове",
+        "hideResultsBeforeVote": "Скрий резултатите до гласуване",
+        "deadline": "Краен срок",
+        "send": "Изпрати анкета",
+        "multipleAllowed": "Изберете няколко варианта",
+        "expired": "Анкетата приключи",
+        "voteToSeeResults": "Гласувайте, за да видите резултатите",
+        "noVotes": "Все още няма гласове",
+        "totalVotes": "{{count}} глас(а)",
+        "deadlineDisplay": "Приключва {{date}}",
+        "tapToChange": "Докоснете, за да промените гласа",
+        "close": "Затвори анкетата",
+        "closed": "Анкетата е затворена",
+        "bannerSingle": "📊 {{title}} — докоснете, за да гласувате",
+        "bannerMultiple": "📊 {{count}} неотговорени анкети — докоснете, за да видите последната",
+        "dismissBanner": "Отхвърли"
     }
 }

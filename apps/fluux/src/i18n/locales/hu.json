@@ -777,11 +777,39 @@
         "mam": "Üzenetarchívum (MAM) engedélyezése, hogy a kliensek korábbi üzeneteket kérhessenek le csatlakozáskor vagy újracsatlakozáskor. Ez az előzmény, amelyet a résztvevők a csevegőalkalmazásukban látnak."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "A Fluux már nyitva van egy másik lapon",
+        "alreadyOpenDescription": "Egyszerre csak egy lap lehet csatlakoztatva az üzenetütközések elkerülése érdekében.",
+        "useHere": "Használat itt",
+        "takenOver": "A munkamenet átkerült egy másik lapra",
+        "takenOverDescription": "Ez a lap lecsatlakozott, mert a Fluux egy másik lapon lett megnyitva.",
+        "reconnectHere": "Újracsatlakozás itt"
+    },
+    "poll": {
+        "create": "Szavazás létrehozása",
+        "title": "Cím",
+        "titlePlaceholder": "Tegyél fel egy kérdést...",
+        "description": "Leírás",
+        "descriptionPlaceholder": "Adj hozzá kontextust vagy részleteket...",
+        "options": "Lehetőségek",
+        "changeEmoji": "Kattints az emoji módosításához",
+        "optionPlaceholder": "Lehetőség {{number}}",
+        "removeOption": "Lehetőség eltávolítása",
+        "addOption": "Lehetőség hozzáadása",
+        "allowMultiple": "Többszörös szavazat engedélyezése",
+        "hideResultsBeforeVote": "Eredmények elrejtése szavazásig",
+        "deadline": "Határidő",
+        "send": "Szavazás küldése",
+        "multipleAllowed": "Több lehetőség kiválasztása",
+        "expired": "Szavazás lezárult",
+        "voteToSeeResults": "Szavazz az eredmények megtekintéséhez",
+        "noVotes": "Még nincsenek szavazatok",
+        "totalVotes": "{{count}} szavazat",
+        "deadlineDisplay": "Lejár {{date}}",
+        "tapToChange": "Koppints a szavazat módosításához",
+        "close": "Szavazás lezárása",
+        "closed": "Szavazás lezárva",
+        "bannerSingle": "📊 {{title}} — koppints a szavazáshoz",
+        "bannerMultiple": "📊 {{count}} megválaszolatlan szavazás — koppints a legutóbbi megtekintéséhez",
+        "dismissBanner": "Elvetés"
     }
 }

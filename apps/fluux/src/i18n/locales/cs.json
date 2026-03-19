@@ -779,11 +779,39 @@
         "mam": "Povolit archiv zpráv (MAM), aby klienti mohli načíst předchozí zprávy při připojení nebo opětovném připojení. Toto je historie, kterou účastníci vidí ve své chatovací aplikaci."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux je již otevřen v jiné kartě",
+        "alreadyOpenDescription": "Pouze jedna karta může být připojena současně, aby se předešlo konfliktům zpráv.",
+        "useHere": "Použít zde místo toho",
+        "takenOver": "Relace přesunuta do jiné karty",
+        "takenOverDescription": "Tato karta byla odpojena, protože Fluux byl otevřen v jiné kartě.",
+        "reconnectHere": "Znovu se připojit zde"
+    },
+    "poll": {
+        "create": "Vytvořit anketu",
+        "title": "Název",
+        "titlePlaceholder": "Položte otázku...",
+        "description": "Popis",
+        "descriptionPlaceholder": "Přidejte kontext nebo podrobnosti...",
+        "options": "Možnosti",
+        "changeEmoji": "Klikněte pro změnu emoji",
+        "optionPlaceholder": "Možnost {{number}}",
+        "removeOption": "Odebrat možnost",
+        "addOption": "Přidat možnost",
+        "allowMultiple": "Povolit více hlasů",
+        "hideResultsBeforeVote": "Skrýt výsledky do hlasování",
+        "deadline": "Termín",
+        "send": "Odeslat anketu",
+        "multipleAllowed": "Vyberte více možností",
+        "expired": "Anketa skončila",
+        "voteToSeeResults": "Hlasujte pro zobrazení výsledků",
+        "noVotes": "Zatím žádné hlasy",
+        "totalVotes": "{{count}} hlas(ů)",
+        "deadlineDisplay": "Končí {{date}}",
+        "tapToChange": "Klepněte pro změnu hlasu",
+        "close": "Uzavřít anketu",
+        "closed": "Anketa uzavřena",
+        "bannerSingle": "📊 {{title}} — klepněte pro hlasování",
+        "bannerMultiple": "📊 {{count}} nezodpovězených anket — klepněte pro zobrazení poslední",
+        "dismissBanner": "Zavřít"
     }
 }

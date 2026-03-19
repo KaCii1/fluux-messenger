@@ -779,11 +779,39 @@
         "mam": "Activar el archivo de mensajes (MAM) para que los clientes puedan obtener mensajes anteriores al unirse o reconectarse. Este es el historial que los participantes ven en su aplicación de chat."
     },
     "tabCoordination": {
-        "alreadyOpen": "Fluux is already open in another tab",
-        "alreadyOpenDescription": "Only one tab can be connected at a time to prevent message conflicts.",
-        "useHere": "Use here instead",
-        "takenOver": "Session moved to another tab",
-        "takenOverDescription": "This tab was disconnected because Fluux was opened in another tab.",
-        "reconnectHere": "Reconnect here"
+        "alreadyOpen": "Fluux ya está abierto en otra pestaña",
+        "alreadyOpenDescription": "Solo una pestaña puede estar conectada a la vez para evitar conflictos de mensajes.",
+        "useHere": "Usar aquí en su lugar",
+        "takenOver": "Sesión movida a otra pestaña",
+        "takenOverDescription": "Esta pestaña fue desconectada porque Fluux se abrió en otra pestaña.",
+        "reconnectHere": "Reconectar aquí"
+    },
+    "poll": {
+        "create": "Crear encuesta",
+        "title": "Título",
+        "titlePlaceholder": "Haz una pregunta...",
+        "description": "Descripción",
+        "descriptionPlaceholder": "Añade contexto o detalles...",
+        "options": "Opciones",
+        "changeEmoji": "Clic para cambiar emoji",
+        "optionPlaceholder": "Opción {{number}}",
+        "removeOption": "Eliminar opción",
+        "addOption": "Añadir opción",
+        "allowMultiple": "Permitir múltiples votos",
+        "hideResultsBeforeVote": "Ocultar resultados hasta votar",
+        "deadline": "Fecha límite",
+        "send": "Enviar encuesta",
+        "multipleAllowed": "Seleccionar múltiples opciones",
+        "expired": "Encuesta finalizada",
+        "voteToSeeResults": "Vota para ver los resultados",
+        "noVotes": "Aún no hay votos",
+        "totalVotes": "{{count}} voto(s)",
+        "deadlineDisplay": "Termina {{date}}",
+        "tapToChange": "Toca para cambiar el voto",
+        "close": "Cerrar encuesta",
+        "closed": "Encuesta cerrada",
+        "bannerSingle": "📊 {{title}} — toca para votar",
+        "bannerMultiple": "📊 {{count}} encuestas sin responder — toca para ver la última",
+        "dismissBanner": "Descartar"
     }
 }
