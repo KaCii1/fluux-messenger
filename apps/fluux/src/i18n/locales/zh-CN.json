@@ -75,7 +75,9 @@
         "daysAgo": "{{count}} 天前",
         "weeksAgo": "{{count}} 周前",
         "changeStatus": "更改状态",
-        "localTime": "联系人当地时间"
+        "localTime": "联系人当地时间",
+        "monthsAgo": "{{count}} 个月前",
+        "yearsAgo": "{{count}} 年前"
     },
     "status": {
         "reconnecting": "正在重新连接…",

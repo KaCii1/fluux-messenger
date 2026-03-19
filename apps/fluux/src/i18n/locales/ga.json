@@ -75,7 +75,9 @@
         "daysAgo": "{{count}}l ó shin",
         "weeksAgo": "{{count}}s ó shin",
         "changeStatus": "Athraigh stádas",
-        "localTime": "Am áitiúil an teagmhálaí"
+        "localTime": "Am áitiúil an teagmhálaí",
+        "monthsAgo": "{{count}} mhí ó shin",
+        "yearsAgo": "{{count}} bl ó shin"
     },
     "status": {
         "reconnecting": "Ag athcheangal...",

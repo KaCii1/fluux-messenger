@@ -75,7 +75,9 @@
         "daysAgo": "pirms {{count}} d",
         "weeksAgo": "pirms {{count}} ned",
         "changeStatus": "Mainīt statusu",
-        "localTime": "Kontaktpersonas vietējais laiks"
+        "localTime": "Kontaktpersonas vietējais laiks",
+        "monthsAgo": "pirms {{count}} mēn",
+        "yearsAgo": "pirms {{count}} gadiem"
     },
     "status": {
         "reconnecting": "Atkārtoti savienojas...",

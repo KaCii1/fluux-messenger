@@ -75,7 +75,9 @@
         "daysAgo": "{{count}} napja",
         "weeksAgo": "{{count}} hete",
         "changeStatus": "Állapot módosítása",
-        "localTime": "A kapcsolat helyi ideje"
+        "localTime": "A kapcsolat helyi ideje",
+        "monthsAgo": "{{count}} hónapja",
+        "yearsAgo": "{{count}} éve"
     },
     "status": {
         "reconnecting": "Újracsatlakozás...",

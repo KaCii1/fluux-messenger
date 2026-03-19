@@ -75,7 +75,9 @@
         "daysAgo": "vor {{count}} Tagen",
         "weeksAgo": "vor {{count}} Wochen",
         "changeStatus": "Status ändern",
-        "localTime": "Ortszeit des Kontakts"
+        "localTime": "Ortszeit des Kontakts",
+        "monthsAgo": "vor {{count}} Monaten",
+        "yearsAgo": "vor {{count}} Jahren"
     },
     "status": {
         "reconnecting": "Verbindung wird wiederhergestellt...",

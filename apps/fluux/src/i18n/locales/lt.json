@@ -75,7 +75,9 @@
         "daysAgo": "prieš {{count}}d",
         "weeksAgo": "prieš {{count}} sav",
         "changeStatus": "Keisti būseną",
-        "localTime": "Kontakto vietinis laikas"
+        "localTime": "Kontakto vietinis laikas",
+        "monthsAgo": "prieš {{count}} mėn",
+        "yearsAgo": "prieš {{count}} m"
     },
     "status": {
         "reconnecting": "Jungiamasi iš naujo...",

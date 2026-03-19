@@ -75,7 +75,9 @@
         "daysAgo": "fa {{count}}d",
         "weeksAgo": "fa {{count}}s",
         "changeStatus": "Canvia l'estat",
-        "localTime": "Hora local del contacte"
+        "localTime": "Hora local del contacte",
+        "monthsAgo": "fa {{count}} mesos",
+        "yearsAgo": "fa {{count}} anys"
     },
     "status": {
         "reconnecting": "Reconnectant...",

@@ -75,7 +75,9 @@
         "daysAgo": "{{count}}d siden",
         "weeksAgo": "{{count}}u siden",
         "changeStatus": "Endre status",
-        "localTime": "Kontaktens lokale tid"
+        "localTime": "Kontaktens lokale tid",
+        "monthsAgo": "{{count}} mnd siden",
+        "yearsAgo": "{{count}} år siden"
     },
     "status": {
         "reconnecting": "Kobler til på nytt...",

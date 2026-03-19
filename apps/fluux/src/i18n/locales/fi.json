@@ -75,7 +75,9 @@
         "daysAgo": "{{count}} pv sitten",
         "weeksAgo": "{{count}} vk sitten",
         "changeStatus": "Vaihda tila",
-        "localTime": "Yhteystiedon paikallinen aika"
+        "localTime": "Yhteystiedon paikallinen aika",
+        "monthsAgo": "{{count}} kk sitten",
+        "yearsAgo": "{{count}} v sitten"
     },
     "status": {
         "reconnecting": "Yhdistetään uudelleen...",

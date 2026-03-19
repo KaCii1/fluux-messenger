@@ -75,7 +75,9 @@
         "daysAgo": "{{count}}d geleden",
         "weeksAgo": "{{count}}w geleden",
         "changeStatus": "Status wijzigen",
-        "localTime": "Lokale tijd van contact"
+        "localTime": "Lokale tijd van contact",
+        "monthsAgo": "{{count}} mnd geleden",
+        "yearsAgo": "{{count}} jaar geleden"
     },
     "status": {
         "reconnecting": "Opnieuw verbinden...",

@@ -9,6 +9,8 @@ const MINUTE = 60 * 1000
 const HOUR = 60 * MINUTE
 const DAY = 24 * HOUR
 const WEEK = 7 * DAY
+const MONTH = 30 * DAY
+const YEAR = 365 * DAY
 
 /**
  * Format a duration to a translated human-readable string
@@ -19,7 +21,9 @@ function formatDuration(ms: number, t: TranslateFn): string {
   if (ms < DAY) return t('presence.hoursAgo', { count: Math.floor(ms / HOUR) })
   if (ms < 2 * DAY) return t('presence.yesterday')
   if (ms < WEEK) return t('presence.daysAgo', { count: Math.floor(ms / DAY) })
-  return t('presence.weeksAgo', { count: Math.floor(ms / WEEK) })
+  if (ms < MONTH) return t('presence.weeksAgo', { count: Math.floor(ms / WEEK) })
+  if (ms < YEAR) return t('presence.monthsAgo', { count: Math.floor(ms / MONTH) })
+  return t('presence.yearsAgo', { count: Math.floor(ms / YEAR) })
 }
 
 /**

@@ -75,7 +75,9 @@
         "daysAgo": "{{count}}p tagasi",
         "weeksAgo": "{{count}}n tagasi",
         "changeStatus": "Muuda olekut",
-        "localTime": "Kontakti kohalik aeg"
+        "localTime": "Kontakti kohalik aeg",
+        "monthsAgo": "{{count}} kuud tagasi",
+        "yearsAgo": "{{count}} aastat tagasi"
     },
     "status": {
         "reconnecting": "Taasühendamine...",

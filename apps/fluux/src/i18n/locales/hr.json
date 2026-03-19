@@ -75,7 +75,9 @@
         "daysAgo": "prije {{count}}d",
         "weeksAgo": "prije {{count}}t",
         "changeStatus": "Promijeni status",
-        "localTime": "Lokalno vrijeme kontakta"
+        "localTime": "Lokalno vrijeme kontakta",
+        "monthsAgo": "prije {{count}} mj",
+        "yearsAgo": "prije {{count}} god"
     },
     "status": {
         "reconnecting": "Ponovno povezivanje...",

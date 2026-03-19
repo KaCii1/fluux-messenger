@@ -75,7 +75,9 @@
         "daysAgo": "{{count}} дн таму",
         "weeksAgo": "{{count}} тыд таму",
         "changeStatus": "Змяніць статус",
-        "localTime": "Мясцовы час кантакту"
+        "localTime": "Мясцовы час кантакту",
+        "monthsAgo": "{{count}} мес таму",
+        "yearsAgo": "{{count}} г таму"
     },
     "status": {
         "reconnecting": "Перападключэнне...",

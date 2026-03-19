@@ -75,7 +75,9 @@
         "daysAgo": "{{count}}d siden",
         "weeksAgo": "{{count}}u siden",
         "changeStatus": "Skift status",
-        "localTime": "Kontaktens lokale tid"
+        "localTime": "Kontaktens lokale tid",
+        "monthsAgo": "{{count}} mdr siden",
+        "yearsAgo": "{{count}} år siden"
     },
     "status": {
         "reconnecting": "Genopretter forbindelse...",

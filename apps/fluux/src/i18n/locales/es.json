@@ -75,7 +75,9 @@
         "daysAgo": "hace {{count}}d",
         "weeksAgo": "hace {{count}} sem",
         "changeStatus": "Cambiar estado",
-        "localTime": "Hora local del contacto"
+        "localTime": "Hora local del contacto",
+        "monthsAgo": "hace {{count}} meses",
+        "yearsAgo": "hace {{count}} años"
     },
     "status": {
         "reconnecting": "Reconectando...",
