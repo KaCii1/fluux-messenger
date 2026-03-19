@@ -782,6 +782,40 @@ describe('XMPPClient', () => {
       expect(stores.connection.setJid).toHaveBeenCalledWith('user@example.com')
     })
 
+    it('should reset and rejoin rooms on SM resumption', async () => {
+      const mockClientWithSM = createMockXmppClientWithSM('sm-id-rooms')
+      mockClientFactory._setInstance(mockClientWithSM)
+
+      const stores = createMockStores()
+      const newXmppClient = new XMPPClient({ debug: false })
+      newXmppClient.bindStores(stores)
+
+      const connectPromise = newXmppClient.connect({
+        jid: 'user@example.com',
+        password: 'secret',
+        server: 'example.com',
+        smState: { id: 'sm-id-rooms', inbound: 5 },
+        skipDiscovery: true,
+        previouslyJoinedRooms: [
+          { jid: 'room1@conference.example.com', nickname: 'testuser' },
+          { jid: 'room2@conference.example.com', nickname: 'testuser' },
+        ],
+      })
+
+      // SM resume succeeded
+      const resumedNonza = createMockElement('resumed', {
+        xmlns: 'urn:xmpp:sm:3',
+        previd: 'sm-id-rooms',
+        h: '5',
+      })
+      mockClientWithSM._emit('nonza', resumedNonza)
+
+      await connectPromise
+
+      // Room state should be reset to clear stuck isJoining flags
+      expect(stores.room.markAllRoomsNotJoined).toHaveBeenCalled()
+    })
+
     it('should detect new session when SM resume fails (online event fires)', async () => {
       // SM resume failed - server emits 'online' instead of 'resumed'
       const mockClientWithSM = createMockXmppClientWithSM(null)

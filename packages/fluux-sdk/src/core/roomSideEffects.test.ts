@@ -623,6 +623,52 @@ describe('setupRoomSideEffects', () => {
       expect(mockClient.chat.queryRoomMAM).not.toHaveBeenCalled()
     })
 
+    it('should mark all joined rooms in fetchInitiated on SM resumption (not just active)', async () => {
+      // Add two rooms, both joined — only room1 is active
+      roomStore.getState().addRoom({
+        jid: 'room1@conference.example.com',
+        name: 'Room 1',
+        nickname: 'testuser',
+        joined: true,
+        supportsMAM: true,
+        occupants: new Map(),
+        messages: [],
+        unreadCount: 0,
+        mentionsCount: 0,
+        typingUsers: new Set(),
+        isBookmarked: true,
+      })
+      roomStore.getState().addRoom({
+        jid: 'room2@conference.example.com',
+        name: 'Room 2',
+        nickname: 'testuser',
+        joined: true,
+        supportsMAM: true,
+        occupants: new Map(),
+        messages: [],
+        unreadCount: 0,
+        mentionsCount: 0,
+        typingUsers: new Set(),
+        isBookmarked: true,
+      })
+
+      roomStore.getState().setActiveRoom('room1@conference.example.com')
+
+      cleanup = setupRoomSideEffects(mockClient)
+
+      // SM resumption should mark BOTH rooms in fetchInitiated
+      simulateSmResumption(mockClient)
+
+      // Simulate room:joined for the non-active room (from rejoin flow after SM resume)
+      roomStore.getState().setRoomJoined('room2@conference.example.com', true)
+      mockClient._emitSDK('room:joined', { roomJid: 'room2@conference.example.com', joined: true })
+
+      await new Promise(resolve => setTimeout(resolve, 50))
+
+      // MAM should NOT be queried for room2 because SM resumption marked it in fetchInitiated
+      expect(mockClient.chat.queryRoomMAM).not.toHaveBeenCalled()
+    })
+
     it('should trigger MAM correctly after SM resume then fresh session', async () => {
       roomStore.getState().addRoom({
         jid: 'room@conference.example.com',

@@ -1326,7 +1326,7 @@ export class XMPPClient {
     this.isSmResumedSession = isResumption
 
     if (isResumption) {
-      await this.handleSmResumption(generation)
+      await this.handleSmResumption(generation, previouslyJoinedRooms)
     } else {
       await this.handleFreshSession(previouslyJoinedRooms, generation)
     }
@@ -1366,7 +1366,10 @@ export class XMPPClient {
    * 1) Send initial presence
    * 2) Send presence probes to refresh contact status
    */
-  private async handleSmResumption(generation?: number): Promise<void> {
+  private async handleSmResumption(
+    generation?: number,
+    previouslyJoinedRooms?: Array<{ jid: string; nickname: string; password?: string; autojoin?: boolean }>
+  ): Promise<void> {
     const gen = generation ?? this.sessionGeneration
 
     // Check if local cache was cleared (e.g., Ctrl-Shift+R on Linux clears WebKit cache).
@@ -1379,7 +1382,7 @@ export class XMPPClient {
         logInfo('SM resumption: cache marker missing — local storage was cleared, upgrading to full sync')
         this.stores?.console.addEvent('Cache cleared during SM session — performing full sync', 'sm')
         this.isSmResumedSession = false
-        await this.handleFreshSession(undefined, gen)
+        await this.handleFreshSession(previouslyJoinedRooms, gen)
         // Emit 'online' so side effects (MAM sync, background sync) run their fresh session path.
         // Connection.ts already emitted 'resumed', but side effects need 'online' to trigger.
         if (!this.isSessionStale(gen)) {
@@ -1397,6 +1400,26 @@ export class XMPPClient {
 
     this.stores?.console.addEvent('Sending presence probes to refresh contact status', 'sm')
     this.roster.sendPresenceProbes().catch(() => {})
+
+    // Reset room join state so stuck isJoining rooms get unstuck
+    // and joinRoom() won't skip rooms that think they're still joined.
+    // SM only preserves the XMPP stream — MUC presence is separate.
+    // The MUC server may have removed us during the disconnect.
+    this.stores?.room.markAllRoomsNotJoined()
+
+    // Rejoin previously joined rooms (re-sending MUC presence is idempotent)
+    if (previouslyJoinedRooms && previouslyJoinedRooms.length > 0) {
+      logInfo(`SM resumption: rejoining ${previouslyJoinedRooms.length} room(s)`)
+      this.stores?.console.addEvent(
+        `Rejoining ${previouslyJoinedRooms.length} room(s) after SM resumption`,
+        'sm'
+      )
+      await this.muc.rejoinActiveRooms(previouslyJoinedRooms)
+      if (this.isSessionStale(gen)) {
+        logInfo('SM resumption aborted after rejoinActiveRooms (session superseded)')
+        return
+      }
+    }
   }
 
   /**
