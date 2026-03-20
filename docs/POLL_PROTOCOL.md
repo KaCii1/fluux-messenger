@@ -291,9 +291,11 @@ The IQ query mechanism requires the poll creator to be online. If the creator is
 
 ## 7. Result Tallying
 
-Poll results are computed from the reactions map on the poll message. For each option, the list of voters is the set of participants who reacted with that option's emoji.
+Poll results are computed from the reactions map on the poll message. The tallying algorithm differs between single-vote and multi-vote modes to handle malformed votes gracefully.
 
-### 7.1 Algorithm
+### 7.1 Multi-Vote Algorithm
+
+In multi-vote mode (`allow-multiple="true"`), all reactions are counted as-is:
 
 ```
 for each option in poll.options:
@@ -301,7 +303,23 @@ for each option in poll.options:
   count = len(voters)
 ```
 
-### 7.2 Total Voters
+### 7.2 Single-Vote Algorithm
+
+In single-vote mode, a voter who reacted with multiple poll-option emojis (e.g., from a legacy client that does not understand poll semantics) is counted only in their **first option** in option order. This provides graceful best-effort handling without rejecting the vote entirely:
+
+```
+assigned = empty set
+for each option in poll.options (in order):
+  raw_voters = reactions[option.emoji] or []
+  voters = [v for v in raw_voters if v not in assigned]
+  for v in voters:
+    assigned.add(v)
+  count = len(voters)
+```
+
+**Example:** Alice reacted with both 1️⃣ and 2️⃣ on a single-vote poll. She is counted only in option 1 (the first option in the poll's option order). Her reaction on option 2 is silently ignored.
+
+### 7.3 Total Voters
 
 The total number of unique voters is the union of all voter sets across all options. In multi-vote mode, a single participant who voted for multiple options is counted once.
 

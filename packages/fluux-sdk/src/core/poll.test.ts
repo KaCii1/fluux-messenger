@@ -388,6 +388,58 @@ describe('poll utilities', () => {
     })
   })
 
+  describe('tallyPollResults — single-vote deduplication', () => {
+    it('should count voter only in first option when they reacted with multiple poll emojis', () => {
+      const poll = buildPollData('Q?', ['Pizza', 'Sushi', 'Tacos'])
+      // alice reacted with both 1️⃣ and 2️⃣ — malformed for single-vote
+      const reactions = {
+        '1️⃣': ['alice', 'bob'],
+        '2️⃣': ['alice', 'carol'],
+        '3️⃣': ['dave'],
+      }
+
+      const tally = tallyPollResults(poll, reactions)
+
+      // alice should only count in option 1 (first in option order)
+      expect(tally[0]).toEqual({ emoji: '1️⃣', label: 'Pizza', voters: ['alice', 'bob'], count: 2 })
+      expect(tally[1]).toEqual({ emoji: '2️⃣', label: 'Sushi', voters: ['carol'], count: 1 })
+      expect(tally[2]).toEqual({ emoji: '3️⃣', label: 'Tacos', voters: ['dave'], count: 1 })
+    })
+
+    it('should not deduplicate in multi-vote mode', () => {
+      const poll = buildPollData('Q?', ['Pizza', 'Sushi', 'Tacos'], { allowMultiple: true })
+      // alice voted for both — this is valid in multi-vote mode
+      const reactions = {
+        '1️⃣': ['alice', 'bob'],
+        '2️⃣': ['alice', 'carol'],
+        '3️⃣': ['dave'],
+      }
+
+      const tally = tallyPollResults(poll, reactions)
+
+      // alice counted in both options
+      expect(tally[0]).toEqual({ emoji: '1️⃣', label: 'Pizza', voters: ['alice', 'bob'], count: 2 })
+      expect(tally[1]).toEqual({ emoji: '2️⃣', label: 'Sushi', voters: ['alice', 'carol'], count: 2 })
+      expect(tally[2]).toEqual({ emoji: '3️⃣', label: 'Tacos', voters: ['dave'], count: 1 })
+    })
+
+    it('should assign voter to earliest option even if they appear later first in reactions map', () => {
+      const poll = buildPollData('Q?', ['A', 'B', 'C'])
+      // alice only appears in option 2 and 3 — should be counted in option 2 (earlier in option order)
+      const reactions = {
+        '1️⃣': ['bob'],
+        '2️⃣': ['alice'],
+        '3️⃣': ['alice'],
+      }
+
+      const tally = tallyPollResults(poll, reactions)
+
+      expect(tally[0]).toEqual({ emoji: '1️⃣', label: 'A', voters: ['bob'], count: 1 })
+      expect(tally[1]).toEqual({ emoji: '2️⃣', label: 'B', voters: ['alice'], count: 1 })
+      expect(tally[2]).toEqual({ emoji: '3️⃣', label: 'C', voters: [], count: 0 })
+    })
+  })
+
   describe('getTotalVoters', () => {
     const poll = buildPollData('Q?', ['A', 'B'])
 
@@ -697,13 +749,25 @@ describe('poll utilities', () => {
   })
 
   describe('edge cases: tallyPollResults', () => {
-    it('should handle duplicate voters in a single option gracefully', () => {
+    it('should handle duplicate voters in a single option gracefully (single-vote)', () => {
       const poll = buildPollData('Q?', ['A', 'B'])
       // Malformed reaction data: same voter listed twice for one option
       const reactions = { '1️⃣': ['alice', 'alice'], '2️⃣': [] }
 
       const tally = tallyPollResults(poll, reactions)
-      // count reflects raw array length (includes duplicates)
+      // In single-vote mode, alice is assigned to option 1 on first occurrence,
+      // then filtered out on second — count is 1
+      expect(tally[0].count).toBe(1)
+      expect(tally[0].voters).toEqual(['alice'])
+    })
+
+    it('should handle duplicate voters in a single option gracefully (multi-vote)', () => {
+      const poll = buildPollData('Q?', ['A', 'B'], { allowMultiple: true })
+      // Malformed reaction data: same voter listed twice for one option
+      const reactions = { '1️⃣': ['alice', 'alice'], '2️⃣': [] }
+
+      const tally = tallyPollResults(poll, reactions)
+      // In multi-vote mode, raw array is used — duplicates are preserved
       expect(tally[0].count).toBe(2)
       expect(tally[0].voters).toEqual(['alice', 'alice'])
     })
@@ -717,8 +781,9 @@ describe('poll utilities', () => {
       expect(tally[1].count).toBe(0) // 2️⃣
     })
 
-    it('should produce correct tally when duplicate emojis exist in poll options', () => {
-      // When two options share the same emoji, both get the same voter list
+    it('should produce correct tally when duplicate emojis exist in poll options (single-vote)', () => {
+      // When two options share the same emoji in single-vote mode,
+      // voters are assigned to the first option only
       const poll: import('./types/message-base').PollData = {
         title: 'Q?',
         options: [
@@ -730,7 +795,25 @@ describe('poll utilities', () => {
       const reactions = { '🐱': ['alice', 'bob'] }
 
       const tally = tallyPollResults(poll, reactions)
-      // Both options map to the same emoji — both show 2 votes (double-counted)
+      // Single-vote: alice and bob assigned to first option, second gets 0
+      expect(tally[0].count).toBe(2)
+      expect(tally[1].count).toBe(0)
+    })
+
+    it('should produce correct tally when duplicate emojis exist in poll options (multi-vote)', () => {
+      // When two options share the same emoji in multi-vote mode,
+      // both get the same voter list (double-counted)
+      const poll: import('./types/message-base').PollData = {
+        title: 'Q?',
+        options: [
+          { emoji: '🐱', label: 'Cats' },
+          { emoji: '🐱', label: 'Also Cats' },
+        ],
+        settings: { allowMultiple: true, hideResultsBeforeVote: false },
+      }
+      const reactions = { '🐱': ['alice', 'bob'] }
+
+      const tally = tallyPollResults(poll, reactions)
       expect(tally[0].count).toBe(2)
       expect(tally[1].count).toBe(2)
     })

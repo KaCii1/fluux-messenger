@@ -138,24 +138,42 @@ export interface PollTally {
  *
  * Returns one entry per option with voter list and count,
  * in the same order as the poll options.
+ *
+ * In single-vote mode, if a voter has reacted with multiple poll-option emojis,
+ * only their first vote (in option order) is counted. This provides a graceful
+ * best-effort handling of malformed votes from legacy or buggy clients.
+ * In multi-vote mode, all votes are counted as-is.
  */
 export function tallyPollResults(
   poll: PollData,
   reactions: Record<string, string[]> | undefined,
 ): PollTally[] {
+  if (poll.settings.allowMultiple) {
+    // Multi-vote: count all reactions per option
+    return poll.options.map((opt) => {
+      const voters = reactions?.[opt.emoji] ?? []
+      return { emoji: opt.emoji, label: opt.label, voters, count: voters.length }
+    })
+  }
+
+  // Single-vote: each voter is counted in their first option only (in option order).
+  // This handles the case where a legacy client sent multiple poll-option reactions.
+  const voterAssigned = new Set<string>()
+
   return poll.options.map((opt) => {
-    const voters = reactions?.[opt.emoji] ?? []
-    return {
-      emoji: opt.emoji,
-      label: opt.label,
-      voters,
-      count: voters.length,
-    }
+    const rawVoters = reactions?.[opt.emoji] ?? []
+    const voters = rawVoters.filter((voter) => {
+      if (voterAssigned.has(voter)) return false
+      voterAssigned.add(voter)
+      return true
+    })
+    return { emoji: opt.emoji, label: opt.label, voters, count: voters.length }
   })
 }
 
 /**
  * Get the total number of unique voters across all options.
+ * A voter who reacted with multiple poll emojis is counted once.
  */
 export function getTotalVoters(
   poll: PollData,
