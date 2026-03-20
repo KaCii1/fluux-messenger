@@ -182,6 +182,58 @@ describe('PollBanner', () => {
     expect(container.firstChild).toBeNull()
   })
 
+  it('should not render closed polls', () => {
+    const pollMsg = makePollMessage({ id: 'poll-1' })
+    // A separate message that closes poll-1
+    const closeMsg = makePollMessage({
+      id: 'close-1',
+      poll: undefined,
+      pollClosed: {
+        title: 'What for lunch?',
+        pollMessageId: 'poll-1',
+        results: [
+          { emoji: '1️⃣', label: 'Pizza', count: 3 },
+          { emoji: '2️⃣', label: 'Sushi', count: 1 },
+        ],
+      },
+    })
+
+    const { container } = render(
+      <PollBanner
+        messages={[pollMsg, closeMsg]}
+        myNick="bob"
+        dismissedPollIds={new Set()}
+        onDismiss={vi.fn()}
+      />
+    )
+    expect(container.firstChild).toBeNull()
+  })
+
+  it('should still show unclosed polls when another poll is closed', () => {
+    const pollMsg1 = makePollMessage({ id: 'poll-1' })
+    const pollMsg2 = makePollMessage({ id: 'poll-2', poll: { ...pollMsg1.poll!, title: 'Second poll' } })
+    // Only poll-1 is closed
+    const closeMsg = makePollMessage({
+      id: 'close-1',
+      poll: undefined,
+      pollClosed: {
+        title: 'What for lunch?',
+        pollMessageId: 'poll-1',
+        results: [{ emoji: '1️⃣', label: 'Pizza', count: 3 }],
+      },
+    })
+
+    render(
+      <PollBanner
+        messages={[pollMsg1, pollMsg2, closeMsg]}
+        myNick="bob"
+        dismissedPollIds={new Set()}
+        onDismiss={vi.fn()}
+      />
+    )
+    expect(screen.getByText(/Second poll/)).toBeInTheDocument()
+  })
+
   it('should show the latest unanswered poll when one is dismissed', () => {
     const msg1 = makePollMessage({ id: 'poll-1' })
     const msg2 = makePollMessage({

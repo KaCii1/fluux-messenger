@@ -25,7 +25,18 @@ export interface PollBannerProps {
 export function PollBanner({ messages, myNick, dismissedPollIds, onDismiss }: PollBannerProps) {
   const { t } = useTranslation()
 
-  // Find unanswered, non-expired, non-dismissed polls (most recent first)
+  // Build the set of poll message IDs that have been closed
+  const closedPollIds = useMemo(() => {
+    const ids = new Set<string>()
+    for (const msg of messages) {
+      if (msg.pollClosed?.pollMessageId) {
+        ids.add(msg.pollClosed.pollMessageId)
+      }
+    }
+    return ids
+  }, [messages])
+
+  // Find unanswered, non-expired, non-dismissed, non-closed polls (most recent first)
   const unansweredPolls = useMemo(() => {
     if (!myNick) return []
     const polls: RoomMessage[] = []
@@ -35,6 +46,7 @@ export function PollBanner({ messages, myNick, dismissedPollIds, onDismiss }: Po
         msg.poll &&
         !msg.isRetracted &&
         !isPollExpired(msg.poll) &&
+        !closedPollIds.has(msg.id) &&
         !hasVotedOnPoll(msg.poll, msg.reactions, myNick) &&
         !dismissedPollIds.has(msg.id)
       ) {
@@ -42,7 +54,7 @@ export function PollBanner({ messages, myNick, dismissedPollIds, onDismiss }: Po
       }
     }
     return polls
-  }, [messages, myNick, dismissedPollIds])
+  }, [messages, myNick, dismissedPollIds, closedPollIds])
 
   if (unansweredPolls.length === 0) return null
 
