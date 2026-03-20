@@ -63,6 +63,7 @@
   --fluux-yellow: #f0b232;
   --fluux-red: #da373c;
   --fluux-gray: #80848e;
+  --fluux-surface: #2b2d31;
   --fluux-border: rgba(0, 0, 0, 0.1);
   --scrollbar-thumb: #1a1b1e;
   --scrollbar-thumb-hover: #2b2d31;
@@ -89,6 +90,7 @@
   --fluux-muted: #4a4d54;
   --fluux-link: #0969da;
   --fluux-gray: #9ca3af;
+  --fluux-surface: #f2f3f5;
   --fluux-border: rgba(0, 0, 0, 0.15);
   --scrollbar-thumb: #c4c9ce;
   --scrollbar-thumb-hover: #a8adb3;

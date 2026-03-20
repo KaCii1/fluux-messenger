@@ -14,6 +14,7 @@ export default {
           'bg-secondary': 'var(--fluux-bg-secondary)',
           'sidebar': 'var(--fluux-sidebar)',
           'chat': 'var(--fluux-chat)',
+          'surface': 'var(--fluux-surface)',
           'hover': 'var(--fluux-hover)',
           'active': 'var(--fluux-active)',
           'selection': 'var(--fluux-selection)',

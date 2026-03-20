@@ -1407,16 +1407,25 @@ export class XMPPClient {
     // The MUC server may have removed us during the disconnect.
     this.stores?.room.markAllRoomsNotJoined()
 
-    // Rejoin previously joined rooms (re-sending MUC presence is idempotent)
+    // Rejoin ALL previously joined rooms (re-sending MUC presence is idempotent).
+    // Unlike the fresh session path, we don't filter by autojoin here because
+    // SM resumption doesn't re-fetch bookmarks — we must rejoin every room
+    // that was active before the disconnect, regardless of autojoin flag.
     if (previouslyJoinedRooms && previouslyJoinedRooms.length > 0) {
       logInfo(`SM resumption: rejoining ${previouslyJoinedRooms.length} room(s)`)
       this.stores?.console.addEvent(
         `Rejoining ${previouslyJoinedRooms.length} room(s) after SM resumption`,
         'sm'
       )
-      await this.muc.rejoinActiveRooms(previouslyJoinedRooms)
+      for (const room of previouslyJoinedRooms) {
+        try {
+          await this.muc.joinRoom(room.jid, room.nickname, { password: room.password })
+        } catch (err) {
+          console.error(`[XMPPClient] Failed to rejoin ${room.jid} after SM resumption:`, err)
+        }
+      }
       if (this.isSessionStale(gen)) {
-        logInfo('SM resumption aborted after rejoinActiveRooms (session superseded)')
+        logInfo('SM resumption aborted after room rejoins (session superseded)')
         return
       }
     }
