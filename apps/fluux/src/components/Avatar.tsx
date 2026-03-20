@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { generateConsistentColorHexSync, type PresenceStatus, type PresenceShow } from '@fluux/sdk'
 import { useConnectionStore } from '@fluux/sdk/react'
 import { APP_OFFLINE_PRESENCE_COLOR, PRESENCE_COLORS } from '@/constants/ui'
@@ -215,6 +215,10 @@ export function Avatar({
     ? (isOffline ? APP_OFFLINE_PRESENCE_COLOR : PRESENCE_COLORS[resolvedPresence])
     : undefined
 
+  // Track image load errors to fall back to letter display
+  const [imgError, setImgError] = useState(false)
+  useEffect(() => { setImgError(false) }, [avatarUrl])
+
   // Determine if clickable
   const isClickable = clickable ?? !!onClick
 
@@ -228,13 +232,14 @@ export function Avatar({
 
   return (
     <div className={containerClasses} onClick={onClick}>
-      {avatarUrl ? (
+      {avatarUrl && !imgError ? (
         // Avatar image
         <img
           src={avatarUrl}
           alt={displayName}
           className="w-full h-full rounded-full object-cover"
           draggable={false}
+          onError={() => setImgError(true)}
         />
       ) : (
         // Letter fallback with consistent color

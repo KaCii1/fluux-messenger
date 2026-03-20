@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { Avatar, getConsistentTextColor } from './Avatar'
 
 // Mock the SDK color generation
@@ -142,6 +142,27 @@ describe('Avatar', () => {
     it('applies correct size classes for lg', () => {
       const { container } = render(<Avatar identifier="alice" size="lg" />)
       expect(container.firstChild).toHaveClass('w-12', 'h-12')
+    })
+  })
+
+  describe('Image error fallback', () => {
+    it('shows letter fallback when image fails to load', () => {
+      render(<Avatar identifier="alice" name="Alice" avatarUrl="blob:invalid" />)
+      const img = screen.getByRole('img')
+      fireEvent.error(img)
+      expect(screen.getByText('A')).toBeInTheDocument()
+      expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    })
+
+    it('resets error state when avatarUrl changes', () => {
+      const { rerender } = render(
+        <Avatar identifier="alice" name="Alice" avatarUrl="blob:invalid" />
+      )
+      fireEvent.error(screen.getByRole('img'))
+      expect(screen.queryByRole('img')).not.toBeInTheDocument()
+
+      rerender(<Avatar identifier="alice" name="Alice" avatarUrl="blob:new-valid-url" />)
+      expect(screen.getByRole('img')).toBeInTheDocument()
     })
   })
 
