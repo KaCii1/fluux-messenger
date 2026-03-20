@@ -86,7 +86,7 @@ export class Poll extends BaseModule {
    *
    * @param roomJid - The room JID to send the poll to
    * @param title - The poll title (typically a question)
-   * @param optionLabels - 2-4 option labels
+   * @param optionLabels - 2-9 option labels
    * @param settings - Optional voting settings
    * @param description - Optional description providing context
    * @param deadline - Optional ISO 8601 deadline after which voting is blocked

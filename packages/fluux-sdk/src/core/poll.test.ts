@@ -18,9 +18,9 @@ import {
 
 describe('poll utilities', () => {
   describe('constants', () => {
-    it('should have 4 option emojis', () => {
-      expect(POLL_OPTION_EMOJIS).toEqual(['1️⃣', '2️⃣', '3️⃣', '4️⃣'])
-      expect(MAX_POLL_OPTIONS).toBe(4)
+    it('should have 9 option emojis', () => {
+      expect(POLL_OPTION_EMOJIS).toEqual(['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣'])
+      expect(MAX_POLL_OPTIONS).toBe(9)
     })
   })
 
@@ -59,19 +59,20 @@ describe('poll utilities', () => {
       expect(poll.description).toBe('Pick your favorite for Friday')
     })
 
-    it('should support up to 4 options', () => {
-      const poll = buildPollData('Q?', ['A', 'B', 'C', 'D'])
+    it('should support up to 9 options', () => {
+      const poll = buildPollData('Q?', ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'])
 
-      expect(poll.options).toHaveLength(4)
-      expect(poll.options[3].emoji).toBe('4️⃣')
+      expect(poll.options).toHaveLength(9)
+      expect(poll.options[8].emoji).toBe('9️⃣')
     })
 
     it('should throw for less than 2 options', () => {
       expect(() => buildPollData('Q?', ['Only one'])).toThrow('at least 2 options')
     })
 
-    it('should throw for more than 4 options with default emojis', () => {
-      expect(() => buildPollData('Q?', ['A', 'B', 'C', 'D', 'E'])).toThrow('at most 4 options')
+    it('should throw for more than 9 options with default emojis', () => {
+      const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+      expect(() => buildPollData('Q?', labels)).toThrow('at most 9 options')
     })
 
     it('should build poll with custom emojis', () => {
@@ -83,7 +84,7 @@ describe('poll utilities', () => {
       ])
     })
 
-    it('should allow more than 4 options with custom emojis', () => {
+    it('should allow more than 9 options with custom emojis', () => {
       const labels = ['A', 'B', 'C', 'D', 'E']
       const customEmojis = ['🅰️', '🅱️', '©️', '🌊', '🎯']
       const poll = buildPollData('Q?', labels, {}, undefined, undefined, customEmojis)

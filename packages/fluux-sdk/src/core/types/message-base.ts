@@ -45,7 +45,7 @@ export interface PollData {
   title: string
   /** Optional longer description providing context for the poll */
   description?: string
-  /** 2-4 options, each mapped to a numbered emoji */
+  /** 2-9 options, each mapped to a numbered emoji */
   options: PollOption[]
   /** Voting settings */
   settings: PollSettings

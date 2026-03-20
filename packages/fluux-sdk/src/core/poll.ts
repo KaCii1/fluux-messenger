@@ -12,7 +12,7 @@ import type { Element } from '@xmpp/client'
 import type { PollData, PollOption, PollSettings, PollClosedData } from './types/message-base'
 
 /** The numbered emoji set used for poll options (index 0 = 1️⃣, etc.) */
-export const POLL_OPTION_EMOJIS = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'] as const
+export const POLL_OPTION_EMOJIS = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣'] as const
 
 /** Maximum number of poll options */
 export const MAX_POLL_OPTIONS = POLL_OPTION_EMOJIS.length
