@@ -68,8 +68,8 @@ export interface PollClosedData {
   description?: string
   /** The original poll message ID */
   pollMessageId: string
-  /** Frozen results: emoji → vote count */
-  results: { emoji: string; count: number }[]
+  /** Frozen results: emoji + label → vote count */
+  results: { emoji: string; label: string; count: number }[]
 }
 
 /**

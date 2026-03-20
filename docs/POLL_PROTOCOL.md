@@ -194,9 +194,9 @@ The poll creator can close a poll at any time by sending a `<poll-closed>` messa
 
   <poll-closed xmlns="urn:fluux:poll:0" message-id="poll-msg-1">
     <title>What for lunch?</title>
-    <tally emoji="1️⃣" count="3"/>
-    <tally emoji="2️⃣" count="7"/>
-    <tally emoji="3️⃣" count="1"/>
+    <tally emoji="1️⃣" label="Pizza" count="3"/>
+    <tally emoji="2️⃣" label="Sushi" count="7"/>
+    <tally emoji="3️⃣" label="Tacos" count="1"/>
   </poll-closed>
 
   <fallback xmlns="urn:xmpp:fallback:0" for="urn:fluux:poll:0">
@@ -225,6 +225,7 @@ The poll creator can close a poll at any time by sending a `<poll-closed>` messa
 | Attribute | Type    | Required | Description                                                      |
 |-----------|---------|----------|------------------------------------------------------------------|
 | `emoji`   | string  | Yes      | The option emoji.                                                |
+| `label`   | string  | No       | The option label text (for display alongside the emoji).         |
 | `count`   | integer | Yes      | The final number of votes for this option. MUST be non-negative. |
 
 ### 5.5 Creator-Only Action
@@ -259,9 +260,9 @@ Clients that join a room late or need to verify results can query the poll creat
   <poll-results xmlns="urn:fluux:poll:0"
     message-id="poll-msg-1"
     closed="false">
-    <tally emoji="1️⃣" count="3"/>
-    <tally emoji="2️⃣" count="7"/>
-    <tally emoji="3️⃣" count="1"/>
+    <tally emoji="1️⃣" label="Pizza" count="3"/>
+    <tally emoji="2️⃣" label="Sushi" count="7"/>
+    <tally emoji="3️⃣" label="Tacos" count="1"/>
   </poll-results>
 </iq>
 ```
@@ -449,6 +450,7 @@ The protocol uses the namespace `urn:fluux:poll:0`. The `:0` suffix indicates th
         <xs:element name="tally" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
             <xs:attribute name="emoji" type="xs:string" use="required"/>
+            <xs:attribute name="label" type="xs:string"/>
             <xs:attribute name="count" type="xs:nonNegativeInteger" use="required"/>
           </xs:complexType>
         </xs:element>
@@ -464,6 +466,7 @@ The protocol uses the namespace `urn:fluux:poll:0`. The `:0` suffix indicates th
         <xs:element name="tally" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
             <xs:attribute name="emoji" type="xs:string" use="required"/>
+            <xs:attribute name="label" type="xs:string"/>
             <xs:attribute name="count" type="xs:nonNegativeInteger" use="required"/>
           </xs:complexType>
         </xs:element>

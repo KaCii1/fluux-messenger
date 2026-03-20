@@ -219,7 +219,7 @@ export class Poll extends BaseModule {
     const fallbackBody = `📊 Poll closed: ${localPoll.poll.title}\n${resultLines.join('\n')}`
 
     const tallyElements = tally.map((t) =>
-      xml('tally', { emoji: t.emoji, count: String(t.count) })
+      xml('tally', { emoji: t.emoji, label: t.label, count: String(t.count) })
     )
 
     const pollClosedChildren = [
@@ -274,7 +274,7 @@ export class Poll extends BaseModule {
 
     const tally = tallyPollResults(localPoll.poll, reactions)
     const tallyElements = tally.map((t) =>
-      xml('tally', { emoji: t.emoji, count: String(t.count) })
+      xml('tally', { emoji: t.emoji, label: t.label, count: String(t.count) })
     )
 
     const resultIq = xml('iq', { type: 'result', to: from, id },

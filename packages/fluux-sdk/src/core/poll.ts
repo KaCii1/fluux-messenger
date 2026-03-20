@@ -293,6 +293,7 @@ export function parsePollClosedElement(el: Element): PollClosedData | null {
   const results = tallyEls
     .map((t) => ({
       emoji: t.attrs.emoji as string,
+      label: (t.attrs.label as string) ?? '',
       count: Math.max(0, parseInt(t.attrs.count as string, 10) || 0),
     }))
     .filter((r) => r.emoji)

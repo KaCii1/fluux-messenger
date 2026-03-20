@@ -280,8 +280,8 @@ describe('poll utilities', () => {
     it('should parse a valid poll-closed element', () => {
       const el = createMockElement('poll-closed', { xmlns: 'urn:fluux:poll:0', 'message-id': 'msg-1' }, [
         { name: 'title', text: 'What for lunch?' },
-        { name: 'tally', attrs: { emoji: '1️⃣', count: '3' } },
-        { name: 'tally', attrs: { emoji: '2️⃣', count: '5' } },
+        { name: 'tally', attrs: { emoji: '1️⃣', label: 'Pizza', count: '3' } },
+        { name: 'tally', attrs: { emoji: '2️⃣', label: 'Sushi', count: '5' } },
       ])
 
       const result = parsePollClosedElement(el)
@@ -291,17 +291,28 @@ describe('poll utilities', () => {
       expect(result!.description).toBeUndefined()
       expect(result!.pollMessageId).toBe('msg-1')
       expect(result!.results).toEqual([
-        { emoji: '1️⃣', count: 3 },
-        { emoji: '2️⃣', count: 5 },
+        { emoji: '1️⃣', label: 'Pizza', count: 3 },
+        { emoji: '2️⃣', label: 'Sushi', count: 5 },
       ])
+    })
+
+    it('should parse poll-closed element without labels (backward compat)', () => {
+      const el = createMockElement('poll-closed', { xmlns: 'urn:fluux:poll:0', 'message-id': 'msg-1' }, [
+        { name: 'title', text: 'Old poll' },
+        { name: 'tally', attrs: { emoji: '1️⃣', count: '3' } },
+      ])
+
+      const result = parsePollClosedElement(el)
+      expect(result).not.toBeNull()
+      expect(result!.results[0].label).toBe('')
     })
 
     it('should parse description in poll-closed element', () => {
       const el = createMockElement('poll-closed', { xmlns: 'urn:fluux:poll:0', 'message-id': 'msg-1' }, [
         { name: 'title', text: 'Team Lunch' },
         { name: 'description', text: 'Friday plans' },
-        { name: 'tally', attrs: { emoji: '1️⃣', count: '2' } },
-        { name: 'tally', attrs: { emoji: '2️⃣', count: '4' } },
+        { name: 'tally', attrs: { emoji: '1️⃣', label: 'Pizza', count: '2' } },
+        { name: 'tally', attrs: { emoji: '2️⃣', label: 'Sushi', count: '4' } },
       ])
 
       const result = parsePollClosedElement(el)

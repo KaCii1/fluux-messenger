@@ -15,8 +15,8 @@ export interface PollClosedCardProps {
   pollClosed: PollClosedData
 }
 
-function getResultColor(emoji: string): string {
-  return generateConsistentColorHexSync(emoji, { saturation: 80, lightness: 50 })
+function getResultColor(label: string, emoji: string): string {
+  return generateConsistentColorHexSync(label || emoji, { saturation: 80, lightness: 50 })
 }
 
 export function PollClosedCard({ pollClosed }: PollClosedCardProps) {
@@ -28,7 +28,7 @@ export function PollClosedCard({ pollClosed }: PollClosedCardProps) {
   )
 
   const resultColors = useMemo(
-    () => pollClosed.results.map((r) => getResultColor(r.emoji)),
+    () => pollClosed.results.map((r) => getResultColor(r.label, r.emoji)),
     [pollClosed.results],
   )
 
@@ -83,10 +83,15 @@ export function PollClosedCard({ pollClosed }: PollClosedCardProps) {
               )}
               <div className="relative flex items-center gap-2 w-full">
                 <span className="text-sm flex-shrink-0">{result.emoji}</span>
-                <span className={`text-sm flex-1 ${isWinner ? 'font-medium text-fluux-text' : 'text-fluux-muted'}`}>
+                {result.label && (
+                  <span className={`text-sm truncate ${isWinner ? 'font-medium text-fluux-text' : 'text-fluux-muted'}`}>
+                    {result.label}
+                  </span>
+                )}
+                <span className={`text-sm ${isWinner ? 'font-medium text-fluux-text' : 'text-fluux-muted'}`}>
                   {percentage}%
                 </span>
-                <span className="text-xs text-fluux-muted">({result.count})</span>
+                <span className="text-xs text-fluux-muted ml-auto flex-shrink-0">({result.count})</span>
               </div>
             </div>
           )
