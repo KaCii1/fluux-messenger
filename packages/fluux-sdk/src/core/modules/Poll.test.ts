@@ -715,7 +715,198 @@ describe('Poll module', () => {
     })
   })
 
-  // Note: incoming stanza parsing (parsePollElement, parsePollClosedElement) is tested
-  // in poll.test.ts as pure functions. Full MUC message parsing integration is tested
-  // in Chat.test.ts where room membership state is properly set up.
+  describe('poll-closed creator verification', () => {
+    const roomJid = 'room@conf.example.com'
+    let emitSDKSpy: ReturnType<typeof vi.spyOn>
+
+    function setupRoomWithPollMessage(creatorNick: string, creatorOccupantId?: string) {
+      // Room must exist for processRoomMessage to proceed
+      vi.mocked(mockStores.room.getRoom).mockReturnValue({
+        jid: roomJid,
+        name: 'Test Room',
+        nickname: 'me',
+        occupants: new Map(),
+        isJoined: true,
+      } as any)
+
+      // The original poll message in the store
+      vi.mocked(mockStores.room.getMessage).mockReturnValue({
+        id: 'poll-msg-1',
+        type: 'groupchat',
+        roomJid,
+        nick: creatorNick,
+        from: `${roomJid}/${creatorNick}`,
+        body: '',
+        timestamp: new Date(),
+        isOutgoing: false,
+        poll: {
+          title: 'Lunch?',
+          options: [{ emoji: '1️⃣', label: 'Pizza' }, { emoji: '2️⃣', label: 'Sushi' }],
+          settings: { allowMultiple: false, hideResultsBeforeVote: false },
+          ...(creatorOccupantId ? { creatorId: creatorOccupantId } : {}),
+        },
+        ...(creatorOccupantId ? { occupantId: creatorOccupantId } : {}),
+      } as any)
+    }
+
+    function buildPollClosedStanza(
+      senderNick: string,
+      senderOccupantId?: string,
+      overrides?: { title?: string; tallies?: Array<{ emoji: string; label: string; count: string }> }
+    ) {
+      const title = overrides?.title ?? 'Lunch?'
+      const tallies = overrides?.tallies ?? [
+        { emoji: '1️⃣', label: 'Pizza', count: '3' },
+        { emoji: '2️⃣', label: 'Sushi', count: '1' },
+      ]
+      const children: any[] = [
+        { name: 'body', text: `Poll closed: ${title}` },
+        {
+          name: 'poll-closed',
+          attrs: { xmlns: 'urn:fluux:poll:0', 'message-id': 'poll-msg-1' },
+          children: [
+            { name: 'title', text: title },
+            ...tallies.map(t => ({ name: 'tally', attrs: { emoji: t.emoji, label: t.label, count: t.count } })),
+          ],
+        },
+      ]
+      if (senderOccupantId) {
+        children.push({ name: 'occupant-id', attrs: { xmlns: 'urn:xmpp:occupant-id:0', id: senderOccupantId } })
+      }
+      return createMockElement('message', {
+        from: `${roomJid}/${senderNick}`,
+        to: 'user@example.com',
+        type: 'groupchat',
+        id: 'close-msg-1',
+      }, children)
+    }
+
+    function getEmittedRoomMessage() {
+      const roomCalls = emitSDKSpy.mock.calls.filter((call: unknown[]) => call[0] === 'room:message')
+      if (roomCalls.length === 0) return undefined
+      return (roomCalls[0][1] as any).message
+    }
+
+    it('should accept poll-closed from the poll creator (nick match)', async () => {
+      await connectClient()
+      emitSDKSpy = vi.spyOn(xmppClient, 'emitSDK')
+      setupRoomWithPollMessage('alice')
+
+      const stanza = buildPollClosedStanza('alice')
+      mockXmppClientInstance._emit('stanza', stanza)
+
+      const message = getEmittedRoomMessage()
+      expect(message).toBeDefined()
+      expect(message.pollClosed).toBeDefined()
+      expect(message.pollClosed.title).toBe('Lunch?')
+    })
+
+    it('should reject poll-closed from a different user (nick mismatch)', async () => {
+      await connectClient()
+      emitSDKSpy = vi.spyOn(xmppClient, 'emitSDK')
+      setupRoomWithPollMessage('alice')
+
+      const stanza = buildPollClosedStanza('eve')
+      mockXmppClientInstance._emit('stanza', stanza)
+
+      const message = getEmittedRoomMessage()
+      expect(message).toBeDefined()
+      expect(message.pollClosed).toBeUndefined()
+    })
+
+    it('should accept poll-closed from the creator (occupant-id match)', async () => {
+      await connectClient()
+      emitSDKSpy = vi.spyOn(xmppClient, 'emitSDK')
+      setupRoomWithPollMessage('alice', 'occ-abc')
+
+      // Nick changed but occupant-id matches
+      const stanza = buildPollClosedStanza('alice-renamed', 'occ-abc')
+      mockXmppClientInstance._emit('stanza', stanza)
+
+      const message = getEmittedRoomMessage()
+      expect(message).toBeDefined()
+      expect(message.pollClosed).toBeDefined()
+    })
+
+    it('should reject poll-closed with wrong occupant-id', async () => {
+      await connectClient()
+      emitSDKSpy = vi.spyOn(xmppClient, 'emitSDK')
+      setupRoomWithPollMessage('alice', 'occ-abc')
+
+      const stanza = buildPollClosedStanza('alice', 'occ-eve')
+      mockXmppClientInstance._emit('stanza', stanza)
+
+      const message = getEmittedRoomMessage()
+      expect(message).toBeDefined()
+      expect(message.pollClosed).toBeUndefined()
+    })
+
+    it('should reject poll-closed with mismatched title', async () => {
+      await connectClient()
+      emitSDKSpy = vi.spyOn(xmppClient, 'emitSDK')
+      setupRoomWithPollMessage('alice')
+
+      const stanza = buildPollClosedStanza('alice', undefined, { title: 'Fake title' })
+      mockXmppClientInstance._emit('stanza', stanza)
+
+      const message = getEmittedRoomMessage()
+      expect(message).toBeDefined()
+      expect(message.pollClosed).toBeUndefined()
+    })
+
+    it('should reject poll-closed with unknown emojis not in original poll', async () => {
+      await connectClient()
+      emitSDKSpy = vi.spyOn(xmppClient, 'emitSDK')
+      setupRoomWithPollMessage('alice')
+
+      const stanza = buildPollClosedStanza('alice', undefined, {
+        tallies: [
+          { emoji: '1️⃣', label: 'Pizza', count: '3' },
+          { emoji: '🎉', label: 'Party', count: '2' },  // Not in original poll
+        ],
+      })
+      mockXmppClientInstance._emit('stanza', stanza)
+
+      const message = getEmittedRoomMessage()
+      expect(message).toBeDefined()
+      expect(message.pollClosed).toBeUndefined()
+    })
+
+    it('should accept poll-closed with a subset of original emojis', async () => {
+      await connectClient()
+      emitSDKSpy = vi.spyOn(xmppClient, 'emitSDK')
+      setupRoomWithPollMessage('alice')
+
+      // Only reporting results for option 1 (subset is OK — option 2 might have 0 votes)
+      const stanza = buildPollClosedStanza('alice', undefined, {
+        tallies: [{ emoji: '1️⃣', label: 'Pizza', count: '3' }],
+      })
+      mockXmppClientInstance._emit('stanza', stanza)
+
+      const message = getEmittedRoomMessage()
+      expect(message).toBeDefined()
+      expect(message.pollClosed).toBeDefined()
+    })
+
+    it('should accept poll-closed when original poll is not in store (joined late)', async () => {
+      await connectClient()
+      emitSDKSpy = vi.spyOn(xmppClient, 'emitSDK')
+      // Room exists but getMessage returns undefined (original poll not loaded)
+      vi.mocked(mockStores.room.getRoom).mockReturnValue({
+        jid: roomJid,
+        name: 'Test Room',
+        nickname: 'me',
+        occupants: new Map(),
+        isJoined: true,
+      } as any)
+      vi.mocked(mockStores.room.getMessage).mockReturnValue(undefined)
+
+      const stanza = buildPollClosedStanza('eve')
+      mockXmppClientInstance._emit('stanza', stanza)
+
+      const message = getEmittedRoomMessage()
+      expect(message).toBeDefined()
+      expect(message.pollClosed).toBeDefined()
+    })
+  })
 })

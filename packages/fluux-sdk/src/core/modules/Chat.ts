@@ -263,7 +263,8 @@ export class Chat extends BaseModule {
     }
 
     // Process actual message
-    if (body || stanza.getChild('x', NS_OOB)) {
+    // Poll messages have their body stripped by fallback processing, so also check for poll elements
+    if (body || stanza.getChild('x', NS_OOB) || stanza.getChild('poll', NS_POLL) || stanza.getChild('poll-closed', NS_POLL)) {
       let message: Message | RoomMessage | null = null
       if (type === 'groupchat') {
         message = this.processRoomMessage(stanza, from, bareFrom, body || '', isCarbonCopy, isSentCarbon)
@@ -1346,7 +1347,26 @@ export class Chat extends BaseModule {
     if (pollClosedEl) {
       const pollClosedData = parsePollClosedElement(pollClosedEl)
       if (pollClosedData) {
-        message.pollClosed = pollClosedData
+        // Verify against the original poll message (if available in store)
+        const originalMsg = this.deps.stores?.room.getMessage(roomJid, pollClosedData.pollMessageId)
+        if (originalMsg?.poll) {
+          // Verify the sender is the original poll creator
+          const senderIsCreator = (occupantId && originalMsg.occupantId)
+            ? occupantId === originalMsg.occupantId        // Prefer stable occupant-id (XEP-0421)
+            : nick === originalMsg.nick                     // Fall back to nick comparison
+          // Verify the title matches the original poll
+          const titleMatches = pollClosedData.title === originalMsg.poll.title
+          // Verify result emojis are a subset of the original poll options
+          const originalEmojis = new Set(originalMsg.poll.options.map(o => o.emoji))
+          const emojisMatch = pollClosedData.results.every(r => originalEmojis.has(r.emoji))
+
+          if (senderIsCreator && titleMatches && emojisMatch) {
+            message.pollClosed = pollClosedData
+          }
+        } else {
+          // Original poll not in store (e.g., joined late) — accept on trust
+          message.pollClosed = pollClosedData
+        }
       }
     }
 
