@@ -195,9 +195,16 @@ export class Chat extends BaseModule {
       return { handled: true }
     }
 
-    // Fastenings (Link Previews)
+    // Fastenings (Link Previews) / XEP-0425 v0 Moderation (via apply-to)
     const applyToEl = stanza.getChild('apply-to', NS_FASTEN)
     if (applyToEl) {
+      // XEP-0425 v0: moderation wrapped in <apply-to> — check before link preview
+      const moderatedV0 = applyToEl.getChild('moderated', 'urn:xmpp:message-moderate:0')
+      if (moderatedV0 && applyToEl.attrs.id) {
+        if (this.handleIncomingModeration(applyToEl.attrs.id, moderatedV0, bareFrom, type)) {
+          return { handled: true }
+        }
+      }
       this.handleFastening(applyToEl, bareFrom, bareTo, type, isSentCarbon)
       return { handled: true }
     }
@@ -218,9 +225,16 @@ export class Chat extends BaseModule {
       if (handled) return { handled: true }
     }
 
-    // Retractions
+    // Retractions / XEP-0425 v1 Moderation (moderated inside retract)
     const retractEl = stanza.getChild('retract', NS_RETRACT)
     if (retractEl?.attrs.id) {
+      // XEP-0425 v1: <moderated> nested inside <retract>
+      const moderatedV1 = retractEl.getChild('moderated', NS_MESSAGE_MODERATE)
+      if (moderatedV1) {
+        if (this.handleIncomingModeration(retractEl.attrs.id, moderatedV1, bareFrom, type)) {
+          return { handled: true }
+        }
+      }
       if (this.handleIncomingRetraction(
         retractEl.attrs.id,
         from,
@@ -231,10 +245,10 @@ export class Chat extends BaseModule {
       )) return { handled: true }
     }
 
-    // XEP-0425: Message Moderation (server broadcast)
+    // XEP-0425: Message Moderation (legacy: moderated as direct child)
     const moderatedEl = stanza.getChild('moderated', NS_MESSAGE_MODERATE)
-    if (moderatedEl) {
-      if (this.handleIncomingModeration(moderatedEl, bareFrom, type)) {
+    if (moderatedEl?.attrs.id) {
+      if (this.handleIncomingModeration(moderatedEl.attrs.id, moderatedEl, bareFrom, type)) {
         return { handled: true }
       }
     }
@@ -1156,15 +1170,17 @@ export class Chat extends BaseModule {
   /**
    * Handle incoming XEP-0425 moderation broadcast from the room service.
    *
-   * The server sends a groupchat message from the bare room JID with a
-   * `<moderated>` element containing the stanza ID of the retracted message.
+   * Supports multiple stanza formats:
+   * - v0: `<apply-to id="..."><moderated by="..." xmlns="...:0">` (stanza-id on apply-to)
+   * - v1: `<retract id="..."><moderated by="..." xmlns="...:1">` (stanza-id on retract)
+   * - legacy: `<moderated id="..." by="...">` (stanza-id on moderated itself)
+   *
+   * @param stanzaId - The stanza-id of the retracted message (from wrapper element)
+   * @param moderatedEl - The `<moderated>` element containing the moderator info
    */
-  private handleIncomingModeration(moderatedEl: Element, bareFrom: string, type: string): boolean {
+  private handleIncomingModeration(stanzaId: string, moderatedEl: Element, bareFrom: string, type: string): boolean {
     // XEP-0425 moderation only applies to groupchat messages
     if (type !== 'groupchat') return false
-
-    const stanzaId = moderatedEl.attrs.id
-    if (!stanzaId) return false
 
     // Extract moderator nick from the "by" attribute (full MUC JID: room@server/nick)
     const byJid = moderatedEl.attrs.by

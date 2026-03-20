@@ -2822,4 +2822,51 @@ describe('roomStore', () => {
       expect(runtime?.nickToJidCache?.get('Alice')).toBe('alice@example.com')
     })
   })
+
+  describe('updateMessage', () => {
+    it('should update message found by client id', () => {
+      const roomJid = 'room@conference.example.com'
+      const msg = createMessage('client-id-1', roomJid, 'alice', 'Hello')
+      const room = createRoom(roomJid, { messages: [msg], joined: true })
+      roomStore.getState().addRoom(room)
+
+      roomStore.getState().updateMessage(roomJid, 'client-id-1', { isRetracted: true })
+
+      const updated = roomStore.getState().rooms.get(roomJid)?.messages[0]
+      expect(updated?.isRetracted).toBe(true)
+    })
+
+    it('should update message found by stanzaId when messageId is a stanza-id', () => {
+      const roomJid = 'room@conference.example.com'
+      const msg: RoomMessage = {
+        ...createMessage('client-id-1', roomJid, 'alice', 'Hello'),
+        stanzaId: 'server-stanza-id-123',
+      }
+      const room = createRoom(roomJid, { messages: [msg], joined: true })
+      roomStore.getState().addRoom(room)
+
+      // Retraction references the stanza-id, not the client id
+      roomStore.getState().updateMessage(roomJid, 'server-stanza-id-123', { isRetracted: true })
+
+      const updated = roomStore.getState().rooms.get(roomJid)?.messages[0]
+      expect(updated?.isRetracted).toBe(true)
+      // Verify IndexedDB update uses actual message id, not the stanza-id
+      expect(messageCache.updateRoomMessage).toHaveBeenCalledWith('client-id-1', { isRetracted: true })
+    })
+
+    it('should update roomRuntime messages in sync', () => {
+      const roomJid = 'room@conference.example.com'
+      const msg: RoomMessage = {
+        ...createMessage('client-id-1', roomJid, 'alice', 'Hello'),
+        stanzaId: 'server-stanza-id-123',
+      }
+      const room = createRoom(roomJid, { messages: [msg], joined: true })
+      roomStore.getState().addRoom(room)
+
+      roomStore.getState().updateMessage(roomJid, 'server-stanza-id-123', { isRetracted: true })
+
+      const runtime = roomStore.getState().roomRuntime.get(roomJid)
+      expect(runtime?.messages[0]?.isRetracted).toBe(true)
+    })
+  })
 })

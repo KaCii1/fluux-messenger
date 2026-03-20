@@ -916,18 +916,23 @@ export const roomStore = createStore<RoomState>()(
   },
 
   updateMessage: (roomJid, messageId, updates) => {
-    // Update IndexedDB (non-blocking)
-    void messageCache.updateRoomMessage(messageId, updates)
-
     set((state) => {
       const newRooms = new Map(state.rooms)
       const existing = newRooms.get(roomJid)
       if (!existing) return state
 
+      let updatedMessage: RoomMessage | undefined
       const newMessages = existing.messages.map((msg) => {
-        if (msg.id !== messageId) return msg
-        return { ...msg, ...updates }
+        // Match by id or stanzaId (retractions/corrections reference stanza-id in MUC)
+        if (msg.id !== messageId && msg.stanzaId !== messageId) return msg
+        updatedMessage = { ...msg, ...updates }
+        return updatedMessage
       })
+
+      // Update IndexedDB (non-blocking) — use actual message id, not the lookup key
+      if (updatedMessage) {
+        void messageCache.updateRoomMessage(updatedMessage.id, updates)
+      }
 
       newRooms.set(roomJid, { ...existing, messages: newMessages })
 
@@ -941,7 +946,7 @@ export const roomStore = createStore<RoomState>()(
       // Update metadata's lastMessage if the updated message is the last one
       const lastMessage = newMessages[newMessages.length - 1]
       const result: Partial<RoomState> = { rooms: newRooms, roomRuntime: newRuntime }
-      if (lastMessage?.id === messageId) {
+      if (updatedMessage && lastMessage === updatedMessage) {
         const newMeta = new Map(state.roomMeta)
         const existingMeta = newMeta.get(roomJid)
         if (existingMeta) {

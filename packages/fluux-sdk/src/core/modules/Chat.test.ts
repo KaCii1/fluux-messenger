@@ -2684,11 +2684,87 @@ describe('XMPPClient Message', () => {
     })
   })
 
-  describe('incoming message moderation (XEP-0425)', () => {
-    it('should handle moderation broadcast with moderator and reason', async () => {
+  describe('incoming retraction (XEP-0424)', () => {
+    it('should retract a MUC message referenced by stanza-id', async () => {
       await connectClient()
 
-      // Simulate incoming moderation broadcast from room service
+      // Mock that the original message exists in the room store
+      vi.mocked(mockStores.room.getMessage).mockReturnValue({
+        type: 'groupchat',
+        id: 'client-msg-id',
+        stanzaId: 'server-stanza-id-999',
+        roomJid: 'room@conference.example.com',
+        from: 'room@conference.example.com/edaveine',
+        nick: 'edaveine',
+        body: 'Message to retract',
+        timestamp: new Date(),
+        isOutgoing: false,
+      })
+
+      // Simulate incoming retraction from the same user, referencing stanza-id
+      const retractionStanza = createMockElement('message', {
+        from: 'room@conference.example.com/edaveine',
+        type: 'groupchat',
+        id: 'retraction-msg-id',
+      }, [
+        {
+          name: 'retract',
+          attrs: { xmlns: 'urn:xmpp:message-retract:1', id: 'server-stanza-id-999' },
+        },
+        { name: 'fallback', attrs: { xmlns: 'urn:xmpp:fallback:0', for: 'urn:xmpp:message-retract:1' } },
+        { name: 'body', text: 'This person attempted to retract a previous message, but it\'s unsupported by your client.' },
+      ])
+
+      mockXmppClientInstance._emit('stanza', retractionStanza)
+
+      expect(emitSDKSpy).toHaveBeenCalledWith('room:message-updated', {
+        roomJid: 'room@conference.example.com',
+        messageId: 'server-stanza-id-999',
+        updates: {
+          isRetracted: true,
+          retractedAt: expect.any(Date),
+        },
+      })
+    })
+
+    it('should not retract if sender does not match original message', async () => {
+      await connectClient()
+
+      vi.mocked(mockStores.room.getMessage).mockReturnValue({
+        type: 'groupchat',
+        id: 'client-msg-id',
+        stanzaId: 'server-stanza-id-999',
+        roomJid: 'room@conference.example.com',
+        from: 'room@conference.example.com/alice',
+        nick: 'alice',
+        body: 'Original message',
+        timestamp: new Date(),
+        isOutgoing: false,
+      })
+
+      // Different user tries to retract alice's message
+      const retractionStanza = createMockElement('message', {
+        from: 'room@conference.example.com/mallory',
+        type: 'groupchat',
+      }, [
+        {
+          name: 'retract',
+          attrs: { xmlns: 'urn:xmpp:message-retract:1', id: 'server-stanza-id-999' },
+        },
+        { name: 'body', text: 'Fallback' },
+      ])
+
+      mockXmppClientInstance._emit('stanza', retractionStanza)
+
+      expect(emitSDKSpy).not.toHaveBeenCalledWith('room:message-updated', expect.anything())
+    })
+  })
+
+  describe('incoming message moderation (XEP-0425)', () => {
+    it('should handle moderation broadcast with legacy format (moderated as direct child)', async () => {
+      await connectClient()
+
+      // Legacy format: <moderated> as direct child of <message> with id attribute
       const moderationStanza = createMockElement('message', {
         from: 'room@conference.example.com',
         type: 'groupchat',
@@ -2718,6 +2794,139 @@ describe('XMPPClient Message', () => {
           isModerated: true,
           moderatedBy: 'admin',
           moderationReason: 'Spam',
+        },
+      })
+    })
+
+    it('should handle moderation v1 format (moderated inside retract)', async () => {
+      await connectClient()
+
+      // v1 format: <retract id="..."><moderated by="..." xmlns="...:1"/></retract>
+      const moderationStanza = createMockElement('message', {
+        from: 'room@conference.example.com',
+        type: 'groupchat',
+      }, [
+        {
+          name: 'retract',
+          attrs: { xmlns: 'urn:xmpp:message-retract:1', id: 'retracted-stanza-id' },
+          children: [
+            {
+              name: 'moderated',
+              attrs: {
+                xmlns: 'urn:xmpp:message-moderate:1',
+                by: 'room@conference.example.com/moderator',
+              },
+            },
+          ],
+        },
+      ])
+
+      mockXmppClientInstance._emit('stanza', moderationStanza)
+
+      expect(emitSDKSpy).toHaveBeenCalledWith('room:message-updated', {
+        roomJid: 'room@conference.example.com',
+        messageId: 'retracted-stanza-id',
+        updates: {
+          isRetracted: true,
+          retractedAt: expect.any(Date),
+          isModerated: true,
+          moderatedBy: 'moderator',
+          moderationReason: undefined,
+        },
+      })
+    })
+
+    it('should handle moderation v0 format (moderated inside apply-to)', async () => {
+      await connectClient()
+
+      // v0 format: <apply-to id="..."><moderated by="..." xmlns="...:0"/></apply-to>
+      const moderationStanza = createMockElement('message', {
+        from: 'room@conference.example.com',
+        type: 'groupchat',
+      }, [
+        {
+          name: 'apply-to',
+          attrs: { xmlns: 'urn:xmpp:fasten:0', id: 'retracted-stanza-id' },
+          children: [
+            {
+              name: 'moderated',
+              attrs: {
+                xmlns: 'urn:xmpp:message-moderate:0',
+                by: 'room@conference.example.com/admin',
+              },
+              children: [
+                { name: 'retract', attrs: { xmlns: 'urn:xmpp:message-retract:0' } },
+              ],
+            },
+          ],
+        },
+      ])
+
+      mockXmppClientInstance._emit('stanza', moderationStanza)
+
+      expect(emitSDKSpy).toHaveBeenCalledWith('room:message-updated', {
+        roomJid: 'room@conference.example.com',
+        messageId: 'retracted-stanza-id',
+        updates: {
+          isRetracted: true,
+          retractedAt: expect.any(Date),
+          isModerated: true,
+          moderatedBy: 'admin',
+          moderationReason: undefined,
+        },
+      })
+    })
+
+    it('should handle ejabberd combined v0+v1 moderation format', async () => {
+      await connectClient()
+
+      // ejabberd sends both v0 (apply-to) and v1 (retract) in the same stanza
+      const moderationStanza = createMockElement('message', {
+        from: 'room@conference.example.com',
+        type: 'groupchat',
+      }, [
+        {
+          name: 'apply-to',
+          attrs: { xmlns: 'urn:xmpp:fasten:0', id: 'retracted-stanza-id' },
+          children: [
+            {
+              name: 'moderated',
+              attrs: {
+                xmlns: 'urn:xmpp:message-moderate:0',
+                by: 'room@conference.example.com/mickael',
+              },
+              children: [
+                { name: 'retract', attrs: { xmlns: 'urn:xmpp:message-retract:0' } },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'retract',
+          attrs: { xmlns: 'urn:xmpp:message-retract:1', id: 'retracted-stanza-id' },
+          children: [
+            {
+              name: 'moderated',
+              attrs: {
+                xmlns: 'urn:xmpp:message-moderate:1',
+                by: 'room@conference.example.com/mickael',
+              },
+            },
+          ],
+        },
+      ])
+
+      mockXmppClientInstance._emit('stanza', moderationStanza)
+
+      expect(emitSDKSpy).toHaveBeenCalledWith('room:message-updated', {
+        roomJid: 'room@conference.example.com',
+        messageId: 'retracted-stanza-id',
+        updates: {
+          isRetracted: true,
+          retractedAt: expect.any(Date),
+          isModerated: true,
+          moderatedBy: 'mickael',
+          moderationReason: undefined,
         },
       })
     })
