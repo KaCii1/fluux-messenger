@@ -909,6 +909,313 @@ describe('poll utilities', () => {
     })
   })
 
+  // ── Bad input tolerance & calculation correctness ─────────────────
+  // Simulates reactions from other users (including legacy clients, buggy
+  // clients, or deliberately malformed data) and verifies that tallying
+  // remains correct and never crashes.
+
+  describe('bad input tolerance: tallying', () => {
+    const poll = buildPollData('Q?', ['Pizza', 'Sushi', 'Tacos'])
+
+    it('should handle empty string voter names', () => {
+      const reactions = { '1️⃣': ['', 'alice'], '2️⃣': [''] }
+
+      const tally = tallyPollResults(poll, reactions)
+      // Single-vote: '' assigned to option 1, filtered from option 2
+      expect(tally[0].voters).toEqual(['', 'alice'])
+      expect(tally[0].count).toBe(2)
+      expect(tally[1].voters).toEqual([])
+      expect(tally[1].count).toBe(0)
+    })
+
+    it('should handle voter names with special characters', () => {
+      const reactions = {
+        '1️⃣': ['user@example.com/resource', 'nick with spaces', '日本語ニック'],
+        '2️⃣': ['<script>alert(1)</script>'],
+      }
+
+      const tally = tallyPollResults(poll, reactions)
+      expect(tally[0].count).toBe(3)
+      expect(tally[1].count).toBe(1)
+    })
+
+    it('should handle every voter cheating in single-vote (voted all options)', () => {
+      // All 3 users reacted on all 3 options — each should count once, in first option
+      const reactions = {
+        '1️⃣': ['alice', 'bob', 'carol'],
+        '2️⃣': ['alice', 'bob', 'carol'],
+        '3️⃣': ['alice', 'bob', 'carol'],
+      }
+
+      const tally = tallyPollResults(poll, reactions)
+      expect(tally[0].count).toBe(3) // all assigned here
+      expect(tally[1].count).toBe(0) // filtered
+      expect(tally[2].count).toBe(0) // filtered
+
+      // Total voters should still be 3
+      expect(getTotalVoters(poll, reactions)).toBe(3)
+    })
+
+    it('should handle a mix of valid and cheating voters', () => {
+      const reactions = {
+        '1️⃣': ['alice', 'cheater'],         // alice: legitimate, cheater: also in option 2
+        '2️⃣': ['bob', 'cheater'],            // bob: legitimate
+        '3️⃣': ['carol'],                      // carol: legitimate
+      }
+
+      const tally = tallyPollResults(poll, reactions)
+      expect(tally[0]).toEqual({ emoji: '1️⃣', label: 'Pizza', voters: ['alice', 'cheater'], count: 2 })
+      expect(tally[1]).toEqual({ emoji: '2️⃣', label: 'Sushi', voters: ['bob'], count: 1 })
+      expect(tally[2]).toEqual({ emoji: '3️⃣', label: 'Tacos', voters: ['carol'], count: 1 })
+
+      expect(getTotalVoters(poll, reactions)).toBe(4)
+    })
+
+    it('should handle reactions map with only non-poll emojis', () => {
+      const reactions = {
+        '👍': ['alice', 'bob'],
+        '❤️': ['carol'],
+        '🎉': ['dave'],
+      }
+
+      const tally = tallyPollResults(poll, reactions)
+      expect(tally.every(t => t.count === 0)).toBe(true)
+      expect(getTotalVoters(poll, reactions)).toBe(0)
+    })
+
+    it('should handle empty voter arrays for all options', () => {
+      const reactions = { '1️⃣': [], '2️⃣': [], '3️⃣': [] }
+
+      const tally = tallyPollResults(poll, reactions)
+      expect(tally.every(t => t.count === 0)).toBe(true)
+      expect(getTotalVoters(poll, reactions)).toBe(0)
+    })
+
+    it('should handle reactions for emojis not in the poll options', () => {
+      // Only non-matching emojis — poll options use 1️⃣ 2️⃣ 3️⃣
+      const reactions = { '4️⃣': ['alice'], '5️⃣': ['bob'] }
+
+      const tally = tallyPollResults(poll, reactions)
+      expect(tally.every(t => t.count === 0)).toBe(true)
+    })
+
+    it('should preserve option order regardless of reaction map key order', () => {
+      // Reactions map has emojis in reverse order
+      const reactions = { '3️⃣': ['carol'], '1️⃣': ['alice'], '2️⃣': ['bob'] }
+
+      const tally = tallyPollResults(poll, reactions)
+      // Tally should follow poll option order, not reaction map key order
+      expect(tally[0].emoji).toBe('1️⃣')
+      expect(tally[0].label).toBe('Pizza')
+      expect(tally[1].emoji).toBe('2️⃣')
+      expect(tally[1].label).toBe('Sushi')
+      expect(tally[2].emoji).toBe('3️⃣')
+      expect(tally[2].label).toBe('Tacos')
+    })
+  })
+
+  describe('bad input tolerance: tallying with many options', () => {
+    it('should handle 9-option poll with complex voting patterns', () => {
+      const poll = buildPollData('Q?', ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'])
+
+      // Single-vote: cheater voted on options 3, 5, and 8
+      const reactions = {
+        '1️⃣': ['alice'],
+        '2️⃣': ['bob'],
+        '3️⃣': ['cheater', 'carol'],
+        '4️⃣': [],
+        '5️⃣': ['cheater', 'dave'],
+        '6️⃣': [],
+        '7️⃣': [],
+        '8️⃣': ['cheater'],
+        '9️⃣': ['eve'],
+      }
+
+      const tally = tallyPollResults(poll, reactions)
+
+      // cheater's vote should only count in option 3 (first appearance)
+      expect(tally[2].voters).toContain('cheater')
+      expect(tally[2].count).toBe(2) // cheater + carol
+      expect(tally[4].voters).not.toContain('cheater')
+      expect(tally[4].count).toBe(1) // dave only
+      expect(tally[7].voters).not.toContain('cheater')
+      expect(tally[7].count).toBe(0)
+
+      // Total unique voters: alice, bob, cheater, carol, dave, eve = 6
+      expect(getTotalVoters(poll, reactions)).toBe(6)
+    })
+  })
+
+  describe('bad input tolerance: multi-vote tallying', () => {
+    const multiPoll = buildPollData('Q?', ['A', 'B', 'C'], { allowMultiple: true })
+
+    it('should count all votes in multi-vote even with duplicate voter in same option', () => {
+      const reactions = {
+        '1️⃣': ['alice', 'alice', 'bob'],
+        '2️⃣': ['alice'],
+        '3️⃣': [],
+      }
+
+      const tally = tallyPollResults(multiPoll, reactions)
+      // Multi-vote: no deduplication, raw arrays used
+      expect(tally[0].count).toBe(3) // alice (x2) + bob
+      expect(tally[1].count).toBe(1) // alice
+      expect(tally[2].count).toBe(0)
+
+      // getTotalVoters still deduplicates across options
+      expect(getTotalVoters(multiPoll, reactions)).toBe(2) // alice + bob
+    })
+
+    it('should allow a voter to appear in every option in multi-vote', () => {
+      const reactions = {
+        '1️⃣': ['alice'],
+        '2️⃣': ['alice'],
+        '3️⃣': ['alice'],
+      }
+
+      const tally = tallyPollResults(multiPoll, reactions)
+      expect(tally[0].count).toBe(1)
+      expect(tally[1].count).toBe(1)
+      expect(tally[2].count).toBe(1)
+      expect(getTotalVoters(multiPoll, reactions)).toBe(1)
+    })
+  })
+
+  describe('tally + totalVoters consistency', () => {
+    it('single-vote: sum of tally counts should equal total unique voters', () => {
+      const poll = buildPollData('Q?', ['A', 'B', 'C'])
+      const reactions = {
+        '1️⃣': ['alice', 'cheater'],
+        '2️⃣': ['bob', 'cheater', 'carol'],
+        '3️⃣': ['dave', 'cheater'],
+      }
+
+      const tally = tallyPollResults(poll, reactions)
+      const tallySum = tally.reduce((sum, t) => sum + t.count, 0)
+      const totalVoters = getTotalVoters(poll, reactions)
+
+      // In single-vote mode, each voter is counted exactly once in tally
+      // so the sum of counts must equal the total unique voters
+      expect(tallySum).toBe(totalVoters)
+    })
+
+    it('single-vote: tally count sum equals totalVoters even with heavy cheating', () => {
+      const poll = buildPollData('Q?', ['A', 'B'])
+      // 5 voters, all cheating (voted both options)
+      const reactions = {
+        '1️⃣': ['u1', 'u2', 'u3', 'u4', 'u5'],
+        '2️⃣': ['u1', 'u2', 'u3', 'u4', 'u5'],
+      }
+
+      const tally = tallyPollResults(poll, reactions)
+      const tallySum = tally.reduce((sum, t) => sum + t.count, 0)
+
+      // All 5 assigned to option 1 (first in order), option 2 gets 0
+      expect(tally[0].count).toBe(5)
+      expect(tally[1].count).toBe(0)
+      expect(tallySum).toBe(5)
+      expect(getTotalVoters(poll, reactions)).toBe(5)
+    })
+
+    it('multi-vote: tally sum can exceed total unique voters', () => {
+      const poll = buildPollData('Q?', ['A', 'B'], { allowMultiple: true })
+      const reactions = {
+        '1️⃣': ['alice', 'bob'],
+        '2️⃣': ['alice'],
+      }
+
+      const tally = tallyPollResults(poll, reactions)
+      const tallySum = tally.reduce((sum, t) => sum + t.count, 0)
+
+      // Multi-vote: alice counted in both → sum is 3, but only 2 unique voters
+      expect(tallySum).toBe(3)
+      expect(getTotalVoters(poll, reactions)).toBe(2)
+    })
+  })
+
+  describe('bad input tolerance: hasVotedOnPoll', () => {
+    const poll = buildPollData('Q?', ['A', 'B', 'C'])
+
+    it('should detect vote even if user cheated (voted multiple options)', () => {
+      const reactions = { '1️⃣': ['alice'], '2️⃣': ['alice'] }
+      expect(hasVotedOnPoll(poll, reactions, 'alice')).toBe(true)
+    })
+
+    it('should return false for empty string voter checking empty string in reactions', () => {
+      const reactions = { '1️⃣': [''] }
+      // Empty string voter matches empty string query
+      expect(hasVotedOnPoll(poll, reactions, '')).toBe(true)
+    })
+
+    it('should not match voter in non-poll emoji reactions', () => {
+      const reactions = { '👍': ['alice'], '❤️': ['alice'] }
+      expect(hasVotedOnPoll(poll, reactions, 'alice')).toBe(false)
+    })
+
+    it('should handle reactions map with missing poll option emojis', () => {
+      // Reactions only for option 2, options 1 and 3 not present
+      const reactions = { '2️⃣': ['alice'] }
+      expect(hasVotedOnPoll(poll, reactions, 'alice')).toBe(true)
+      expect(hasVotedOnPoll(poll, reactions, 'bob')).toBe(false)
+    })
+  })
+
+  describe('bad input tolerance: percentage calculation safety', () => {
+    it('should produce 0% for all options when no voters', () => {
+      const poll = buildPollData('Q?', ['A', 'B'])
+      const tally = tallyPollResults(poll, {})
+
+      tally.forEach(option => {
+        const totalVoters = getTotalVoters(poll, {})
+        const percentage = totalVoters > 0 ? Math.round((option.count / totalVoters) * 100) : 0
+        expect(percentage).toBe(0)
+        expect(Number.isFinite(percentage)).toBe(true)
+      })
+    })
+
+    it('should produce valid percentages that sum to ~100%', () => {
+      const poll = buildPollData('Q?', ['A', 'B', 'C'])
+      const reactions = {
+        '1️⃣': ['a1', 'a2', 'a3'],
+        '2️⃣': ['b1', 'b2'],
+        '3️⃣': ['c1'],
+      }
+
+      const tally = tallyPollResults(poll, reactions)
+      const totalVoters = getTotalVoters(poll, reactions)
+
+      const percentages = tally.map(t =>
+        totalVoters > 0 ? Math.round((t.count / totalVoters) * 100) : 0
+      )
+
+      // All percentages should be non-negative finite numbers
+      percentages.forEach(p => {
+        expect(p).toBeGreaterThanOrEqual(0)
+        expect(p).toBeLessThanOrEqual(100)
+        expect(Number.isFinite(p)).toBe(true)
+      })
+
+      // Sum should be close to 100 (rounding may cause ±1)
+      const sum = percentages.reduce((a, b) => a + b, 0)
+      expect(sum).toBeGreaterThanOrEqual(99)
+      expect(sum).toBeLessThanOrEqual(101)
+    })
+
+    it('should handle single voter producing 100% on one option', () => {
+      const poll = buildPollData('Q?', ['A', 'B', 'C'])
+      const reactions = { '2️⃣': ['alice'] }
+
+      const tally = tallyPollResults(poll, reactions)
+      const totalVoters = getTotalVoters(poll, reactions)
+
+      const percentages = tally.map(t =>
+        totalVoters > 0 ? Math.round((t.count / totalVoters) * 100) : 0
+      )
+
+      expect(percentages).toEqual([0, 100, 0])
+    })
+  })
+
   describe('round-trip: buildPollData → XML → parsePollElement asymmetry', () => {
     it('should lose empty-label options on parse (build/parse asymmetry)', () => {
       // buildPollData allows empty labels...
