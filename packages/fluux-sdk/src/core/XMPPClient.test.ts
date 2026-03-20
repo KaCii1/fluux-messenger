@@ -1383,6 +1383,119 @@ describe('XMPPClient', () => {
     })
   })
 
+  describe('stale client detection after reconnect', () => {
+    it('verifyConnectionHealth should return true (not kill new connection) when client is replaced during await', async () => {
+      mockXmppClientInstance.streamManagement = {
+        id: 'sm-123',
+        inbound: 5,
+        outbound: 0,
+        enabled: true,
+        on: vi.fn(),
+      }
+
+      const connectPromise = xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'password',
+        server: 'wss://example.com/ws',
+      })
+
+      mockXmppClientInstance._emit('online')
+      await connectPromise
+
+      mockStores.connection.getStatus.mockReturnValue('online')
+      mockStores.connection.setStatus.mockClear()
+
+      // Start health check — this will call waitForSmAck on the current client
+      const resultPromise = xmppClient.verifyConnectionHealth()
+
+      // Simulate reconnection: replace the xmpp client before the ack timeout fires.
+      // This is what happens when forceDestroyClient strips listeners on the old client
+      // and a new connection is established via SM resumption.
+      const newClient = createMockXmppClient()
+      newClient.streamManagement = {
+        id: 'sm-456',
+        inbound: 10,
+        outbound: 0,
+        enabled: true,
+        on: vi.fn(),
+      }
+      mockClientFactory._setInstance(newClient)
+
+      const reconnectPromise = xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'password',
+        server: 'wss://example.com/ws',
+      })
+      newClient._emit('online')
+      await reconnectPromise
+
+      mockStores.connection.getStatus.mockReturnValue('online')
+      mockStores.connection.setStatus.mockClear()
+
+      // Now advance past the timeout — the stale waitForSmAck should fire
+      await vi.advanceTimersByTimeAsync(VERIFY_CONNECTION_TIMEOUT_MS + 50)
+
+      const result = await resultPromise
+
+      // Should return true (stale result ignored) and NOT trigger reconnect
+      expect(result).toBe(true)
+      expect(mockStores.connection.setStatus).not.toHaveBeenCalledWith('reconnecting')
+    })
+
+    it('verifyConnection should return true when client is replaced during await', async () => {
+      mockXmppClientInstance.streamManagement = {
+        id: 'sm-123',
+        inbound: 5,
+        outbound: 0,
+        enabled: true,
+        on: vi.fn(),
+      }
+
+      const connectPromise = xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'password',
+        server: 'wss://example.com/ws',
+      })
+
+      mockXmppClientInstance._emit('online')
+      await connectPromise
+
+      mockStores.connection.getStatus.mockReturnValue('online')
+      mockStores.connection.setStatus.mockClear()
+
+      const resultPromise = xmppClient.verifyConnection()
+
+      // Simulate reconnection mid-verify
+      const newClient = createMockXmppClient()
+      newClient.streamManagement = {
+        id: 'sm-456',
+        inbound: 10,
+        outbound: 0,
+        enabled: true,
+        on: vi.fn(),
+      }
+      mockClientFactory._setInstance(newClient)
+
+      const reconnectPromise = xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'password',
+        server: 'wss://example.com/ws',
+      })
+      newClient._emit('online')
+      await reconnectPromise
+
+      mockStores.connection.getStatus.mockReturnValue('online')
+      mockStores.connection.setStatus.mockClear()
+
+      await vi.advanceTimersByTimeAsync(VERIFY_CONNECTION_TIMEOUT_MS + 50)
+
+      const result = await resultPromise
+
+      expect(result).toBe(true)
+      expect(mockStores.connection.setStatus).not.toHaveBeenCalledWith('reconnecting')
+    })
+  })
+
   describe('internal event wiring (regression tests)', () => {
     // These tests ensure internal events are properly connected to their handlers.
     // They prevent regressions where events are emitted but have no listeners.

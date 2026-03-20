@@ -69,10 +69,39 @@ const mockClearRoomAvatar = vi.fn()
 const mockClearFirstNewMessageId = vi.fn()
 const mockClearAnimation = vi.fn()
 
-// Mock SDK hooks
-vi.mock('@fluux/sdk', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@fluux/sdk')>()
-  return {
+// Inline implementations of pure functions needed by ignored-user filtering tests.
+// We avoid `importOriginal` because it loads the entire SDK barrel, including
+// zustand stores with persist middleware that cause OOM in jsdom.
+function _isMessageFromIgnoredUser(
+  ignoredUsers: { identifier: string; jid?: string }[],
+  msg: { occupantId?: string; nick: string },
+  nickToJidCache?: Map<string, string>,
+): boolean {
+  if (ignoredUsers.length === 0) return false
+  const ignoredIds = new Set(ignoredUsers.map(u => u.identifier))
+  const ignoredJids = new Set(ignoredUsers.map(u => u.jid).filter(Boolean))
+  if (msg.occupantId && ignoredIds.has(msg.occupantId)) return true
+  if (nickToJidCache) {
+    const jid = nickToJidCache.get(msg.nick)
+    if (jid && (ignoredIds.has(jid) || ignoredJids.has(jid))) return true
+  }
+  if (ignoredIds.has(msg.nick)) return true
+  return false
+}
+
+function _isReplyToIgnoredUser(
+  ignoredUsers: { identifier: string; jid?: string }[],
+  replyTo: { to?: string } | undefined,
+  nickToJidCache?: Map<string, string>,
+): boolean {
+  if (!replyTo?.to || ignoredUsers.length === 0) return false
+  const nick = replyTo.to.includes('/') ? replyTo.to.split('/').pop()! : ''
+  if (!nick) return false
+  return _isMessageFromIgnoredUser(ignoredUsers, { nick }, nickToJidCache)
+}
+
+// Mock SDK hooks and pure functions
+vi.mock('@fluux/sdk', () => ({
   useRoomActive: () => ({
     activeRoom: mockActiveRoom,
     activeMessages: mockActiveMessages,
@@ -90,7 +119,6 @@ vi.mock('@fluux/sdk', async (importOriginal) => {
     joinRoom: mockJoinRoom,
     setRoomAvatar: mockSetRoomAvatar,
     clearRoomAvatar: mockClearRoomAvatar,
-    // Draft management
     getDraft: vi.fn(() => ''),
     setDraft: vi.fn(),
     clearDraft: vi.fn(),
@@ -105,6 +133,21 @@ vi.mock('@fluux/sdk', async (importOriginal) => {
     presenceShow: 'online',
     isConnected: true,
   }),
+  useRoom: () => ({
+    setAffiliation: vi.fn(),
+    setRole: vi.fn(),
+  }),
+  useXMPP: () => ({
+    client: { profile: { fetchVCard: vi.fn().mockResolvedValue(null) } },
+    sendRawXml: vi.fn(),
+    onStanza: vi.fn(() => vi.fn()),
+    on: vi.fn(() => vi.fn()),
+    setPresence: vi.fn(),
+    xml: vi.fn(),
+    isConnected: () => false,
+    getJid: () => null,
+  }),
+  // Pure functions used by RoomView
   getBareJid: (jid: string) => jid.split('/')[0],
   getUniqueOccupantCount: (occupants: Iterable<{ jid?: string }>) => {
     const bareJids = new Set<string>()
@@ -129,27 +172,40 @@ vi.mock('@fluux/sdk', async (importOriginal) => {
     })
     return map
   },
-  isMessageFromIgnoredUser: actual.isMessageFromIgnoredUser,
-  isReplyToIgnoredUser: actual.isReplyToIgnoredUser,
-  useRoom: () => ({
-    setAffiliation: vi.fn(),
-    setRole: vi.fn(),
-  }),
+  isMessageFromIgnoredUser: _isMessageFromIgnoredUser,
+  isReplyToIgnoredUser: _isReplyToIgnoredUser,
   canKick: () => false,
   canBan: () => false,
+  canModerate: () => false,
   getAvailableAffiliations: () => [],
   getAvailableRoles: () => [],
-  useXMPP: () => ({
-    client: { profile: { fetchVCard: vi.fn().mockResolvedValue(null) } },
-    sendRawXml: vi.fn(),
-    onStanza: vi.fn(() => vi.fn()),
-    on: vi.fn(() => vi.fn()),
-    setPresence: vi.fn(),
-    xml: vi.fn(),
-    isConnected: () => false,
-    getJid: () => null,
-  }),
-}})
+  // Pure functions used by child components (MessageBubble, PollBanner, PollCard)
+  formatMessagePreview: (msg: { body?: string }) => msg?.body || '',
+  formatXMPPError: () => 'Error',
+  hasVotedOnPoll: () => false,
+  isPollExpired: () => false,
+  tallyPollResults: () => [],
+  getTotalVoters: () => 0,
+  // Store mocks needed by child components
+  connectionStore: {
+    getState: () => ({ status: 'online', jid: 'me@example.com', windowVisible: true }),
+    subscribe: vi.fn(() => vi.fn()),
+  },
+  roomStore: {
+    getState: () => ({ rooms: new Map(), activeRoomJid: null }),
+    subscribe: vi.fn(() => vi.fn()),
+  },
+  ignoreStore: {
+    getState: () => ({
+      ignoredUsers: {},
+      addIgnored: vi.fn(),
+      removeIgnored: vi.fn(),
+      isIgnored: () => false,
+      getIgnoredForRoom: () => [],
+    }),
+    subscribe: vi.fn(() => vi.fn()),
+  },
+}))
 
 // Mock React store hooks (from @fluux/sdk/react)
 vi.mock('@fluux/sdk/react', () => ({
@@ -209,18 +265,27 @@ vi.mock('@/hooks', () => ({
     handleScroll: vi.fn(),
     resetScrollState: vi.fn(),
   }),
-  useMessageSelection: () => ({
-    selectedMessageId: null,
-    setSelectedMessageId: vi.fn(),
-    hasKeyboardSelection: false,
-    showToolbarForSelection: false,
-    handleKeyDown: vi.fn(),
-    clearSelection: vi.fn(),
-    shouldIgnoreMouseEvent: vi.fn(() => false),
-    handleMouseEnterMessage: vi.fn(),
-    lastMousePosRef: { current: null },
-    keyboardCooldownRef: { current: 0 },
-  }),
+  // useMessageSelection must return STABLE references. If vi.fn() is created
+  // inside the hook function, it's a new ref each render, and the useEffect in
+  // RoomView that depends on clearSelection re-fires every render — which calls
+  // setDismissedPollIds(new Set()), triggering yet another render → infinite loop.
+  useMessageSelection: (() => {
+    const stable = {
+      selectedMessageId: null,
+      setSelectedMessageId: vi.fn(),
+      hasKeyboardSelection: false,
+      showToolbarForSelection: false,
+      handleKeyDown: vi.fn(),
+      clearSelection: vi.fn(),
+      shouldIgnoreMouseEvent: vi.fn(() => false),
+      handleMouseEnterMessage: vi.fn(),
+      handleMouseMove: vi.fn(),
+      handleMouseLeave: vi.fn(),
+      lastMousePosRef: { current: null },
+      keyboardCooldownRef: { current: 0 },
+    }
+    return () => stable
+  })(),
   useTauriFileDrop: () => ({
     isDragging: false,
     isTauri: false,

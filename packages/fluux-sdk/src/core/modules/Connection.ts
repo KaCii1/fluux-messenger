@@ -780,6 +780,7 @@ export class Connection extends BaseModule {
    */
   async verifyConnection(timeoutMs = VERIFY_CONNECTION_TIMEOUT_MS): Promise<boolean> {
     if (!this.xmpp) return false
+    const clientAtStart = this.xmpp
     const verifyStart = Date.now()
 
     // Transition the machine to connected.verifying if currently healthy.
@@ -796,6 +797,13 @@ export class Connection extends BaseModule {
       if (sm?.enabled) {
         // SM request - wait for <a/> acknowledgment with timeout
         const ackReceived = await this.waitForSmAck(timeoutMs)
+        // If a NEW xmpp client was established during the await (reconnect completed),
+        // this verification is stale — the new connection is already established.
+        // Note: null means connection was torn down (not replaced), so still report failure.
+        if (this.xmpp && this.xmpp !== clientAtStart) {
+          logInfo('verifyConnection: client replaced during await, ignoring stale result')
+          return true
+        }
         if (!ackReceived) {
           // Timeout waiting for ack - connection is dead
           this.stores.console.addEvent('Verification timed out waiting for SM ack', 'connection')
@@ -805,7 +813,7 @@ export class Connection extends BaseModule {
         }
       } else {
         // Fallback: send a ping IQ and wait for response
-        const iqCaller = (this.xmpp as any).iqCaller
+        const iqCaller = (clientAtStart as any).iqCaller
         if (iqCaller) {
           const ping = xml(
             'iq',
@@ -825,15 +833,18 @@ export class Connection extends BaseModule {
             { type: 'get', id: `ping_${Date.now()}` },
             xml('ping', { xmlns: NS_PING })
           )
-          await this.xmpp.send(ping)
+          await clientAtStart.send(ping)
         }
       }
 
       // Connection verified — signal machine: verifying → healthy
+      if (this.xmpp && this.xmpp !== clientAtStart) return true
       this.sendMachineEvent({ type: 'VERIFY_SUCCESS' }, 'verifyConnection:success')
       logInfo(`Connection verified (${Date.now() - verifyStart}ms)`)
       return true
     } catch (err) {
+      // If a new client was established during the await, this error is stale
+      if (this.xmpp && this.xmpp !== clientAtStart) return true
       const errorMessage = err instanceof Error ? err.message : String(err)
       if (isDeadSocketError(errorMessage) || errorMessage.includes('timeout')) {
         this.sendMachineEvent({ type: 'VERIFY_FAILED' }, 'verifyConnection:error')
@@ -856,19 +867,29 @@ export class Connection extends BaseModule {
    * connection is expected to be healthy.
    */
   async verifyConnectionHealth(timeoutMs = VERIFY_CONNECTION_TIMEOUT_MS): Promise<boolean> {
-    if (!this.xmpp || !this.isInConnectedState()) return false
+    const clientAtStart = this.xmpp
+    if (!clientAtStart || !this.isInConnectedState()) return false
 
     try {
-      const sm = this.xmpp.streamManagement as any
+      const sm = clientAtStart.streamManagement as any
       if (sm?.enabled) {
         const ackReceived = await this.waitForSmAck(timeoutMs)
+        // If a NEW xmpp client was established during the await (reconnect completed),
+        // this health check is stale — don't kill the new connection.
+        // Note: null means connection was torn down (not replaced), so still report failure.
+        if (this.xmpp && this.xmpp !== clientAtStart) {
+          logInfo('verifyConnectionHealth: client replaced during await, ignoring stale result')
+          return true
+        }
         if (!ackReceived) {
+          // Double-check we're still in a state where acting makes sense
+          if (!this.isInConnectedState()) return false
           this.stores.console.addEvent('Keepalive health check failed (SM ack timeout)', 'connection')
           this.handleDeadSocket({ source: 'keepalive-timeout' })
           return false
         }
       } else {
-        const iqCaller = (this.xmpp as any).iqCaller
+        const iqCaller = (clientAtStart as any).iqCaller
         if (iqCaller) {
           const ping = xml(
             'iq',
@@ -885,8 +906,11 @@ export class Connection extends BaseModule {
       }
       return true
     } catch (err) {
+      // If client was replaced during the await, this error is stale
+      if (this.xmpp !== clientAtStart) return true
       const errorMessage = err instanceof Error ? err.message : String(err)
       if (isDeadSocketError(errorMessage) || errorMessage.includes('timeout')) {
+        if (!this.isInConnectedState()) return false
         this.stores.console.addEvent('Keepalive health check failed, reconnecting', 'connection')
         this.handleDeadSocket({ source: 'keepalive-error' })
       }
@@ -900,7 +924,12 @@ export class Connection extends BaseModule {
    */
   private waitForSmAck(timeoutMs: number): Promise<boolean> {
     return new Promise((resolve) => {
-      if (!this.xmpp) {
+      // Capture the client reference at call time. If the client is swapped
+      // (reconnect), we must not act on the stale timeout — forceDestroyClient
+      // strips listeners (including handleDisconnect), so the timeout is the
+      // only exit path for orphaned waits.
+      const client = this.xmpp
+      if (!client) {
         resolve(false)
         return
       }
@@ -910,8 +939,8 @@ export class Connection extends BaseModule {
       // Cleanup helper
       const cleanup = (timeoutId: ReturnType<typeof setTimeout>) => {
         clearTimeout(timeoutId)
-        ;(this.xmpp as any)?.off?.('nonza', handleNonza)
-        ;(this.xmpp as any)?.off?.('disconnect', handleDisconnect)
+        ;(client as any)?.off?.('nonza', handleNonza)
+        ;(client as any)?.off?.('disconnect', handleDisconnect)
       }
 
       // Listen for <a/> nonza - defined as a hoisted function for cleanup reference
@@ -932,21 +961,21 @@ export class Connection extends BaseModule {
         }
       }
 
-      ;(this.xmpp as any)?.on?.('nonza', handleNonza)
-      ;(this.xmpp as any)?.on?.('disconnect', handleDisconnect)
+      ;(client as any)?.on?.('nonza', handleNonza)
+      ;(client as any)?.on?.('disconnect', handleDisconnect)
 
       // Timeout - must be set up before send() to be in scope for cleanup
       const timeoutId = setTimeout(() => {
         if (!resolved) {
           resolved = true
-          ;(this.xmpp as any)?.off?.('nonza', handleNonza)
-          ;(this.xmpp as any)?.off?.('disconnect', handleDisconnect)
+          ;(client as any)?.off?.('nonza', handleNonza)
+          ;(client as any)?.off?.('disconnect', handleDisconnect)
           resolve(false)
         }
       }, timeoutMs)
 
       // Send <r/> request
-      this.xmpp.send(xml('r', { xmlns: 'urn:xmpp:sm:3' })).catch(() => {
+      client.send(xml('r', { xmlns: 'urn:xmpp:sm:3' })).catch(() => {
         if (!resolved) {
           resolved = true
           cleanup(timeoutId)
@@ -1770,7 +1799,22 @@ export class Connection extends BaseModule {
     try {
       // Capture rooms early so reconnect recovery can still rejoin them even if
       // we short-circuit because the transport is already back online.
-      const previouslyJoinedRooms = this.stores.room.joinedRooms() ?? []
+      // Use live store first, but fall back to SM-persisted room list if the store
+      // was cleared by markAllRoomsNotJoined() during a failed reconnect cycle.
+      const liveJoinedRooms = this.stores.room.joinedRooms() ?? []
+      let previouslyJoinedRooms: Array<{ jid: string; nickname: string; password?: string; autojoin?: boolean }> = liveJoinedRooms
+      if (liveJoinedRooms.length <= 1 && this.credentials) {
+        try {
+          const persisted = await this.smPersistence.load(this.credentials.jid)
+          if (persisted.joinedRooms.length > liveJoinedRooms.length) {
+            this.stores.console.addEvent(
+              `Using SM-persisted room list (${persisted.joinedRooms.length} rooms) — live store only has ${liveJoinedRooms.length}`,
+              'sm'
+            )
+            previouslyJoinedRooms = persisted.joinedRooms
+          }
+        } catch { /* storage errors are non-fatal */ }
+      }
 
       // Defensive check: verify xmpp.js client is not already online.
       // This shouldn't happen in normal flow, but guards against edge cases.

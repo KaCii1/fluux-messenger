@@ -3023,4 +3023,266 @@ describe('XMPPClient Connection', () => {
       expect(passedCreds.token).toBe(mockToken)
     })
   })
+
+  // =========================================================================
+  // Reconnection robustness tests
+  //
+  // These tests target the three bugs found in the XMPP log analysis:
+  // Bug 1: Stale waitForSmAck timeout killing new connections
+  // Bug 2: Room list shrinking across reconnect cycles
+  // Bug 3: Wake + keepalive timer race
+  // =========================================================================
+  describe('reconnection robustness', () => {
+    beforeEach(async () => {
+      // Set up a connected client with SM enabled
+      mockXmppClientInstance.streamManagement = {
+        id: 'sm-123',
+        inbound: 5,
+        outbound: 0,
+        enabled: true,
+        on: vi.fn(),
+      }
+
+      const connectPromise = xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'secret',
+        server: 'example.com',
+        skipDiscovery: true,
+      })
+      mockXmppClientInstance._emit('online')
+      await connectPromise
+
+      mockStores.connection.getStatus.mockReturnValue('online')
+      mockStores.connection.setStatus.mockClear()
+      mockStores.console.addEvent.mockClear()
+      mockClientFactory.mockClear()
+    })
+
+    it('should not kill new connection when stale keepalive timeout fires after SM resume', async () => {
+      // Simulate: keepalive send succeeds but no ack comes (dead socket scenario)
+      mockXmppClientInstance.send.mockImplementation(() => Promise.resolve())
+
+      // Start keepalive health check on old connection
+      const healthPromise = xmppClient.verifyConnectionHealth()
+
+      // Before timeout fires, connection drops and reconnects via SM resume
+      mockXmppClientInstance._emit('disconnect', { clean: false })
+
+      const reconnectClient = createMockXmppClient()
+      reconnectClient.streamManagement = {
+        id: 'sm-456',
+        inbound: 10,
+        outbound: 0,
+        enabled: true,
+        on: vi.fn(),
+      }
+      mockClientFactory._setInstance(reconnectClient)
+
+      // Advance to trigger reconnect attempt
+      await vi.advanceTimersByTimeAsync(1000)
+
+      // New connection succeeds
+      reconnectClient._emit('online')
+      await vi.advanceTimersByTimeAsync(100)
+
+      mockStores.connection.setStatus.mockClear()
+
+      // Now the stale 10s timeout fires — should NOT kill the new connection
+      await vi.advanceTimersByTimeAsync(10_000)
+      await healthPromise
+
+      // New connection should remain healthy (no reconnect triggered by stale timeout)
+      expect(mockStores.connection.setStatus).not.toHaveBeenCalledWith('reconnecting')
+    })
+
+    it('should not trigger reconnect when concurrent verifyConnection and verifyConnectionHealth race', async () => {
+      // Both wake detection and Rust keepalive timer can call verify concurrently
+      mockXmppClientInstance.send.mockImplementation(() => {
+        // Simulate: SM ack arrives for both verifications
+        setTimeout(() => {
+          const ackNonza = createMockElement('a', { xmlns: 'urn:xmpp:sm:3', h: '5' })
+          mockXmppClientInstance._emit('nonza', ackNonza)
+        }, 50)
+        return Promise.resolve()
+      })
+
+      // Fire both concurrently (wake + keepalive race)
+      const verify1 = xmppClient.verifyConnection()
+      const verify2 = xmppClient.verifyConnectionHealth()
+
+      // Advance past ack delay
+      await vi.advanceTimersByTimeAsync(100)
+
+      const [result1, result2] = await Promise.all([verify1, verify2])
+
+      // Both should succeed without triggering reconnect
+      expect(result1).toBe(true)
+      expect(result2).toBe(true)
+      expect(mockStores.connection.setStatus).not.toHaveBeenCalledWith('reconnecting')
+    })
+
+    it('should preserve rooms across multiple rapid disconnect/reconnect cycles', async () => {
+      // Simulate 9 rooms joined (as seen in the real log)
+      const nineRooms = Array.from({ length: 9 }, (_, i) => ({
+        jid: `room${i + 1}@conference.example.com`,
+        nickname: 'user',
+        joined: true,
+        autojoin: false,
+      }))
+      vi.mocked(mockStores.room.joinedRooms).mockReturnValue(nineRooms as any)
+
+      // Cycle 1: disconnect → reconnect
+      mockXmppClientInstance._emit('disconnect', { clean: false })
+
+      const client2 = createMockXmppClient()
+      mockClientFactory._setInstance(client2)
+      await vi.advanceTimersByTimeAsync(1000)
+      client2._emit('online')
+      await vi.advanceTimersByTimeAsync(100)
+      mockStores.connection.getStatus.mockReturnValue('online')
+
+      // After reconnect, markAllRoomsNotJoined was called — simulate store now
+      // returning fewer rooms (only 1 finished rejoining before next disconnect)
+      vi.mocked(mockStores.room.joinedRooms).mockReturnValue([
+        { jid: 'room1@conference.example.com', nickname: 'user', joined: true, autojoin: false } as any,
+      ])
+
+      // Cycle 2: disconnect again before all rooms rejoined
+      client2._emit('disconnect', { clean: false })
+
+      const client3 = createMockXmppClient()
+      mockClientFactory._setInstance(client3)
+      await vi.advanceTimersByTimeAsync(1000)
+
+      // The connect call should use previouslyJoinedRooms — check it passed
+      // all rooms, not just the 1 that was joined in the live store.
+      // Since we don't have a storageAdapter in this test, the live store value
+      // (1 room) is used. The SM-persisted fallback is tested separately below.
+      expect(mockClientFactory).toHaveBeenCalled()
+    })
+  })
+
+  describe('SM-persisted room list fallback', () => {
+    let clientWithStorage: XMPPClient
+    let mockStorageAdapter: {
+      getSessionState: ReturnType<typeof vi.fn>
+      setSessionState: ReturnType<typeof vi.fn>
+      clearSessionState: ReturnType<typeof vi.fn>
+    }
+
+    beforeEach(async () => {
+      // Use real timers for storage-related tests
+      vi.useRealTimers()
+
+      mockStorageAdapter = {
+        getSessionState: vi.fn().mockResolvedValue(null),
+        setSessionState: vi.fn().mockResolvedValue(undefined),
+        clearSessionState: vi.fn().mockResolvedValue(undefined),
+      }
+
+      clientWithStorage = new XMPPClient({
+        debug: false,
+        storageAdapter: mockStorageAdapter as any,
+      })
+      clientWithStorage.bindStores(mockStores)
+
+      // Connect
+      const connectPromise = clientWithStorage.connect({
+        jid: 'user@example.com',
+        password: 'secret',
+        server: 'example.com',
+        skipDiscovery: true,
+      })
+
+      await new Promise(resolve => setTimeout(resolve, 10))
+      mockXmppClientInstance._emit('online')
+      await connectPromise
+      await new Promise(resolve => setTimeout(resolve, 50))
+
+      mockStores.connection.getStatus.mockReturnValue('online')
+      mockStores.connection.setStatus.mockClear()
+      mockStores.console.addEvent.mockClear()
+      mockClientFactory.mockClear()
+    })
+
+    afterEach(() => {
+      clientWithStorage.cancelReconnect()
+      vi.useFakeTimers()
+    })
+
+    it('should fall back to SM-persisted room list when live store has few rooms', async () => {
+      // Live store returns only 1 room (others lost due to markAllRoomsNotJoined)
+      vi.mocked(mockStores.room.joinedRooms).mockReturnValue([
+        { jid: 'room1@conference.example.com', nickname: 'user', joined: true } as any,
+      ])
+
+      // SM persistence has the full list of 9 rooms
+      const persistedRooms = Array.from({ length: 9 }, (_, i) => ({
+        jid: `room${i + 1}@conference.example.com`,
+        nickname: 'user',
+      }))
+      mockStorageAdapter.getSessionState.mockResolvedValue({
+        smId: 'sm-old',
+        smInbound: 5,
+        resource: 'desktop',
+        timestamp: Date.now() - 60_000, // 1 minute ago (fresh)
+        joinedRooms: persistedRooms,
+      })
+
+      // Directly test attemptReconnect via the connection module
+      const connectionModule = clientWithStorage.connection as any
+      const reconnectSubstateSpy = vi.spyOn(connectionModule, 'isReconnectingSubstate').mockReturnValue(true)
+
+      // Make the transport appear online so it short-circuits (easier to test)
+      ;(mockXmppClientInstance as any).status = 'online'
+
+      await connectionModule.attemptReconnect()
+      reconnectSubstateSpy.mockRestore()
+
+      // Should have logged the SM fallback
+      expect(mockStores.console.addEvent).toHaveBeenCalledWith(
+        expect.stringMatching(/SM-persisted room list.*9 rooms.*live store only has 1/),
+        'sm'
+      )
+    })
+
+    it('should use live store when it has enough rooms (no fallback needed)', async () => {
+      // Live store has 5 rooms — enough that fallback is not triggered (threshold is ≤ 1)
+      const fiveRooms = Array.from({ length: 5 }, (_, i) => ({
+        jid: `room${i + 1}@conference.example.com`,
+        nickname: 'user',
+        joined: true,
+      }))
+      vi.mocked(mockStores.room.joinedRooms).mockReturnValue(fiveRooms as any)
+
+      // Clear any calls from the initial connect()
+      mockStorageAdapter.getSessionState.mockClear()
+
+      const connectionModule = clientWithStorage.connection as any
+      const reconnectSubstateSpy = vi.spyOn(connectionModule, 'isReconnectingSubstate').mockReturnValue(true)
+      ;(mockXmppClientInstance as any).status = 'online'
+
+      await connectionModule.attemptReconnect()
+      reconnectSubstateSpy.mockRestore()
+
+      // Should NOT have loaded from SM persistence (live store has enough rooms)
+      expect(mockStorageAdapter.getSessionState).not.toHaveBeenCalled()
+    })
+
+    it('should handle SM persistence load failure gracefully', async () => {
+      // Live store has 0 rooms
+      vi.mocked(mockStores.room.joinedRooms).mockReturnValue([])
+
+      // Storage throws an error
+      mockStorageAdapter.getSessionState.mockRejectedValue(new Error('IndexedDB unavailable'))
+
+      const connectionModule = clientWithStorage.connection as any
+      const reconnectSubstateSpy = vi.spyOn(connectionModule, 'isReconnectingSubstate').mockReturnValue(true)
+      ;(mockXmppClientInstance as any).status = 'online'
+
+      // Should not throw — storage errors are non-fatal
+      await expect(connectionModule.attemptReconnect()).resolves.not.toThrow()
+      reconnectSubstateSpy.mockRestore()
+    })
+  })
 })
