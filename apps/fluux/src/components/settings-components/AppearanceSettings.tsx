@@ -1,10 +1,11 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Sun, Moon, Monitor, Upload, Trash2, FolderOpen } from 'lucide-react'
+import { Sun, Moon, Monitor, Upload, Trash2, Pencil, Plus, FolderOpen } from 'lucide-react'
 import { useSettingsStore, type ThemeMode } from '@/stores/settingsStore'
 import { useThemeStore } from '@/stores/themeStore'
 import type { ThemeDefinition } from '@/themes/types'
 import { getBuiltinTheme } from '@/themes/builtins'
+import { ModalShell } from '@/components/ModalShell'
 
 const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
 
@@ -77,6 +78,99 @@ function ThemeCard({
   )
 }
 
+/** Modal for editing CSS snippet content */
+function SnippetEditorModal({
+  snippet,
+  onClose,
+  onSave,
+}: {
+  snippet: { id: string; filename: string; css: string } | null
+  onClose: () => void
+  onSave: (filename: string, css: string) => void
+}) {
+  const { t } = useTranslation()
+  const [name, setName] = useState(snippet?.filename ?? 'custom.css')
+  const [css, setCss] = useState(snippet?.css ?? '')
+
+  function handleSave() {
+    const filename = name.endsWith('.css') ? name : `${name}.css`
+    onSave(filename, css)
+    onClose()
+  }
+
+  return (
+    <ModalShell title={snippet ? t('settings.editSnippet') : t('settings.addCustomCss')} onClose={onClose} width="max-w-lg">
+      <div className="p-4 space-y-4">
+        {/* Name field */}
+        <div className="space-y-1">
+          <label className="text-xs font-medium text-fluux-muted">{t('settings.snippetName')}</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full px-3 py-2 text-sm bg-fluux-bg text-fluux-text rounded-lg border border-fluux-hover focus:border-fluux-brand outline-none"
+            placeholder="my-tweaks.css"
+          />
+        </div>
+
+        {/* CSS editor */}
+        <div className="space-y-1">
+          <label className="text-xs font-medium text-fluux-muted">CSS</label>
+          <textarea
+            value={css}
+            onChange={(e) => setCss(e.target.value)}
+            className="w-full h-48 px-3 py-2 text-sm font-mono bg-fluux-bg text-fluux-text rounded-lg border border-fluux-hover focus:border-fluux-brand outline-none resize-y"
+            placeholder={`/* Example: make the sidebar wider */\n.sidebar {\n  min-width: 300px;\n}\n\n/* Override a theme variable */\n:root {\n  --fluux-bg-accent: #e06c75;\n}`}
+            spellCheck={false}
+          />
+        </div>
+
+        <p className="text-xs text-fluux-muted">
+          {t('settings.snippetsDescription')}
+        </p>
+
+        {/* Actions */}
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="px-3 py-1.5 text-sm text-fluux-muted hover:text-fluux-text rounded-lg hover:bg-fluux-hover transition-colors"
+          >
+            {t('common.cancel')}
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={!css.trim()}
+            className="px-3 py-1.5 text-sm text-white bg-fluux-brand hover:bg-fluux-brand-hover rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {t('common.save')}
+          </button>
+        </div>
+      </div>
+    </ModalShell>
+  )
+}
+
+/** Open a subdirectory inside the app config dir, creating it if needed (Tauri only) */
+async function openConfigFolder(subdir: string) {
+  if (!isTauri) return
+  try {
+    const { appConfigDir, join } = await import('@tauri-apps/api/path')
+    const { mkdir, exists } = await import('@tauri-apps/plugin-fs')
+    const { open } = await import('@tauri-apps/plugin-shell')
+
+    const configDir = await appConfigDir()
+    const dir = await join(configDir, subdir)
+
+    if (!await exists(dir)) {
+      await mkdir(dir, { recursive: true })
+    }
+
+    await open(dir)
+  } catch {
+    // Ignore errors (e.g. shell plugin not available)
+  }
+}
+
 export function AppearanceSettings() {
   const { t } = useTranslation()
   const themeMode = useSettingsStore((s) => s.themeMode)
@@ -95,7 +189,8 @@ export function AppearanceSettings() {
   const removeSnippet = useThemeStore((s) => s.removeSnippet)
 
   const themeInputRef = useRef<HTMLInputElement>(null)
-  const snippetInputRef = useRef<HTMLInputElement>(null)
+  const [editingSnippet, setEditingSnippet] = useState<{ id: string; filename: string; css: string } | null>(null)
+  const [showNewSnippet, setShowNewSnippet] = useState(false)
 
   const allThemes = getAllThemes()
   const isDark = themeMode === 'dark' || (themeMode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -119,33 +214,7 @@ export function AppearanceSettings() {
       }
     }
     reader.readAsText(file)
-    // Reset input so the same file can be re-imported
     e.target.value = ''
-  }
-
-  /** Handle CSS snippet file import */
-  function handleSnippetImport(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = () => {
-      addSnippet(file.name, reader.result as string)
-    }
-    reader.readAsText(file)
-    e.target.value = ''
-  }
-
-  /** Open themes/snippets folder (Tauri desktop only) */
-  async function openFolder(subdir: string) {
-    if (!isTauri) return
-    try {
-      const { appConfigDir } = await import('@tauri-apps/api/path')
-      const { open } = await import('@tauri-apps/plugin-shell')
-      const configDir = await appConfigDir()
-      await open(`${configDir}${subdir}`)
-    } catch {
-      // Ignore errors
-    }
   }
 
   return (
@@ -155,50 +224,7 @@ export function AppearanceSettings() {
       </h3>
 
       <div className="space-y-6">
-        {/* Theme picker */}
-        <div className="space-y-3">
-          <label className="text-sm font-medium text-fluux-text">{t('settings.theme')}</label>
-          <div className="grid grid-cols-4 gap-2">
-            {allThemes.map((theme) => (
-              <ThemeCard
-                key={theme.id}
-                theme={theme}
-                isActive={activeThemeId === theme.id}
-                isDark={isDark}
-                onSelect={() => setActiveTheme(theme.id)}
-                onRemove={() => removeTheme(theme.id)}
-                isBuiltIn={!!getBuiltinTheme(theme.id)}
-              />
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => themeInputRef.current?.click()}
-              className="flex items-center gap-1.5 text-xs text-fluux-muted hover:text-fluux-text transition-colors"
-            >
-              <Upload className="w-3.5 h-3.5" />
-              {t('settings.importTheme')}
-            </button>
-            {isTauri && (
-              <button
-                onClick={() => openFolder('themes')}
-                className="flex items-center gap-1.5 text-xs text-fluux-muted hover:text-fluux-text transition-colors"
-              >
-                <FolderOpen className="w-3.5 h-3.5" />
-                {t('settings.openThemesFolder')}
-              </button>
-            )}
-          </div>
-          <input
-            ref={themeInputRef}
-            type="file"
-            accept=".json"
-            className="hidden"
-            onChange={handleThemeImport}
-          />
-        </div>
-
-        {/* Theme mode */}
+        {/* 1. Mode */}
         <div className="space-y-3">
           <label className="text-sm font-medium text-fluux-text">{t('settings.mode')}</label>
           <div className="grid grid-cols-3 gap-3">
@@ -228,10 +254,77 @@ export function AppearanceSettings() {
           </p>
         </div>
 
-        {/* CSS Snippets */}
+        {/* 2. Font size */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium text-fluux-text">{t('settings.fontSize')}</label>
+            <span className="text-sm text-fluux-muted">{fontSize}%</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-fluux-muted shrink-0">A</span>
+            <input
+              type="range"
+              min={FONT_SIZE_MIN}
+              max={FONT_SIZE_MAX}
+              step={FONT_SIZE_STEP}
+              value={fontSize}
+              onChange={(e) => setFontSize(Number(e.target.value))}
+              className="w-full accent-fluux-brand"
+            />
+            <span className="text-base font-medium text-fluux-muted shrink-0">A</span>
+          </div>
+          <p className="text-xs text-fluux-muted">
+            {t('settings.fontSizeDescription')}
+          </p>
+        </div>
+
+        {/* 3. Theme picker */}
+        <div className="space-y-3">
+          <label className="text-sm font-medium text-fluux-text">{t('settings.theme')}</label>
+          <div className="grid grid-cols-4 gap-2">
+            {allThemes.map((theme) => (
+              <ThemeCard
+                key={theme.id}
+                theme={theme}
+                isActive={activeThemeId === theme.id}
+                isDark={isDark}
+                onSelect={() => setActiveTheme(theme.id)}
+                onRemove={() => removeTheme(theme.id)}
+                isBuiltIn={!!getBuiltinTheme(theme.id)}
+              />
+            ))}
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={() => themeInputRef.current?.click()}
+              className="flex items-center gap-1.5 text-xs text-fluux-muted hover:text-fluux-text transition-colors"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              {t('settings.importTheme')}
+            </button>
+            {isTauri && (
+              <button
+                onClick={() => openConfigFolder('themes')}
+                className="flex items-center gap-1.5 text-xs text-fluux-muted hover:text-fluux-text transition-colors"
+              >
+                <FolderOpen className="w-3.5 h-3.5" />
+                {t('settings.openThemesFolder')}
+              </button>
+            )}
+          </div>
+          <input
+            ref={themeInputRef}
+            type="file"
+            accept=".json"
+            className="hidden"
+            onChange={handleThemeImport}
+          />
+        </div>
+
+        {/* 4. CSS Snippets (advanced) */}
         <div className="space-y-3">
           <label className="text-sm font-medium text-fluux-text">{t('settings.cssSnippets')}</label>
-          {snippets.length > 0 ? (
+          {snippets.length > 0 && (
             <div className="space-y-1">
               {snippets.map((snippet) => (
                 <div
@@ -239,7 +332,14 @@ export function AppearanceSettings() {
                   className="flex items-center justify-between px-3 py-2 rounded-lg bg-fluux-bg"
                 >
                   <span className="text-sm text-fluux-text truncate flex-1">{snippet.filename}</span>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => setEditingSnippet(snippet)}
+                      className="p-1 text-fluux-muted hover:text-fluux-text transition-colors"
+                      title={t('settings.editSnippet')}
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
                     <button
                       onClick={() => removeSnippet(snippet.id)}
                       className="p-1 text-fluux-muted hover:text-fluux-red transition-colors"
@@ -263,20 +363,18 @@ export function AppearanceSettings() {
                 </div>
               ))}
             </div>
-          ) : (
-            <p className="text-xs text-fluux-muted">{t('settings.noSnippets')}</p>
           )}
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <button
-              onClick={() => snippetInputRef.current?.click()}
+              onClick={() => setShowNewSnippet(true)}
               className="flex items-center gap-1.5 text-xs text-fluux-muted hover:text-fluux-text transition-colors"
             >
-              <Upload className="w-3.5 h-3.5" />
-              {t('settings.importSnippet')}
+              <Plus className="w-3.5 h-3.5" />
+              {t('settings.addCustomCss')}
             </button>
             {isTauri && (
               <button
-                onClick={() => openFolder('snippets')}
+                onClick={() => openConfigFolder('snippets')}
                 className="flex items-center gap-1.5 text-xs text-fluux-muted hover:text-fluux-text transition-colors"
               >
                 <FolderOpen className="w-3.5 h-3.5" />
@@ -284,39 +382,22 @@ export function AppearanceSettings() {
               </button>
             )}
           </div>
-          <input
-            ref={snippetInputRef}
-            type="file"
-            accept=".css"
-            className="hidden"
-            onChange={handleSnippetImport}
-          />
-        </div>
-
-        {/* Font size */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-fluux-text">{t('settings.fontSize')}</label>
-            <span className="text-sm text-fluux-muted">{fontSize}%</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-fluux-muted shrink-0">A</span>
-            <input
-              type="range"
-              min={FONT_SIZE_MIN}
-              max={FONT_SIZE_MAX}
-              step={FONT_SIZE_STEP}
-              value={fontSize}
-              onChange={(e) => setFontSize(Number(e.target.value))}
-              className="w-full accent-fluux-brand"
-            />
-            <span className="text-base font-medium text-fluux-muted shrink-0">A</span>
-          </div>
-          <p className="text-xs text-fluux-muted">
-            {t('settings.fontSizeDescription')}
-          </p>
         </div>
       </div>
+
+      {/* Snippet editor modal */}
+      {(showNewSnippet || editingSnippet) && (
+        <SnippetEditorModal
+          snippet={editingSnippet}
+          onClose={() => {
+            setShowNewSnippet(false)
+            setEditingSnippet(null)
+          }}
+          onSave={(filename, css) => {
+            addSnippet(filename, css)
+          }}
+        />
+      )}
     </section>
   )
 }
