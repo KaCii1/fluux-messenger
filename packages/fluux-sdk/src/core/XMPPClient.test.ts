@@ -782,13 +782,16 @@ describe('XMPPClient', () => {
       expect(stores.connection.setJid).toHaveBeenCalledWith('user@example.com')
     })
 
-    it('should reset and rejoin rooms on SM resumption', async () => {
+    it('should refresh presence in rooms on SM resumption (not full rejoin)', async () => {
       const mockClientWithSM = createMockXmppClientWithSM('sm-id-rooms')
       mockClientFactory._setInstance(mockClientWithSM)
 
       const stores = createMockStores()
       const newXmppClient = new XMPPClient({ debug: false })
       newXmppClient.bindStores(stores)
+
+      const refreshSpy = vi.spyOn(newXmppClient.muc, 'refreshPresenceInRooms').mockResolvedValue()
+      const joinRoomSpy = vi.spyOn(newXmppClient.muc, 'joinRoom').mockResolvedValue()
 
       const connectPromise = newXmppClient.connect({
         jid: 'user@example.com',
@@ -812,49 +815,17 @@ describe('XMPPClient', () => {
 
       await connectPromise
 
-      // Room state should be reset to clear stuck isJoining flags
-      expect(stores.room.markAllRoomsNotJoined).toHaveBeenCalled()
+      // Should use lightweight presence refresh, not full joinRoom
+      expect(refreshSpy).toHaveBeenCalledWith([
+        { jid: 'room1@conference.example.com', nickname: 'testuser' },
+        { jid: 'room2@conference.example.com', nickname: 'testuser' },
+      ])
+      expect(joinRoomSpy).not.toHaveBeenCalled()
+      // Should NOT reset room state (rooms stay joined)
+      expect(stores.room.markAllRoomsNotJoined).not.toHaveBeenCalled()
     })
 
-    it('should rejoin autojoin rooms on SM resumption', async () => {
-      const mockClientWithSM = createMockXmppClientWithSM('sm-id-autojoin')
-      mockClientFactory._setInstance(mockClientWithSM)
-
-      const stores = createMockStores()
-      const newXmppClient = new XMPPClient({ debug: false })
-      newXmppClient.bindStores(stores)
-
-      // Spy on joinRoom before connecting
-      const joinRoomSpy = vi.spyOn(newXmppClient.muc, 'joinRoom').mockResolvedValue()
-
-      const connectPromise = newXmppClient.connect({
-        jid: 'user@example.com',
-        password: 'secret',
-        server: 'example.com',
-        smState: { id: 'sm-id-autojoin', inbound: 5 },
-        skipDiscovery: true,
-        previouslyJoinedRooms: [
-          { jid: 'room1@conference.example.com', nickname: 'testuser', autojoin: true },
-          { jid: 'room2@conference.example.com', nickname: 'testuser', autojoin: true },
-        ],
-      })
-
-      const resumedNonza = createMockElement('resumed', {
-        xmlns: 'urn:xmpp:sm:3',
-        previd: 'sm-id-autojoin',
-        h: '5',
-      })
-      mockClientWithSM._emit('nonza', resumedNonza)
-
-      await connectPromise
-
-      // Both autojoin rooms should be rejoined (not filtered out)
-      expect(joinRoomSpy).toHaveBeenCalledTimes(2)
-      expect(joinRoomSpy).toHaveBeenCalledWith('room1@conference.example.com', 'testuser', { password: undefined })
-      expect(joinRoomSpy).toHaveBeenCalledWith('room2@conference.example.com', 'testuser', { password: undefined })
-    })
-
-    it('should rejoin mixed autojoin and non-autojoin rooms on SM resumption', async () => {
+    it('should refresh presence for all rooms regardless of autojoin flag', async () => {
       const mockClientWithSM = createMockXmppClientWithSM('sm-id-mixed')
       mockClientFactory._setInstance(mockClientWithSM)
 
@@ -862,7 +833,13 @@ describe('XMPPClient', () => {
       const newXmppClient = new XMPPClient({ debug: false })
       newXmppClient.bindStores(stores)
 
-      const joinRoomSpy = vi.spyOn(newXmppClient.muc, 'joinRoom').mockResolvedValue()
+      const refreshSpy = vi.spyOn(newXmppClient.muc, 'refreshPresenceInRooms').mockResolvedValue()
+
+      const rooms = [
+        { jid: 'autojoin@conference.example.com', nickname: 'testuser', autojoin: true },
+        { jid: 'manual@conference.example.com', nickname: 'testuser', autojoin: false },
+        { jid: 'noflag@conference.example.com', nickname: 'testuser' },
+      ]
 
       const connectPromise = newXmppClient.connect({
         jid: 'user@example.com',
@@ -870,11 +847,7 @@ describe('XMPPClient', () => {
         server: 'example.com',
         smState: { id: 'sm-id-mixed', inbound: 5 },
         skipDiscovery: true,
-        previouslyJoinedRooms: [
-          { jid: 'autojoin@conference.example.com', nickname: 'testuser', autojoin: true },
-          { jid: 'manual@conference.example.com', nickname: 'testuser', autojoin: false },
-          { jid: 'noflag@conference.example.com', nickname: 'testuser' },
-        ],
+        previouslyJoinedRooms: rooms,
       })
 
       const resumedNonza = createMockElement('resumed', {
@@ -886,80 +859,43 @@ describe('XMPPClient', () => {
 
       await connectPromise
 
-      // ALL rooms should be rejoined regardless of autojoin flag
-      expect(joinRoomSpy).toHaveBeenCalledTimes(3)
+      // ALL rooms should have presence refreshed regardless of autojoin flag
+      expect(refreshSpy).toHaveBeenCalledWith(rooms)
     })
 
-    it('should handle individual room rejoin failures during SM resumption', async () => {
-      const mockClientWithSM = createMockXmppClientWithSM('sm-id-fail')
+    it('should run MAM catch-up after presence refresh on SM resumption', async () => {
+      const mockClientWithSM = createMockXmppClientWithSM('sm-id-catchup')
       mockClientFactory._setInstance(mockClientWithSM)
 
       const stores = createMockStores()
       const newXmppClient = new XMPPClient({ debug: false })
       newXmppClient.bindStores(stores)
 
-      let callCount = 0
-      const joinRoomSpy = vi.spyOn(newXmppClient.muc, 'joinRoom').mockImplementation(async () => {
-        callCount++
-        if (callCount === 1) throw new Error('Room unavailable')
-      })
+      vi.spyOn(newXmppClient.muc, 'refreshPresenceInRooms').mockResolvedValue()
+      const catchUpSpy = vi.spyOn(newXmppClient.mam, 'catchUpAllRooms').mockResolvedValue()
 
       const connectPromise = newXmppClient.connect({
         jid: 'user@example.com',
         password: 'secret',
         server: 'example.com',
-        smState: { id: 'sm-id-fail', inbound: 5 },
+        smState: { id: 'sm-id-catchup', inbound: 5 },
         skipDiscovery: true,
         previouslyJoinedRooms: [
-          { jid: 'failing@conference.example.com', nickname: 'testuser', autojoin: true },
-          { jid: 'working@conference.example.com', nickname: 'testuser', autojoin: true },
+          { jid: 'room1@conference.example.com', nickname: 'testuser' },
         ],
       })
 
       const resumedNonza = createMockElement('resumed', {
         xmlns: 'urn:xmpp:sm:3',
-        previd: 'sm-id-fail',
+        previd: 'sm-id-catchup',
         h: '5',
       })
       mockClientWithSM._emit('nonza', resumedNonza)
 
       await connectPromise
 
-      // Both rooms should be attempted even though the first one failed
-      expect(joinRoomSpy).toHaveBeenCalledTimes(2)
-    })
-
-    it('should pass room password when rejoining after SM resumption', async () => {
-      const mockClientWithSM = createMockXmppClientWithSM('sm-id-pw')
-      mockClientFactory._setInstance(mockClientWithSM)
-
-      const stores = createMockStores()
-      const newXmppClient = new XMPPClient({ debug: false })
-      newXmppClient.bindStores(stores)
-
-      const joinRoomSpy = vi.spyOn(newXmppClient.muc, 'joinRoom').mockResolvedValue()
-
-      const connectPromise = newXmppClient.connect({
-        jid: 'user@example.com',
-        password: 'secret',
-        server: 'example.com',
-        smState: { id: 'sm-id-pw', inbound: 5 },
-        skipDiscovery: true,
-        previouslyJoinedRooms: [
-          { jid: 'private@conference.example.com', nickname: 'testuser', password: 'roompass', autojoin: true },
-        ],
-      })
-
-      const resumedNonza = createMockElement('resumed', {
-        xmlns: 'urn:xmpp:sm:3',
-        previd: 'sm-id-pw',
-        h: '5',
-      })
-      mockClientWithSM._emit('nonza', resumedNonza)
-
-      await connectPromise
-
-      expect(joinRoomSpy).toHaveBeenCalledWith('private@conference.example.com', 'testuser', { password: 'roompass' })
+      // Should trigger MAM catch-up to verify no missed messages
+      expect(catchUpSpy).toHaveBeenCalledWith({ concurrency: 2 })
     })
 
     it('should detect new session when SM resume fails (online event fires)', async () => {

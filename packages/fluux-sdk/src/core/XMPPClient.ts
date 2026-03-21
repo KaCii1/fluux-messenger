@@ -1475,33 +1475,29 @@ export class XMPPClient {
     this.stores?.console.addEvent('Sending presence probes to refresh contact status', 'sm')
     this.roster.sendPresenceProbes().catch(() => {})
 
-    // Reset room join state so stuck isJoining rooms get unstuck
-    // and joinRoom() won't skip rooms that think they're still joined.
-    // SM only preserves the XMPP stream — MUC presence is separate.
-    // The MUC server may have removed us during the disconnect.
-    this.stores?.room.markAllRoomsNotJoined()
-
-    // Rejoin ALL previously joined rooms (re-sending MUC presence is idempotent).
-    // Unlike the fresh session path, we don't filter by autojoin here because
-    // SM resumption doesn't re-fetch bookmarks — we must rejoin every room
-    // that was active before the disconnect, regardless of autojoin flag.
+    // Refresh presence in previously joined rooms.
+    // SM resumption preserves our MUC membership, so we don't need a full
+    // rejoin (no disco#info, no history request). We just resend directed
+    // presence to confirm we're still in each room.
     if (previouslyJoinedRooms && previouslyJoinedRooms.length > 0) {
-      logInfo(`SM resumption: rejoining ${previouslyJoinedRooms.length} room(s)`)
+      logInfo(`SM resumption: refreshing presence in ${previouslyJoinedRooms.length} room(s)`)
       this.stores?.console.addEvent(
-        `Rejoining ${previouslyJoinedRooms.length} room(s) after SM resumption`,
+        `Refreshing presence in ${previouslyJoinedRooms.length} room(s) after SM resumption`,
         'sm'
       )
-      for (const room of previouslyJoinedRooms) {
-        try {
-          await this.muc.joinRoom(room.jid, room.nickname, { password: room.password })
-        } catch (err) {
-          console.error(`[XMPPClient] Failed to rejoin ${room.jid} after SM resumption:`, err)
-        }
-      }
+      await this.muc.refreshPresenceInRooms(previouslyJoinedRooms)
       if (this.isSessionStale(gen)) {
-        logInfo('SM resumption aborted after room rejoins (session superseded)')
+        logInfo('SM resumption aborted after room presence refresh (session superseded)')
         return
       }
+
+      // Verify we haven't missed any room messages during the disconnect.
+      // SM replay covers stanzas the server queued, but if the disconnect was
+      // long enough for messages to fall outside the SM window, a forward MAM
+      // query from the newest cached message will catch them.
+      this.mam.catchUpAllRooms({ concurrency: 2 }).catch((err) => {
+        console.error('[XMPPClient] Room catch-up after SM resumption failed:', err)
+      })
     }
   }
 
