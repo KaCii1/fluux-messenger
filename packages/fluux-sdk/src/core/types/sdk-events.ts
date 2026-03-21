@@ -551,6 +551,23 @@ export interface ConsoleEvents {
 }
 
 // ============================================================================
+// Activity Events
+// ============================================================================
+
+export interface ActivityEvents {
+  /** Activity event logged to the activity log */
+  'activity:event-logged': {
+    event: import('./activity').ActivityEvent
+  }
+
+  /** Activity event resolved (accepted/rejected/dismissed) */
+  'activity:event-resolved': {
+    eventId: string
+    resolution: import('./activity').ActivityResolution
+  }
+}
+
+// ============================================================================
 // Raw Stanza Events (for advanced usage)
 // ============================================================================
 
@@ -593,6 +610,7 @@ export interface SDKEvents
     BlockingEvents,
     AdminEvents,
     ConsoleEvents,
+    ActivityEvents,
     StanzaEvents {}
 
 /**

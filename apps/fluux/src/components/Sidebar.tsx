@@ -56,6 +56,7 @@ import {
   ContactList,
   RoomsList,
   EventsView,
+  ActivityLogView,
   UserMenu,
 } from './sidebar-components'
 
@@ -411,7 +412,10 @@ export function Sidebar({ onSelectContact, onStartChat, onManageUser, adminCateg
                 onCategoryChange={(category) => navigateToSettings(category)}
               />
             ) : (
-              <EventsView />
+              <>
+                <EventsView />
+                <ActivityLogView />
+              </>
             )}
           </SidebarZoneContext.Provider>
         </div>

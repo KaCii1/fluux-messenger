@@ -91,6 +91,7 @@ export { useRosterActions } from './hooks/useRosterActions'
 export { useContactIdentities, type ContactIdentity } from './hooks/useContactIdentities'
 export { useConsole } from './hooks/useConsole'
 export { useEvents } from './hooks/useEvents'
+export { useActivityLog } from './hooks/useActivityLog'
 export { useRoom } from './hooks/useRoom'
 export { useRoomActive } from './hooks/useRoomActive'
 export { useXMPP } from './hooks/useXMPP'
@@ -304,6 +305,22 @@ export type {
 // Events types
 export type { SubscriptionRequest, StrangerMessage, MucInvitation, SystemNotification, SystemNotificationType } from './core/types'
 
+// Activity types
+export type {
+  ActivityEventType,
+  ActivityEventKind,
+  ActivityResolution,
+  ActivityPayload,
+  ActivityEvent,
+  ActivityEventInput,
+  ReactionEntry,
+  ReactionReceivedPayload,
+} from './core/types'
+
+// EventHook base class (Obsidian-inspired plugin pattern)
+export { EventHook } from './core/EventHook'
+export { ActivityLogHook } from './core/eventHooks'
+
 // SDK Events (for event-based decoupling)
 export type {
   SDKEvents,
@@ -317,6 +334,7 @@ export type {
   BlockingEvents,
   AdminEvents,
   ConsoleEvents,
+  ActivityEvents,
   StanzaEvents,
 } from './core/types'
 

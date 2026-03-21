@@ -57,6 +57,24 @@ export type {
   SystemNotification,
 } from './events'
 
+// Activity types
+export type {
+  ActivityEventType,
+  ActivityEventKind,
+  ActivityResolution,
+  ActivityPayload,
+  ActivityEvent,
+  ActivityEventInput,
+  SubscriptionRequestPayload,
+  SubscriptionAcceptedPayload,
+  SubscriptionDeniedPayload,
+  MucInvitationPayload,
+  ReactionEntry,
+  ReactionReceivedPayload,
+  SystemEventPayload,
+  StrangerMessagePayload,
+} from './activity'
+
 // Console types
 export type {
   ConsoleEntryType,
@@ -155,6 +173,7 @@ export type {
   BlockingEvents,
   AdminEvents,
   ConsoleEvents,
+  ActivityEvents,
   StanzaEvents,
 } from './sdk-events'
 

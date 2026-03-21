@@ -6,6 +6,7 @@ export { ConversationList, ArchiveList, ConversationItem } from './ConversationL
 export { ContactList } from './ContactList'
 export { RoomsList } from './RoomsList'
 export { EventsView } from './EventsView'
+export { ActivityLogView } from './ActivityLogView'
 export { UserMenu } from './UserMenu'
 
 // Types and utilities

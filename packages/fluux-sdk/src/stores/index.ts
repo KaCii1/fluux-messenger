@@ -68,3 +68,6 @@ export type { BlockingState } from './blockingStore'
 
 export { ignoreStore, isMessageFromIgnoredUser, isReplyToIgnoredUser } from './ignoreStore'
 export type { IgnoreState, IgnoredUser } from './ignoreStore'
+
+export { activityLogStore } from './activityLogStore'
+export type { ActivityLogState } from './activityLogStore'

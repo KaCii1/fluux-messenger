@@ -1,5 +1,6 @@
 import { xml, Client, Element } from '@xmpp/client'
 import { createActor, type Subscription, type Snapshot } from 'xstate'
+import type { EventHook } from './EventHook'
 import type {
   ConnectOptions,
   StoreBindings,
@@ -369,6 +370,13 @@ export class XMPPClient {
    * @internal
    */
   private cleanupFunctions: (() => void)[] = []
+
+  /**
+   * Registered event hooks (Obsidian-inspired plugin pattern).
+   * Hooks subscribe to SDK events with automatic lifecycle cleanup.
+   * @internal
+   */
+  private eventHooks: Map<string, EventHook> = new Map()
 
   /**
    * Creates a new XMPPClient instance.
@@ -1042,6 +1050,12 @@ export class XMPPClient {
    * ```
    */
   destroy(): void {
+    // Unload all event hooks
+    for (const hook of this.eventHooks.values()) {
+      hook.onunload()
+    }
+    this.eventHooks.clear()
+
     // Clean up all subscriptions (store bindings, side effects, presence sync,
     // presence persistence) to prevent memory leaks
     for (const cleanup of this.cleanupFunctions) {
@@ -1051,6 +1065,61 @@ export class XMPPClient {
 
     // Clean up MUC pending joins to prevent orphaned timeouts
     this.muc?.cleanup()
+  }
+
+  // ============================================================================
+  // Event Hook Registry (Obsidian-inspired)
+  // ============================================================================
+
+  /**
+   * Register and activate an event hook.
+   *
+   * The hook's `onload()` method is called immediately. All event
+   * subscriptions registered inside `onload()` via `registerEvent()`
+   * will be automatically cleaned up when the hook is unregistered
+   * or the client is destroyed.
+   *
+   * @param hook - The event hook to register
+   * @throws Error if a hook with the same ID is already registered
+   *
+   * @example
+   * ```typescript
+   * const hook = new ActivityLogHook(client)
+   * client.registerHook(hook)
+   * ```
+   */
+  registerHook(hook: EventHook): void {
+    if (this.eventHooks.has(hook.id)) {
+      throw new Error(`EventHook "${hook.id}" is already registered`)
+    }
+    this.eventHooks.set(hook.id, hook)
+    hook.onload()
+  }
+
+  /**
+   * Unregister and deactivate an event hook.
+   *
+   * Calls the hook's `onunload()` method which cleans up all
+   * registered event subscriptions.
+   *
+   * @param hookId - The ID of the hook to unregister
+   */
+  unregisterHook(hookId: string): void {
+    const hook = this.eventHooks.get(hookId)
+    if (hook) {
+      hook.onunload()
+      this.eventHooks.delete(hookId)
+    }
+  }
+
+  /**
+   * Get a registered hook by ID.
+   *
+   * @param hookId - The ID of the hook to retrieve
+   * @returns The hook instance, or undefined if not found
+   */
+  getHook(hookId: string): EventHook | undefined {
+    return this.eventHooks.get(hookId)
   }
 
   /**

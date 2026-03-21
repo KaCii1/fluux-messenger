@@ -93,6 +93,7 @@ export {
   useAdminStore,
   useBlockingStore,
   useIgnoreStore,
+  useActivityLogStore,
 } from './storeHooks'
 
 // Presence state machine types (for XState integration)

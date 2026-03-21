@@ -6,6 +6,7 @@ import type { ProxyAdapter } from '../core/types/proxy'
 import { sessionStorageAdapter } from '../utils/sessionStorageAdapter'
 import { setupDebugUtils } from '../utils/debugUtils'
 import { PresenceContext } from './PresenceContext'
+import { ActivityLogHook } from '../core/eventHooks'
 
 /**
  * Value provided by the XMPP React context.
@@ -167,6 +168,10 @@ export function XMPPProvider({
     if (!client) return
     // Re-establish bindings (idempotent: destroy() clears previous ones first)
     client.setupBindings()
+    // Register built-in event hooks (after bindings so stores are populated first)
+    if (!client.getHook('activity-log')) {
+      client.registerHook(new ActivityLogHook(client))
+    }
     return () => {
       client.destroy()
     }

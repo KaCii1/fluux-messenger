@@ -28,20 +28,24 @@ export const MessageReactions = memo(function MessageReactions({
   isRetracted,
 }: MessageReactionsProps) {
   const { t } = useTranslation()
+  const MAX_INLINE = 9
+  const MAX_OVERFLOW = 9
+
   // Don't show reactions for retracted messages or if no reactions
   const hasReactions = reactions && Object.keys(reactions).length > 0
+
+  // Sort reactions by count (descending), then split into visible and overflow
+  const sorted = useMemo(() =>
+    hasReactions
+      ? Object.entries(reactions).sort((a, b) => b[1].length - a[1].length)
+      : [],
+    [reactions, hasReactions]
+  )
+
   if (isRetracted || !hasReactions) {
     return null
   }
 
-  const MAX_INLINE = 9
-  const MAX_OVERFLOW = 9
-
-  // Sort reactions by count (descending), then split into visible and overflow
-  const sorted = useMemo(() =>
-    Object.entries(reactions).sort((a, b) => b[1].length - a[1].length),
-    [reactions]
-  )
   const visible = sorted.slice(0, MAX_INLINE)
   const overflow = sorted.slice(MAX_INLINE, MAX_INLINE + MAX_OVERFLOW)
 
