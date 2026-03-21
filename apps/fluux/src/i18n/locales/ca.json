@@ -368,6 +368,7 @@
         "reply": "Respon",
         "forwardMessage": "Reenvia el missatge (properament)",
         "moreReactions": "Més reaccions",
+        "reactionOthers": "{{count}} altres",
         "moreOptions": "Més opcions",
         "reactWith": "Reacciona amb {{emoji}}",
         "noMessages": "Encara no hi ha missatges. Digues hola!",

@@ -366,6 +366,7 @@
         "reply": "Svara",
         "forwardMessage": "Vidarebefordra meddelande (kommer snart)",
         "moreReactions": "Fler reaktioner",
+        "reactionOthers": "{{count}} andra",
         "moreOptions": "Fler alternativ",
         "reactWith": "Reagera med {{emoji}}",
         "noMessages": "Inga meddelanden ännu. Säg hej!",

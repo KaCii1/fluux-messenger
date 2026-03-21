@@ -366,6 +366,7 @@
         "reply": "Адказаць",
         "forwardMessage": "Пераслаць паведамленне (хутка)",
         "moreReactions": "Больш рэакцый",
+        "reactionOthers": "{{count}} іншых",
         "moreOptions": "Больш опцый",
         "reactWith": "Адрэагаваць {{emoji}}",
         "noMessages": "Яшчэ няма паведамленняў. Вітаюце!",

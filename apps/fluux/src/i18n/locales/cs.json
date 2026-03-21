@@ -368,6 +368,7 @@
         "reply": "Odpovědět",
         "forwardMessage": "Přeposlat zprávu (již brzy)",
         "moreReactions": "Více reakcí",
+        "reactionOthers": "{{count}} dalších",
         "moreOptions": "Další možnosti",
         "reactWith": "Reagovat pomocí {{emoji}}",
         "noMessages": "Zatím žádné zprávy. Pozdravte!",

@@ -368,6 +368,7 @@
         "reply": "Rispondi",
         "forwardMessage": "Inoltra messaggio (in arrivo)",
         "moreReactions": "Altre reazioni",
+        "reactionOthers": "{{count}} altri",
         "moreOptions": "Altre opzioni",
         "reactWith": "Reagisci con {{emoji}}",
         "noMessages": "Nessun messaggio. Di' ciao!",

@@ -366,6 +366,7 @@
         "reply": "回复",
         "forwardMessage": "转发消息（即将推出）",
         "moreReactions": "更多回应",
+        "reactionOthers": "{{count}} 人",
         "moreOptions": "更多选项",
         "reactWith": "使用 {{emoji}} 回应",
         "noMessages": "暂无消息。打个招呼吧！",

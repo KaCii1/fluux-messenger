@@ -366,6 +366,7 @@
         "reply": "Vastaa",
         "forwardMessage": "Välitä viesti (tulossa pian)",
         "moreReactions": "Lisää reaktioita",
+        "reactionOthers": "{{count}} muuta",
         "moreOptions": "Lisää vaihtoehtoja",
         "reactWith": "Reagoi {{emoji}}",
         "noMessages": "Ei viestejä vielä. Sano hei!",

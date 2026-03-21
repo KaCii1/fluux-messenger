@@ -368,6 +368,7 @@
         "reply": "Wieġeb",
         "forwardMessage": "Ibgħat 'il quddiem (dalwaqt)",
         "moreReactions": "Aktar reazzjonijiet",
+        "reactionOthers": "{{count}} oħrajn",
         "moreOptions": "Aktar għażliet",
         "reactWith": "Reazzjoni b'{{emoji}}",
         "noMessages": "Għad m'hemmx messaġġi. Għid bonġu!",

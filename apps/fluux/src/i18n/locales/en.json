@@ -366,6 +366,7 @@
         "reply": "Reply",
         "forwardMessage": "Forward message (coming soon)",
         "moreReactions": "More reactions",
+        "reactionOthers": "{{count}} others",
         "moreOptions": "More options",
         "reactWith": "React with {{emoji}}",
         "noMessages": "No messages yet. Say hello!",

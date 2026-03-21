@@ -366,6 +366,7 @@
         "reply": "Válasz",
         "forwardMessage": "Üzenet továbbítása (hamarosan)",
         "moreReactions": "További reakciók",
+        "reactionOthers": "{{count}} másik",
         "moreOptions": "További lehetőségek",
         "reactWith": "Reagálás: {{emoji}}",
         "noMessages": "Még nincsenek üzenetek. Köszönjön!",

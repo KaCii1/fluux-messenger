@@ -368,6 +368,7 @@
         "reply": "Vasta",
         "forwardMessage": "Edasta sõnum (tulemas)",
         "moreReactions": "Rohkem reaktsioone",
+        "reactionOthers": "{{count}} muud",
         "moreOptions": "Rohkem valikuid",
         "reactWith": "Reageeri emotikoniga {{emoji}}",
         "noMessages": "Sõnumeid veel pole. Ütle tere!",

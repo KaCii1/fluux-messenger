@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Tooltip } from '../Tooltip'
 
 export interface MessageReactionsProps {
@@ -26,6 +27,7 @@ export const MessageReactions = memo(function MessageReactions({
   getReactorName,
   isRetracted,
 }: MessageReactionsProps) {
+  const { t } = useTranslation()
   // Don't show reactions for retracted messages or if no reactions
   const hasReactions = reactions && Object.keys(reactions).length > 0
   if (isRetracted || !hasReactions) {
@@ -37,7 +39,12 @@ export const MessageReactions = memo(function MessageReactions({
       {Object.entries(reactions).map(([emoji, reactors]) => (
         <Tooltip
           key={emoji}
-          content={reactors.map(getReactorName).join(', ')}
+          content={(() => {
+            const MAX_SHOWN = 9
+            const names = reactors.map(getReactorName)
+            if (names.length <= MAX_SHOWN) return names.join(', ')
+            return names.slice(0, MAX_SHOWN).join(', ') + ' + ' + t('chat.reactionOthers', { count: names.length - MAX_SHOWN })
+          })()}
           position="top"
           delay={300}
         >

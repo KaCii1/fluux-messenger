@@ -366,6 +366,7 @@
         "reply": "Svar",
         "forwardMessage": "Videresend besked (kommer snart)",
         "moreReactions": "Flere reaktioner",
+        "reactionOthers": "{{count}} andre",
         "moreOptions": "Flere muligheder",
         "reactWith": "Reager med {{emoji}}",
         "noMessages": "Ingen beskeder endnu. Sig hej!",

@@ -367,6 +367,7 @@
         "reply": "Odpovedať",
         "forwardMessage": "Preposlať správu (už čoskoro)",
         "moreReactions": "Viac reakcií",
+        "reactionOthers": "{{count}} ďalších",
         "moreOptions": "Viac možností",
         "reactWith": "Reagovať s {{emoji}}",
         "noMessages": "Zatiaľ žiadne správy. Povedzte ahoj!",

@@ -368,6 +368,7 @@
         "reply": "Odgovori",
         "forwardMessage": "Posreduj sporočilo (kmalu)",
         "moreReactions": "Več odzivov",
+        "reactionOthers": "{{count}} drugih",
         "moreOptions": "Več možnosti",
         "reactWith": "Odzovi se z {{emoji}}",
         "noMessages": "Še ni sporočil. Pozdravi!",

@@ -366,6 +366,7 @@
         "reply": "Beantwoorden",
         "forwardMessage": "Bericht doorsturen (binnenkort)",
         "moreReactions": "Meer reacties",
+        "reactionOthers": "{{count}} anderen",
         "moreOptions": "Meer opties",
         "reactWith": "Reageren met {{emoji}}",
         "noMessages": "Nog geen berichten. Zeg hallo!",

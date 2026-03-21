@@ -368,6 +368,7 @@
         "reply": "Antworten",
         "forwardMessage": "Nachricht weiterleiten (bald verfügbar)",
         "moreReactions": "Mehr Reaktionen",
+        "reactionOthers": "{{count}} andere",
         "moreOptions": "Mehr Optionen",
         "reactWith": "Mit {{emoji}} reagieren",
         "noMessages": "Noch keine Nachrichten. Sagen Sie Hallo!",

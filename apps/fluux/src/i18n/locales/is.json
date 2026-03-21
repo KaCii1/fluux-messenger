@@ -366,6 +366,7 @@
         "reply": "Svara",
         "forwardMessage": "Áframsenda skilaboð (væntanlegt)",
         "moreReactions": "Fleiri viðbrögð",
+        "reactionOthers": "{{count}} aðrir",
         "moreOptions": "Fleiri valkostir",
         "reactWith": "Bregðast við með {{emoji}}",
         "noMessages": "Engin skilaboð enn. Segðu halló!",

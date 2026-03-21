@@ -367,6 +367,7 @@
         "reply": "Atbildēt",
         "forwardMessage": "Pārsūtīt ziņojumu (drīzumā)",
         "moreReactions": "Vairāk reakciju",
+        "reactionOthers": "{{count}} citi",
         "moreOptions": "Vairāk opciju",
         "reactWith": "Reaģēt ar {{emoji}}",
         "noMessages": "Vēl nav ziņojumu. Pasaki sveiki!",

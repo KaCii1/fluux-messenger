@@ -366,6 +366,7 @@
         "reply": "Atsakyti",
         "forwardMessage": "Persiųsti žinutę (greitai)",
         "moreReactions": "Daugiau reakcijų",
+        "reactionOthers": "{{count}} kitų",
         "moreOptions": "Daugiau parinkčių",
         "reactWith": "Reaguoti su {{emoji}}",
         "noMessages": "Kol kas nėra žinučių. Pasakyk labas!",

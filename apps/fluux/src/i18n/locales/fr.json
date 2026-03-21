@@ -367,6 +367,7 @@
         "reply": "Répondre",
         "forwardMessage": "Transférer le message (bientôt disponible)",
         "moreReactions": "Plus de réactions",
+        "reactionOthers": "{{count}} autres",
         "moreOptions": "Plus d'options",
         "reactWith": "Réagir avec {{emoji}}",
         "noMessages": "Aucun message. Dites bonjour !",

@@ -366,6 +366,7 @@
         "reply": "Freagair",
         "forwardMessage": "Seol ar aghaidh (ag teacht go luath)",
         "moreReactions": "Níos mó frithghníomhartha",
+        "reactionOthers": "{{count}} eile",
         "moreOptions": "Níos mó roghanna",
         "reactWith": "Freagair le {{emoji}}",
         "noMessages": "Níl aon teachtaireachtaí fós. Abair haló!",

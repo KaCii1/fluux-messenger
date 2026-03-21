@@ -366,6 +366,7 @@
         "reply": "Отговор",
         "forwardMessage": "Препрати съобщение (очаквайте скоро)",
         "moreReactions": "Още реакции",
+        "reactionOthers": "{{count}} други",
         "moreOptions": "Още опции",
         "reactWith": "Реагирай с {{emoji}}",
         "noMessages": "Все още няма съобщения. Кажи здравей!",

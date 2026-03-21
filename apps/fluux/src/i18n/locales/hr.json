@@ -366,6 +366,7 @@
         "reply": "Odgovori",
         "forwardMessage": "Proslijedi poruku (uskoro dolazi)",
         "moreReactions": "Više reakcija",
+        "reactionOthers": "{{count}} drugih",
         "moreOptions": "Više opcija",
         "reactWith": "Reagiraj s {{emoji}}",
         "noMessages": "Još nema poruka. Reci bok!",

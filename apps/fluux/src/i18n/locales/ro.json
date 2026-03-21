@@ -368,6 +368,7 @@
         "reply": "Răspunde",
         "forwardMessage": "Redirecționează mesajul (în curând)",
         "moreReactions": "Mai multe reacții",
+        "reactionOthers": "{{count}} alții",
         "moreOptions": "Mai multe opțiuni",
         "reactWith": "Reacționează cu {{emoji}}",
         "noMessages": "Niciun mesaj încă. Spune bună!",
