@@ -16,6 +16,7 @@ import { OccupantPanel } from './OccupantPanel'
 import { OccupantModerationModal } from './OccupantModerationModal'
 import { PollCreator } from './PollCreator'
 import { MenuButton, MenuDivider } from './sidebar-components/SidebarListMenu'
+import { Tooltip } from './Tooltip'
 import { useToastStore } from '@/stores/toastStore'
 import { findLastEditableMessage, findLastEditableMessageId } from '@/utils/messageUtils'
 import { useExpandedMessagesStore } from '@/stores/expandedMessagesStore'
@@ -1007,15 +1008,48 @@ const RoomMessageBubbleWrapper = memo(function RoomMessageBubbleWrapper({
           <Shield className="w-3.5 h-3.5 text-fluux-muted" />
         </span>
       )}
-      {occupant?.hats?.map((hat) => (
-        <span
-          key={hat.uri}
-          className="px-1.5 py-0.5 text-[10px] font-medium rounded self-center"
-          style={getHatColors(hat)}
-        >
-          {hat.title}
-        </span>
-      ))}
+      {(() => {
+        const hats = occupant?.hats ?? []
+        const MAX_INLINE = 3
+        const visible = hats.slice(0, MAX_INLINE)
+        const overflow = hats.slice(MAX_INLINE, MAX_INLINE + 9)
+        return (
+          <>
+            {visible.map((hat) => (
+              <span
+                key={hat.uri}
+                className="px-1.5 py-0.5 text-[10px] font-medium rounded self-center"
+                style={getHatColors(hat)}
+              >
+                {hat.title}
+              </span>
+            ))}
+            {overflow.length > 0 && (
+              <Tooltip
+                content={
+                  <div className="flex flex-col gap-1">
+                    {overflow.map((hat) => (
+                      <span
+                        key={hat.uri}
+                        className="px-1.5 py-0.5 text-[10px] font-medium rounded inline-block"
+                        style={getHatColors(hat)}
+                      >
+                        {hat.title}
+                      </span>
+                    ))}
+                  </div>
+                }
+                position="top"
+                delay={300}
+              >
+                <span className="px-1.5 py-0.5 text-[10px] font-medium rounded self-center bg-fluux-muted/20 text-fluux-muted cursor-default">
+                  +{overflow.length}
+                </span>
+              </Tooltip>
+            )}
+          </>
+        )
+      })()}
     </>
   )
 

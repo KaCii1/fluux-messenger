@@ -404,16 +404,49 @@ export function OccupantPanel({
                         {ignored && (
                           <EyeOff className="w-3 h-3 text-fluux-muted" />
                         )}
-                        {/* XEP-0317 Hats from all connections */}
-                        {Array.from(allHats.values()).map((hat) => (
-                          <span
-                            key={hat.uri}
-                            className="px-1.5 py-0.5 text-[10px] font-medium rounded"
-                            style={getHatColors(hat)}
-                          >
-                            {hat.title}
-                          </span>
-                        ))}
+                        {/* XEP-0317 Hats from all connections (max 3 inline, overflow in tooltip) */}
+                        {(() => {
+                          const hats = Array.from(allHats.values())
+                          const MAX_INLINE = 3
+                          const visible = hats.slice(0, MAX_INLINE)
+                          const overflow = hats.slice(MAX_INLINE, MAX_INLINE + 9)
+                          return (
+                            <>
+                              {visible.map((hat) => (
+                                <span
+                                  key={hat.uri}
+                                  className="px-1.5 py-0.5 text-[10px] font-medium rounded"
+                                  style={getHatColors(hat)}
+                                >
+                                  {hat.title}
+                                </span>
+                              ))}
+                              {overflow.length > 0 && (
+                                <Tooltip
+                                  content={
+                                    <div className="flex flex-col gap-1">
+                                      {overflow.map((hat) => (
+                                        <span
+                                          key={hat.uri}
+                                          className="px-1.5 py-0.5 text-[10px] font-medium rounded inline-block"
+                                          style={getHatColors(hat)}
+                                        >
+                                          {hat.title}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  }
+                                  position="top"
+                                  delay={300}
+                                >
+                                  <span className="px-1.5 py-0.5 text-[10px] font-medium rounded bg-fluux-muted/20 text-fluux-muted cursor-default">
+                                    +{overflow.length}
+                                  </span>
+                                </Tooltip>
+                              )}
+                            </>
+                          )
+                        })()}
                       </div>
                       {/* Show bare JID if available */}
                       {group.bareJid && (
