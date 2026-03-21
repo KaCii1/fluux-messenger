@@ -39,6 +39,8 @@
     "fs:allow-appcache-write-recursive",
     "fs:allow-appcache-read-recursive",
     "fs:allow-appcache-meta-recursive",
+    "fs:allow-appconfig-write-recursive",
+    "fs:allow-appconfig-read-recursive",
     {
       "identifier": "fs:allow-read-file",
       "allow": [{ "path": "**/*" }]

@@ -156,7 +156,7 @@ async function openConfigFolder(subdir: string) {
   try {
     const { appConfigDir, join } = await import('@tauri-apps/api/path')
     const { mkdir, exists } = await import('@tauri-apps/plugin-fs')
-    const { open } = await import('@tauri-apps/plugin-shell')
+    const { revealItemInDir } = await import('@tauri-apps/plugin-opener')
 
     const configDir = await appConfigDir()
     const dir = await join(configDir, subdir)
@@ -165,9 +165,9 @@ async function openConfigFolder(subdir: string) {
       await mkdir(dir, { recursive: true })
     }
 
-    await open(dir)
+    await revealItemInDir(dir)
   } catch {
-    // Ignore errors (e.g. shell plugin not available)
+    // Ignore errors (e.g. opener plugin not available)
   }
 }
 
