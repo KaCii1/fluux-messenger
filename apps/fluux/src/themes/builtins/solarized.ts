@@ -37,6 +37,12 @@ export const solarizedTheme: ThemeDefinition = {
       '--fluux-color-yellow-rgb': '181, 137, 0',
       '--fluux-color-blue-rgb': '38, 139, 210',
       '--fluux-color-purple-rgb': '108, 113, 196',
+      // Semantic overrides — base-40/50 are content colors, too bright for backgrounds
+      '--fluux-bg-hover': 'rgba(7, 54, 66, 0.6)',
+      '--fluux-bg-active': '#073642',
+      '--fluux-selection-bg': 'hsla(205, 69%, 49%, 0.2)',
+      '--fluux-scrollbar-thumb': '#073642',
+      '--fluux-scrollbar-thumb-hover': '#0a4050',
     },
     light: {
       // Foundation — neutral ramp (Solarized light — flipped)
