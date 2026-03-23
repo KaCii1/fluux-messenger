@@ -2432,4 +2432,27 @@ describe('chatStore', () => {
       expect(active).toHaveLength(2)
     })
   })
+
+  describe('setTargetMessageId', () => {
+    it('should set targetMessageId', () => {
+      chatStore.getState().setTargetMessageId('msg-123')
+      expect(chatStore.getState().targetMessageId).toBe('msg-123')
+    })
+
+    it('should clear targetMessageId when set to null', () => {
+      chatStore.getState().setTargetMessageId('msg-123')
+      chatStore.getState().setTargetMessageId(null)
+      expect(chatStore.getState().targetMessageId).toBeNull()
+    })
+
+    it('should start as null', () => {
+      expect(chatStore.getState().targetMessageId).toBeNull()
+    })
+
+    it('should be reset when store is reset', () => {
+      chatStore.getState().setTargetMessageId('msg-123')
+      chatStore.getState().reset()
+      expect(chatStore.getState().targetMessageId).toBeNull()
+    })
+  })
 })

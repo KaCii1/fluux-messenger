@@ -156,6 +156,8 @@ export interface RoomState {
   drafts: Map<string, string>
   // MAM query states per room (for rooms with MAM enabled)
   mamQueryStates: Map<string, MAMQueryState>
+  // Target message to scroll to after navigation (ephemeral)
+  targetMessageId: string | null
 
   // Actions
   addRoom: (room: Room) => void
@@ -231,6 +233,7 @@ export interface RoomState {
   clearRoomNeedsCatchUp: (roomJid: string) => void
   /** Update only the lastMessage preview without affecting message history */
   updateLastMessagePreview: (roomJid: string, lastMessage: RoomMessage) => void
+  setTargetMessageId: (id: string | null) => void
 
   // Computed
   joinedRooms: () => Room[]
@@ -245,7 +248,7 @@ export interface RoomState {
   roomsWithUnreadCount: () => number // Number of rooms with unread activity (for dock badge)
 }
 
-function createEmptyRoomState(drafts: Map<string, string> = new Map()): Pick<RoomState, 'rooms' | 'roomEntities' | 'roomMeta' | 'roomRuntime' | 'activeRoomJid' | 'activeAnimation' | 'drafts' | 'mamQueryStates'> {
+function createEmptyRoomState(drafts: Map<string, string> = new Map()): Pick<RoomState, 'rooms' | 'roomEntities' | 'roomMeta' | 'roomRuntime' | 'activeRoomJid' | 'activeAnimation' | 'drafts' | 'mamQueryStates' | 'targetMessageId'> {
   return {
     rooms: new Map(),
     roomEntities: new Map(),
@@ -255,6 +258,7 @@ function createEmptyRoomState(drafts: Map<string, string> = new Map()): Pick<Roo
     activeAnimation: null,
     drafts,
     mamQueryStates: new Map(),
+    targetMessageId: null,
   }
 }
 
@@ -1359,6 +1363,10 @@ export const roomStore = createStore<RoomState>()(
 
   clearAnimation: () => {
     set({ activeAnimation: null })
+  },
+
+  setTargetMessageId: (id) => {
+    set({ targetMessageId: id })
   },
 
   // Draft management (persisted to localStorage)

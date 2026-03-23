@@ -95,6 +95,9 @@ export function useChatActive() {
   // Easter egg animation state
   const activeAnimation = useChatStore((s) => s.activeAnimation)
 
+  // Target message for scroll-to (from activity log click, etc.)
+  const targetMessageId = useChatStore((s) => s.targetMessageId)
+
   // XEP-0313: MAM support
   const supportsMAM = useConnectionStore((s) => {
     return s.serverInfo?.features?.includes(NS_MAM) ?? false
@@ -220,6 +223,10 @@ export function useChatActive() {
     chatStore.getState().clearAnimation()
   }, [])
 
+  const clearTargetMessageId = useCallback(() => {
+    chatStore.getState().setTargetMessageId(null)
+  }, [])
+
   const archiveConversation = useCallback((id: string) => {
     chatStore.getState().archiveConversation(id)
   }, [])
@@ -339,6 +346,7 @@ export function useChatActive() {
       retryMessage,
       sendEasterEgg,
       clearAnimation,
+      clearTargetMessageId,
       setDraft,
       getDraft,
       clearDraft,
@@ -351,7 +359,7 @@ export function useChatActive() {
       sendMessage, setActiveConversation, addConversation, deleteConversation,
       markAsRead, archiveConversation, unarchiveConversation, isArchived,
       sendChatState, sendReaction, sendCorrection, retractMessage, retryMessage,
-      sendEasterEgg, clearAnimation, setDraft, getDraft, clearDraft,
+      sendEasterEgg, clearAnimation, clearTargetMessageId, setDraft, getDraft, clearDraft,
       clearFirstNewMessageId, updateLastSeenMessageId, fetchHistory, fetchOlderHistory,
     ]
   )
@@ -363,13 +371,14 @@ export function useChatActive() {
       activeMessages,
       activeTypingUsers,
       activeAnimation,
+      targetMessageId,
       supportsMAM,
       activeMAMState,
       ...actions,
     }),
     [
       activeConversationId, activeConversation, activeMessages,
-      activeTypingUsers, activeAnimation, supportsMAM, activeMAMState,
+      activeTypingUsers, activeAnimation, targetMessageId, supportsMAM, activeMAMState,
       actions,
     ]
   )

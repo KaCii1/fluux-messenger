@@ -27,7 +27,7 @@ export function ChatView({ onBack, onSwitchToMessages, mainContentRef, composerR
   const { t } = useTranslation()
   // Use useChatActive instead of useChat to avoid subscribing to the conversation list.
   // This prevents re-renders during background MAM sync of other conversations.
-  const { activeConversation, activeMessages, activeTypingUsers, sendReaction, sendCorrection, retractMessage, retryMessage, activeAnimation, sendEasterEgg, clearAnimation, clearFirstNewMessageId, updateLastSeenMessageId, activeMAMState, fetchOlderHistory } = useChatActive()
+  const { activeConversation, activeMessages, activeTypingUsers, sendReaction, sendCorrection, retractMessage, retryMessage, activeAnimation, sendEasterEgg, clearAnimation, clearFirstNewMessageId, updateLastSeenMessageId, activeMAMState, fetchOlderHistory, targetMessageId, clearTargetMessageId } = useChatActive()
   // Use useContactIdentities instead of useRoster() to avoid re-renders on
   // presence changes. ChatView only needs contact names and avatars for display.
   const contactsByJid = useContactIdentities()
@@ -280,6 +280,8 @@ export function ChatView({ onBack, onSwitchToMessages, mainContentRef, composerR
           hasKeyboardSelection={hasKeyboardSelection}
           showToolbarForSelection={showToolbarForSelection}
           firstNewMessageId={activeConversation.firstNewMessageId}
+          targetMessageId={targetMessageId}
+          clearTargetMessageId={clearTargetMessageId}
           clearFirstNewMessageId={handleClearFirstNewMessageId}
           onMessageSeen={handleMessageSeen}
           isDarkMode={resolvedMode === 'dark'}
@@ -355,6 +357,8 @@ const ChatMessageList = memo(function ChatMessageList({
   hasKeyboardSelection,
   showToolbarForSelection,
   firstNewMessageId,
+  targetMessageId,
+  clearTargetMessageId,
   clearFirstNewMessageId,
   onMessageSeen,
   isDarkMode,
@@ -388,6 +392,8 @@ const ChatMessageList = memo(function ChatMessageList({
   hasKeyboardSelection: boolean
   showToolbarForSelection: boolean
   firstNewMessageId?: string
+  targetMessageId?: string | null
+  clearTargetMessageId?: () => void
   clearFirstNewMessageId: () => void
   onMessageSeen?: (messageId: string) => void
   isDarkMode?: boolean
@@ -487,6 +493,8 @@ const ChatMessageList = memo(function ChatMessageList({
       messages={messages}
       conversationId={conversationId}
       firstNewMessageId={firstNewMessageId}
+      targetMessageId={targetMessageId}
+      onTargetMessageConsumed={clearTargetMessageId}
       clearFirstNewMessageId={clearFirstNewMessageId}
       onMessageSeen={onMessageSeen}
       scrollerRef={scrollerRef}

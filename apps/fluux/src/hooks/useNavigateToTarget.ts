@@ -4,6 +4,7 @@
  * Used by:
  * - useDeepLink: when opening xmpp: URIs
  * - useDesktopNotifications: when clicking notifications
+ * - ActivityLogView: when clicking an activity event
  *
  * Phase 2.4: Uses React Router for navigation instead of callback handlers.
  */
@@ -42,25 +43,35 @@ export function useNavigateToTarget() {
   // Those hooks subscribe to conversations/rooms which change during MAM loading,
   // causing unnecessary re-renders. We only need the setters here.
   const setActiveConversation = useChatStore((s) => s.setActiveConversation)
+  const setChatTargetMessageId = useChatStore((s) => s.setTargetMessageId)
   const setActiveRoom = useRoomStore((s) => s.setActiveRoom)
+  const setRoomTargetMessageId = useRoomStore((s) => s.setTargetMessageId)
 
   // Use refs to avoid stale closures in async callbacks
   const navigateRef = useRef(navigate)
   const setActiveConversationRef = useRef(setActiveConversation)
+  const setChatTargetMessageIdRef = useRef(setChatTargetMessageId)
   const setActiveRoomRef = useRef(setActiveRoom)
+  const setRoomTargetMessageIdRef = useRef(setRoomTargetMessageId)
 
   useEffect(() => {
     navigateRef.current = navigate
     setActiveConversationRef.current = setActiveConversation
+    setChatTargetMessageIdRef.current = setChatTargetMessageId
     setActiveRoomRef.current = setActiveRoom
-  }, [navigate, setActiveConversation, setActiveRoom])
+    setRoomTargetMessageIdRef.current = setRoomTargetMessageId
+  }, [navigate, setActiveConversation, setChatTargetMessageId, setActiveRoom, setRoomTargetMessageId])
 
   /**
    * Navigate to a 1:1 conversation.
    * Uses URL-based navigation (/messages/:jid) and sets active conversation.
+   * Optionally scrolls to a specific message.
    * Clears all active notifications.
    */
-  const navigateToConversation = (conversationId: string) => {
+  const navigateToConversation = (conversationId: string, messageId?: string) => {
+    if (messageId) {
+      setChatTargetMessageIdRef.current(messageId)
+    }
     // Navigate via URL (this updates sidebarView via useRouteSync)
     void navigateRef.current(`/messages/${encodeURIComponent(conversationId)}`)
     // Also set active conversation in state
@@ -71,9 +82,13 @@ export function useNavigateToTarget() {
   /**
    * Navigate to a MUC room.
    * Uses URL-based navigation (/rooms/:jid) and sets active room.
+   * Optionally scrolls to a specific message.
    * Clears all active notifications.
    */
-  const navigateToRoom = (roomJid: string) => {
+  const navigateToRoom = (roomJid: string, messageId?: string) => {
+    if (messageId) {
+      setRoomTargetMessageIdRef.current(messageId)
+    }
     // Navigate via URL (this updates sidebarView via useRouteSync)
     void navigateRef.current(`/rooms/${encodeURIComponent(roomJid)}`)
     // Also set active room in state

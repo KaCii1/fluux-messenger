@@ -98,6 +98,8 @@ interface ChatState {
   drafts: Map<string, string>
   // XEP-0313: MAM query state per conversation (ephemeral, not persisted)
   mamQueryStates: Map<string, MAMQueryState>
+  // Target message to scroll to after navigation (ephemeral, not persisted)
+  targetMessageId: string | null
 
   // Computed
   activeConversation: () => Conversation | null
@@ -157,6 +159,7 @@ interface ChatState {
   // IndexedDB message loading
   loadMessagesFromCache: (conversationId: string, options?: { limit?: number; before?: Date }) => Promise<Message[]>
   loadOlderMessagesFromCache: (conversationId: string, limit?: number) => Promise<Message[]>
+  setTargetMessageId: (id: string | null) => void
   switchAccount: (jid: string | null) => void
   reset: () => void
 }
@@ -310,7 +313,7 @@ function deserializeState(persisted: PersistedState): Pick<ChatState, 'conversat
   }
 }
 
-function createEmptyChatState(): Pick<ChatState, 'conversationEntities' | 'conversationMeta' | 'conversations' | 'messages' | 'activeConversationId' | 'archivedConversations' | 'typingStates' | 'activeAnimation' | 'drafts' | 'mamQueryStates'> {
+function createEmptyChatState(): Pick<ChatState, 'conversationEntities' | 'conversationMeta' | 'conversations' | 'messages' | 'activeConversationId' | 'archivedConversations' | 'typingStates' | 'activeAnimation' | 'drafts' | 'mamQueryStates' | 'targetMessageId'> {
   return {
     conversationEntities: new Map(),
     conversationMeta: new Map(),
@@ -322,6 +325,7 @@ function createEmptyChatState(): Pick<ChatState, 'conversationEntities' | 'conve
     activeAnimation: null,
     drafts: new Map(),
     mamQueryStates: new Map(),
+    targetMessageId: null,
   }
 }
 
@@ -331,7 +335,7 @@ function createEmptyChatState(): Pick<ChatState, 'conversationEntities' | 'conve
  * Legacy versions stored chat data under a single unscoped key. For safety, we only migrate
  * conversation lists (active + archived classification) and intentionally skip drafts/messages.
  */
-function migrateLegacyConversationListsToScoped(jid: string | null): Pick<ChatState, 'conversationEntities' | 'conversationMeta' | 'conversations' | 'messages' | 'activeConversationId' | 'archivedConversations' | 'typingStates' | 'activeAnimation' | 'drafts' | 'mamQueryStates'> | null {
+function migrateLegacyConversationListsToScoped(jid: string | null): Pick<ChatState, 'conversationEntities' | 'conversationMeta' | 'conversations' | 'messages' | 'activeConversationId' | 'archivedConversations' | 'typingStates' | 'activeAnimation' | 'drafts' | 'mamQueryStates' | 'targetMessageId'> | null {
   if (!jid) return null
 
   const legacyKey = getLegacyStorageKey()
@@ -370,7 +374,7 @@ function migrateLegacyConversationListsToScoped(jid: string | null): Pick<ChatSt
   }
 }
 
-function loadScopedChatState(jid: string | null): Pick<ChatState, 'conversationEntities' | 'conversationMeta' | 'conversations' | 'messages' | 'activeConversationId' | 'archivedConversations' | 'typingStates' | 'activeAnimation' | 'drafts' | 'mamQueryStates'> {
+function loadScopedChatState(jid: string | null): Pick<ChatState, 'conversationEntities' | 'conversationMeta' | 'conversations' | 'messages' | 'activeConversationId' | 'archivedConversations' | 'typingStates' | 'activeAnimation' | 'drafts' | 'mamQueryStates' | 'targetMessageId'> {
   const baseState = createEmptyChatState()
   const scopedStorageKey = getScopedStorageKey(jid)
 
@@ -960,6 +964,10 @@ export const chatStore = createStore<ChatState>()(
 
       clearAnimation: () => {
         set({ activeAnimation: null })
+      },
+
+      setTargetMessageId: (id) => {
+        set({ targetMessageId: id })
       },
 
       setDraft: (conversationId, text) => {

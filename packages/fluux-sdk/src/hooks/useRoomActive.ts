@@ -80,6 +80,9 @@ export function useRoomActive() {
   // Easter egg animation state
   const activeAnimation = useRoomStore((s) => s.activeAnimation)
 
+  // Target message for scroll-to (from activity log click, etc.)
+  const targetMessageId = useRoomStore((s) => s.targetMessageId)
+
   // Get MAM query state for active room (individual fields for granularity)
   const mamIsLoading = useRoomStore((s) => {
     if (!s.activeRoomJid) return false
@@ -219,6 +222,10 @@ export function useRoomActive() {
     roomStore.getState().clearAnimation()
   }, [])
 
+  const clearTargetMessageId = useCallback(() => {
+    roomStore.getState().setTargetMessageId(null)
+  }, [])
+
   const setDraft = useCallback((roomJid: string, text: string) => {
     roomStore.getState().setDraft(roomJid, text)
   }, [])
@@ -348,6 +355,7 @@ export function useRoomActive() {
       setRoomNotifyAll,
       sendEasterEgg,
       clearAnimation,
+      clearTargetMessageId,
       restoreRoomAvatarFromCache,
       setRoomAvatar,
       clearRoomAvatar,
@@ -378,6 +386,7 @@ export function useRoomActive() {
       setRoomNotifyAll,
       sendEasterEgg,
       clearAnimation,
+      clearTargetMessageId,
       restoreRoomAvatarFromCache,
       setRoomAvatar,
       clearRoomAvatar,
@@ -404,6 +413,7 @@ export function useRoomActive() {
       activeMessages,
       activeTypingUsers,
       activeAnimation,
+      targetMessageId,
       activeMAMState,
 
       // Actions (spread memoized actions)
@@ -415,6 +425,7 @@ export function useRoomActive() {
       activeMessages,
       activeTypingUsers,
       activeAnimation,
+      targetMessageId,
       activeMAMState,
       actions,
     ]

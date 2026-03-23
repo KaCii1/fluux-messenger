@@ -60,7 +60,7 @@ const MAX_ROOM_SIZE_FOR_TYPING = 30
 export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = false, onShowOccupantsChange, onStartChat, onShowProfile }: RoomViewProps) {
   detectRenderLoop('RoomView')
   const { t } = useTranslation()
-  const { activeRoom, activeMessages, activeTypingUsers, sendMessage, sendReaction, sendPoll, votePoll, closePoll, sendCorrection, retractMessage, moderateMessage, sendChatState, setRoomNotifyAll, activeAnimation, sendEasterEgg, clearAnimation, clearFirstNewMessageId, updateLastSeenMessageId, joinRoom, setRoomAvatar, clearRoomAvatar, fetchOlderHistory, activeMAMState, submitRoomConfig, setSubject, destroyRoom, setAffiliation, setRole } = useRoomActive()
+  const { activeRoom, activeMessages, activeTypingUsers, sendMessage, sendReaction, sendPoll, votePoll, closePoll, sendCorrection, retractMessage, moderateMessage, sendChatState, setRoomNotifyAll, activeAnimation, sendEasterEgg, clearAnimation, clearFirstNewMessageId, updateLastSeenMessageId, joinRoom, setRoomAvatar, clearRoomAvatar, fetchOlderHistory, activeMAMState, submitRoomConfig, setSubject, destroyRoom, setAffiliation, setRole, targetMessageId, clearTargetMessageId } = useRoomActive()
   const { contacts } = useRoster()
   // NOTE: Use focused selectors instead of useConnection() hook to avoid
   // re-renders when unrelated connection state changes (error, reconnectAttempt, etc.)
@@ -373,6 +373,8 @@ export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = 
             hasKeyboardSelection={hasKeyboardSelection}
             showToolbarForSelection={showToolbarForSelection}
             firstNewMessageId={activeRoom.firstNewMessageId}
+            targetMessageId={targetMessageId}
+            clearTargetMessageId={clearTargetMessageId}
             clearFirstNewMessageId={handleClearFirstNewMessageId}
             onMessageSeen={handleMessageSeen}
             isJoined={activeRoom.joined}
@@ -603,6 +605,8 @@ const RoomMessageList = memo(function RoomMessageList({
   hasKeyboardSelection,
   showToolbarForSelection,
   firstNewMessageId,
+  targetMessageId,
+  clearTargetMessageId,
   clearFirstNewMessageId,
   onMessageSeen,
   isJoined,
@@ -640,6 +644,8 @@ const RoomMessageList = memo(function RoomMessageList({
   hasKeyboardSelection: boolean
   showToolbarForSelection: boolean
   firstNewMessageId?: string
+  targetMessageId?: string | null
+  clearTargetMessageId?: () => void
   clearFirstNewMessageId: () => void
   onMessageSeen?: (messageId: string) => void
   isJoined?: boolean
@@ -789,6 +795,8 @@ const RoomMessageList = memo(function RoomMessageList({
       messages={messages}
       conversationId={room.jid}
       firstNewMessageId={firstNewMessageId}
+      targetMessageId={targetMessageId}
+      onTargetMessageConsumed={clearTargetMessageId}
       clearFirstNewMessageId={clearFirstNewMessageId}
       onMessageSeen={onMessageSeen}
       scrollerRef={scrollerRef}

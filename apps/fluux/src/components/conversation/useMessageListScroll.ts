@@ -50,6 +50,8 @@ export interface UseMessageListScrollOptions {
   messageCount: number
   firstMessageId: string | undefined
   firstNewMessageId?: string  // ID of the first unread message (for new message marker)
+  targetMessageId?: string | null  // ID of a message to scroll to (e.g., from activity log click)
+  onTargetMessageConsumed?: () => void  // Called after scrolling to target message
   externalScrollerRef?: React.RefObject<HTMLElement | null>
   externalIsAtBottomRef?: React.MutableRefObject<boolean>
   onScrollToTop?: () => void
@@ -80,6 +82,8 @@ export function useMessageListScroll({
   messageCount,
   firstMessageId,
   firstNewMessageId,
+  targetMessageId,
+  onTargetMessageConsumed,
   externalScrollerRef,
   externalIsAtBottomRef,
   onScrollToTop,
@@ -639,6 +643,57 @@ export function useMessageListScroll({
     prevConversationRef.current = conversationId
     prevMessageCountRef.current = messageCount
   }, [conversationId, messageCount, firstNewMessageId, isAtBottomRef])
+
+  // ==========================================================================
+  // EFFECT: Scroll to target message (from activity log click, etc.)
+  // ==========================================================================
+  //
+  // When targetMessageId is set (e.g., user clicked a reaction in the activity log),
+  // scroll to that specific message. Uses the same data-message-id attribute pattern
+  // as the unread marker scroll. Clears the target after consumption.
+
+  useEffect(() => {
+    if (!targetMessageId) return
+    const scroller = scrollerRef.current
+    if (!scroller) return
+
+    const scrollToTarget = () => {
+      const currentScroller = scrollerRef.current
+      if (!currentScroller) return
+
+      const escapedId = CSS.escape(targetMessageId)
+      const messageElement = currentScroller.querySelector(`[data-message-id="${escapedId}"]`)
+
+      if (messageElement) {
+        const elementTop = (messageElement as HTMLElement).offsetTop
+        const viewportHeight = currentScroller.clientHeight
+        // Center the target message in the viewport
+        const targetScrollTop = Math.max(0, elementTop - viewportHeight / 3)
+
+        currentScroller.scrollTop = targetScrollTop
+
+        const distFromBottom = currentScroller.scrollHeight - targetScrollTop - viewportHeight
+        isAtBottomRef.current = distFromBottom < AT_BOTTOM_THRESHOLD
+
+        debugLog('TARGET MESSAGE: scrolled to target', {
+          targetMessageId,
+          elementTop,
+          targetScrollTop,
+          viewportHeight,
+          isAtBottom: isAtBottomRef.current,
+        })
+
+        onTargetMessageConsumed?.()
+      } else {
+        debugLog('TARGET MESSAGE: element not found', { targetMessageId })
+      }
+    }
+
+    // Try with increasing delays to handle async rendering
+    requestAnimationFrame(scrollToTarget)
+    setTimeout(scrollToTarget, 50)
+    setTimeout(scrollToTarget, 150)
+  }, [targetMessageId, isAtBottomRef, onTargetMessageConsumed])
 
   // ==========================================================================
   // EFFECT: Cleanup on unmount

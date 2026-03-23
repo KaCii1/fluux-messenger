@@ -37,6 +37,10 @@ export interface MessageListProps<T extends BaseMessage> {
   conversationId: string
   /** ID of the first unread message (for new message marker) */
   firstNewMessageId?: string
+  /** ID of a specific message to scroll to (e.g., from activity log click) */
+  targetMessageId?: string | null
+  /** Called after scrolling to target message (to clear the store value) */
+  onTargetMessageConsumed?: () => void
   /** Callback to clear the first new message ID (used by viewport observer) */
   clearFirstNewMessageId?: () => void
   /** Users currently typing */
@@ -79,6 +83,8 @@ export function MessageList<T extends BaseMessage>({
   messages,
   conversationId,
   firstNewMessageId,
+  targetMessageId,
+  onTargetMessageConsumed,
   typingUsers = [],
   formatTypingUser,
   renderMessage,
@@ -145,6 +151,8 @@ export function MessageList<T extends BaseMessage>({
     messageCount: messages.length,
     firstMessageId,
     firstNewMessageId,
+    targetMessageId,
+    onTargetMessageConsumed,
     externalScrollerRef,
     externalIsAtBottomRef,
     onScrollToTop,

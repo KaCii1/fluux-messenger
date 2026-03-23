@@ -8,6 +8,8 @@ import { useNavigateToTarget } from './useNavigateToTarget'
 const mockState = {
   setActiveConversation: vi.fn(),
   setActiveRoom: vi.fn(),
+  setChatTargetMessageId: vi.fn(),
+  setRoomTargetMessageId: vi.fn(),
 }
 
 // Mock SDK (no React hooks needed here)
@@ -18,12 +20,14 @@ vi.mock('@fluux/sdk/react', () => ({
   useChatStore: (selector: (s: unknown) => unknown) => {
     const state = {
       setActiveConversation: mockState.setActiveConversation,
+      setTargetMessageId: mockState.setChatTargetMessageId,
     }
     return selector(state)
   },
   useRoomStore: (selector: (s: unknown) => unknown) => {
     const state = {
       setActiveRoom: mockState.setActiveRoom,
+      setTargetMessageId: mockState.setRoomTargetMessageId,
     }
     return selector(state)
   },
@@ -66,6 +70,8 @@ describe('useNavigateToTarget', () => {
     currentLocation.current = { pathname: '/', search: '' }
     mockState.setActiveConversation = vi.fn()
     mockState.setActiveRoom = vi.fn()
+    mockState.setChatTargetMessageId = vi.fn()
+    mockState.setRoomTargetMessageId = vi.fn()
   })
 
   describe('navigateToConversation', () => {
@@ -135,6 +141,59 @@ describe('useNavigateToTarget', () => {
 
       expect(currentLocation.current.pathname).toBe('/rooms/dev%40conference.example.com')
       expect(mockState.setActiveRoom).toHaveBeenCalledWith('dev@conference.example.com')
+    })
+
+    it('should set targetMessageId in room store when messageId is provided', () => {
+      const { result } = renderHook(() => useNavigateToTarget(), {
+        wrapper: createWrapper('/rooms'),
+      })
+
+      act(() => {
+        result.current.navigateToRoom('general@conference.example.com', 'msg-456')
+      })
+
+      expect(mockState.setRoomTargetMessageId).toHaveBeenCalledWith('msg-456')
+      expect(mockState.setActiveRoom).toHaveBeenCalledWith('general@conference.example.com')
+    })
+
+    it('should not set targetMessageId when messageId is omitted', () => {
+      const { result } = renderHook(() => useNavigateToTarget(), {
+        wrapper: createWrapper('/rooms'),
+      })
+
+      act(() => {
+        result.current.navigateToRoom('general@conference.example.com')
+      })
+
+      expect(mockState.setRoomTargetMessageId).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('navigateToConversation with messageId', () => {
+    it('should set targetMessageId in chat store when messageId is provided', () => {
+      const { result } = renderHook(() => useNavigateToTarget(), {
+        wrapper: createWrapper('/messages'),
+      })
+
+      act(() => {
+        result.current.navigateToConversation('alice@example.com', 'msg-123')
+      })
+
+      expect(mockState.setChatTargetMessageId).toHaveBeenCalledWith('msg-123')
+      expect(mockState.setActiveConversation).toHaveBeenCalledWith('alice@example.com')
+      expect(currentLocation.current.pathname).toBe('/messages/alice%40example.com')
+    })
+
+    it('should not set targetMessageId when messageId is omitted', () => {
+      const { result } = renderHook(() => useNavigateToTarget(), {
+        wrapper: createWrapper('/messages'),
+      })
+
+      act(() => {
+        result.current.navigateToConversation('alice@example.com')
+      })
+
+      expect(mockState.setChatTargetMessageId).not.toHaveBeenCalled()
     })
   })
 

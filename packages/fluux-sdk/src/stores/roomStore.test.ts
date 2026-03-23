@@ -2939,4 +2939,27 @@ describe('roomStore', () => {
       expect(runtime?.messages[0]?.isRetracted).toBe(true)
     })
   })
+
+  describe('setTargetMessageId', () => {
+    it('should set targetMessageId', () => {
+      roomStore.getState().setTargetMessageId('msg-456')
+      expect(roomStore.getState().targetMessageId).toBe('msg-456')
+    })
+
+    it('should clear targetMessageId when set to null', () => {
+      roomStore.getState().setTargetMessageId('msg-456')
+      roomStore.getState().setTargetMessageId(null)
+      expect(roomStore.getState().targetMessageId).toBeNull()
+    })
+
+    it('should start as null', () => {
+      expect(roomStore.getState().targetMessageId).toBeNull()
+    })
+
+    it('should be reset when store is reset', () => {
+      roomStore.getState().setTargetMessageId('msg-456')
+      roomStore.getState().reset()
+      expect(roomStore.getState().targetMessageId).toBeNull()
+    })
+  })
 })

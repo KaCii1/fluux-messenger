@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   useActivityLog,
@@ -8,6 +8,9 @@ import {
   type ReactionReceivedPayload,
   getBareJid,
 } from '@fluux/sdk'
+import { useRoomStore } from '@fluux/sdk/react'
+import { useNavigateToTarget } from '@/hooks/useNavigateToTarget'
+import { getNavigationTarget } from './activityNavigation'
 import { Avatar } from '../Avatar'
 import { Tooltip } from '../Tooltip'
 import {
@@ -87,6 +90,26 @@ export function ActivityLogView() {
   const { t } = useTranslation()
   const { events, unreadCount, markAllRead, muteType, unmuteType, mutedTypes, markRead } = useActivityLog()
   const { pendingCount } = useEvents()
+  const { navigateToConversation, navigateToRoom } = useNavigateToTarget()
+  const hasRoom = useRoomStore((s) => (jid: string) => s.rooms.has(jid))
+
+  const handleNavigate = useCallback((event: ActivityEvent) => {
+    const target = getNavigationTarget(event)
+    if (!target) return
+
+    if (target.type === 'room') {
+      navigateToRoom(target.jid, target.messageId)
+    } else if (target.type === 'conversation') {
+      navigateToConversation(target.jid, target.messageId)
+    } else {
+      // 'auto' — check if it's a room or conversation
+      if (hasRoom(target.jid)) {
+        navigateToRoom(target.jid, target.messageId)
+      } else {
+        navigateToConversation(target.jid, target.messageId)
+      }
+    }
+  }, [navigateToConversation, navigateToRoom, hasRoom])
 
   const groupedEvents = useMemo(() => groupEventsByDate(events), [events])
 
@@ -135,6 +158,8 @@ export function ActivityLogView() {
               key={event.id}
               event={event}
               onMarkRead={() => markRead(event.id)}
+              onNavigate={() => handleNavigate(event)}
+              isNavigable={getNavigationTarget(event) !== null}
               isMuted={mutedTypes.has(event.type)}
               onMuteType={() => muteType(event.type)}
               onUnmuteType={() => unmuteType(event.type)}
@@ -149,12 +174,14 @@ export function ActivityLogView() {
 interface ActivityEventItemProps {
   event: ActivityEvent
   onMarkRead: () => void
+  onNavigate: () => void
+  isNavigable: boolean
   isMuted: boolean
   onMuteType: () => void
   onUnmuteType: () => void
 }
 
-function ActivityEventItem({ event, onMarkRead, isMuted, onMuteType, onUnmuteType }: ActivityEventItemProps) {
+function ActivityEventItem({ event, onMarkRead, onNavigate, isNavigable, isMuted, onMuteType, onUnmuteType }: ActivityEventItemProps) {
   const { t } = useTranslation()
   const Icon = getEventIcon(event.type)
   const ResolutionIcon = event.resolution && event.resolution !== 'pending'
@@ -165,12 +192,18 @@ function ActivityEventItem({ event, onMarkRead, isMuted, onMuteType, onUnmuteTyp
   const timeStr = event.timestamp.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
   const avatarId = getEventAvatarId(event)
 
+  const handleClick = () => {
+    if (!event.read) onMarkRead()
+    if (isNavigable) onNavigate()
+  }
+
   return (
     <div
-      className={`group flex items-start gap-2 px-2 py-1.5 rounded transition-colors cursor-default
+      className={`group flex items-start gap-2 px-2 py-1.5 rounded transition-colors
+        ${isNavigable ? 'cursor-pointer' : 'cursor-default'}
         ${!event.read ? 'bg-fluux-brand/5' : 'hover:bg-fluux-hover'}
         ${event.muted ? 'opacity-50' : ''}`}
-      onClick={() => { if (!event.read) onMarkRead() }}
+      onClick={handleClick}
     >
       {/* Avatar or icon */}
       <div className="flex-shrink-0 mt-0.5">
