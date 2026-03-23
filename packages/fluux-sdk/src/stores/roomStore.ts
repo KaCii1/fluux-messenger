@@ -15,6 +15,7 @@ import { setTypingTimeout, clearTypingTimeout } from './typingTimeout'
 import { findMessageById } from '../utils/messageLookup'
 import { getBareJid } from '../core/jid'
 import * as messageCache from '../utils/messageCache'
+import * as searchIndex from '../utils/searchIndex'
 import type { GetMessagesOptions } from '../utils/messageCache'
 import * as mamState from './shared/mamState'
 import type { MAMQueryDirection } from './shared/mamState'
@@ -775,6 +776,7 @@ export const roomStore = createStore<RoomState>()(
     // Save to IndexedDB only if message doesn't have noStore hint
     if (!messageToAdd.noStore) {
       void messageCache.saveRoomMessage(messageToAdd)
+      void searchIndex.indexMessage(messageToAdd)
     }
 
     set((state) => {
@@ -942,6 +944,13 @@ export const roomStore = createStore<RoomState>()(
       // Update IndexedDB (non-blocking) — use actual message id, not the lookup key
       if (updatedMessage) {
         void messageCache.updateRoomMessage(updatedMessage.id, updates)
+
+        // Update search index: re-index if body changed, remove if retracted
+        if (updates.isRetracted) {
+          void searchIndex.removeMessage(updatedMessage)
+        } else if (updates.body) {
+          void searchIndex.updateMessage(updatedMessage)
+        }
       }
 
       newRooms.set(roomJid, { ...existing, messages: newMessages })
@@ -1627,6 +1636,7 @@ export const roomStore = createStore<RoomState>()(
       const persistableMessages = newFromMAM.filter(msg => !msg.noStore)
       if (persistableMessages.length > 0) {
         void messageCache.saveRoomMessages(persistableMessages)
+        void searchIndex.indexMessages(persistableMessages)
       }
 
       // Get the last message from merged messages for sidebar preview

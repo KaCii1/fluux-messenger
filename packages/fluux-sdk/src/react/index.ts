@@ -56,6 +56,8 @@ export { useNotificationEvents } from '../hooks/useNotificationEvents'
 export type { NotificationEventHandlers } from '../hooks/useNotificationEvents'
 export { useContactTime } from '../hooks/useContactTime'
 export { useLastActivity } from '../hooks/useLastActivity'
+export { useSearch } from '../hooks/useSearch'
+export type { SearchResult } from '../hooks/useSearch'
 
 // Fine-grained metadata subscription hooks
 export {
@@ -94,6 +96,7 @@ export {
   useBlockingStore,
   useIgnoreStore,
   useActivityLogStore,
+  useSearchStore,
 } from './storeHooks'
 
 // Presence state machine types (for XState integration)

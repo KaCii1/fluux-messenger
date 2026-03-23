@@ -216,6 +216,7 @@ function App() {
         <Route path="/contacts/:jid?" element={<ChatLayout />} />
         <Route path="/archive/:jid?" element={<ChatLayout />} />
         <Route path="/events" element={<ChatLayout />} />
+        <Route path="/search" element={<ChatLayout />} />
         <Route path="/admin/*" element={<ChatLayout />} />
         <Route path="/settings/:category?" element={<ChatLayout />} />
         {/* Default redirect to messages */}

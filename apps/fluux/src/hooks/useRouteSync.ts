@@ -87,6 +87,9 @@ function parseRoute(pathname: string): SidebarView {
   if (pathname.startsWith('/admin')) {
     return 'admin'
   }
+  if (pathname.startsWith('/search')) {
+    return 'search'
+  }
 
   // Default to messages
   return 'messages'

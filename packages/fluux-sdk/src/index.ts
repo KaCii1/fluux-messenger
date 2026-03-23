@@ -106,6 +106,8 @@ export { useNotificationEvents } from './hooks/useNotificationEvents'
 export type { NotificationEventHandlers } from './hooks/useNotificationEvents'
 export { useContactTime } from './hooks/useContactTime'
 export { useLastActivity } from './hooks/useLastActivity'
+export { useSearch } from './hooks/useSearch'
+export type { SearchResult } from './hooks/useSearch'
 
 // Fine-grained metadata subscription hooks (Phase 6)
 export {

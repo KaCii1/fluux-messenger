@@ -57,6 +57,7 @@ import {
   RoomsList,
   EventsView,
   ActivityLogView,
+  SearchView,
   UserMenu,
 } from './sidebar-components'
 
@@ -272,6 +273,14 @@ export function Sidebar({ onSelectContact, onStartChat, onManageUser, adminCateg
           onNavigate={onViewChange}
           showBadge={pendingCount > 0}
         />
+        {/* Search */}
+        <IconRailNavLink
+          icon={Search}
+          label={t('sidebar.search', 'Search')}
+          view="search"
+          pathPrefix="/search"
+          onNavigate={onViewChange}
+        />
         <div className="flex-1" />
         {/* Admin - only visible for server administrators */}
         {isAdmin && (
@@ -304,6 +313,7 @@ export function Sidebar({ onSelectContact, onStartChat, onManageUser, adminCateg
               : sidebarView === 'archive' ? t('sidebar.archive')
               : sidebarView === 'admin' ? t('sidebar.admin')
               : sidebarView === 'settings' ? t('sidebar.settings')
+              : sidebarView === 'search' ? t('sidebar.search', 'Search')
               : t('sidebar.events')}
           </h1>
           {sidebarView === 'directory' && (
@@ -406,6 +416,8 @@ export function Sidebar({ onSelectContact, onStartChat, onManageUser, adminCateg
                 activeCategory={adminCategory ?? null}
                 onCategoryChange={onAdminCategoryChange ?? (() => {})}
               />
+            ) : sidebarView === 'search' ? (
+              <SearchView onNavigate={(view) => onViewChange(view)} />
             ) : sidebarView === 'settings' ? (
               <SettingsSidebar
                 activeCategory={(settingsCategory as SettingsCategory) || DEFAULT_SETTINGS_CATEGORY}

@@ -196,6 +196,26 @@ vi.mock('@fluux/sdk', async (importOriginal) => {
       unblockAll: vi.fn(),
       isBlocked: () => false,
     })),
+    searchStore: {
+      getState: () => ({
+        query: '',
+        isSearching: false,
+        results: [],
+        error: null,
+        search: vi.fn(),
+        clearSearch: vi.fn(),
+      }),
+      subscribe: vi.fn(() => vi.fn()),
+      setState: vi.fn(),
+    },
+    useSearch: vi.fn(() => ({
+      query: '',
+      isSearching: false,
+      results: [],
+      error: null,
+      search: vi.fn(),
+      clearSearch: vi.fn(),
+    })),
     useXMPP: vi.fn(() => ({
       client: {
         profile: {
@@ -322,6 +342,17 @@ vi.mock('@fluux/sdk/react', () => ({
       removeIgnored: vi.fn(),
       isIgnored: () => false,
       getIgnoredForRoom: () => [],
+    }
+    return selector ? selector(state) : state
+  }),
+  useSearchStore: vi.fn((selector) => {
+    const state = {
+      query: '',
+      isSearching: false,
+      results: [],
+      error: null,
+      search: vi.fn(),
+      clearSearch: vi.fn(),
     }
     return selector ? selector(state) : state
   }),

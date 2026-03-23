@@ -16,6 +16,7 @@ export { useSystemState, type UseSystemStateReturn, type SystemState } from './u
 export { useNotificationEvents, type NotificationEventHandlers } from './useNotificationEvents'
 export { useContactTime } from './useContactTime'
 export { useLastActivity } from './useLastActivity'
+export { useSearch, type SearchResult } from './useSearch'
 
 // Fine-grained metadata subscription hooks (Phase 6)
 export {

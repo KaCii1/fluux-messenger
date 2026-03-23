@@ -4,6 +4,7 @@ import type { Message, Conversation, ConversationEntity, ConversationMetadata, M
 import { setTypingTimeout, clearTypingTimeout, clearAllTypingTimeouts } from './typingTimeout'
 import { findMessageById } from '../utils/messageLookup'
 import * as messageCache from '../utils/messageCache'
+import * as searchIndex from '../utils/searchIndex'
 import * as mamState from './shared/mamState'
 import type { MAMQueryDirection } from './shared/mamState'
 import * as draftState from './shared/draftState'
@@ -622,6 +623,7 @@ export const chatStore = createStore<ChatState>()(
           // XEP-0334: Save to IndexedDB only if message doesn't have noStore hint
           if (!msg.noStore) {
             void messageCache.saveMessage(msg)
+            void searchIndex.indexMessage(msg)
           }
 
           const newMessages = new Map(state.messages)
@@ -930,6 +932,13 @@ export const chatStore = createStore<ChatState>()(
           // Use the actual message id (not the lookup id which could be stanzaId)
           void messageCache.updateMessage(convMessages[messageIndex].id, updates)
 
+          // Update search index: re-index if body changed, remove if retracted
+          if (updates.isRetracted) {
+            void searchIndex.removeMessage(updatedMessage)
+          } else if (updates.body) {
+            void searchIndex.updateMessage(updatedMessage)
+          }
+
           // Update lastMessage if this was the last message in the conversation
           const isLastMessage = messageIndex === updatedConvMessages.length - 1
           if (isLastMessage) {
@@ -1042,6 +1051,7 @@ export const chatStore = createStore<ChatState>()(
           const persistableMessages = newMessages.filter(msg => !msg.noStore)
           if (persistableMessages.length > 0) {
             void messageCache.saveMessages(persistableMessages)
+            void searchIndex.indexMessages(persistableMessages)
           }
 
           // Update messages map (only when we have new messages)

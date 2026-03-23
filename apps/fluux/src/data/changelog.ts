@@ -37,6 +37,7 @@ export const changelog: ChangelogEntry[] = [
           'Scoped reaction muting in activity log (per-conversation instead of global)',
           'Poll votes distinguished from reactions in activity log with conversation context',
           'Ability to disable push notifications from settings',
+          'Full-text message search across all conversations and rooms with local IndexedDB inverted index, prefix matching, and highlighted snippets',
           'Semantic color overrides for Solarized dark theme',
           'Click outside handler to dismiss add vCard field popup in profile settings',
         ],

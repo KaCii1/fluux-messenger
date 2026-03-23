@@ -12,7 +12,7 @@ export interface ShortcutDefinition {
   displayOnly?: boolean
 }
 
-type SidebarView = 'messages' | 'rooms' | 'directory' | 'archive' | 'events' | 'admin' | 'settings'
+type SidebarView = 'messages' | 'rooms' | 'directory' | 'archive' | 'events' | 'admin' | 'settings' | 'search'
 
 interface UseKeyboardShortcutsOptions {
   onToggleShortcutHelp: () => void

@@ -19,6 +19,7 @@ import {
   blockingStore,
   ignoreStore,
   activityLogStore,
+  searchStore,
 } from '../stores'
 import type { ConnectionState } from '../stores/connectionStore'
 import type { ChatState } from '../stores/chatStore'
@@ -30,6 +31,7 @@ import type { AdminState } from '../stores/adminStore'
 import type { BlockingState } from '../stores/blockingStore'
 import type { IgnoreState } from '../stores/ignoreStore'
 import type { ActivityLogState } from '../stores/activityLogStore'
+import type { SearchState } from '../stores/searchStore'
 
 /**
  * React hook for the connection store.
@@ -129,4 +131,14 @@ export function useActivityLogStore<T = ActivityLogState>(
   selector: (state: ActivityLogState) => T = (state) => state as unknown as T
 ): T {
   return useStore(activityLogStore, selector)
+}
+
+/**
+ * React hook for the search store.
+ * @param selector - Optional selector function to pick specific state
+ */
+export function useSearchStore<T = SearchState>(
+  selector: (state: SearchState) => T = (state) => state as unknown as T
+): T {
+  return useStore(searchStore, selector)
 }

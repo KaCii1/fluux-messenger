@@ -71,3 +71,6 @@ export type { IgnoreState, IgnoredUser } from './ignoreStore'
 
 export { activityLogStore } from './activityLogStore'
 export type { ActivityLogState } from './activityLogStore'
+
+export { searchStore } from './searchStore'
+export type { SearchState, SearchResult } from './searchStore'
