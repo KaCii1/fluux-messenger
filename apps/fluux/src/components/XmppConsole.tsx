@@ -1,10 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { X, Trash2, Send, ChevronDown, ChevronUp, Search, Download, Server, ArrowDownToLine } from 'lucide-react'
 import { useConsole, useXMPP, type XmppPacket } from '@fluux/sdk'
 import { useConnectionStore } from '@fluux/sdk/react'
 import { formatStanzaPreview, formatStanzaXml } from '@/utils/stanzaPreviewFormatter'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { Tooltip } from './Tooltip'
 import { isTauri } from '@/utils/tauri'
 
@@ -181,14 +182,12 @@ export function XmppConsole() {
   const [expandedEntries, setExpandedEntries] = useState<Set<string>>(new Set())
   const [isResizing, setIsResizing] = useState(false)
   const [isResizeHover, setIsResizeHover] = useState(false)
-  const packetsEndRef = useRef<HTMLDivElement>(null)
   const packetsContainerRef = useRef<HTMLDivElement>(null)
   const resizeRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const selectedEntryRef = useRef<HTMLDivElement>(null)
 
   // Filter entries by type, direction, and search query
-  const filteredEntries = (() => {
+  const filteredEntries = useMemo(() => {
     return entries.filter((entry) => {
       // Filter by direction (events pass through all direction filters)
       if (entry.type !== 'event' && directionFilter !== 'all') {
@@ -207,7 +206,14 @@ export function XmppConsole() {
 
       return true
     })
-  })()
+  }, [entries, directionFilter, enabledTypes, searchQuery])
+
+  const virtualizer = useVirtualizer({
+    count: filteredEntries.length,
+    getScrollElement: () => packetsContainerRef.current,
+    estimateSize: () => 36,
+    overscan: 10,
+  })
 
   const toggleType = (type: FilterType) => {
     setEnabledTypes((prev) => {
@@ -221,7 +227,7 @@ export function XmppConsole() {
     })
   }
 
-  const toggleEntryExpanded = (entryId: string) => {
+  const toggleEntryExpanded = useCallback((entryId: string) => {
     setExpandedEntries((prev) => {
       const next = new Set(prev)
       if (next.has(entryId)) {
@@ -236,7 +242,7 @@ export function XmppConsole() {
       }
       return next
     })
-  }
+  }, [])
 
   // Keyboard navigation for log entries
   const handleLogKeyDown = (e: React.KeyboardEvent) => {
@@ -292,24 +298,28 @@ export function XmppConsole() {
 
   // Scroll selected entry into view
   useEffect(() => {
-    if (selectedEntryId && selectedEntryRef.current) {
-      selectedEntryRef.current.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    if (selectedEntryId) {
+      const index = filteredEntries.findIndex((e) => e.id === selectedEntryId)
+      if (index >= 0) {
+        virtualizer.scrollToIndex(index, { align: 'auto' })
+      }
     }
-  }, [selectedEntryId])
+  }, [selectedEntryId, filteredEntries, virtualizer])
 
   // Auto-scroll to bottom when new entries arrive
   useEffect(() => {
-    if (isOpen && autoScroll && packetsEndRef.current) {
-      packetsEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    if (isOpen && autoScroll && filteredEntries.length > 0) {
+      virtualizer.scrollToIndex(filteredEntries.length - 1, { align: 'end' })
     }
-  }, [entries, autoScroll, isOpen])
+  }, [entries, autoScroll, isOpen, filteredEntries.length, virtualizer])
 
   // Scroll to bottom instantly when console opens and focus the log area
   useEffect(() => {
     if (isOpen) {
-      // Use requestAnimationFrame to ensure DOM is ready
       requestAnimationFrame(() => {
-        packetsEndRef.current?.scrollIntoView({ behavior: 'instant' })
+        if (filteredEntries.length > 0) {
+          virtualizer.scrollToIndex(filteredEntries.length - 1, { align: 'end' })
+        }
         packetsContainerRef.current?.focus()
       })
     }
@@ -398,7 +408,7 @@ export function XmppConsole() {
     }
   }
 
-  const handleExport = async () => {
+  const handleExport = useCallback(async () => {
     // Snapshot current entries at export time to avoid stale closure issues
     const currentEntries = entries
     const currentConnectionMethod = connectionMethod
@@ -469,7 +479,7 @@ export function XmppConsole() {
     } else {
       downloadAsBlob(content, defaultFilename)
     }
-  }
+  }, [entries, connectionMethod, serverInfo])
 
   if (!isOpen) return null
 
@@ -614,24 +624,40 @@ export function XmppConsole() {
               {t('console.noEntriesMatchFilters')}{searchQuery && ` "${searchQuery}"`}
             </div>
           ) : (
-            <>
-              {filteredEntries.map((entry) => (
-                <div
-                  key={entry.id}
-                  ref={entry.id === selectedEntryId ? selectedEntryRef : undefined}
-                  data-entry-id={entry.id}
-                >
-                  <ConsoleEntry
-                    entry={entry}
-                    isSelected={entry.id === selectedEntryId}
-                    expanded={expandedEntries.has(entry.id)}
-                    onToggle={toggleEntryExpanded}
-                    onSelect={setSelectedEntryId}
-                  />
-                </div>
-              ))}
-              <div ref={packetsEndRef} />
-            </>
+            <div
+              style={{
+                height: virtualizer.getTotalSize(),
+                width: '100%',
+                position: 'relative',
+              }}
+            >
+              {virtualizer.getVirtualItems().map((virtualRow) => {
+                const entry = filteredEntries[virtualRow.index]
+                return (
+                  <div
+                    key={entry.id}
+                    data-index={virtualRow.index}
+                    ref={virtualizer.measureElement}
+                    data-entry-id={entry.id}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                  >
+                    <ConsoleEntry
+                      entry={entry}
+                      isSelected={entry.id === selectedEntryId}
+                      expanded={expandedEntries.has(entry.id)}
+                      onToggle={toggleEntryExpanded}
+                      onSelect={setSelectedEntryId}
+                    />
+                  </div>
+                )
+              })}
+            </div>
           )}
         </div>
 
@@ -641,7 +667,9 @@ export function XmppConsole() {
             onClick={() => {
               setAutoScroll(true)
               setSelectedEntryId(null)
-              packetsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+              if (filteredEntries.length > 0) {
+                virtualizer.scrollToIndex(filteredEntries.length - 1, { align: 'end', behavior: 'smooth' })
+              }
             }}
             className="absolute bottom-4 right-4 flex items-center gap-2 px-3 py-2 bg-fluux-brand text-white text-sm font-medium rounded-full shadow-lg hover:bg-fluux-brand/90 transition-colors"
           >
