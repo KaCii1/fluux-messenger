@@ -637,32 +637,35 @@ export function XmppConsole() {
                 position: 'relative',
               }}
             >
-              {virtualizer.getVirtualItems().map((virtualRow) => {
-                const entry = filteredEntries[virtualRow.index]
-                return (
-                  <div
-                    key={entry.id}
-                    data-index={virtualRow.index}
-                    ref={virtualizer.measureElement}
-                    data-entry-id={entry.id}
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      transform: `translateY(${virtualRow.start}px)`,
-                    }}
-                  >
-                    <ConsoleEntry
-                      entry={entry}
-                      isSelected={entry.id === selectedEntryId}
-                      expanded={expandedEntries.has(entry.id)}
-                      onToggle={toggleEntryExpanded}
-                      onSelect={setSelectedEntryId}
-                    />
-                  </div>
-                )
-              })}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  transform: `translateY(${virtualizer.getVirtualItems()[0]?.start ?? 0}px)`,
+                }}
+              >
+                {virtualizer.getVirtualItems().map((virtualRow) => {
+                  const entry = filteredEntries[virtualRow.index]
+                  return (
+                    <div
+                      key={entry.id}
+                      data-index={virtualRow.index}
+                      ref={virtualizer.measureElement}
+                      data-entry-id={entry.id}
+                    >
+                      <ConsoleEntry
+                        entry={entry}
+                        isSelected={entry.id === selectedEntryId}
+                        expanded={expandedEntries.has(entry.id)}
+                        onToggle={toggleEntryExpanded}
+                        onSelect={setSelectedEntryId}
+                      />
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           )}
         </div>
