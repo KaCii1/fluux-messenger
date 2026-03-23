@@ -98,6 +98,13 @@ export async function clearLocalData(options: ClearLocalDataOptions = {}): Promi
     }
     console.log('[Fluux] clearLocalData: complete')
   } finally {
+    // 7. Reset URL to clear any stale conversation/room JID from the hash.
+    // After clearing all data, the URL may still contain a JID (e.g., #/messages/user@example.com)
+    // that no longer exists in the empty stores, causing a blank screen on re-login.
+    if (window.location.hash && window.location.hash !== '#/' && window.location.hash !== '#/messages') {
+      window.location.hash = '#/messages'
+    }
+
     // Clear app-level session keys last so the logout transition happens
     // after cleanup has run.
     clearSession(allAccounts ? { allAccounts: true } : undefined)
