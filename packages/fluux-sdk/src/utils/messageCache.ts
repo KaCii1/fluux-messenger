@@ -396,6 +396,31 @@ export async function getMessageCount(conversationId: string): Promise<number> {
 }
 
 /**
+ * Count all chat messages across all conversations.
+ */
+export async function getTotalMessageCount(): Promise<number> {
+  try {
+    const db = await getDB(getStorageScopeJid())
+    return await db.count(MESSAGES_STORE)
+  } catch {
+    return 0
+  }
+}
+
+/**
+ * Count all room messages across all rooms.
+ */
+export async function getTotalRoomMessageCount(): Promise<number> {
+  try {
+    await flushPendingRoomMessages()
+    const db = await getDB(getStorageScopeJid())
+    return await db.count(ROOM_MESSAGES_STORE)
+  } catch {
+    return 0
+  }
+}
+
+/**
  * Update specific fields of a message.
  */
 export async function updateMessage(

@@ -12,17 +12,18 @@ const ContactProfileView = lazy(() => import('./ContactProfileView').then(m => (
 const SettingsView = lazy(() => import('./SettingsView').then(m => ({ default: m.SettingsView })))
 const AdminView = lazy(() => import('./AdminView').then(m => ({ default: m.AdminView })))
 const XmppConsole = lazy(() => import('./XmppConsole').then(m => ({ default: m.XmppConsole })))
+const SearchContextView = lazy(() => import('./SearchContextView').then(m => ({ default: m.SearchContextView })))
 import { ShortcutHelp } from './ShortcutHelp'
 import { CommandPalette } from './CommandPalette'
 import { ToastContainer } from './ToastContainer'
 import {
   // Vanilla stores for imperative .getState() access
-  chatStore, roomStore, consoleStore, adminStore, rosterStore,
+  chatStore, roomStore, consoleStore, adminStore, rosterStore, searchStore,
   useRosterActions,
   type Contact, type Conversation, type AdminCategory
 } from '@fluux/sdk'
 // React hook wrappers for reactive subscriptions
-import { useChatStore, useRoomStore, useRosterStore, useConnectionStore, useConsoleStore, useAdminStore } from '@fluux/sdk/react'
+import { useChatStore, useRoomStore, useRosterStore, useConnectionStore, useConsoleStore, useAdminStore, useSearchStore } from '@fluux/sdk/react'
 import { useNotificationBadge } from '@/hooks/useNotificationBadge'
 import { useDesktopNotifications } from '@/hooks/useDesktopNotifications'
 import { useWebPush } from '@/hooks/useWebPush'
@@ -131,6 +132,7 @@ function ChatLayoutContent() {
   const addConversation = useChatStore((s) => s.addConversation)
   const activeRoomJid = useRoomStore((s) => s.activeRoomJid)
   const setActiveRoom = useRoomStore((s) => s.setActiveRoom)
+  const searchPreviewResult = useSearchStore((s) => s.previewResult)
 
   // NOTE: Don't use useRoster() hook here - it subscribes to ALL contacts and triggers
   // re-renders when ANY contact's presence changes. Use useRosterActions() for actions
@@ -425,7 +427,7 @@ function ChatLayoutContent() {
   const adminHasMainContent = adminSession || adminCategory === 'users' || adminCategory === 'rooms'
   // Settings: only show content when a category is explicitly selected (on mobile, let user choose from sidebar first)
   const settingsHasContent = sidebarView === 'settings' && !!settingsCategory
-  const hasActiveContent = !!(activeConversationId || activeRoomJid || selectedContact || adminHasMainContent || settingsHasContent)
+  const hasActiveContent = !!(activeConversationId || activeRoomJid || selectedContact || adminHasMainContent || settingsHasContent || searchPreviewResult)
 
   // Toggle shortcut help overlay
   const toggleShortcutHelp = () => {
@@ -729,6 +731,10 @@ function ChatLayoutContent() {
             </Suspense>
           ) : sidebarView === 'admin' ? (
             <AdminEmptyState />
+          ) : searchPreviewResult ? (
+            <Suspense fallback={<ViewLoadingFallback />}>
+              <SearchContextView onBack={() => searchStore.getState().setPreviewResult(null)} />
+            </Suspense>
           ) : (
             <EmptyState sidebarView={sidebarView} />
           )}

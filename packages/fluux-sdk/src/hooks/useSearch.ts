@@ -37,13 +37,14 @@ import { searchStore, type SearchResult } from '../stores/searchStore'
  * Search is debounced (300ms) and queries a local IndexedDB inverted index.
  */
 export function useSearch() {
-  const { query, isSearching, results, error } = useStore(
+  const { query, isSearching, results, error, previewResult } = useStore(
     searchStore,
     useShallow((state) => ({
       query: state.query,
       isSearching: state.isSearching,
       results: state.results,
       error: state.error,
+      previewResult: state.previewResult,
     }))
   )
 
@@ -56,10 +57,14 @@ export function useSearch() {
     results,
     /** Error message if search failed */
     error,
+    /** Search result currently being previewed in context */
+    previewResult,
     /** Execute a search (debounced 300ms) */
     search: searchStore.getState().search,
     /** Clear search state and results */
     clearSearch: searchStore.getState().clearSearch,
+    /** Set the search result to preview in context */
+    setPreviewResult: searchStore.getState().setPreviewResult,
   }
 }
 

@@ -4,6 +4,7 @@ import { Trash2, Loader2, Check, Search } from 'lucide-react'
 import { formatBytes } from '@/hooks'
 import { getMediaCacheSize, clearMediaCache } from '@/utils/mediaCache'
 import { rebuildSearchIndex } from '@fluux/sdk'
+import type { RebuildProgress } from '@fluux/sdk'
 
 export function StorageSettings() {
   const { t } = useTranslation()
@@ -12,6 +13,7 @@ export function StorageSettings() {
   const [cleared, setCleared] = useState(false)
   const [isRebuilding, setIsRebuilding] = useState(false)
   const [rebuilt, setRebuilt] = useState<number | false>(false)
+  const [progress, setProgress] = useState<RebuildProgress | null>(null)
 
   const loadCacheSize = useCallback(async () => {
     setCacheSize(null)
@@ -37,16 +39,22 @@ export function StorageSettings() {
   const handleRebuildIndex = async () => {
     setIsRebuilding(true)
     setRebuilt(false)
+    setProgress(null)
     try {
-      const count = await rebuildSearchIndex()
+      const count = await rebuildSearchIndex((p) => setProgress(p))
       setRebuilt(count)
       setTimeout(() => setRebuilt(false), 5000)
     } catch (error) {
       console.error('[StorageSettings] Search index rebuild failed:', error)
     } finally {
       setIsRebuilding(false)
+      setProgress(null)
     }
   }
+
+  const progressPercent = progress && progress.total > 0
+    ? Math.round((progress.indexed / progress.total) * 100)
+    : 0
 
   return (
     <section className="max-w-md space-y-8">
@@ -101,6 +109,21 @@ export function StorageSettings() {
         <p className="text-sm text-fluux-muted">
           {t('settings.storage.searchIndexDescription', 'The search index allows full-text search across your message history. Rebuild it if search results seem incomplete.')}
         </p>
+
+        {/* Progress bar */}
+        {isRebuilding && progress && progress.total > 0 && (
+          <div className="space-y-1">
+            <div className="h-2 rounded-full bg-fluux-hover overflow-hidden">
+              <div
+                className="h-full rounded-full bg-fluux-accent transition-all duration-300"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            <p className="text-xs text-fluux-muted text-right">
+              {progress.indexed} / {progress.total} ({progressPercent}%)
+            </p>
+          </div>
+        )}
 
         <button
           onClick={handleRebuildIndex}

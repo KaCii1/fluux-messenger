@@ -46,11 +46,15 @@ export interface SearchState {
   results: SearchResult[]
   /** Error message if search failed */
   error: string | null
+  /** Search result currently being previewed in the context view */
+  previewResult: SearchResult | null
 
   /** Execute a search (debounced internally) */
   search: (query: string) => void
   /** Clear search state */
   clearSearch: () => void
+  /** Set the search result to preview in context */
+  setPreviewResult: (result: SearchResult | null) => void
 }
 
 /** Debounce timer for search input */
@@ -107,6 +111,7 @@ export const searchStore = createStore<SearchState>((set) => ({
   isSearching: false,
   results: [],
   error: null,
+  previewResult: null,
 
   search: (query: string) => {
     if (debounceTimer) {
@@ -133,6 +138,10 @@ export const searchStore = createStore<SearchState>((set) => ({
       clearTimeout(debounceTimer)
       debounceTimer = null
     }
-    set({ query: '', isSearching: false, results: [], error: null })
+    set({ query: '', isSearching: false, results: [], error: null, previewResult: null })
+  },
+
+  setPreviewResult: (result: SearchResult | null) => {
+    set({ previewResult: result })
   },
 }))

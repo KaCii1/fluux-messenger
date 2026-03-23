@@ -351,8 +351,10 @@ vi.mock('@fluux/sdk/react', () => ({
       isSearching: false,
       results: [],
       error: null,
+      previewResult: null,
       search: vi.fn(),
       clearSearch: vi.fn(),
+      setPreviewResult: vi.fn(),
     }
     return selector ? selector(state) : state
   }),

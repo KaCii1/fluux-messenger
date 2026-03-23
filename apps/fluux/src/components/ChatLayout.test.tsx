@@ -290,6 +290,9 @@ vi.mock('@fluux/sdk/react', () => ({
     }
   ),
   useContactTime: () => null, useLastActivity: vi.fn(),
+  useSearchStore: (selector: (state: { previewResult: null }) => unknown) => {
+    return selector({ previewResult: null })
+  },
 }))
 
 // Mock app hooks

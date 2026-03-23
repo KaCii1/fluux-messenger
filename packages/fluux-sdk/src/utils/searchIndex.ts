@@ -534,14 +534,27 @@ export async function backfillFromMessageCache(): Promise<void> {
 }
 
 /**
+ * Progress info emitted during index rebuild.
+ */
+export interface RebuildProgress {
+  /** Messages indexed so far */
+  indexed: number
+  /** Total messages to index (chat + room) */
+  total: number
+}
+
+/**
  * Rebuild the search index from scratch.
  *
  * Clears all indexed data and re-indexes every message from messageCache.
  * Intended for the "Rebuild search index" button in settings.
  *
+ * @param onProgress - Optional callback invoked after each batch with progress info.
  * @returns The total number of messages indexed.
  */
-export async function rebuildSearchIndex(): Promise<number> {
+export async function rebuildSearchIndex(
+  onProgress?: (progress: RebuildProgress) => void
+): Promise<number> {
   if (!isIndexedDBAvailable()) return 0
 
   // Clear existing index data
@@ -552,23 +565,28 @@ export async function rebuildSearchIndex(): Promise<number> {
   await tx.objectStore(META_STORE).clear()
   await tx.done
 
-  // Re-run backfill (flag was cleared above, so it will execute)
+  // Count total messages for progress reporting
   const messageCache = await import('./messageCache')
+  const totalMessages =
+    (await messageCache.getTotalMessageCount()) +
+    (await messageCache.getTotalRoomMessageCount())
 
-  let total = 0
+  let indexed = 0
 
   await messageCache.iterateAllMessages(BACKFILL_BATCH_SIZE, async (batch) => {
     await indexMessages(batch)
-    total += batch.length
+    indexed += batch.length
+    onProgress?.({ indexed, total: totalMessages })
   })
 
   await messageCache.iterateAllRoomMessages(BACKFILL_BATCH_SIZE, async (batch) => {
     await indexMessages(batch)
-    total += batch.length
+    indexed += batch.length
+    onProgress?.({ indexed, total: totalMessages })
   })
 
   await markBackfillComplete()
-  return total
+  return indexed
 }
 
 // =============================================================================

@@ -452,6 +452,12 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 0.5rem;
 }
 
+/* Persistent highlight for search context view */
+.message-highlight-persistent {
+  background-color: var(--fluux-bg-accent);
+  border-radius: 0.5rem;
+}
+
 /* Bounce effect for keyboard navigation at boundaries */
 @keyframes bounce-top {
   0%, 100% { transform: translateY(0); }

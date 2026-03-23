@@ -6,11 +6,11 @@ import { Avatar } from '../Avatar'
 import { useNavigateToTarget } from '@/hooks/useNavigateToTarget'
 import { formatConversationTime } from '@/utils/dateFormat'
 import { useSettingsStore, type TimeFormat } from '@/stores/settingsStore'
-import { Search, X, Loader2, Hash } from 'lucide-react'
+import { Search, X, Loader2, Hash, ExternalLink } from 'lucide-react'
 
 export function SearchView() {
   const { t, i18n } = useTranslation()
-  const { query, results, isSearching, error, search, clearSearch } = useSearch()
+  const { query, results, isSearching, error, search, clearSearch, previewResult, setPreviewResult } = useSearch()
   const { navigateToConversation, navigateToRoom } = useNavigateToTarget()
   const inputRef = useRef<HTMLInputElement>(null)
   const currentLang = i18n.language.split('-')[0]
@@ -23,13 +23,22 @@ export function SearchView() {
 
   const handleResultClick = useCallback(
     (result: SearchResult) => {
+      setPreviewResult(result)
+    },
+    [setPreviewResult]
+  )
+
+  const handleGoToMessage = useCallback(
+    (e: React.MouseEvent, result: SearchResult) => {
+      e.stopPropagation()
+      setPreviewResult(null)
       if (result.isRoom) {
         navigateToRoom(result.conversationId, result.messageId)
       } else {
         navigateToConversation(result.conversationId, result.messageId)
       }
     },
-    [navigateToConversation, navigateToRoom]
+    [navigateToConversation, navigateToRoom, setPreviewResult]
   )
 
   return (
@@ -84,7 +93,9 @@ export function SearchView() {
               <SearchResultItem
                 key={result.indexId}
                 result={result}
+                isActive={previewResult?.indexId === result.indexId}
                 onClick={() => handleResultClick(result)}
+                onGoToMessage={(e) => handleGoToMessage(e, result)}
                 currentLang={currentLang}
                 timeFormat={timeFormat}
                 t={t}
@@ -105,20 +116,22 @@ export function SearchView() {
 
 interface SearchResultItemProps {
   result: SearchResult
+  isActive: boolean
   onClick: () => void
+  onGoToMessage: (e: React.MouseEvent) => void
   currentLang: string
   timeFormat: TimeFormat
   t: (key: string) => string
 }
 
-function SearchResultItem({ result, onClick, currentLang, timeFormat, t }: SearchResultItemProps) {
+function SearchResultItem({ result, isActive, onClick, onGoToMessage, currentLang, timeFormat, t }: SearchResultItemProps) {
   const timestamp = new Date(result.timestamp)
 
   return (
     <button
       onClick={onClick}
-      className="w-full px-2 py-1.5 rounded flex items-start gap-2.5 text-left cursor-pointer
-                 transition-colors text-fluux-muted hover:bg-fluux-hover hover:text-fluux-text"
+      className={`w-full px-2 py-1.5 rounded flex items-start gap-2.5 text-left cursor-pointer
+                 transition-colors group/result ${isActive ? 'bg-fluux-hover text-fluux-text' : 'text-fluux-muted hover:bg-fluux-hover hover:text-fluux-text'}`}
     >
       {/* Avatar / icon */}
       <div className="flex-shrink-0 mt-0.5">
@@ -147,9 +160,18 @@ function SearchResultItem({ result, onClick, currentLang, timeFormat, t }: Searc
           <span className="text-sm font-medium text-fluux-text truncate">
             {result.conversationName}
           </span>
-          <span className="text-xs text-fluux-muted flex-shrink-0">
-            {formatConversationTime(timestamp, t, currentLang, timeFormat)}
-          </span>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <span className="text-xs text-fluux-muted">
+              {formatConversationTime(timestamp, t, currentLang, timeFormat)}
+            </span>
+            <button
+              onClick={onGoToMessage}
+              className="p-0.5 rounded opacity-0 group-hover/result:opacity-100 transition-opacity hover:bg-fluux-hover-strong"
+              title="Go to message"
+            >
+              <ExternalLink className="w-3 h-3 text-fluux-muted" />
+            </button>
+          </div>
         </div>
         {result.matchSnippet && (
           <HighlightedSnippet snippet={result.matchSnippet} />
