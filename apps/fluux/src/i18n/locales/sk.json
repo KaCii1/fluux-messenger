@@ -527,7 +527,12 @@
             "cacheSize": "Veľkosť vyrovnávacej pamäte",
             "clearCache": "Vymazať vyrovnávaciu pamäť",
             "cacheCleared": "Vyrovnávacia pamäť vymazaná",
-            "calculating": "Počítam..."
+            "calculating": "Počítam...",
+            "searchIndex": "Index vyhľadávania",
+            "searchIndexDescription": "Index vyhľadávania umožňuje fulltextové vyhľadávanie v histórii správ. Obnovte ho, ak sa výsledky zdajú neúplné.",
+            "rebuildIndex": "Obnoviť index",
+            "rebuildingIndex": "Obnovovanie…",
+            "indexRebuilt": "{{count}} správ indexovaných"
         }
     },
     "update": {

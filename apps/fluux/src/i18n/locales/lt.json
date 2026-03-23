@@ -526,7 +526,12 @@
             "cacheSize": "Talpyklos dydis",
             "clearCache": "Išvalyti talpyklą",
             "cacheCleared": "Talpykla išvalyta",
-            "calculating": "Skaičiuojama..."
+            "calculating": "Skaičiuojama...",
+            "searchIndex": "Paieškos indeksas",
+            "searchIndexDescription": "Paieškos indeksas leidžia atlikti viso teksto paiešką žinučių istorijoje. Atkurkite jį, jei paieškos rezultatai atrodo nepilni.",
+            "rebuildIndex": "Atkurti indeksą",
+            "rebuildingIndex": "Atkuriama…",
+            "indexRebuilt": "{{count}} žinučių indeksuota"
         }
     },
     "update": {

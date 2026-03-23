@@ -526,7 +526,12 @@
             "cacheSize": "缓存大小",
             "clearCache": "清除缓存",
             "cacheCleared": "缓存已清除",
-            "calculating": "正在计算..."
+            "calculating": "正在计算...",
+            "searchIndex": "搜索索引",
+            "searchIndexDescription": "搜索索引支持对消息历史进行全文搜索。如果搜索结果不完整，请重建索引。",
+            "rebuildIndex": "重建索引",
+            "rebuildingIndex": "重建中…",
+            "indexRebuilt": "已索引 {{count}} 条消息"
         }
     },
     "update": {

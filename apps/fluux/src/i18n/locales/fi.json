@@ -526,7 +526,12 @@
             "cacheSize": "Välimuistin koko",
             "clearCache": "Tyhjennä välimuisti",
             "cacheCleared": "Välimuisti tyhjennetty",
-            "calculating": "Lasketaan..."
+            "calculating": "Lasketaan...",
+            "searchIndex": "Hakuindeksi",
+            "searchIndexDescription": "Hakuindeksi mahdollistaa kokotekstihaun viestihistoriastasi. Rakenna se uudelleen, jos hakutulokset vaikuttavat puutteellisilta.",
+            "rebuildIndex": "Rakenna indeksi uudelleen",
+            "rebuildingIndex": "Rakennetaan…",
+            "indexRebuilt": "{{count}} viestiä indeksoitu"
         }
     },
     "update": {

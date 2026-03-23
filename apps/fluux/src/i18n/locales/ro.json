@@ -528,7 +528,12 @@
             "cacheSize": "Dimensiune cache",
             "clearCache": "Golește cache-ul",
             "cacheCleared": "Cache golit",
-            "calculating": "Se calculează..."
+            "calculating": "Se calculează...",
+            "searchIndex": "Index de căutare",
+            "searchIndexDescription": "Indexul de căutare permite căutarea în text complet în istoricul mesajelor. Reconstruiți-l dacă rezultatele par incomplete.",
+            "rebuildIndex": "Reconstruiește indexul",
+            "rebuildingIndex": "Reconstruire…",
+            "indexRebuilt": "{{count}} mesaje indexate"
         }
     },
     "update": {

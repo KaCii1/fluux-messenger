@@ -528,7 +528,12 @@
             "cacheSize": "Daqs tal-cache",
             "clearCache": "Naddaf il-cache",
             "cacheCleared": "Il-cache tnaddaf",
-            "calculating": "Qed nikkalkula..."
+            "calculating": "Qed nikkalkula...",
+            "searchIndex": "Indiċi tat-tiftix",
+            "searchIndexDescription": "L-indiċi tat-tiftix jippermetti tiftix ta' test sħiħ fl-istorja tal-messaġġi tiegħek. Erġa' ibnih jekk ir-riżultati jidhru mhux kompluti.",
+            "rebuildIndex": "Erġa' ibni l-indiċi",
+            "rebuildingIndex": "Qed jinbena…",
+            "indexRebuilt": "{{count}} messaġġ indiċjati"
         }
     },
     "update": {

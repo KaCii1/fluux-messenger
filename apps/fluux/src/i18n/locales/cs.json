@@ -528,7 +528,12 @@
             "cacheSize": "Velikost mezipaměti",
             "clearCache": "Vymazat mezipaměť",
             "cacheCleared": "Mezipaměť vymazána",
-            "calculating": "Počítám..."
+            "calculating": "Počítám...",
+            "searchIndex": "Index vyhledávání",
+            "searchIndexDescription": "Index vyhledávání umožňuje fulltextové vyhledávání v historii zpráv. Obnovte jej, pokud se výsledky zdají neúplné.",
+            "rebuildIndex": "Obnovit index",
+            "rebuildingIndex": "Obnovování…",
+            "indexRebuilt": "{{count}} zpráv indexováno"
         }
     },
     "update": {

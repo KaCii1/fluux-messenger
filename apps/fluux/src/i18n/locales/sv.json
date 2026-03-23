@@ -526,7 +526,12 @@
             "cacheSize": "Cachestorlek",
             "clearCache": "Rensa cache",
             "cacheCleared": "Cache rensad",
-            "calculating": "Beräknar..."
+            "calculating": "Beräknar...",
+            "searchIndex": "Sökindex",
+            "searchIndexDescription": "Sökindexet möjliggör fulltextsökning i din meddelandehistorik. Bygg om det om sökresultaten verkar ofullständiga.",
+            "rebuildIndex": "Bygg om index",
+            "rebuildingIndex": "Bygger om…",
+            "indexRebuilt": "{{count}} meddelanden indexerade"
         }
     },
     "update": {

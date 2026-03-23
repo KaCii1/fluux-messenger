@@ -527,7 +527,12 @@
             "cacheSize": "Kešatmiņas lielums",
             "clearCache": "Iztīrīt kešatmiņu",
             "cacheCleared": "Kešatmiņa iztīrīta",
-            "calculating": "Aprēķinu..."
+            "calculating": "Aprēķinu...",
+            "searchIndex": "Meklēšanas indekss",
+            "searchIndexDescription": "Meklēšanas indekss ļauj veikt pilna teksta meklēšanu ziņojumu vēsturē. Pārbūvējiet to, ja meklēšanas rezultāti šķiet nepilnīgi.",
+            "rebuildIndex": "Pārbūvēt indeksu",
+            "rebuildingIndex": "Pārbūvēšana…",
+            "indexRebuilt": "{{count}} ziņojumi indeksēti"
         }
     },
     "update": {

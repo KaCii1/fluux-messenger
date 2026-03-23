@@ -526,7 +526,12 @@
             "cacheSize": "Bufferstørrelse",
             "clearCache": "Tøm buffer",
             "cacheCleared": "Buffer tømt",
-            "calculating": "Beregner..."
+            "calculating": "Beregner...",
+            "searchIndex": "Søkeindeks",
+            "searchIndexDescription": "Søkeindeksen muliggjør fulltekstsøk i meldingshistorikken din. Gjenoppbygg den hvis søkeresultatene virker ufullstendige.",
+            "rebuildIndex": "Gjenoppbygg indeks",
+            "rebuildingIndex": "Gjenoppbygger…",
+            "indexRebuilt": "{{count}} meldinger indeksert"
         }
     },
     "update": {

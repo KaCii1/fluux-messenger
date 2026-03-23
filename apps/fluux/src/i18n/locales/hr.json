@@ -526,7 +526,12 @@
             "cacheSize": "Veličina predmemorije",
             "clearCache": "Očisti predmemoriju",
             "cacheCleared": "Predmemorija očišćena",
-            "calculating": "Računam..."
+            "calculating": "Računam...",
+            "searchIndex": "Indeks pretraživanja",
+            "searchIndexDescription": "Indeks pretraživanja omogućuje pretraživanje punog teksta u povijesti poruka. Obnovite ga ako rezultati pretraživanja djeluju nepotpuno.",
+            "rebuildIndex": "Obnovi indeks",
+            "rebuildingIndex": "Obnavljanje…",
+            "indexRebuilt": "{{count}} poruka indeksirano"
         }
     },
     "update": {

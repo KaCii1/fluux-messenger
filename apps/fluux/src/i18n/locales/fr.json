@@ -527,7 +527,12 @@
             "cacheSize": "Taille du cache",
             "clearCache": "Vider le cache",
             "cacheCleared": "Cache vidé",
-            "calculating": "Calcul en cours..."
+            "calculating": "Calcul en cours...",
+            "searchIndex": "Index de recherche",
+            "searchIndexDescription": "L'index de recherche permet la recherche en texte intégral dans l'historique de vos messages. Reconstruisez-le si les résultats semblent incomplets.",
+            "rebuildIndex": "Reconstruire l'index",
+            "rebuildingIndex": "Reconstruction…",
+            "indexRebuilt": "{{count}} messages indexés"
         }
     },
     "update": {

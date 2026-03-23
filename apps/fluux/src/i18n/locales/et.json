@@ -528,7 +528,12 @@
             "cacheSize": "Vahemälu suurus",
             "clearCache": "Tühjenda vahemälu",
             "cacheCleared": "Vahemälu tühjendatud",
-            "calculating": "Arvutan..."
+            "calculating": "Arvutan...",
+            "searchIndex": "Otsinguindeks",
+            "searchIndexDescription": "Otsinguindeks võimaldab täistekstiotsingut teie sõnumite ajaloost. Ehitage see uuesti, kui otsingutulemused tunduvad puudulikud.",
+            "rebuildIndex": "Ehita indeks uuesti",
+            "rebuildingIndex": "Ehitamine…",
+            "indexRebuilt": "{{count}} sõnumit indekseeritud"
         }
     },
     "update": {

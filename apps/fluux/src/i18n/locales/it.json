@@ -528,7 +528,12 @@
             "cacheSize": "Dimensione cache",
             "clearCache": "Svuota cache",
             "cacheCleared": "Cache svuotata",
-            "calculating": "Calcolo in corso..."
+            "calculating": "Calcolo in corso...",
+            "searchIndex": "Indice di ricerca",
+            "searchIndexDescription": "L'indice di ricerca consente la ricerca full-text nella cronologia dei messaggi. Ricostruiscilo se i risultati sembrano incompleti.",
+            "rebuildIndex": "Ricostruisci l'indice",
+            "rebuildingIndex": "Ricostruzione…",
+            "indexRebuilt": "{{count}} messaggi indicizzati"
         }
     },
     "update": {

@@ -526,7 +526,12 @@
             "cacheSize": "Cachestørrelse",
             "clearCache": "Ryd cache",
             "cacheCleared": "Cache ryddet",
-            "calculating": "Beregner..."
+            "calculating": "Beregner...",
+            "searchIndex": "Søgeindeks",
+            "searchIndexDescription": "Søgeindekset muliggør fuldtekstsøgning i din beskedhistorik. Genopbyg det, hvis søgeresultaterne virker ufuldstændige.",
+            "rebuildIndex": "Genopbyg indeks",
+            "rebuildingIndex": "Genopbygger…",
+            "indexRebuilt": "{{count}} beskeder indekseret"
         }
     },
     "update": {

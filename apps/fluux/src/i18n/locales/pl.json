@@ -528,7 +528,12 @@
             "cacheSize": "Rozmiar pamięci podręcznej",
             "clearCache": "Wyczyść pamięć podręczną",
             "cacheCleared": "Pamięć podręczna wyczyszczona",
-            "calculating": "Obliczanie..."
+            "calculating": "Obliczanie...",
+            "searchIndex": "Indeks wyszukiwania",
+            "searchIndexDescription": "Indeks wyszukiwania umożliwia wyszukiwanie pełnotekstowe w historii wiadomości. Odbuduj go, jeśli wyniki wyszukiwania wydają się niekompletne.",
+            "rebuildIndex": "Odbuduj indeks",
+            "rebuildingIndex": "Odbudowywanie…",
+            "indexRebuilt": "{{count}} wiadomości zindeksowanych"
         }
     },
     "update": {

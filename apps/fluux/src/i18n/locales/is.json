@@ -526,7 +526,12 @@
             "cacheSize": "Stærð skyndiminnis",
             "clearCache": "Hreinsa skyndiminni",
             "cacheCleared": "Skyndiminni hreinsað",
-            "calculating": "Reikna..."
+            "calculating": "Reikna...",
+            "searchIndex": "Leitarvísir",
+            "searchIndexDescription": "Leitarvísirinn gerir kleift að leita í öllum skilaboðasögunni. Endurbyggðu hann ef leitarniðurstöður virðast ófullkomnar.",
+            "rebuildIndex": "Endurbyggja vísir",
+            "rebuildingIndex": "Endurbygging…",
+            "indexRebuilt": "{{count}} skilaboð skráð"
         }
     },
     "update": {

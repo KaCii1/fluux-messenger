@@ -528,7 +528,12 @@
             "cacheSize": "Cache-Größe",
             "clearCache": "Cache leeren",
             "cacheCleared": "Cache geleert",
-            "calculating": "Berechne..."
+            "calculating": "Berechne...",
+            "searchIndex": "Suchindex",
+            "searchIndexDescription": "Der Suchindex ermöglicht die Volltextsuche in Ihrem Nachrichtenverlauf. Erstellen Sie ihn neu, wenn die Suchergebnisse unvollständig erscheinen.",
+            "rebuildIndex": "Index neu erstellen",
+            "rebuildingIndex": "Wird erstellt…",
+            "indexRebuilt": "{{count}} Nachrichten indexiert"
         }
     },
     "update": {

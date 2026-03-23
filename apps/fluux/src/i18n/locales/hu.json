@@ -526,7 +526,12 @@
             "cacheSize": "Gyorsítótár mérete",
             "clearCache": "Gyorsítótár törlése",
             "cacheCleared": "Gyorsítótár törölve",
-            "calculating": "Számítás..."
+            "calculating": "Számítás...",
+            "searchIndex": "Keresési index",
+            "searchIndexDescription": "A keresési index lehetővé teszi a teljes szöveges keresést az üzenetelőzmények között. Építse újra, ha a keresési eredmények hiányosnak tűnnek.",
+            "rebuildIndex": "Index újraépítése",
+            "rebuildingIndex": "Újraépítés…",
+            "indexRebuilt": "{{count}} üzenet indexelve"
         }
     },
     "update": {

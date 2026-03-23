@@ -528,7 +528,12 @@
             "cacheSize": "Mida de la memòria cau",
             "clearCache": "Buidar la memòria cau",
             "cacheCleared": "Memòria cau buidada",
-            "calculating": "Calculant..."
+            "calculating": "Calculant...",
+            "searchIndex": "Índex de cerca",
+            "searchIndexDescription": "L'índex de cerca permet la cerca de text complet a l'historial de missatges. Reconstruïu-lo si els resultats semblen incomplets.",
+            "rebuildIndex": "Reconstruir l'índex",
+            "rebuildingIndex": "Reconstruint…",
+            "indexRebuilt": "{{count}} missatges indexats"
         }
     },
     "update": {

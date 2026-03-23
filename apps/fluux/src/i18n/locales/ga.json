@@ -526,7 +526,12 @@
             "cacheSize": "Méid taisce",
             "clearCache": "Glan taisce",
             "cacheCleared": "Taisce glanta",
-            "calculating": "Ag ríomh..."
+            "calculating": "Ag ríomh...",
+            "searchIndex": "Innéacs cuardaigh",
+            "searchIndexDescription": "Cumasaíonn an t-innéacs cuardaigh cuardach téacs iomlán ar fud stair do theachtaireachtaí. Atóg é má tá na torthaí cuardaigh neamhiomlán.",
+            "rebuildIndex": "Atóg an t-innéacs",
+            "rebuildingIndex": "Ag atógáil…",
+            "indexRebuilt": "{{count}} teachtaireacht innéacsaithe"
         }
     },
     "update": {

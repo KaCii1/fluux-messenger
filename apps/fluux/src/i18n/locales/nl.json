@@ -526,7 +526,12 @@
             "cacheSize": "Cachegrootte",
             "clearCache": "Cache wissen",
             "cacheCleared": "Cache gewist",
-            "calculating": "Berekenen..."
+            "calculating": "Berekenen...",
+            "searchIndex": "Zoekindex",
+            "searchIndexDescription": "De zoekindex maakt zoeken in volledige tekst mogelijk in uw berichtengeschiedenis. Herbouw deze als de zoekresultaten onvolledig lijken.",
+            "rebuildIndex": "Index opnieuw opbouwen",
+            "rebuildingIndex": "Opnieuw opbouwen…",
+            "indexRebuilt": "{{count}} berichten geïndexeerd"
         }
     },
     "update": {

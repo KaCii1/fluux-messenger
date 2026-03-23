@@ -526,7 +526,12 @@
             "cacheSize": "Cache size",
             "clearCache": "Clear Cache",
             "cacheCleared": "Cache cleared",
-            "calculating": "Calculating..."
+            "calculating": "Calculating...",
+            "searchIndex": "Search Index",
+            "searchIndexDescription": "The search index allows full-text search across your message history. Rebuild it if search results seem incomplete.",
+            "rebuildIndex": "Rebuild search index",
+            "rebuildingIndex": "Rebuilding…",
+            "indexRebuilt": "{{count}} messages indexed"
         }
     },
     "update": {
