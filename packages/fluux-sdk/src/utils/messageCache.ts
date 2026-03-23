@@ -835,6 +835,67 @@ export async function getOldestRoomMessageTimestamp(
 }
 
 /**
+ * Iterate all stored chat messages in batches.
+ * Used for search index backfill. Processes messages in chunks to avoid
+ * holding all messages in memory at once.
+ *
+ * @param batchSize - Number of messages per batch (default: 500)
+ * @param onBatch - Callback invoked with each batch of deserialized messages
+ */
+export async function iterateAllMessages(
+  batchSize: number,
+  onBatch: (messages: Message[]) => Promise<void>
+): Promise<void> {
+  const db = await getDB(getStorageScopeJid())
+  const tx = db.transaction(MESSAGES_STORE, 'readonly')
+  let cursor = await tx.store.openCursor()
+  let batch: Message[] = []
+
+  while (cursor) {
+    batch.push(deserializeMessage(cursor.value))
+    if (batch.length >= batchSize) {
+      await onBatch(batch)
+      batch = []
+    }
+    cursor = await cursor.continue()
+  }
+
+  if (batch.length > 0) {
+    await onBatch(batch)
+  }
+}
+
+/**
+ * Iterate all stored room messages in batches.
+ * Used for search index backfill.
+ *
+ * @param batchSize - Number of messages per batch (default: 500)
+ * @param onBatch - Callback invoked with each batch of deserialized messages
+ */
+export async function iterateAllRoomMessages(
+  batchSize: number,
+  onBatch: (messages: RoomMessage[]) => Promise<void>
+): Promise<void> {
+  const db = await getDB(getStorageScopeJid())
+  const tx = db.transaction(ROOM_MESSAGES_STORE, 'readonly')
+  let cursor = await tx.store.openCursor()
+  let batch: RoomMessage[] = []
+
+  while (cursor) {
+    batch.push(deserializeRoomMessage(cursor.value))
+    if (batch.length >= batchSize) {
+      await onBatch(batch)
+      batch = []
+    }
+    cursor = await cursor.continue()
+  }
+
+  if (batch.length > 0) {
+    await onBatch(batch)
+  }
+}
+
+/**
  * Check if IndexedDB message cache is available.
  */
 export function isMessageCacheAvailable(): boolean {

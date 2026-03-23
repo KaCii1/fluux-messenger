@@ -18,9 +18,10 @@ import type { Message, RoomMessage } from '../core/types'
 import { getStorageScopeJid } from './storageScope'
 
 const DB_NAME = 'fluux-search-index'
-const DB_VERSION = 1
+const DB_VERSION = 2
 const TOKENS_STORE = 'search-tokens'
 const DOCS_STORE = 'search-docs'
+const META_STORE = 'search-meta'
 
 /** Minimum token length to index (skip single characters) */
 const MIN_TOKEN_LENGTH = 2
@@ -47,6 +48,11 @@ interface DocEntry {
   body: string
 }
 
+interface MetaEntry {
+  key: string
+  value: string
+}
+
 interface SearchIndexSchema extends DBSchema {
   [TOKENS_STORE]: {
     key: string
@@ -59,6 +65,10 @@ interface SearchIndexSchema extends DBSchema {
       timestamp: number
       conversationId: string
     }
+  }
+  [META_STORE]: {
+    key: string
+    value: MetaEntry
   }
 }
 
@@ -126,6 +136,9 @@ function getDB(
         docsStore.createIndex('timestamp', 'timestamp', { unique: false })
         docsStore.createIndex('conversationId', 'conversationId', { unique: false })
       }
+      if (!db.objectStoreNames.contains(META_STORE)) {
+        db.createObjectStore(META_STORE, { keyPath: 'key' })
+      }
     },
   })
 
@@ -179,10 +192,13 @@ function getIndexId(message: Message | RoomMessage): string {
 
 /**
  * Initialize the search index for the given account scope.
- * Opens (or creates) the IndexedDB database.
+ * Opens (or creates) the IndexedDB database and triggers a one-time
+ * backfill of existing messages from messageCache (if not already done).
  */
 export async function initSearchIndex(scopeJid: string): Promise<void> {
   await getDB(scopeJid)
+  // Fire-and-forget backfill — runs once per account, no-op thereafter
+  void backfillFromMessageCache()
 }
 
 /**
@@ -439,6 +455,107 @@ export async function search(
     body: doc.body,
   }))
 }
+
+// =============================================================================
+// Backfill
+// =============================================================================
+
+const BACKFILL_KEY = 'backfill-complete'
+const BACKFILL_BATCH_SIZE = 500
+
+/**
+ * Check if the initial backfill from messageCache has been completed.
+ */
+async function isBackfillComplete(): Promise<boolean> {
+  const db = await getDB()
+  const entry = await db.get(META_STORE, BACKFILL_KEY)
+  return !!entry
+}
+
+/**
+ * Mark the backfill as complete so it won't run again.
+ */
+async function markBackfillComplete(): Promise<void> {
+  const db = await getDB()
+  await db.put(META_STORE, { key: BACKFILL_KEY, value: 'true' })
+}
+
+/**
+ * Backfill the search index with all existing messages from messageCache.
+ *
+ * Runs once per account — tracks completion in the search index DB.
+ * Processes messages in batches to avoid holding all messages in memory.
+ * Safe to call multiple times; subsequent calls are no-ops.
+ */
+export async function backfillFromMessageCache(): Promise<void> {
+  if (!isIndexedDBAvailable()) return
+
+  if (await isBackfillComplete()) return
+
+  // Dynamic import to avoid circular dependency and keep lazy loading possible
+  const messageCache = await import('./messageCache')
+
+  let chatCount = 0
+  let roomCount = 0
+
+  await messageCache.iterateAllMessages(BACKFILL_BATCH_SIZE, async (batch) => {
+    await indexMessages(batch)
+    chatCount += batch.length
+  })
+
+  await messageCache.iterateAllRoomMessages(BACKFILL_BATCH_SIZE, async (batch) => {
+    await indexMessages(batch)
+    roomCount += batch.length
+  })
+
+  await markBackfillComplete()
+
+  if (chatCount > 0 || roomCount > 0) {
+    console.log(`[searchIndex] Backfill complete: indexed ${chatCount} chat + ${roomCount} room messages`)
+  }
+}
+
+/**
+ * Rebuild the search index from scratch.
+ *
+ * Clears all indexed data and re-indexes every message from messageCache.
+ * Intended for the "Rebuild search index" button in settings.
+ *
+ * @returns The total number of messages indexed.
+ */
+export async function rebuildSearchIndex(): Promise<number> {
+  if (!isIndexedDBAvailable()) return 0
+
+  // Clear existing index data
+  const db = await getDB()
+  const tx = db.transaction([TOKENS_STORE, DOCS_STORE, META_STORE], 'readwrite')
+  await tx.objectStore(TOKENS_STORE).clear()
+  await tx.objectStore(DOCS_STORE).clear()
+  await tx.objectStore(META_STORE).clear()
+  await tx.done
+
+  // Re-run backfill (flag was cleared above, so it will execute)
+  const messageCache = await import('./messageCache')
+
+  let total = 0
+
+  await messageCache.iterateAllMessages(BACKFILL_BATCH_SIZE, async (batch) => {
+    await indexMessages(batch)
+    total += batch.length
+  })
+
+  await messageCache.iterateAllRoomMessages(BACKFILL_BATCH_SIZE, async (batch) => {
+    await indexMessages(batch)
+    total += batch.length
+  })
+
+  await markBackfillComplete()
+  return total
+}
+
+// =============================================================================
+// Lifecycle
+// =============================================================================
 
 /**
  * Destroy the search index (close and delete the database).

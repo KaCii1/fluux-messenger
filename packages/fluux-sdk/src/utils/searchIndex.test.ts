@@ -12,10 +12,13 @@ import {
   removeMessage,
   updateMessage,
   search,
+  backfillFromMessageCache,
+  rebuildSearchIndex,
   closeSearchIndex,
   tokenize,
   _resetDBForTesting,
 } from './searchIndex'
+import { _resetDBForTesting as _resetMessageCacheDB, flushPendingRoomMessages } from './messageCache'
 
 // =============================================================================
 // Test helpers
@@ -57,6 +60,7 @@ describe('searchIndex', () => {
     _resetStorageScopeForTesting()
     globalThis.indexedDB = new IDBFactory()
     _resetDBForTesting()
+    _resetMessageCacheDB()
     setStorageScopeJid('test@example.com')
   })
 
@@ -503,6 +507,183 @@ describe('searchIndex', () => {
       await closeSearchIndex()
       _resetDBForTesting()
       await expect(initSearchIndex('user@example.com')).resolves.not.toThrow()
+    })
+  })
+
+  // ===========================================================================
+  // backfillFromMessageCache
+  // ===========================================================================
+
+  describe('backfillFromMessageCache', () => {
+    // We need to populate the messageCache IDB directly, then call backfill.
+    // Import messageCache after fake-indexeddb is set up.
+    let messageCache: typeof import('./messageCache')
+
+    beforeEach(async () => {
+      messageCache = await import('./messageCache')
+    })
+
+    it('should index existing chat messages from messageCache', async () => {
+      // Seed messageCache with some messages
+      await messageCache.saveMessage(createChatMessage('alice@example.com', {
+        id: 'old-chat-1',
+        body: 'Historical chat message one',
+      }))
+      await messageCache.saveMessage(createChatMessage('bob@example.com', {
+        id: 'old-chat-2',
+        body: 'Historical chat message two',
+      }))
+
+      await backfillFromMessageCache()
+
+      const results = await search('historical')
+      expect(results).toHaveLength(2)
+    })
+
+    it('should index existing room messages from messageCache', async () => {
+      await messageCache.saveRoomMessage(createRoomMessage('dev@conference.example.com', {
+        id: 'old-room-1',
+        stanzaId: 'stanza-old-1',
+        body: 'Historical room discussion',
+      }))
+      await flushPendingRoomMessages()
+
+      await backfillFromMessageCache()
+
+      const results = await search('discussion')
+      expect(results).toHaveLength(1)
+      expect(results[0].isRoom).toBe(true)
+    })
+
+    it('should not run twice (idempotent)', async () => {
+      await messageCache.saveMessage(createChatMessage('alice@example.com', {
+        id: 'backfill-msg',
+        body: 'Backfill test message',
+      }))
+
+      await backfillFromMessageCache()
+      expect(await search('backfill')).toHaveLength(1)
+
+      // Add another message to messageCache after backfill
+      await messageCache.saveMessage(createChatMessage('alice@example.com', {
+        id: 'post-backfill-msg',
+        body: 'Post backfill only message',
+      }))
+
+      // Second backfill should be a no-op (flag is set)
+      await backfillFromMessageCache()
+
+      // The post-backfill message should NOT be in the index
+      // (it was added to messageCache after backfill, and backfill didn't re-run)
+      expect(await search('post backfill only')).toHaveLength(0)
+    })
+
+    it('should handle mixed chat and room messages', async () => {
+      await messageCache.saveMessage(createChatMessage('alice@example.com', {
+        id: 'mixed-chat',
+        body: 'Searchable content in chat',
+      }))
+      await messageCache.saveRoomMessage(createRoomMessage('room@conference.example.com', {
+        id: 'mixed-room',
+        stanzaId: 'stanza-mixed',
+        body: 'Searchable content in room',
+      }))
+      await flushPendingRoomMessages()
+
+      await backfillFromMessageCache()
+
+      const results = await search('searchable content')
+      expect(results).toHaveLength(2)
+    })
+
+    it('should handle empty messageCache gracefully', async () => {
+      await backfillFromMessageCache()
+
+      const results = await search('anything')
+      expect(results).toHaveLength(0)
+    })
+  })
+
+  // ===========================================================================
+  // rebuildSearchIndex
+  // ===========================================================================
+
+  describe('rebuildSearchIndex', () => {
+    let messageCache: typeof import('./messageCache')
+
+    beforeEach(async () => {
+      messageCache = await import('./messageCache')
+    })
+
+    it('should clear existing index and re-index from messageCache', async () => {
+      // Index a message directly
+      await indexMessage(createChatMessage('alice@example.com', {
+        id: 'direct-indexed',
+        body: 'Directly indexed message',
+      }))
+      expect(await search('directly')).toHaveLength(1)
+
+      // Seed messageCache with different messages
+      await messageCache.saveMessage(createChatMessage('bob@example.com', {
+        id: 'cache-msg',
+        body: 'Message from cache only',
+      }))
+
+      // Rebuild: should clear the direct-indexed message and only have cache messages
+      const count = await rebuildSearchIndex()
+
+      // The directly indexed message is NOT in messageCache, so it's gone
+      expect(await search('directly')).toHaveLength(0)
+      // The cache message should now be indexed
+      expect(await search('cache')).toHaveLength(1)
+      expect(count).toBe(1)
+    })
+
+    it('should return total count of messages indexed', async () => {
+      await messageCache.saveMessage(createChatMessage('alice@example.com', {
+        id: 'count-1', body: 'First message',
+      }))
+      await messageCache.saveMessage(createChatMessage('alice@example.com', {
+        id: 'count-2', body: 'Second message',
+      }))
+      await messageCache.saveRoomMessage(createRoomMessage('room@conference.example.com', {
+        id: 'count-3', stanzaId: 'stanza-count-3', body: 'Third message',
+      }))
+      await flushPendingRoomMessages()
+
+      const count = await rebuildSearchIndex()
+      expect(count).toBe(3)
+    })
+
+    it('should allow backfill to run again after rebuild', async () => {
+      // First backfill
+      await messageCache.saveMessage(createChatMessage('alice@example.com', {
+        id: 'phase1', body: 'Phase one message',
+      }))
+      await backfillFromMessageCache()
+      expect(await search('phase')).toHaveLength(1)
+
+      // Add more messages
+      await messageCache.saveMessage(createChatMessage('alice@example.com', {
+        id: 'phase2', body: 'Phase two message',
+      }))
+
+      // Rebuild clears everything and re-indexes all
+      await rebuildSearchIndex()
+
+      // Both messages should be found (rebuild re-indexed everything)
+      expect(await search('phase')).toHaveLength(2)
+    })
+
+    it('should handle empty messageCache', async () => {
+      // Index something first
+      await indexMessage(createChatMessage('alice@example.com', {
+        body: 'Will be cleared',
+      }))
+
+      const count = await rebuildSearchIndex()
+      expect(count).toBe(0)
+      expect(await search('cleared')).toHaveLength(0)
     })
   })
 })

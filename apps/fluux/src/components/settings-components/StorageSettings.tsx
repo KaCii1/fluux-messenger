@@ -1,14 +1,17 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Trash2, Loader2, Check } from 'lucide-react'
+import { Trash2, Loader2, Check, Search } from 'lucide-react'
 import { formatBytes } from '@/hooks'
 import { getMediaCacheSize, clearMediaCache } from '@/utils/mediaCache'
+import { rebuildSearchIndex } from '@fluux/sdk'
 
 export function StorageSettings() {
   const { t } = useTranslation()
   const [cacheSize, setCacheSize] = useState<number | null>(null)
   const [isClearing, setIsClearing] = useState(false)
   const [cleared, setCleared] = useState(false)
+  const [isRebuilding, setIsRebuilding] = useState(false)
+  const [rebuilt, setRebuilt] = useState<number | false>(false)
 
   const loadCacheSize = useCallback(async () => {
     setCacheSize(null)
@@ -31,8 +34,18 @@ export function StorageSettings() {
     setTimeout(() => setCleared(false), 3000)
   }
 
+  const handleRebuildIndex = async () => {
+    setIsRebuilding(true)
+    setRebuilt(false)
+    const count = await rebuildSearchIndex()
+    setIsRebuilding(false)
+    setRebuilt(count)
+    setTimeout(() => setRebuilt(false), 5000)
+  }
+
   return (
-    <section className="max-w-md">
+    <section className="max-w-md space-y-8">
+      <div>
       <h3 className="text-xs font-semibold text-fluux-muted uppercase tracking-wide mb-4">
         {t('settings.storage.mediaCache')}
       </h3>
@@ -70,6 +83,41 @@ export function StorageSettings() {
           )}
           {cleared ? t('settings.storage.cacheCleared') : t('settings.storage.clearCache')}
         </button>
+      </div>
+      </div>
+
+      {/* Search index */}
+      <div>
+      <h3 className="text-xs font-semibold text-fluux-muted uppercase tracking-wide mb-4">
+        {t('settings.storage.searchIndex', 'Search Index')}
+      </h3>
+
+      <div className="space-y-4">
+        <p className="text-sm text-fluux-muted">
+          {t('settings.storage.searchIndexDescription', 'The search index allows full-text search across your message history. Rebuild it if search results seem incomplete.')}
+        </p>
+
+        <button
+          onClick={handleRebuildIndex}
+          disabled={isRebuilding}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors
+            bg-fluux-hover hover:bg-fluux-border text-fluux-text
+            disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isRebuilding ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : rebuilt !== false ? (
+            <Check className="w-4 h-4 text-fluux-green" />
+          ) : (
+            <Search className="w-4 h-4" />
+          )}
+          {isRebuilding
+            ? t('settings.storage.rebuildingIndex', 'Rebuilding…')
+            : rebuilt !== false
+              ? t('settings.storage.indexRebuilt', '{{count}} messages indexed', { count: rebuilt })
+              : t('settings.storage.rebuildIndex', 'Rebuild search index')}
+        </button>
+      </div>
       </div>
     </section>
   )
