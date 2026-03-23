@@ -398,6 +398,13 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): Shor
       action: () => onSidebarViewChange('admin'),
     },
     {
+      key: 'f',
+      modifiers: ['meta'],
+      description: 'Search messages',
+      category: 'navigation',
+      action: () => onSidebarViewChange('search'),
+    },
+    {
       key: 'ArrowUp',
       modifiers: ['alt'],
       description: 'Previous conversation/room',
@@ -504,9 +511,11 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): Shor
                          (shortcut.modifiers?.includes('meta') || shortcut.modifiers?.includes('ctrl'))
           const isCmdU = shortcut.key.toLowerCase() === 'u' &&
                          (shortcut.modifiers?.includes('meta') || shortcut.modifiers?.includes('ctrl'))
+          const isCmdF = shortcut.key.toLowerCase() === 'f' &&
+                         (shortcut.modifiers?.includes('meta') || shortcut.modifiers?.includes('ctrl'))
           const isCmdQ = shortcut.key.toLowerCase() === 'q' &&
                          (shortcut.modifiers?.includes('meta') || shortcut.modifiers?.includes('ctrl'))
-          const allowInInput = shortcut.key === '?' || shortcut.key === 'F12' || shortcut.key === 'Escape' || isAltArrow || isCmdK || isCmdU || isCmdQ
+          const allowInInput = shortcut.key === '?' || shortcut.key === 'F12' || shortcut.key === 'Escape' || isAltArrow || isCmdK || isCmdU || isCmdF || isCmdQ
 
           if (!isInputField || allowInInput) {
             e.preventDefault()
