@@ -314,11 +314,17 @@ export function XmppConsole() {
   }, [entries, autoScroll, isOpen, filteredEntries.length, virtualizer])
 
   // Scroll to bottom instantly when console opens and focus the log area
+  // Uses refs to avoid re-triggering on every new entry or virtualizer change.
+  const filteredEntriesLengthRef = useRef(filteredEntries.length)
+  filteredEntriesLengthRef.current = filteredEntries.length
+  const virtualizerRef = useRef(virtualizer)
+  virtualizerRef.current = virtualizer
+
   useEffect(() => {
     if (isOpen) {
       requestAnimationFrame(() => {
-        if (filteredEntries.length > 0) {
-          virtualizer.scrollToIndex(filteredEntries.length - 1, { align: 'end' })
+        if (filteredEntriesLengthRef.current > 0) {
+          virtualizerRef.current.scrollToIndex(filteredEntriesLengthRef.current - 1, { align: 'end' })
         }
         packetsContainerRef.current?.focus()
       })
