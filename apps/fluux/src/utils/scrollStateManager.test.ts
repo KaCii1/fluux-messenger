@@ -445,5 +445,34 @@ describe('ScrollStateManager', () => {
       expect(action).toBe('restore-position')
       expect(manager.getSavedScrollTop('conv1')).toBe(200)
     })
+
+    it('BUG PREVENTION: search preview must not corrupt real conversation scroll state', () => {
+      // Scenario: User is in conv1 scrolled up, opens search, previews results
+      // from the same conversation. The preview uses a prefixed conversationId
+      // (e.g., "search-preview:conv1") to avoid overwriting the real scroll state.
+
+      // User in conv1, scrolled up
+      manager.enterConversation('conv1', 50)
+      manager.saveScrollPosition('conv1', 400, 3000, 500)
+      manager.leaveConversation('conv1', 400, 3000, 500)
+
+      // Search preview opens for the same conversation (prefixed ID)
+      manager.enterConversation('search-preview:conv1', 100)
+      // Preview scrolls to the matched message (different position)
+      manager.saveScrollPosition('search-preview:conv1', 1200, 5000, 500)
+      manager.leaveConversation('search-preview:conv1', 1200, 5000, 500)
+
+      // User navigates between multiple search results in the same conversation
+      manager.enterConversation('search-preview:conv1', 100)
+      manager.saveScrollPosition('search-preview:conv1', 800, 5000, 500)
+      manager.leaveConversation('search-preview:conv1', 800, 5000, 500)
+
+      // User closes search and returns to the real conversation
+      const action = manager.enterConversation('conv1', 50)
+
+      // Must restore the REAL scroll position, not the search preview's
+      expect(action).toBe('restore-position')
+      expect(manager.getSavedScrollTop('conv1')).toBe(400)
+    })
   })
 })

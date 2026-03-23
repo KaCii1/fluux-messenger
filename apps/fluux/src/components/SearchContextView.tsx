@@ -262,7 +262,7 @@ export function SearchContextView({ onBack }: { onBack?: () => void }) {
       <div className="flex-1 flex flex-col min-h-0 p-1">
         <SearchContextMessageList
           messages={messages}
-          conversationId={previewResult.conversationId}
+          conversationId={`search-preview:${previewResult.conversationId}`}
           isRoom={previewResult.isRoom}
           highlightedMessageId={previewResult.messageId}
           onHighlightedClick={handleHighlightedMessageClick}
