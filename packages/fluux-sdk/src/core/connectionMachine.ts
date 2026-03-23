@@ -210,6 +210,13 @@ export const connectionMachine = setup({
       reconnectTargetTime: null,
     }),
 
+    // Reset attempt counter on wake — fresh backoff after system wake.
+    // Unlike resetReconnectState, preserves lastError for UI display.
+    resetAttemptCounter: assign({
+      reconnectAttempt: 0,
+      nextRetryDelayMs: 0,
+    }),
+
     // Clear error
     clearError: assign({
       lastError: null,
@@ -385,10 +392,11 @@ export const connectionMachine = setup({
               target: 'attempting',
               actions: 'clearTargetTime',
             },
-            // Wake or visibility while waiting — skip to immediate attempt
+            // Wake while waiting — skip to immediate attempt and reset backoff.
+            // Sleep/wake failures (network not ready) shouldn't accumulate backoff.
             WAKE: {
               target: 'attempting',
-              actions: 'clearTargetTime',
+              actions: ['clearTargetTime', 'resetAttemptCounter'],
             },
             VISIBLE: {
               target: 'attempting',
@@ -415,6 +423,10 @@ export const connectionMachine = setup({
             SOCKET_DIED: {
               target: 'waiting',
               actions: 'incrementAttempt',
+            },
+            // Wake during active attempt — reset counter so next failure uses fresh backoff
+            WAKE: {
+              actions: 'resetAttemptCounter',
             },
           },
         },
