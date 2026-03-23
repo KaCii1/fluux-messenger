@@ -141,6 +141,9 @@ export function useMessageListScroll({
   // Last scroll data (for saving on conversation switch)
   const lastScrollDataRef = useRef<{ top: number; height: number; client: number } | null>(null)
 
+  // Track whether we've already scrolled to the new message marker (for two-step FAB behavior)
+  const hasScrolledToMarkerRef = useRef(false)
+
   // ==========================================================================
   // REACT STATE - Only for things that need to trigger UI updates
   // ==========================================================================
@@ -262,8 +265,27 @@ export function useMessageListScroll({
   // ==========================================================================
 
   const scrollToBottom = useCallback(() => {
-    scrollerRef.current?.scrollTo({ top: scrollerRef.current.scrollHeight, behavior: 'smooth' })
-  }, [])
+    const scroller = scrollerRef.current
+    if (!scroller) return
+
+    // Two-step behavior: first click scrolls to new message marker, second to bottom
+    if (firstNewMessageId && !hasScrolledToMarkerRef.current) {
+      const escapedId = CSS.escape(firstNewMessageId)
+      const messageElement = scroller.querySelector(`[data-message-id="${escapedId}"]`)
+
+      if (messageElement) {
+        const elementTop = (messageElement as HTMLElement).offsetTop
+        const viewportHeight = scroller.clientHeight
+        const targetScrollTop = Math.max(0, elementTop - viewportHeight / 3)
+
+        scroller.scrollTo({ top: targetScrollTop, behavior: 'smooth' })
+        hasScrolledToMarkerRef.current = true
+        return
+      }
+    }
+
+    scroller.scrollTo({ top: scroller.scrollHeight, behavior: 'smooth' })
+  }, [firstNewMessageId])
 
   const scrollToTop = useCallback(() => {
     lastLoadTimeRef.current = Date.now() // prevent auto-load trigger
@@ -546,6 +568,7 @@ export function useMessageListScroll({
     scrolledAwayFromTopRef.current = false
     lastScrollDataRef.current = null
     prependRef.current = null
+    hasScrolledToMarkerRef.current = false
     setShowScrollToBottom(false)
 
     // Clear any pending media load batch
@@ -940,6 +963,18 @@ export function useMessageListScroll({
 
     prevMessageCountRef.current = messageCount
   }, [messageCount, isAtBottomRef])
+
+  // ==========================================================================
+  // EFFECT: Reset marker scroll tracking when firstNewMessageId changes
+  // ==========================================================================
+
+  const prevFirstNewMessageIdRef = useRef(firstNewMessageId)
+  useEffect(() => {
+    if (firstNewMessageId !== prevFirstNewMessageIdRef.current) {
+      hasScrolledToMarkerRef.current = false
+      prevFirstNewMessageIdRef.current = firstNewMessageId
+    }
+  }, [firstNewMessageId])
 
   // ==========================================================================
   // EFFECT: Typing indicator / reactions change

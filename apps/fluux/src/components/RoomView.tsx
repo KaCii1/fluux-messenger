@@ -373,6 +373,7 @@ export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = 
             hasKeyboardSelection={hasKeyboardSelection}
             showToolbarForSelection={showToolbarForSelection}
             firstNewMessageId={activeRoom.firstNewMessageId}
+            unreadCount={activeRoom.unreadCount}
             targetMessageId={targetMessageId}
             clearTargetMessageId={clearTargetMessageId}
             clearFirstNewMessageId={handleClearFirstNewMessageId}
@@ -605,6 +606,7 @@ const RoomMessageList = memo(function RoomMessageList({
   hasKeyboardSelection,
   showToolbarForSelection,
   firstNewMessageId,
+  unreadCount,
   targetMessageId,
   clearTargetMessageId,
   clearFirstNewMessageId,
@@ -644,6 +646,7 @@ const RoomMessageList = memo(function RoomMessageList({
   hasKeyboardSelection: boolean
   showToolbarForSelection: boolean
   firstNewMessageId?: string
+  unreadCount?: number
   targetMessageId?: string | null
   clearTargetMessageId?: () => void
   clearFirstNewMessageId: () => void
@@ -795,6 +798,7 @@ const RoomMessageList = memo(function RoomMessageList({
       messages={messages}
       conversationId={room.jid}
       firstNewMessageId={firstNewMessageId}
+      unreadCount={unreadCount}
       targetMessageId={targetMessageId}
       onTargetMessageConsumed={clearTargetMessageId}
       clearFirstNewMessageId={clearFirstNewMessageId}

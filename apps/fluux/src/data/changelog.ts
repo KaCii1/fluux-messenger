@@ -15,7 +15,7 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     version: '0.15.0',
-    date: '2026-03-21',
+    date: '2026-03-23',
     sections: [
       {
         type: 'added',
@@ -30,6 +30,15 @@ export const changelog: ChangelogEntry[] = [
           'Proto-XEP drafts for appearance sync, conversation sync, ignored users, and @all mentions',
           'Obsidian-inspired theme system with 3-tier CSS design tokens (Foundation, Semantic, Component), theme picker, CSS snippets, and 12 built-in themes (Fluux, Dracula, Nord, Gruvbox, Catppuccin Mocha, Solarized, One Dark, Tokyo Night, Monokai, Rosé Pine, Kanagawa, GitHub)',
           'Theme import and CSS snippets available on web version',
+          'Unread message badge on scroll-to-bottom button with two-step scroll: first click jumps to new message marker, second click to bottom',
+          'IRC-style mention detection with fallback highlighting in MUC rooms',
+          'Highlight effect when navigating to a specific message from activity log',
+          'Activity log events are clickable and navigate to the relevant conversation and message',
+          'Scoped reaction muting in activity log (per-conversation instead of global)',
+          'Poll votes distinguished from reactions in activity log with conversation context',
+          'Ability to disable push notifications from settings',
+          'Semantic color overrides for Solarized dark theme',
+          'Click outside handler to dismiss add vCard field popup in profile settings',
         ],
       },
       {
@@ -41,6 +50,7 @@ export const changelog: ChangelogEntry[] = [
           'Inline hat badges limited to 3 with overflow tooltip',
           'Reaction tooltips limited to 9 names in large rooms',
           'Plural-aware "months ago" and "years ago" duration formatting across all locales',
+          'Cache splitting for built-in themes in Vite config',
         ],
       },
       {
@@ -63,6 +73,9 @@ export const changelog: ChangelogEntry[] = [
           'Blank screen on re-login after data clear prevented by resetting URL hash',
           'Lightweight presence refresh on SM resumption instead of full room rejoin',
           'Status changes now propagated to joined MUC rooms',
+          'XMPP Console virtual items no longer overlap (flow layout)',
+          'XMPP Console items re-measured on expand/collapse',
+          'Message correction uses replace target ID when original is missing',
         ],
       },
     ],

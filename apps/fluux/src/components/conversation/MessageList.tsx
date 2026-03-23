@@ -73,6 +73,8 @@ export interface MessageListProps<T extends BaseMessage> {
   isHistoryComplete?: boolean
   /** Callback when the bottom-most visible message changes (viewport tracking) */
   onMessageSeen?: (messageId: string) => void
+  /** Number of unread messages (displayed as badge on scroll-to-bottom FAB) */
+  unreadCount?: number
 }
 
 // ============================================================================
@@ -98,6 +100,7 @@ export function MessageList<T extends BaseMessage>({
   isLoadingOlder,
   isHistoryComplete,
   onMessageSeen,
+  unreadCount = 0,
 }: MessageListProps<T>) {
   // Detect render loops before they freeze the UI
   detectRenderLoop('MessageList')
@@ -289,6 +292,11 @@ export function MessageList<T extends BaseMessage>({
             className="absolute bottom-4 right-4 z-40 w-10 h-10 rounded-full bg-fluux-bg border border-fluux-border shadow-lg flex items-center justify-center text-fluux-muted hover:text-fluux-text hover:bg-fluux-hover transition-all duration-200 hover:scale-105 active:scale-95"
             aria-label={t('chat.scrollToBottom')}
           >
+            {unreadCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-fluux-red text-white text-xs font-semibold flex items-center justify-center">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
             <ChevronDown className="w-5 h-5" />
           </button>
         </Tooltip>
