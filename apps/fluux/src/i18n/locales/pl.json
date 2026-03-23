@@ -671,7 +671,7 @@
         },
         "search": {
             "title": "Wyniki wyszukiwania",
-            "description": "Wybierz wynik z paska bocznego, aby wyświetlić rozmowę."
+            "description": "Wybierz wynik na pasku bocznym, aby wyświetlić rozmowę."
         }
     },
     "avatar": {

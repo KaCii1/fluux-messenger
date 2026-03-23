@@ -670,8 +670,8 @@
             "description": "Agħżel kmand mis-sidebar biex timmaniġġja s-server tiegħek."
         },
         "search": {
-            "title": "Riżultati tat-tiftix",
-            "description": "Agħżel riżultat mill-bar tal-ġenb biex tara l-konversazzjoni."
+            "title": "Riżultati tat-tfittxija",
+            "description": "Agħżel riżultat fil-bar tal-ġenb biex tara l-konversazzjoni."
         }
     },
     "avatar": {

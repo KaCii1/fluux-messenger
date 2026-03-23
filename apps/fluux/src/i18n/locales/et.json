@@ -671,7 +671,7 @@
         },
         "search": {
             "title": "Otsingutulemused",
-            "description": "Valige tulemus külgribalt vestluse vaatamiseks."
+            "description": "Valige külgribal tulemus, et vaadata vestlust."
         }
     },
     "avatar": {
