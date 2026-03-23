@@ -639,6 +639,9 @@ export function useMessageListScroll({
     } else if (targetMessageId) {
       // Has a target message to scroll to — skip scroll-to-bottom.
       // The targetMessageId effect will handle scrolling.
+      // Mark as NOT at bottom so the ResizeObserver doesn't auto-scroll
+      // to bottom when content grows (messages loading from IndexedDB).
+      isAtBottomRef.current = false
       debugLog('CONVERSATION SWITCH: has targetMessageId, deferring to target scroll', { targetMessageId })
     } else {
       // No unread messages - scroll to bottom
