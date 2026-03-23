@@ -172,6 +172,8 @@ export default defineConfig({
             { name: 'vendor-xstate', test: /node_modules\/xstate\//, priority: 16 },
             // Icons
             { name: 'vendor-icons', test: /node_modules\/lucide-react\//, priority: 16 },
+            // Builtin themes (CSS variable definitions)
+            { name: 'themes', test: /themes\/builtins\//, priority: 10 },
           ],
         },
       },
