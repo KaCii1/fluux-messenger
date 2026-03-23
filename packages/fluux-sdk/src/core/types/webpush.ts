@@ -32,4 +32,4 @@ export interface WebPushRegistration {
  * - `available`: Server supports webpush and VAPID services are available
  * - `registered`: Push subscription has been registered with the server
  */
-export type WebPushStatus = 'unavailable' | 'available' | 'registered'
+export type WebPushStatus = 'unavailable' | 'available' | 'registered' | 'disabled'

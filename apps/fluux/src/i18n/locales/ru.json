@@ -515,6 +515,9 @@
         "webPush_available": "Доступно — нажмите для включения",
         "webPush_registered": "Включено — push-уведомления активны",
         "webPushEnable": "Включить",
+        "webPush_disabled": "Отключено — push-уведомления выключены",
+        "webPushDisable": "Отключить",
+        "webPushReEnable": "Включить снова",
         "updates": "Обновления",
         "storage": {
             "title": "Хранилище",
@@ -606,6 +609,7 @@
         "webPush_unavailable": "Не поддерживается",
         "webPush_available": "Ожидает регистрации",
         "webPush_registered": "Зарегистрировано",
+        "webPush_disabled": "Отключено",
         "addField": "Добавить поле",
         "fullName": "Полное имя",
         "company": "Организация",

@@ -108,25 +108,25 @@ export function useWebPush(): void {
     }
     console.log('[WebPush] Hook active, subscribing to store changes')
 
-    const tryAutoRegister = (status: string, services: WebPushService[]) => {
-      if (status !== 'available' || services.length === 0) return
+    const tryAutoRegister = (status: string, services: WebPushService[], enabled: boolean) => {
+      if (!enabled || status !== 'available' || services.length === 0) return
       void tryRegister(services[0], true)
     }
 
     const unsub = connectionStore.subscribe(
-      (state) => ({ status: state.webPushStatus, services: state.webPushServices }),
-      ({ status, services }) => {
+      (state) => ({ status: state.webPushStatus, services: state.webPushServices, enabled: state.webPushEnabled }),
+      ({ status, services, enabled }) => {
         console.log('[WebPush] Store changed: status =', status,
-          '| services =', services.length, '| registering =', registering.current)
-        tryAutoRegister(status, services)
+          '| services =', services.length, '| enabled =', enabled, '| registering =', registering.current)
+        tryAutoRegister(status, services, enabled)
       },
-      { equalityFn: (a, b) => a.status === b.status && a.services === b.services }
+      { equalityFn: (a, b) => a.status === b.status && a.services === b.services && a.enabled === b.enabled }
     )
 
-    const { webPushStatus, webPushServices } = connectionStore.getState()
+    const { webPushStatus, webPushServices, webPushEnabled } = connectionStore.getState()
     console.log('[WebPush] Initial state: status =', webPushStatus,
-      '| services =', webPushServices.length)
-    tryAutoRegister(webPushStatus, webPushServices)
+      '| services =', webPushServices.length, '| enabled =', webPushEnabled)
+    tryAutoRegister(webPushStatus, webPushServices, webPushEnabled)
 
     return unsub
   }, [client, tryRegister])
@@ -140,8 +140,8 @@ export function useWebPush(): void {
  */
 export function requestWebPushRegistration(client: any): void {
   if (!isWebPushSupported) return
-  const { webPushStatus, webPushServices } = connectionStore.getState()
-  if (webPushStatus !== 'available' || webPushServices.length === 0) return
+  const { webPushServices } = connectionStore.getState()
+  if (webPushServices.length === 0) return
   void registerPush(client, webPushServices[0], false)
 }
 

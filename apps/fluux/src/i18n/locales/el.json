@@ -516,6 +516,9 @@
         "webPush_available": "Διαθέσιμο — πατήστε για ενεργοποίηση",
         "webPush_registered": "Ενεργοποιημένο — ειδοποιήσεις push ενεργές",
         "webPushEnable": "Ενεργοποίηση",
+        "webPush_disabled": "Απενεργοποιημένο — ειδοποιήσεις push απενεργοποιημένες",
+        "webPushDisable": "Απενεργοποίηση",
+        "webPushReEnable": "Επανενεργοποίηση",
         "updates": "Ενημερώσεις",
         "storage": {
             "title": "Αποθήκευση",
@@ -607,6 +610,7 @@
         "webPush_unavailable": "Δεν υποστηρίζεται",
         "webPush_available": "Εκκρεμεί εγγραφή",
         "webPush_registered": "Εγγεγραμμένο",
+        "webPush_disabled": "Απενεργοποιημένο",
         "addField": "Προσθήκη πεδίου",
         "fullName": "Πλήρες όνομα",
         "company": "Εταιρεία",

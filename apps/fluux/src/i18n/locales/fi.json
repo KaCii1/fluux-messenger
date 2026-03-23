@@ -515,6 +515,9 @@
         "webPush_available": "Käytettävissä — ota käyttöön napauttamalla",
         "webPush_registered": "Käytössä — push-ilmoitukset aktiiviset",
         "webPushEnable": "Ota käyttöön",
+        "webPush_disabled": "Pois käytöstä — push-ilmoitukset pois päältä",
+        "webPushDisable": "Poista käytöstä",
+        "webPushReEnable": "Ota uudelleen käyttöön",
         "updates": "Päivitykset",
         "storage": {
             "title": "Tallennustila",
@@ -606,6 +609,7 @@
         "webPush_unavailable": "Ei tuettu",
         "webPush_available": "Rekisteröinti odottaa",
         "webPush_registered": "Rekisteröity",
+        "webPush_disabled": "Pois käytöstä",
         "addField": "Lisää kenttä",
         "fullName": "Koko nimi",
         "company": "Yritys",

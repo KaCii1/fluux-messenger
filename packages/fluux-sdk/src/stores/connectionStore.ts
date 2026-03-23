@@ -67,6 +67,8 @@ interface ConnectionState {
   // p1:push Web Push
   webPushStatus: WebPushStatus
   webPushServices: WebPushService[]
+  /** Whether push notifications are enabled (persisted in localStorage) */
+  webPushEnabled: boolean
   // Window visibility - used to determine if user can see new messages
   windowVisible: boolean
 
@@ -92,6 +94,7 @@ interface ConnectionState {
   setWebPushStatus: (status: WebPushStatus) => void
   setWebPushServices: (services: WebPushService[]) => void
   setWebPushServicesAndStatus: (services: WebPushService[], status: WebPushStatus) => void
+  setWebPushEnabled: (enabled: boolean) => void
   // Window visibility actions
   setWindowVisible: (visible: boolean) => void
   reset: () => void
@@ -115,6 +118,12 @@ const initialState = {
   httpUploadService: null as HttpUploadService | null,
   webPushStatus: 'unavailable' as WebPushStatus,
   webPushServices: [] as WebPushService[],
+  webPushEnabled: (() => {
+    try {
+      const stored = localStorage.getItem('fluux-webpush-enabled')
+      return stored !== null ? stored === 'true' : true
+    } catch { return true }
+  })(),
   windowVisible: true, // Assume visible on startup
 }
 
@@ -164,13 +173,18 @@ export const connectionStore = createStore<ConnectionState>()(
   setWebPushStatus: (status) => set({ webPushStatus: status }),
   setWebPushServices: (services) => set({ webPushServices: services }),
   setWebPushServicesAndStatus: (services, status) => set({ webPushServices: services, webPushStatus: status }),
+  setWebPushEnabled: (enabled) => {
+    try { localStorage.setItem('fluux-webpush-enabled', String(enabled)) } catch {}
+    set({ webPushEnabled: enabled })
+  },
 
   setWindowVisible: (visible) => set({ windowVisible: visible }),
 
-  reset: () => set({
+  reset: () => set((state) => ({
     ...initialState,
     ownResources: new Map(), // Create new Map instance on reset
-  }),
+    webPushEnabled: state.webPushEnabled, // Preserve persisted preference
+  })),
 })))
 
 export type { ConnectionState }

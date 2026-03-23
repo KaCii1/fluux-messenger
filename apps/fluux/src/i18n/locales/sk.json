@@ -516,6 +516,9 @@
         "webPush_available": "K dispozícii — ťuknite pre aktiváciu",
         "webPush_registered": "Aktivované — push notifikácie aktívne",
         "webPushEnable": "Aktivovať",
+        "webPush_disabled": "Deaktivované — push notifikácie vypnuté",
+        "webPushDisable": "Deaktivovať",
+        "webPushReEnable": "Znovu aktivovať",
         "updates": "Aktualizácie",
         "storage": {
             "title": "Úložisko",
@@ -607,6 +610,7 @@
         "webPush_unavailable": "Nepodporované",
         "webPush_available": "Čaká na registráciu",
         "webPush_registered": "Zaregistrované",
+        "webPush_disabled": "Deaktivované",
         "addField": "Pridať pole",
         "fullName": "Celé meno",
         "company": "Spoločnosť",

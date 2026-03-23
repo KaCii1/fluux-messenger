@@ -515,6 +515,9 @@
         "webPush_available": "Beschikbaar — tik om in te schakelen",
         "webPush_registered": "Ingeschakeld — pushmeldingen actief",
         "webPushEnable": "Inschakelen",
+        "webPush_disabled": "Uitgeschakeld — pushmeldingen uit",
+        "webPushDisable": "Uitschakelen",
+        "webPushReEnable": "Opnieuw inschakelen",
         "updates": "Updates",
         "storage": {
             "title": "Opslag",
@@ -606,6 +609,7 @@
         "webPush_unavailable": "Niet ondersteund",
         "webPush_available": "Registratie in afwachting",
         "webPush_registered": "Geregistreerd",
+        "webPush_disabled": "Uitgeschakeld",
         "addField": "Veld toevoegen",
         "fullName": "Volledige naam",
         "company": "Bedrijf",

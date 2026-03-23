@@ -515,6 +515,9 @@
         "webPush_available": "Tiltækt — ýttu til að virkja",
         "webPush_registered": "Virkjað — push-tilkynningar virkar",
         "webPushEnable": "Virkja",
+        "webPush_disabled": "Óvirkt — push-tilkynningar slökktar",
+        "webPushDisable": "Slökkva",
+        "webPushReEnable": "Endurvirkja",
         "updates": "Uppfærslur",
         "storage": {
             "title": "Geymsla",
@@ -606,6 +609,7 @@
         "webPush_unavailable": "Ekki stutt",
         "webPush_available": "Skráning í bið",
         "webPush_registered": "Skráð",
+        "webPush_disabled": "Óvirkt",
         "addField": "Bæta við reit",
         "fullName": "Fullt nafn",
         "company": "Fyrirtæki",

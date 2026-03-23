@@ -517,6 +517,9 @@
         "webPush_available": "Disponibil — atinge pentru activare",
         "webPush_registered": "Activat — notificări push active",
         "webPushEnable": "Activează",
+        "webPush_disabled": "Dezactivat — notificări push dezactivate",
+        "webPushDisable": "Dezactivează",
+        "webPushReEnable": "Reactivează",
         "updates": "Actualizări",
         "storage": {
             "title": "Stocare",
@@ -608,6 +611,7 @@
         "webPush_unavailable": "Nesuportat",
         "webPush_available": "Înregistrare în așteptare",
         "webPush_registered": "Înregistrat",
+        "webPush_disabled": "Dezactivat",
         "addField": "Adaugă câmp",
         "fullName": "Nume complet",
         "company": "Companie",

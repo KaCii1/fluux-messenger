@@ -70,6 +70,7 @@ export interface StoreBindings {
     setWebPushStatus: (status: WebPushStatus) => void
     setWebPushServices: (services: WebPushService[]) => void
     getWebPushServices: () => WebPushService[]
+    getWebPushEnabled: () => boolean
     // Server info getter (for MAM support detection)
     getServerInfo?: () => ServerInfo | null
   }

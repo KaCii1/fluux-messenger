@@ -515,6 +515,9 @@
         "webPush_available": "Galima — bakstelėkite, kad įjungtumėte",
         "webPush_registered": "Įjungta — push pranešimai aktyvūs",
         "webPushEnable": "Įjungti",
+        "webPush_disabled": "Išjungta — push pranešimai išjungti",
+        "webPushDisable": "Išjungti",
+        "webPushReEnable": "Įjungti iš naujo",
         "updates": "Atnaujinimai",
         "storage": {
             "title": "Saugykla",
@@ -606,6 +609,7 @@
         "webPush_unavailable": "Nepalaikoma",
         "webPush_available": "Laukiama registracijos",
         "webPush_registered": "Užregistruota",
+        "webPush_disabled": "Išjungta",
         "addField": "Pridėti lauką",
         "fullName": "Pilnas vardas",
         "company": "Įmonė",

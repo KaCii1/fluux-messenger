@@ -110,6 +110,7 @@ export function useConnection() {
   const httpUploadService = useConnectionStore((s) => s.httpUploadService)
   // Web Push (p1:push:webpush)
   const webPushStatus = useConnectionStore((s) => s.webPushStatus)
+  const webPushEnabled = useConnectionStore((s) => s.webPushEnabled)
 
   const connect = useCallback(
     async (
@@ -302,6 +303,7 @@ export function useConnection() {
       httpUploadService,
       // Web Push (p1:push:webpush)
       webPushStatus,
+      webPushEnabled,
 
       // Computed
       isConnected: status === 'online',
@@ -328,6 +330,7 @@ export function useConnection() {
       ownResources,
       httpUploadService,
       webPushStatus,
+      webPushEnabled,
       supportsPasswordChange,
       actions,
     ]

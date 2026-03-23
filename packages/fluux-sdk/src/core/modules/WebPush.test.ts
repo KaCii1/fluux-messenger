@@ -347,4 +347,98 @@ describe('WebPush Module', () => {
       ).rejects.toThrow('Not connected')
     })
   })
+
+  describe('disableSubscription', () => {
+    it('should send correct disable IQ with appid and notification', async () => {
+      await connectClient()
+
+      mockXmppClientInstance.iqCaller.request.mockResolvedValue(
+        createMockElement('iq', { type: 'result' })
+      )
+
+      await xmppClient.webPush.disableSubscription(
+        'fluux.io',
+        'webpush',
+        'https://fcm.googleapis.com/fcm/send/abc123#p256dh_key#auth_key'
+      )
+
+      expect(mockXmppClientInstance.iqCaller.request).toHaveBeenCalledTimes(1)
+
+      const sentIQ = mockXmppClientInstance.iqCaller.request.mock.calls[0][0]
+      expect(sentIQ.attrs.type).toBe('set')
+      expect(sentIQ.attrs.to).toBeUndefined()
+
+      // Check disable element
+      const disableEl = sentIQ.children[0]
+      expect(disableEl.name).toBe('disable')
+      expect(disableEl.attrs.xmlns).toBe('p1:push')
+
+      // Check appid element
+      const appidEl = disableEl.children.find((c: any) => c.name === 'appid')
+      expect(appidEl).toBeDefined()
+
+      // Check notification element
+      const notificationEl = disableEl.children.find((c: any) => c.name === 'notification')
+      expect(notificationEl).toBeDefined()
+
+      const typeEl = notificationEl.children.find((c: any) => c.name === 'type')
+      expect(typeEl).toBeDefined()
+
+      const idEl = notificationEl.children.find((c: any) => c.name === 'id')
+      expect(idEl).toBeDefined()
+    })
+
+    it('should emit connection:webpush-status as disabled on success', async () => {
+      await connectClient()
+
+      mockXmppClientInstance.iqCaller.request.mockResolvedValue(
+        createMockElement('iq', { type: 'result' })
+      )
+
+      await xmppClient.webPush.disableSubscription(
+        'fluux.io',
+        'webpush',
+        'endpoint#p256dh#auth'
+      )
+
+      expect(emitSDKSpy).toHaveBeenCalledWith('connection:webpush-status', {
+        status: 'disabled',
+      })
+    })
+
+    it('should log console event on successful disable', async () => {
+      await connectClient()
+
+      mockXmppClientInstance.iqCaller.request.mockResolvedValue(
+        createMockElement('iq', { type: 'result' })
+      )
+
+      await xmppClient.webPush.disableSubscription(
+        'fluux.io',
+        'webpush',
+        'endpoint#p256dh#auth'
+      )
+
+      expect(emitSDKSpy).toHaveBeenCalledWith('console:event', {
+        message: 'Web Push subscription disabled',
+        category: 'connection',
+      })
+    })
+
+    it('should throw on IQ error', async () => {
+      await connectClient()
+
+      mockXmppClientInstance.iqCaller.request.mockRejectedValue(new Error('Forbidden'))
+
+      await expect(
+        xmppClient.webPush.disableSubscription('fluux.io', 'webpush', 'endpoint#key#auth')
+      ).rejects.toThrow('Forbidden')
+    })
+
+    it('should throw when not connected', async () => {
+      await expect(
+        xmppClient.webPush.disableSubscription('fluux.io', 'webpush', 'endpoint#key#auth')
+      ).rejects.toThrow('Not connected')
+    })
+  })
 })

@@ -515,6 +515,9 @@
         "webPush_available": "Ar fáil — tapáil le cumasú",
         "webPush_registered": "Cumasaithe — fógraí brú gníomhach",
         "webPushEnable": "Cumasaigh",
+        "webPush_disabled": "Díchumasaithe — fógraí brú as",
+        "webPushDisable": "Díchumasaigh",
+        "webPushReEnable": "Athchumasaigh",
         "updates": "Nuashonruithe",
         "storage": {
             "title": "Stóráil",
@@ -606,6 +609,7 @@
         "webPush_unavailable": "Gan tacaíocht",
         "webPush_available": "Clárú ar feitheamh",
         "webPush_registered": "Cláraithe",
+        "webPush_disabled": "Díchumasaithe",
         "addField": "Cuir réimse leis",
         "fullName": "Ainm iomlán",
         "company": "Comhlacht",

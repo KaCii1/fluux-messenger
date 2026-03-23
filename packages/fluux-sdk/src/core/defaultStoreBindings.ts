@@ -101,6 +101,7 @@ export function createDefaultStoreBindings(options: DefaultStoreBindingsOptions 
       setWebPushStatus: connectionStore.getState().setWebPushStatus,
       setWebPushServices: connectionStore.getState().setWebPushServices,
       getWebPushServices: () => connectionStore.getState().webPushServices,
+      getWebPushEnabled: () => connectionStore.getState().webPushEnabled,
       // Server info getter
       getServerInfo: () => connectionStore.getState().serverInfo,
     },

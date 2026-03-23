@@ -515,6 +515,9 @@
         "webPush_available": "Tilgjengelig — trykk for å aktivere",
         "webPush_registered": "Aktivert — pushvarsler aktive",
         "webPushEnable": "Aktiver",
+        "webPush_disabled": "Deaktivert — pushvarsler avslått",
+        "webPushDisable": "Deaktiver",
+        "webPushReEnable": "Aktiver på nytt",
         "updates": "Oppdateringer",
         "storage": {
             "title": "Lagring",
@@ -606,6 +609,7 @@
         "webPush_unavailable": "Ikke støttet",
         "webPush_available": "Venter på registrering",
         "webPush_registered": "Registrert",
+        "webPush_disabled": "Deaktivert",
         "addField": "Legg til felt",
         "fullName": "Fullt navn",
         "company": "Bedrift",

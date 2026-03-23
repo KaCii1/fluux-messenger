@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Bell, BellOff, ExternalLink, Send } from 'lucide-react'
-import { useConnection, useXMPPContext } from '@fluux/sdk'
+import { useConnection, useXMPPContext, connectionStore } from '@fluux/sdk'
 import { isTauri } from './types'
 import { isWebPushSupported, requestWebPushRegistration } from '@/hooks/useWebPush'
 
@@ -49,11 +49,61 @@ async function openNotificationSettings(): Promise<void> {
   }
 }
 
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer)
+  let binary = ''
+  bytes.forEach((b) => (binary += String.fromCharCode(b)))
+  return btoa(binary)
+}
+
+async function disableWebPush(client: any): Promise<void> {
+  try {
+    const { webPushServices } = connectionStore.getState()
+    const service = webPushServices[0]
+    if (!service) return
+
+    const swReg = await navigator.serviceWorker.ready
+    const subscription = await swReg.pushManager.getSubscription()
+    if (!subscription) return
+
+    const p256dhKey = subscription.getKey('p256dh')
+    const authKey = subscription.getKey('auth')
+    if (!p256dhKey || !authKey) return
+
+    const p256dh = arrayBufferToBase64(p256dhKey)
+    const auth = arrayBufferToBase64(authKey)
+    const notificationId = `${subscription.endpoint}#${p256dh}#${auth}`
+
+    await client.webPush.disableSubscription(service.appId, 'webpush', notificationId)
+    connectionStore.getState().setWebPushEnabled(false)
+  } catch (err) {
+    console.error('[WebPush] Disable failed:', err)
+  }
+}
+
+async function enableWebPush(client: any): Promise<void> {
+  connectionStore.getState().setWebPushEnabled(true)
+  // If services are already known, register directly; otherwise trigger discovery first
+  const { webPushServices } = connectionStore.getState()
+  if (webPushServices.length > 0) {
+    requestWebPushRegistration(client)
+  } else {
+    // Trigger service discovery — the useWebPush hook will auto-register
+    // once services become available and enabled is true
+    try {
+      await client.webPush.queryServices()
+    } catch (err) {
+      console.error('[WebPush] Re-enable: service discovery failed:', err)
+    }
+  }
+}
+
 export function NotificationsSettings() {
   const { t } = useTranslation()
   const { client } = useXMPPContext()
-  const { webPushStatus, isConnected } = useConnection()
+  const { webPushStatus, webPushEnabled, isConnected } = useConnection()
   const [notificationStatus, setNotificationStatus] = useState<NotificationStatus>('checking')
+  const [disabling, setDisabling] = useState(false)
 
   useEffect(() => {
     void checkNotificationPermission()
@@ -64,6 +114,15 @@ export function NotificationsSettings() {
   const handleRequestPermission = async () => {
     const status = await requestWebNotificationPermission()
     setNotificationStatus(status)
+  }
+
+  const handleDisableWebPush = async () => {
+    setDisabling(true)
+    try {
+      await disableWebPush(client)
+    } finally {
+      setDisabling(false)
+    }
   }
 
   return (
@@ -133,6 +192,7 @@ export function NotificationsSettings() {
             <div className="flex items-center gap-3">
               <Send className={`w-5 h-5 ${
                 webPushStatus === 'registered' ? 'text-green-500'
+                  : webPushStatus === 'disabled' ? 'text-red-500'
                   : webPushStatus === 'available' ? 'text-yellow-500'
                   : 'text-fluux-muted'
               }`} />
@@ -146,7 +206,7 @@ export function NotificationsSettings() {
               </div>
             </div>
 
-            {webPushStatus === 'available' && (
+            {webPushStatus === 'available' && webPushEnabled && (
               <button
                 onClick={() => requestWebPushRegistration(client)}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-fluux-brand hover:text-fluux-text
@@ -154,6 +214,29 @@ export function NotificationsSettings() {
               >
                 <Bell className="w-4 h-4" />
                 {t('settings.webPushEnable')}
+              </button>
+            )}
+
+            {webPushStatus === 'registered' && (
+              <button
+                onClick={handleDisableWebPush}
+                disabled={disabling}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-red-500 hover:text-red-400
+                           bg-red-500/10 hover:bg-red-500/20 rounded-md transition-colors disabled:opacity-50"
+              >
+                <BellOff className="w-4 h-4" />
+                {t('settings.webPushDisable')}
+              </button>
+            )}
+
+            {(webPushStatus === 'disabled' || !webPushEnabled) && webPushStatus !== 'registered' && webPushStatus !== 'available' && (
+              <button
+                onClick={() => enableWebPush(client)}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-fluux-brand hover:text-fluux-text
+                           bg-fluux-brand/10 hover:bg-fluux-brand/20 rounded-md transition-colors"
+              >
+                <Bell className="w-4 h-4" />
+                {t('settings.webPushReEnable')}
               </button>
             )}
           </div>

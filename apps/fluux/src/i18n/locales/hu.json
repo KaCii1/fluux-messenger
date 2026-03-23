@@ -515,6 +515,9 @@
         "webPush_available": "Elérhető — érintse meg az aktiváláshoz",
         "webPush_registered": "Bekapcsolva — push értesítések aktívak",
         "webPushEnable": "Bekapcsolás",
+        "webPush_disabled": "Kikapcsolva — push értesítések kikapcsolva",
+        "webPushDisable": "Kikapcsolás",
+        "webPushReEnable": "Újra bekapcsolás",
         "updates": "Frissítések",
         "storage": {
             "title": "Tárhely",
@@ -606,6 +609,7 @@
         "webPush_unavailable": "Nem támogatott",
         "webPush_available": "Regisztráció folyamatban",
         "webPush_registered": "Regisztrálva",
+        "webPush_disabled": "Kikapcsolva",
         "addField": "Mező hozzáadása",
         "fullName": "Teljes név",
         "company": "Cég",

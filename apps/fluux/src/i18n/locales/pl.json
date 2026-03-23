@@ -517,6 +517,9 @@
         "webPush_available": "Dostępne — dotknij, aby włączyć",
         "webPush_registered": "Włączone — powiadomienia push aktywne",
         "webPushEnable": "Włącz",
+        "webPush_disabled": "Wyłączone — powiadomienia push wyłączone",
+        "webPushDisable": "Wyłącz",
+        "webPushReEnable": "Włącz ponownie",
         "updates": "Aktualizacje",
         "storage": {
             "title": "Pamięć",
@@ -608,6 +611,7 @@
         "webPush_unavailable": "Nieobsługiwane",
         "webPush_available": "Oczekuje na rejestrację",
         "webPush_registered": "Zarejestrowano",
+        "webPush_disabled": "Wyłączone",
         "addField": "Dodaj pole",
         "fullName": "Imię i nazwisko",
         "company": "Firma",

@@ -515,6 +515,9 @@
         "webPush_available": "Даступна — націсніце, каб уключыць",
         "webPush_registered": "Уключана — push-апавяшчэнні актыўныя",
         "webPushEnable": "Уключыць",
+        "webPush_disabled": "Выключана — push-апавяшчэнні выключаны",
+        "webPushDisable": "Выключыць",
+        "webPushReEnable": "Уключыць зноў",
         "updates": "Абнаўленні",
         "storage": {
             "title": "Сховішча",
@@ -606,6 +609,7 @@
         "webPush_unavailable": "Не падтрымліваецца",
         "webPush_available": "Чакае рэгістрацыі",
         "webPush_registered": "Зарэгістравана",
+        "webPush_disabled": "Выключана",
         "addField": "Дадаць поле",
         "fullName": "Поўнае імя",
         "company": "Арганізацыя",

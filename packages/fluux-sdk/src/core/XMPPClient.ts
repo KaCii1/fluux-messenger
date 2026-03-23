@@ -1648,9 +1648,10 @@ export class XMPPClient {
     this.discovery.fetchServerInfo().then(() => {
       const serverInfo = this.stores?.connection.getServerInfo?.()
       const hasWebPush = serverInfo?.features.includes(NS_P1_PUSH_WEBPUSH)
+      const pushEnabled = this.stores?.connection.getWebPushEnabled?.() ?? true
       console.log('[WebPush] Server disco: p1:push:webpush feature =', hasWebPush,
-        '| All features:', serverInfo?.features)
-      if (hasWebPush) {
+        '| pushEnabled =', pushEnabled, '| All features:', serverInfo?.features)
+      if (hasWebPush && pushEnabled) {
         this.webPush.queryServices().catch((err) => {
           console.warn('[WebPush] queryServices failed:', err)
         })

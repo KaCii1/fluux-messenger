@@ -515,6 +515,9 @@
         "webPush_available": "Налично — натиснете за активиране",
         "webPush_registered": "Активирано — push известията са активни",
         "webPushEnable": "Активирай",
+        "webPush_disabled": "Деактивирано — push известията са изключени",
+        "webPushDisable": "Деактивирай",
+        "webPushReEnable": "Активирай отново",
         "updates": "Актуализации",
         "storage": {
             "title": "Съхранение",
@@ -606,6 +609,7 @@
         "webPush_unavailable": "Не се поддържа",
         "webPush_available": "Очаква регистрация",
         "webPush_registered": "Регистрирано",
+        "webPush_disabled": "Деактивирано",
         "addField": "Добавяне на поле",
         "fullName": "Пълно име",
         "company": "Организация",

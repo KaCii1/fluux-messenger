@@ -515,6 +515,9 @@
         "webPush_available": "可用 — 点击启用",
         "webPush_registered": "已启用 — 推送通知已激活",
         "webPushEnable": "启用",
+        "webPush_disabled": "已禁用 — 推送通知已关闭",
+        "webPushDisable": "禁用",
+        "webPushReEnable": "重新启用",
         "updates": "更新",
         "storage": {
             "title": "存储",
@@ -606,6 +609,7 @@
         "webPush_unavailable": "不支持",
         "webPush_available": "等待注册",
         "webPush_registered": "已注册",
+        "webPush_disabled": "已禁用",
         "addField": "添加字段",
         "fullName": "全名",
         "company": "公司",

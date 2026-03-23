@@ -517,6 +517,9 @@
         "webPush_available": "Disponível — toque para ativar",
         "webPush_registered": "Ativadas — notificações push ativas",
         "webPushEnable": "Ativar",
+        "webPush_disabled": "Desativado — notificações push desativadas",
+        "webPushDisable": "Desativar",
+        "webPushReEnable": "Reativar",
         "updates": "Atualizações",
         "storage": {
             "title": "Armazenamento",
@@ -608,6 +611,7 @@
         "webPush_unavailable": "Não suportado",
         "webPush_available": "Registo pendente",
         "webPush_registered": "Registado",
+        "webPush_disabled": "Desativado",
         "addField": "Adicionar campo",
         "fullName": "Nome completo",
         "company": "Empresa",

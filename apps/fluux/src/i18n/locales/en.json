@@ -515,6 +515,9 @@
         "webPush_available": "Available — tap to enable",
         "webPush_registered": "Enabled — push notifications active",
         "webPushEnable": "Enable",
+        "webPush_disabled": "Disabled — push notifications off",
+        "webPushDisable": "Disable",
+        "webPushReEnable": "Re-enable",
         "updates": "Updates",
         "storage": {
             "title": "Storage",
@@ -606,6 +609,7 @@
         "webPush_unavailable": "Not supported",
         "webPush_available": "Pending registration",
         "webPush_registered": "Registered",
+        "webPush_disabled": "Disabled",
         "addField": "Add field",
         "fullName": "Full name",
         "company": "Company",

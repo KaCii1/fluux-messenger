@@ -515,6 +515,9 @@
         "webPush_available": "Доступно — натисніть, щоб увімкнути",
         "webPush_registered": "Увімкнено — push-сповіщення активні",
         "webPushEnable": "Увімкнути",
+        "webPush_disabled": "Вимкнено — push-сповіщення вимкнені",
+        "webPushDisable": "Вимкнути",
+        "webPushReEnable": "Увімкнути знову",
         "updates": "Оновлення",
         "storage": {
             "title": "Сховище",
@@ -606,6 +609,7 @@
         "webPush_unavailable": "Не підтримується",
         "webPush_available": "Очікує реєстрації",
         "webPush_registered": "Зареєстровано",
+        "webPush_disabled": "Вимкнено",
         "addField": "Додати поле",
         "fullName": "Повне ім'я",
         "company": "Організація",

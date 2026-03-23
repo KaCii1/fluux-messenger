@@ -94,6 +94,50 @@ export class WebPush extends BaseModule {
    * @param auth - Authentication secret (base64 encoded) from PushSubscription.getKey('auth')
    * @param appId - Application identifier from the VAPID service
    */
+  /**
+   * Disable push notifications on the server for a specific device.
+   *
+   * Sends a `<disable xmlns='p1:push'>` IQ with the app ID and device token
+   * to unregister push notifications for this device.
+   *
+   * @param appId - Application identifier from the VAPID service
+   * @param notificationType - Notification type (e.g. 'webpush')
+   * @param deviceToken - The notification ID (endpoint#p256dh#auth for webpush)
+   */
+  async disableSubscription(
+    appId: string,
+    notificationType: string,
+    deviceToken: string
+  ): Promise<void> {
+    const currentJid = this.deps.getCurrentJid()
+    if (!currentJid) throw new Error('Not connected')
+
+    const iq = xml(
+      'iq',
+      { type: 'set', id: `webpush_dis_${generateUUID()}` },
+      xml('disable', { xmlns: NS_P1_PUSH },
+        xml('appid', {}, appId),
+        xml('notification', {},
+          xml('type', {}, notificationType),
+          xml('id', {}, deviceToken),
+        ),
+      )
+    )
+
+    try {
+      await this.deps.sendIQ(iq)
+      this.deps.emitSDK('connection:webpush-status', { status: 'disabled' })
+      logInfo('Web Push: subscription disabled on server')
+      this.deps.emitSDK('console:event', {
+        message: 'Web Push subscription disabled',
+        category: 'connection',
+      })
+    } catch (err) {
+      logWarn(`Web Push disable failed: ${err instanceof Error ? err.message : String(err)}`)
+      throw err
+    }
+  }
+
   async registerSubscription(
     endpoint: string,
     p256dh: string,

@@ -517,6 +517,9 @@
         "webPush_available": "Saadaval — puuduta lubamiseks",
         "webPush_registered": "Lubatud — push-teavitused aktiivsed",
         "webPushEnable": "Luba",
+        "webPush_disabled": "Keelatud — push-teavitused väljas",
+        "webPushDisable": "Keela",
+        "webPushReEnable": "Luba uuesti",
         "updates": "Värskendused",
         "storage": {
             "title": "Salvestusruum",
@@ -608,6 +611,7 @@
         "webPush_unavailable": "Ei toetata",
         "webPush_available": "Registreerimine ootel",
         "webPush_registered": "Registreeritud",
+        "webPush_disabled": "Keelatud",
         "addField": "Lisa väli",
         "fullName": "Täisnimi",
         "company": "Ettevõte",

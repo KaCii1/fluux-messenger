@@ -516,6 +516,9 @@
         "webPush_available": "Pieejams — pieskarieties, lai iespējotu",
         "webPush_registered": "Iespējots — push paziņojumi aktīvi",
         "webPushEnable": "Iespējot",
+        "webPush_disabled": "Atspējots — push paziņojumi izslēgti",
+        "webPushDisable": "Atspējot",
+        "webPushReEnable": "Iespējot atkārtoti",
         "updates": "Atjauninājumi",
         "storage": {
             "title": "Krātuve",
@@ -607,6 +610,7 @@
         "webPush_unavailable": "Nav atbalstīts",
         "webPush_available": "Gaida reģistrāciju",
         "webPush_registered": "Reģistrēts",
+        "webPush_disabled": "Atspējots",
         "addField": "Pievienot lauku",
         "fullName": "Pilns vārds",
         "company": "Uzņēmums",

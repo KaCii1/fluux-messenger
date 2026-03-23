@@ -515,6 +515,9 @@
         "webPush_available": "Tillgängligt — tryck för att aktivera",
         "webPush_registered": "Aktiverat — pushnotiser aktiva",
         "webPushEnable": "Aktivera",
+        "webPush_disabled": "Inaktiverat — pushnotiser avstängda",
+        "webPushDisable": "Inaktivera",
+        "webPushReEnable": "Återaktivera",
         "updates": "Uppdateringar",
         "storage": {
             "title": "Lagring",
@@ -606,6 +609,7 @@
         "webPush_unavailable": "Stöds inte",
         "webPush_available": "Väntar på registrering",
         "webPush_registered": "Registrerad",
+        "webPush_disabled": "Inaktiverad",
         "addField": "Lägg till fält",
         "fullName": "Fullständigt namn",
         "company": "Företag",

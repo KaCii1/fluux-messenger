@@ -515,6 +515,9 @@
         "webPush_available": "Dostupno — dodirnite za omogućavanje",
         "webPush_registered": "Omogućeno — push obavijesti aktivne",
         "webPushEnable": "Omogući",
+        "webPush_disabled": "Onemogućeno — push obavijesti isključene",
+        "webPushDisable": "Onemogući",
+        "webPushReEnable": "Ponovno omogući",
         "updates": "Ažuriranja",
         "storage": {
             "title": "Pohrana",
@@ -606,6 +609,7 @@
         "webPush_unavailable": "Nije podržano",
         "webPush_available": "Registracija na čekanju",
         "webPush_registered": "Registrirano",
+        "webPush_disabled": "Onemogućeno",
         "addField": "Dodaj polje",
         "fullName": "Puno ime",
         "company": "Tvrtka",

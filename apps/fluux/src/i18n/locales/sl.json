@@ -517,6 +517,9 @@
         "webPush_available": "Na voljo — tapnite za vklop",
         "webPush_registered": "Vklopljeno — push obvestila aktivna",
         "webPushEnable": "Vklopi",
+        "webPush_disabled": "Izklopljeno — push obvestila izklopljena",
+        "webPushDisable": "Izklopi",
+        "webPushReEnable": "Znova vklopi",
         "updates": "Posodobitve",
         "storage": {
             "title": "Shramba",
@@ -608,6 +611,7 @@
         "webPush_unavailable": "Ni podprto",
         "webPush_available": "Čaka na registracijo",
         "webPush_registered": "Registrirano",
+        "webPush_disabled": "Izklopljeno",
         "addField": "Dodaj polje",
         "fullName": "Polno ime",
         "company": "Podjetje",
