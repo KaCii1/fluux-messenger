@@ -376,8 +376,11 @@
         "dismissed": "Ignoré",
         "pending": "En attente",
         "muted": "Mis en sourdine",
-        "muteType": "Mettre ces notifications en sourdine",
-        "unmuteType": "Réactiver ces notifications"
+        "muteReactions": "Mettre les réactions en sourdine",
+        "muteConversationReactions": "Mettre les réactions de cette discussion en sourdine",
+        "unmuteConversationReactions": "Réactiver les réactions de cette discussion",
+        "muteMessageReactions": "Mettre les réactions de ce message en sourdine",
+        "unmuteMessageReactions": "Réactiver les réactions de ce message"
     },
     "chat": {
         "me": "Moi",

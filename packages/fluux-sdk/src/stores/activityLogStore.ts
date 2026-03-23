@@ -3,8 +3,8 @@ import { persist, subscribeWithSelector } from 'zustand/middleware'
 import type {
   ActivityEvent,
   ActivityEventInput,
-  ActivityEventType,
   ActivityResolution,
+  ReactionReceivedPayload,
 } from '../core/types/activity'
 import { generateUUID } from '../utils/uuid'
 import { buildScopedStorageKey } from '../utils/storageScope'
@@ -14,6 +14,30 @@ const MAX_EVENTS = 500
 
 function getScopedStorageKey(jid?: string | null): string {
   return buildScopedStorageKey(STORAGE_KEY_BASE, jid)
+}
+
+/** Check whether a reaction event should be muted based on scoped mute sets. */
+function checkReactionMuted(
+  mutedConversations: Set<string>,
+  mutedMessages: Set<string>,
+  conversationId: string,
+  messageId: string,
+): boolean {
+  return mutedConversations.has(conversationId) || mutedMessages.has(messageId)
+}
+
+/** Recompute muted flag on all reaction-received events after a mute set change. */
+function restampReactionEvents(
+  events: ActivityEvent[],
+  mutedConversations: Set<string>,
+  mutedMessages: Set<string>,
+): ActivityEvent[] {
+  return events.map((e) => {
+    if (e.type !== 'reaction-received') return e
+    const p = e.payload as ReactionReceivedPayload
+    const shouldMute = checkReactionMuted(mutedConversations, mutedMessages, p.conversationId, p.messageId)
+    return e.muted === shouldMute ? e : { ...e, muted: shouldMute }
+  })
 }
 
 /**
@@ -33,8 +57,10 @@ function getScopedStorageKey(jid?: string | null): string {
 interface ActivityLogState {
   /** All logged events, newest first */
   events: ActivityEvent[]
-  /** Set of muted ActivityEventType values */
-  mutedTypes: Set<ActivityEventType>
+  /** Conversation JIDs whose reaction notifications are muted */
+  mutedReactionConversations: Set<string>
+  /** Message IDs whose reaction notifications are muted */
+  mutedReactionMessages: Set<string>
 
   // Actions
   /** Add an event to the activity log. Returns the created event with generated ID. */
@@ -49,12 +75,16 @@ interface ActivityLogState {
   findEvent: (predicate: (event: ActivityEvent) => boolean) => ActivityEvent | undefined
   /** Remove a single event */
   removeEvent: (eventId: string) => void
-  /** Mute an event type (events still logged but marked as muted) */
-  muteType: (type: ActivityEventType) => void
-  /** Unmute an event type */
-  unmuteType: (type: ActivityEventType) => void
-  /** Check if an event type is muted */
-  isMuted: (type: ActivityEventType) => boolean
+  /** Mute reaction notifications for a conversation */
+  muteReactionsForConversation: (conversationId: string) => void
+  /** Unmute reaction notifications for a conversation */
+  unmuteReactionsForConversation: (conversationId: string) => void
+  /** Mute reaction notifications for a specific message */
+  muteReactionsForMessage: (messageId: string) => void
+  /** Unmute reaction notifications for a specific message */
+  unmuteReactionsForMessage: (messageId: string) => void
+  /** Check if reactions for a given conversation/message are muted */
+  isReactionMuted: (conversationId: string, messageId: string) => boolean
   /** Count of unread, non-muted events */
   unreadCount: () => number
   /** Reset the store */
@@ -63,7 +93,8 @@ interface ActivityLogState {
 
 const initialState = {
   events: [] as ActivityEvent[],
-  mutedTypes: new Set<ActivityEventType>(),
+  mutedReactionConversations: new Set<string>(),
+  mutedReactionMessages: new Set<string>(),
 }
 
 export const activityLogStore = createStore<ActivityLogState>()(
@@ -74,11 +105,19 @@ export const activityLogStore = createStore<ActivityLogState>()(
 
         addEvent: (input) => {
           const state = get()
+          const muted = input.type === 'reaction-received'
+            ? checkReactionMuted(
+                state.mutedReactionConversations,
+                state.mutedReactionMessages,
+                (input.payload as ReactionReceivedPayload).conversationId,
+                (input.payload as ReactionReceivedPayload).messageId,
+              )
+            : false
           const event: ActivityEvent = {
             ...input,
             id: generateUUID(),
             read: false,
-            muted: state.mutedTypes.has(input.type),
+            muted,
           }
           set({
             events: [event, ...state.events].slice(0, MAX_EVENTS),
@@ -120,24 +159,53 @@ export const activityLogStore = createStore<ActivityLogState>()(
           }))
         },
 
-        muteType: (type) => {
+        muteReactionsForConversation: (conversationId) => {
           set((state) => {
-            const newMuted = new Set(state.mutedTypes)
-            newMuted.add(type)
-            return { mutedTypes: newMuted }
+            const newSet = new Set(state.mutedReactionConversations)
+            newSet.add(conversationId)
+            return {
+              mutedReactionConversations: newSet,
+              events: restampReactionEvents(state.events, newSet, state.mutedReactionMessages),
+            }
           })
         },
 
-        unmuteType: (type) => {
+        unmuteReactionsForConversation: (conversationId) => {
           set((state) => {
-            const newMuted = new Set(state.mutedTypes)
-            newMuted.delete(type)
-            return { mutedTypes: newMuted }
+            const newSet = new Set(state.mutedReactionConversations)
+            newSet.delete(conversationId)
+            return {
+              mutedReactionConversations: newSet,
+              events: restampReactionEvents(state.events, newSet, state.mutedReactionMessages),
+            }
           })
         },
 
-        isMuted: (type) => {
-          return get().mutedTypes.has(type)
+        muteReactionsForMessage: (messageId) => {
+          set((state) => {
+            const newSet = new Set(state.mutedReactionMessages)
+            newSet.add(messageId)
+            return {
+              mutedReactionMessages: newSet,
+              events: restampReactionEvents(state.events, state.mutedReactionConversations, newSet),
+            }
+          })
+        },
+
+        unmuteReactionsForMessage: (messageId) => {
+          set((state) => {
+            const newSet = new Set(state.mutedReactionMessages)
+            newSet.delete(messageId)
+            return {
+              mutedReactionMessages: newSet,
+              events: restampReactionEvents(state.events, state.mutedReactionConversations, newSet),
+            }
+          })
+        },
+
+        isReactionMuted: (conversationId, messageId) => {
+          const state = get()
+          return checkReactionMuted(state.mutedReactionConversations, state.mutedReactionMessages, conversationId, messageId)
         },
 
         unreadCount: () => {
@@ -170,10 +238,15 @@ export const activityLogStore = createStore<ActivityLogState>()(
                   })
                 )
               }
-              // Restore Set from array
-              if (parsed.state?.mutedTypes) {
-                parsed.state.mutedTypes = new Set(parsed.state.mutedTypes)
-              }
+              // Restore Sets from arrays
+              parsed.state.mutedReactionConversations = new Set(
+                parsed.state?.mutedReactionConversations ?? []
+              )
+              parsed.state.mutedReactionMessages = new Set(
+                parsed.state?.mutedReactionMessages ?? []
+              )
+              // Remove old mutedTypes if present (migration)
+              delete parsed.state.mutedTypes
               return parsed
             } catch {
               return null
@@ -184,7 +257,8 @@ export const activityLogStore = createStore<ActivityLogState>()(
               const state = value.state as ActivityLogState
               const serialized = {
                 events: state.events,
-                mutedTypes: Array.from(state.mutedTypes),
+                mutedReactionConversations: Array.from(state.mutedReactionConversations),
+                mutedReactionMessages: Array.from(state.mutedReactionMessages),
               }
               localStorage.setItem(
                 getScopedStorageKey(),
@@ -204,7 +278,8 @@ export const activityLogStore = createStore<ActivityLogState>()(
         },
         partialize: (state) => ({
           events: state.events,
-          mutedTypes: state.mutedTypes,
+          mutedReactionConversations: state.mutedReactionConversations,
+          mutedReactionMessages: state.mutedReactionMessages,
         } as unknown as ActivityLogState),
       }
     )

@@ -377,8 +377,11 @@
         "dismissed": "Verworfen",
         "pending": "Ausstehend",
         "muted": "Stummgeschaltet",
-        "muteType": "Diese Benachrichtigungen stummschalten",
-        "unmuteType": "Diese Benachrichtigungen aktivieren"
+        "muteReactions": "Reaktionen stummschalten",
+        "muteConversationReactions": "Reaktionen aus diesem Chat stummschalten",
+        "unmuteConversationReactions": "Reaktionen aus diesem Chat aktivieren",
+        "muteMessageReactions": "Reaktionen auf diese Nachricht stummschalten",
+        "unmuteMessageReactions": "Reaktionen auf diese Nachricht aktivieren"
     },
     "chat": {
         "me": "Ich",

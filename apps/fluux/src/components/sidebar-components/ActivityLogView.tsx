@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   useActivityLog,
@@ -88,7 +88,12 @@ function getResolutionColor(resolution: string) {
 
 export function ActivityLogView() {
   const { t } = useTranslation()
-  const { events, unreadCount, markAllRead, muteType, unmuteType, mutedTypes, markRead } = useActivityLog()
+  const {
+    events, unreadCount, markAllRead, markRead,
+    mutedReactionConversations, mutedReactionMessages,
+    muteReactionsForConversation, unmuteReactionsForConversation,
+    muteReactionsForMessage, unmuteReactionsForMessage,
+  } = useActivityLog()
   const { pendingCount } = useEvents()
   const { navigateToConversation, navigateToRoom } = useNavigateToTarget()
   const hasRoom = useRoomStore((s) => (jid: string) => s.rooms.has(jid))
@@ -153,18 +158,40 @@ export function ActivityLogView() {
               : dateLabel === 'yesterday' ? t('activityLog.yesterday')
               : dateLabel}
           </div>
-          {dayEvents.map((event) => (
-            <ActivityEventItem
-              key={event.id}
-              event={event}
-              onMarkRead={() => markRead(event.id)}
-              onNavigate={() => handleNavigate(event)}
-              isNavigable={getNavigationTarget(event) !== null}
-              isMuted={mutedTypes.has(event.type)}
-              onMuteType={() => muteType(event.type)}
-              onUnmuteType={() => unmuteType(event.type)}
-            />
-          ))}
+          {dayEvents.map((event) => {
+            const reactionMuteProps = event.type === 'reaction-received'
+              ? {
+                  isConversationMuted: mutedReactionConversations.has(
+                    (event.payload as ReactionReceivedPayload).conversationId
+                  ),
+                  isMessageMuted: mutedReactionMessages.has(
+                    (event.payload as ReactionReceivedPayload).messageId
+                  ),
+                  onMuteConversation: () => muteReactionsForConversation(
+                    (event.payload as ReactionReceivedPayload).conversationId
+                  ),
+                  onUnmuteConversation: () => unmuteReactionsForConversation(
+                    (event.payload as ReactionReceivedPayload).conversationId
+                  ),
+                  onMuteMessage: () => muteReactionsForMessage(
+                    (event.payload as ReactionReceivedPayload).messageId
+                  ),
+                  onUnmuteMessage: () => unmuteReactionsForMessage(
+                    (event.payload as ReactionReceivedPayload).messageId
+                  ),
+                }
+              : {}
+            return (
+              <ActivityEventItem
+                key={event.id}
+                event={event}
+                onMarkRead={() => markRead(event.id)}
+                onNavigate={() => handleNavigate(event)}
+                isNavigable={getNavigationTarget(event) !== null}
+                {...reactionMuteProps}
+              />
+            )
+          })}
         </div>
       ))}
     </div>
@@ -176,12 +203,21 @@ interface ActivityEventItemProps {
   onMarkRead: () => void
   onNavigate: () => void
   isNavigable: boolean
-  isMuted: boolean
-  onMuteType: () => void
-  onUnmuteType: () => void
+  // Reaction muting (only for reaction-received events)
+  isConversationMuted?: boolean
+  isMessageMuted?: boolean
+  onMuteConversation?: () => void
+  onUnmuteConversation?: () => void
+  onMuteMessage?: () => void
+  onUnmuteMessage?: () => void
 }
 
-function ActivityEventItem({ event, onMarkRead, onNavigate, isNavigable, isMuted, onMuteType, onUnmuteType }: ActivityEventItemProps) {
+function ActivityEventItem({
+  event, onMarkRead, onNavigate, isNavigable,
+  isConversationMuted, isMessageMuted,
+  onMuteConversation, onUnmuteConversation,
+  onMuteMessage, onUnmuteMessage,
+}: ActivityEventItemProps) {
   const { t } = useTranslation()
   const Icon = getEventIcon(event.type)
   const ResolutionIcon = event.resolution && event.resolution !== 'pending'
@@ -191,6 +227,7 @@ function ActivityEventItem({ event, onMarkRead, onNavigate, isNavigable, isMuted
   const description = getEventDescription(event, t)
   const timeStr = event.timestamp.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
   const avatarId = getEventAvatarId(event)
+  const isReaction = event.type === 'reaction-received'
 
   const handleClick = () => {
     if (!event.read) onMarkRead()
@@ -235,16 +272,93 @@ function ActivityEventItem({ event, onMarkRead, onNavigate, isNavigable, isMuted
         </div>
       </div>
 
-      {/* Mute toggle (visible on hover) */}
-      <Tooltip content={isMuted ? t('activityLog.unmuteType') : t('activityLog.muteType')} position="left">
-        <button
-          onClick={(e) => { e.stopPropagation(); if (isMuted) { onUnmuteType() } else { onMuteType() } }}
-          className="opacity-0 group-hover:opacity-100 text-fluux-muted hover:text-fluux-text transition-all flex-shrink-0 mt-0.5"
-          aria-label={isMuted ? t('activityLog.unmuteType') : t('activityLog.muteType')}
-        >
-          {isMuted ? <Bell className="w-3.5 h-3.5" /> : <BellOff className="w-3.5 h-3.5" />}
-        </button>
-      </Tooltip>
+      {/* Reaction mute dropdown (only for reaction-received events) */}
+      {isReaction && (
+        <ReactionMuteDropdown
+          isConversationMuted={isConversationMuted ?? false}
+          isMessageMuted={isMessageMuted ?? false}
+          onMuteConversation={onMuteConversation}
+          onUnmuteConversation={onUnmuteConversation}
+          onMuteMessage={onMuteMessage}
+          onUnmuteMessage={onUnmuteMessage}
+        />
+      )}
+    </div>
+  )
+}
+
+interface ReactionMuteDropdownProps {
+  isConversationMuted: boolean
+  isMessageMuted: boolean
+  onMuteConversation?: () => void
+  onUnmuteConversation?: () => void
+  onMuteMessage?: () => void
+  onUnmuteMessage?: () => void
+}
+
+function ReactionMuteDropdown({
+  isConversationMuted, isMessageMuted,
+  onMuteConversation, onUnmuteConversation,
+  onMuteMessage, onUnmuteMessage,
+}: ReactionMuteDropdownProps) {
+  const { t } = useTranslation()
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const anyMuted = isConversationMuted || isMessageMuted
+
+  // Close on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen])
+
+  return (
+    <div ref={dropdownRef} className="relative flex-shrink-0 mt-0.5">
+      <button
+        onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen) }}
+        className={`${isOpen ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100 text-fluux-muted hover:text-fluux-text transition-all`}
+        aria-label={t('activityLog.muteReactions')}
+      >
+        {anyMuted ? <Bell className="w-3.5 h-3.5" /> : <BellOff className="w-3.5 h-3.5" />}
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 top-full mt-1 z-50 bg-fluux-surface border border-fluux-border rounded-md shadow-lg py-1 min-w-[200px]">
+          <button
+            className="w-full text-left px-3 py-1.5 text-xs text-fluux-text hover:bg-fluux-hover transition-colors"
+            onClick={(e) => {
+              e.stopPropagation()
+              if (isConversationMuted) onUnmuteConversation?.()
+              else onMuteConversation?.()
+              setIsOpen(false)
+            }}
+          >
+            {isConversationMuted
+              ? t('activityLog.unmuteConversationReactions')
+              : t('activityLog.muteConversationReactions')}
+          </button>
+          <button
+            className="w-full text-left px-3 py-1.5 text-xs text-fluux-text hover:bg-fluux-hover transition-colors"
+            onClick={(e) => {
+              e.stopPropagation()
+              if (isMessageMuted) onUnmuteMessage?.()
+              else onMuteMessage?.()
+              setIsOpen(false)
+            }}
+          >
+            {isMessageMuted
+              ? t('activityLog.unmuteMessageReactions')
+              : t('activityLog.muteMessageReactions')}
+          </button>
+        </div>
+      )}
     </div>
   )
 }

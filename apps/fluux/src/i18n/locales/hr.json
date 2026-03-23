@@ -375,8 +375,11 @@
         "dismissed": "Odbačeno",
         "pending": "Na čekanju",
         "muted": "Utišano",
-        "muteType": "Utišaj ove obavijesti",
-        "unmuteType": "Uključi ove obavijesti"
+        "muteReactions": "Mute reactions",
+        "muteConversationReactions": "Mute reactions from this chat",
+        "unmuteConversationReactions": "Unmute reactions from this chat",
+        "muteMessageReactions": "Mute reactions on this message",
+        "unmuteMessageReactions": "Unmute reactions on this message"
     },
     "chat": {
         "me": "Ja",

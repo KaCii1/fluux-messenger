@@ -375,8 +375,11 @@
         "dismissed": "已忽略",
         "pending": "等待中",
         "muted": "已静音",
-        "muteType": "静音这些通知",
-        "unmuteType": "取消静音这些通知"
+        "muteReactions": "Mute reactions",
+        "muteConversationReactions": "Mute reactions from this chat",
+        "unmuteConversationReactions": "Unmute reactions from this chat",
+        "muteMessageReactions": "Mute reactions on this message",
+        "unmuteMessageReactions": "Unmute reactions on this message"
     },
     "chat": {
         "me": "我",

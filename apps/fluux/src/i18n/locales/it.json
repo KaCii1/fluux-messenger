@@ -377,8 +377,11 @@
         "dismissed": "Ignorato",
         "pending": "In attesa",
         "muted": "Silenziato",
-        "muteType": "Silenzia queste notifiche",
-        "unmuteType": "Riattiva queste notifiche"
+        "muteReactions": "Mute reactions",
+        "muteConversationReactions": "Mute reactions from this chat",
+        "unmuteConversationReactions": "Unmute reactions from this chat",
+        "muteMessageReactions": "Mute reactions on this message",
+        "unmuteMessageReactions": "Unmute reactions on this message"
     },
     "chat": {
         "me": "Io",

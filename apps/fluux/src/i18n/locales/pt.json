@@ -377,8 +377,11 @@
         "dismissed": "Dispensado",
         "pending": "Pendente",
         "muted": "Silenciado",
-        "muteType": "Silenciar estas notificações",
-        "unmuteType": "Reativar estas notificações"
+        "muteReactions": "Mute reactions",
+        "muteConversationReactions": "Mute reactions from this chat",
+        "unmuteConversationReactions": "Unmute reactions from this chat",
+        "muteMessageReactions": "Mute reactions on this message",
+        "unmuteMessageReactions": "Unmute reactions on this message"
     },
     "chat": {
         "me": "Eu",

@@ -39,7 +39,8 @@ import type { ActivityEvent, ActivityEventType, ActivityResolution } from '../co
  */
 export function useActivityLog() {
   const events = useActivityLogStore((s) => s.events)
-  const mutedTypes = useActivityLogStore((s) => s.mutedTypes)
+  const mutedReactionConversations = useActivityLogStore((s) => s.mutedReactionConversations)
+  const mutedReactionMessages = useActivityLogStore((s) => s.mutedReactionMessages)
 
   const unreadCount = useMemo(
     () => events.filter((e) => !e.read && !e.muted).length,
@@ -63,12 +64,20 @@ export function useActivityLog() {
     activityLogStore.getState().resolveEvent(eventId, resolution)
   }, [])
 
-  const muteType = useCallback((type: ActivityEventType) => {
-    activityLogStore.getState().muteType(type)
+  const muteReactionsForConversation = useCallback((conversationId: string) => {
+    activityLogStore.getState().muteReactionsForConversation(conversationId)
   }, [])
 
-  const unmuteType = useCallback((type: ActivityEventType) => {
-    activityLogStore.getState().unmuteType(type)
+  const unmuteReactionsForConversation = useCallback((conversationId: string) => {
+    activityLogStore.getState().unmuteReactionsForConversation(conversationId)
+  }, [])
+
+  const muteReactionsForMessage = useCallback((messageId: string) => {
+    activityLogStore.getState().muteReactionsForMessage(messageId)
+  }, [])
+
+  const unmuteReactionsForMessage = useCallback((messageId: string) => {
+    activityLogStore.getState().unmuteReactionsForMessage(messageId)
   }, [])
 
   return useMemo(
@@ -76,14 +85,17 @@ export function useActivityLog() {
       events,
       unreadCount,
       actionableEvents,
-      mutedTypes,
+      mutedReactionConversations,
+      mutedReactionMessages,
       markRead,
       markAllRead,
       resolveEvent,
-      muteType,
-      unmuteType,
+      muteReactionsForConversation,
+      unmuteReactionsForConversation,
+      muteReactionsForMessage,
+      unmuteReactionsForMessage,
     }),
-    [events, unreadCount, actionableEvents, mutedTypes, markRead, markAllRead, resolveEvent, muteType, unmuteType]
+    [events, unreadCount, actionableEvents, mutedReactionConversations, mutedReactionMessages, markRead, markAllRead, resolveEvent, muteReactionsForConversation, unmuteReactionsForConversation, muteReactionsForMessage, unmuteReactionsForMessage]
   )
 }
 
