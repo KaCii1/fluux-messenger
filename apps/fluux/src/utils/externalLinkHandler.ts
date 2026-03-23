@@ -1,16 +1,10 @@
 /**
  * External link handler for Tauri desktop app.
- * Intercepts clicks on external <a> tags and opens them in a Tauri webview popup
- * instead of the system browser. In web mode, links open normally.
+ * Intercepts clicks on external <a> tags and opens them in the system's
+ * default browser. In web mode, links open normally.
  */
 
 import { isTauri } from './tauri'
-
-let counter = 0
-
-function generateWindowLabel(): string {
-  return `external-link-${Date.now()}-${counter++}`
-}
 
 function isExternalUrl(href: string): boolean {
   try {
@@ -21,32 +15,14 @@ function isExternalUrl(href: string): boolean {
   }
 }
 
-async function openInWebviewPopup(url: string): Promise<void> {
-  const { WebviewWindow } = await import('@tauri-apps/api/webviewWindow')
-
-  let title = url
-  try {
-    title = new URL(url).hostname
-  } catch {
-    // Use raw URL as title if parsing fails
-  }
-
-  new WebviewWindow(generateWindowLabel(), {
-    url,
-    title,
-    width: 1024,
-    height: 768,
-    minWidth: 400,
-    minHeight: 300,
-    center: true,
-    resizable: true,
-    focus: true,
-  })
+async function openInSystemBrowser(url: string): Promise<void> {
+  const { open } = await import('@tauri-apps/plugin-shell')
+  await open(url)
 }
 
 /**
  * Set up a global click handler that intercepts external link clicks
- * and opens them in Tauri webview popup windows.
+ * and opens them in the system's default browser.
  * Returns a cleanup function, or undefined in web mode.
  */
 export function setupExternalLinkHandler(): (() => void) | undefined {
@@ -65,7 +41,7 @@ export function setupExternalLinkHandler(): (() => void) | undefined {
     event.preventDefault()
     event.stopPropagation()
 
-    void openInWebviewPopup(href)
+    void openInSystemBrowser(href)
   }
 
   document.addEventListener('click', handler, true)
