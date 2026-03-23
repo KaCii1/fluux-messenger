@@ -59,6 +59,8 @@ export class Poll extends BaseModule {
   private chat: Chat
   /** Polls created by the local user, keyed by message ID */
   private localPolls = new Map<string, LocalPollEntry>()
+  /** Tracks poll IDs that have been closed (prevents duplicate close messages) */
+  private closedPollIds = new Set<string>()
 
   constructor(deps: ModuleDependencies, chat: Chat) {
     super(deps)
@@ -200,31 +202,36 @@ export class Poll extends BaseModule {
    * @returns The message ID of the result message, or null if poll not found
    */
   async closePoll(roomJid: string, messageId: string): Promise<string | null> {
-    const localPoll = this.localPolls.get(messageId)
-    if (!localPoll || localPoll.roomJid !== roomJid) return null
-
     // Guard: already closed — don't send duplicate close messages
-    if (localPoll.closed) return null
+    if (this.closedPollIds.has(messageId)) return null
+    const localPoll = this.localPolls.get(messageId)
+    if (localPoll?.closed) return null
 
-    // Mark as closed locally
-    localPoll.closed = true
+    // Get poll data from store (works for MAM-loaded polls) or fall back to localPolls
+    const roomMessage = this.deps.stores?.room.getMessage(roomJid, messageId)
+    const localPollData = localPoll?.roomJid === roomJid ? localPoll.poll : undefined
+    const pollData = roomMessage?.poll ?? localPollData
+    if (!pollData) return null
+
+    // Mark as closed
+    this.closedPollIds.add(messageId)
+    if (localPoll) localPoll.closed = true
 
     // Get current tally from store
-    const roomMessage = this.deps.stores?.room.getMessage(roomJid, messageId)
     const reactions = roomMessage?.reactions ?? {}
-    const tally = tallyPollResults(localPoll.poll, reactions)
+    const tally = tallyPollResults(pollData, reactions)
 
     // Build a result summary for the body fallback
     const resultLines = tally.map((t) => `${t.emoji} ${t.label}: ${t.count}`)
-    const fallbackBody = `📊 Poll closed: ${localPoll.poll.title}\n${resultLines.join('\n')}`
+    const fallbackBody = `📊 Poll closed: ${pollData.title}\n${resultLines.join('\n')}`
 
     const tallyElements = tally.map((t) =>
       xml('tally', { emoji: t.emoji, label: t.label, count: String(t.count) })
     )
 
     const pollClosedChildren = [
-      xml('title', {}, localPoll.poll.title),
-      ...(localPoll.poll.description ? [xml('description', {}, localPoll.poll.description)] : []),
+      xml('title', {}, pollData.title),
+      ...(pollData.description ? [xml('description', {}, pollData.description)] : []),
       ...tallyElements,
     ]
 

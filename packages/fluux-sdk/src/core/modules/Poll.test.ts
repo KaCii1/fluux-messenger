@@ -631,6 +631,45 @@ describe('Poll module', () => {
       expect(result).not.toBeNull()
       expect(mockXmppClientInstance.send).toHaveBeenCalledTimes(1)
     })
+
+    it('should close a poll loaded from MAM history (not in localPolls)', async () => {
+      await connectClient()
+
+      // Poll was NOT created via sendPoll() this session — simulate MAM-loaded poll
+      const pollData = {
+        title: 'Lunch?',
+        options: [
+          { emoji: '1️⃣', label: 'Pizza' },
+          { emoji: '2️⃣', label: 'Sushi' },
+        ],
+        settings: { allowMultiple: false, hideResultsBeforeVote: false },
+      }
+
+      vi.mocked(mockStores.room.getMessage).mockReturnValue({
+        poll: pollData,
+        reactions: {
+          '1️⃣': ['alice'],
+          '2️⃣': ['bob', 'carol'],
+        },
+      } as any)
+
+      const result = await xmppClient.poll.closePoll('room@conf.example.com', 'mam-msg-42')
+
+      expect(result).not.toBeNull()
+      expect(mockXmppClientInstance.send).toHaveBeenCalledTimes(1)
+
+      const stanza = getLastSentStanza()
+      expect(stanza.attrs.type).toBe('groupchat')
+      const pollClosedEl = stanza.children.find((c: any) => c.name === 'poll-closed')
+      expect(pollClosedEl).toBeDefined()
+      expect(pollClosedEl.attrs['message-id']).toBe('mam-msg-42')
+
+      // Verify tally values
+      const tallies = pollClosedEl.children.filter((c: any) => c.name === 'tally')
+      expect(tallies).toHaveLength(2)
+      expect(tallies[0].attrs.count).toBe('1')
+      expect(tallies[1].attrs.count).toBe('2')
+    })
   })
 
   describe('vote edge cases', () => {
