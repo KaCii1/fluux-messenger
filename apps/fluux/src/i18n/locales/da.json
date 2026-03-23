@@ -666,6 +666,10 @@
         "admin": {
             "title": "Serveradministration",
             "description": "Vælg en kommando fra sidebjælken for at administrere din server."
+        },
+        "search": {
+            "title": "Søgeresultater",
+            "description": "Vælg et resultat i sidebjælken for at se samtalen."
         }
     },
     "avatar": {

@@ -667,6 +667,10 @@
         "admin": {
             "title": "Servera administrēšana",
             "description": "Izvēlieties komandu no sānjoslas, lai pārvaldītu savu serveri."
+        },
+        "search": {
+            "title": "Meklēšanas rezultāti",
+            "description": "Izvēlieties rezultātu sānjoslā, lai apskatītu sarunu."
         }
     },
     "avatar": {

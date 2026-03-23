@@ -666,6 +666,10 @@
         "admin": {
             "title": "Server Administration",
             "description": "Select a command from the sidebar to manage your server."
+        },
+        "search": {
+            "title": "Search Results",
+            "description": "Select a result from the sidebar to view the conversation."
         }
     },
     "avatar": {

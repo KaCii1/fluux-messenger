@@ -667,6 +667,10 @@
         "admin": {
             "title": "Administration du serveur",
             "description": "Sélectionnez une commande dans la barre latérale pour gérer votre serveur."
+        },
+        "search": {
+            "title": "Recherche",
+            "description": "Sélectionnez un résultat dans la barre latérale pour afficher la conversation."
         }
     },
     "avatar": {

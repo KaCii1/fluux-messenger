@@ -563,6 +563,24 @@ export async function rebuildSearchIndex(): Promise<number> {
 // =============================================================================
 
 /**
+ * Clear all data from the search index (tokens, docs, and meta).
+ * Keeps the database open — call on logout to wipe indexed data.
+ */
+export async function clearSearchIndex(): Promise<void> {
+  if (!isIndexedDBAvailable()) return
+  try {
+    const db = await getDB()
+    const tx = db.transaction([TOKENS_STORE, DOCS_STORE, META_STORE], 'readwrite')
+    await tx.objectStore(TOKENS_STORE).clear()
+    await tx.objectStore(DOCS_STORE).clear()
+    await tx.objectStore(META_STORE).clear()
+    await tx.done
+  } catch {
+    // Ignore errors (DB may not exist yet)
+  }
+}
+
+/**
  * Destroy the search index (close and delete the database).
  * Call on logout or account switch.
  */

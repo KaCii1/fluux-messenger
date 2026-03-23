@@ -10,6 +10,7 @@ import {
   clearAllAvatarData,
   getBareJid,
   deleteFastToken,
+  clearSearchIndex,
 } from '@fluux/sdk'
 import { clearSession, getSession } from '@/hooks/useSessionPersistence'
 import { deleteCredentials } from '@/utils/keychain'
@@ -65,6 +66,8 @@ export async function clearLocalData(options: ClearLocalDataOptions = {}): Promi
     consoleStore.getState().reset()
     adminStore.getState().reset()
     blockingStore.getState().reset()
+    // Clear search index (IndexedDB)
+    await clearSearchIndex()
     console.log('[Fluux] clearLocalData: stores reset')
 
     // 3. Clear FAST tokens (XEP-0484) from localStorage

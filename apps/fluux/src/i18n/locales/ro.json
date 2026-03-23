@@ -668,6 +668,10 @@
         "admin": {
             "title": "Administrare server",
             "description": "Selectează o comandă din bara laterală pentru a administra serverul."
+        },
+        "search": {
+            "title": "Rezultatele căutării",
+            "description": "Selectați un rezultat din bara laterală pentru a vizualiza conversația."
         }
     },
     "avatar": {

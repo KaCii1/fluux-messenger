@@ -666,6 +666,10 @@
         "admin": {
             "title": "Serverio administravimas",
             "description": "Pasirinkite komandą iš šoninės juostos valdyti serverį."
+        },
+        "search": {
+            "title": "Paieškos rezultatai",
+            "description": "Pasirinkite rezultatą šoninėje juostoje, kad peržiūrėtumėte pokalbį."
         }
     },
     "avatar": {

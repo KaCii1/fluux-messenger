@@ -667,6 +667,10 @@
         "admin": {
             "title": "Správa servera",
             "description": "Vyberte príkaz z bočného panela pre správu vášho servera."
+        },
+        "search": {
+            "title": "Výsledky vyhľadávania",
+            "description": "Vyberte výsledok v bočnom paneli na zobrazenie konverzácie."
         }
     },
     "avatar": {

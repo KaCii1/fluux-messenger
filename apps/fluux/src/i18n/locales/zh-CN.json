@@ -666,6 +666,10 @@
         "admin": {
             "title": "服务器管理",
             "description": "从侧边栏选择命令以管理您的服务器。"
+        },
+        "search": {
+            "title": "搜索结果",
+            "description": "从侧边栏选择一个结果以查看对话。"
         }
     },
     "avatar": {

@@ -666,6 +666,10 @@
         "admin": {
             "title": "Serveradministration",
             "description": "Välj ett kommando från sidofältet för att hantera din server."
+        },
+        "search": {
+            "title": "Sökresultat",
+            "description": "Välj ett resultat i sidofältet för att visa konversationen."
         }
     },
     "avatar": {

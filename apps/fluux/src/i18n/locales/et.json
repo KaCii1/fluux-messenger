@@ -668,6 +668,10 @@
         "admin": {
             "title": "Serveri haldus",
             "description": "Vali käsk külgribalt oma serveri haldamiseks."
+        },
+        "search": {
+            "title": "Otsingutulemused",
+            "description": "Valige tulemus külgribalt vestluse vaatamiseks."
         }
     },
     "avatar": {

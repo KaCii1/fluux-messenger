@@ -668,6 +668,10 @@
         "admin": {
             "title": "Administracija strežnika",
             "description": "Izberite ukaz iz stranske vrstice za upravljanje strežnika."
+        },
+        "search": {
+            "title": "Rezultati iskanja",
+            "description": "Izberite rezultat v stranski vrstici za ogled pogovora."
         }
     },
     "avatar": {

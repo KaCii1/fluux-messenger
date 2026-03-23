@@ -668,6 +668,10 @@
         "admin": {
             "title": "Administració del servidor",
             "description": "Selecciona una comanda de la barra lateral per gestionar el teu servidor."
+        },
+        "search": {
+            "title": "Resultats de la cerca",
+            "description": "Seleccioneu un resultat a la barra lateral per veure la conversa."
         }
     },
     "avatar": {

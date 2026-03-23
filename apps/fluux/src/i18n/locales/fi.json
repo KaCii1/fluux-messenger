@@ -666,6 +666,10 @@
         "admin": {
             "title": "Palvelimen hallinta",
             "description": "Valitse komento sivupalkista hallitaksesi palvelintasi."
+        },
+        "search": {
+            "title": "Hakutulokset",
+            "description": "Valitse tulos sivupalkista nähdäksesi keskustelun."
         }
     },
     "avatar": {

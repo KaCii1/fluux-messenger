@@ -14,6 +14,7 @@ import {
   search,
   backfillFromMessageCache,
   rebuildSearchIndex,
+  clearSearchIndex,
   closeSearchIndex,
   tokenize,
   _resetDBForTesting,
@@ -105,6 +106,7 @@ describe('searchIndex', () => {
   describe('indexMessage and search', () => {
     it('should index a chat message and find it by keyword', async () => {
       const msg = createChatMessage('alice@example.com', {
+        id: 'chat-msg-42',
         body: 'Hello world from Alice',
       })
 
@@ -114,11 +116,13 @@ describe('searchIndex', () => {
       expect(results).toHaveLength(1)
       expect(results[0].body).toBe('Hello world from Alice')
       expect(results[0].conversationId).toBe('alice@example.com')
+      expect(results[0].messageId).toBe('chat-msg-42')
       expect(results[0].isRoom).toBe(false)
     })
 
     it('should index a room message and find it', async () => {
       const msg = createRoomMessage('room@conference.example.com', {
+        id: 'room-msg-77',
         body: 'Meeting notes for today',
         stanzaId: 'stanza-123',
       })
@@ -129,6 +133,7 @@ describe('searchIndex', () => {
       expect(results).toHaveLength(1)
       expect(results[0].conversationId).toBe('room@conference.example.com')
       expect(results[0].isRoom).toBe(true)
+      expect(results[0].messageId).toBe('room-msg-77')
     })
 
     it('should find messages matching ALL query terms (AND logic)', async () => {
@@ -684,6 +689,50 @@ describe('searchIndex', () => {
       const count = await rebuildSearchIndex()
       expect(count).toBe(0)
       expect(await search('cleared')).toHaveLength(0)
+    })
+  })
+
+  // ===========================================================================
+  // clearSearchIndex
+  // ===========================================================================
+
+  describe('clearSearchIndex', () => {
+    it('should wipe all indexed data', async () => {
+      await indexMessage(createChatMessage('alice@example.com', {
+        body: 'Message to be wiped',
+      }))
+      await indexMessage(createRoomMessage('room@conference.example.com', {
+        body: 'Room message to be wiped',
+        stanzaId: 'stanza-wipe',
+      }))
+      expect(await search('wiped')).toHaveLength(2)
+
+      await clearSearchIndex()
+
+      expect(await search('wiped')).toHaveLength(0)
+    })
+
+    it('should reset the backfill flag so backfill can run again', async () => {
+      // Run backfill to set the flag
+      await backfillFromMessageCache()
+
+      await clearSearchIndex()
+
+      // Seed messageCache with a message after clear
+      const messageCache = await import('./messageCache')
+      await messageCache.saveMessage(createChatMessage('alice@example.com', {
+        id: 'post-clear',
+        body: 'Post clear backfill message',
+      }))
+
+      // Backfill should run again since flag was cleared
+      await backfillFromMessageCache()
+      expect(await search('post clear')).toHaveLength(1)
+    })
+
+    it('should not throw on empty index', async () => {
+      await clearSearchIndex()
+      // Should not throw
     })
   })
 })

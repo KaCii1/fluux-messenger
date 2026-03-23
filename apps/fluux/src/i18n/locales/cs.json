@@ -668,6 +668,10 @@
         "admin": {
             "title": "Správa serveru",
             "description": "Vyberte příkaz z postranního panelu pro správu vašeho serveru."
+        },
+        "search": {
+            "title": "Výsledky vyhledávání",
+            "description": "Vyberte výsledek v postranním panelu pro zobrazení konverzace."
         }
     },
     "avatar": {

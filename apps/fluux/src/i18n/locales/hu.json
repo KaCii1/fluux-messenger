@@ -666,6 +666,10 @@
         "admin": {
             "title": "Szerver adminisztráció",
             "description": "Válasszon egy parancsot az oldalsávból a szerver kezeléséhez."
+        },
+        "search": {
+            "title": "Keresési eredmények",
+            "description": "Válasszon egy eredményt az oldalsávban a beszélgetés megtekintéséhez."
         }
     },
     "avatar": {
