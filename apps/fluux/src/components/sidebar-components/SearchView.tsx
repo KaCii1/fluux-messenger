@@ -174,7 +174,7 @@ function SearchResultItem({ result, isActive, onClick, onGoToMessage, currentLan
           </div>
         </div>
         {result.matchSnippet && (
-          <HighlightedSnippet snippet={result.matchSnippet} />
+          <HighlightedSnippet snippet={result.matchSnippet} nick={result.isRoom ? result.nick : undefined} />
         )}
       </div>
     </button>
@@ -183,15 +183,18 @@ function SearchResultItem({ result, isActive, onClick, onGoToMessage, currentLan
 
 function HighlightedSnippet({
   snippet,
+  nick,
 }: {
   snippet: { text: string; matchStart: number; matchEnd: number }
+  nick?: string
 }) {
   const before = snippet.text.slice(0, snippet.matchStart)
   const match = snippet.text.slice(snippet.matchStart, snippet.matchEnd)
   const after = snippet.text.slice(snippet.matchEnd)
 
   return (
-    <p className="text-xs text-fluux-muted truncate mt-0.5">
+    <p className="text-xs text-fluux-muted line-clamp-2 mt-0.5">
+      {nick && <span className="font-medium text-fluux-text">{nick}: </span>}
       {before}
       <mark className="bg-fluux-brand/20 text-fluux-text rounded-sm px-0.5">
         {match}

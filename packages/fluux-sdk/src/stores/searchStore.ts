@@ -29,6 +29,8 @@ export interface SearchResult {
   isRoom: boolean
   /** Sender JID or nick */
   from: string
+  /** Sender nickname (room messages only) */
+  nick?: string
   /** Message timestamp */
   timestamp: number
   /** Original message body */
@@ -87,6 +89,7 @@ async function executeSearch(query: string): Promise<void> {
       conversationName: getConversationName(r.conversationId, r.isRoom),
       isRoom: r.isRoom,
       from: r.from,
+      ...(r.nick ? { nick: r.nick } : {}),
       timestamp: r.timestamp,
       body: r.body,
       matchSnippet: generateMatchSnippet(r.body, query),

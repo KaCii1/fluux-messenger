@@ -136,6 +136,30 @@ describe('searchIndex', () => {
       expect(results[0].messageId).toBe('room-msg-77')
     })
 
+    it('should include nick in room message search results', async () => {
+      await indexMessage(createRoomMessage('room@conference.example.com', {
+        body: 'Hello from the room',
+        nick: 'Alice',
+        stanzaId: 'stanza-nick-1',
+      }))
+
+      const results = await search('hello')
+      expect(results).toHaveLength(1)
+      expect(results[0].nick).toBe('Alice')
+      expect(results[0].isRoom).toBe(true)
+    })
+
+    it('should not include nick in chat message search results', async () => {
+      await indexMessage(createChatMessage('alice@example.com', {
+        body: 'Hello from DM',
+      }))
+
+      const results = await search('hello')
+      expect(results).toHaveLength(1)
+      expect(results[0].nick).toBeUndefined()
+      expect(results[0].isRoom).toBe(false)
+    })
+
     it('should find messages matching ALL query terms (AND logic)', async () => {
       await indexMessage(createChatMessage('alice@example.com', {
         body: 'The quick brown fox',
@@ -421,6 +445,27 @@ describe('searchIndex', () => {
 
       const results = await search('batch')
       expect(results).toHaveLength(3)
+    })
+
+    it('should preserve nick for room messages in batch', async () => {
+      const messages = [
+        createChatMessage('alice@example.com', { body: 'Batch chat hello' }),
+        createRoomMessage('dev@conference.example.com', {
+          body: 'Batch room hello',
+          nick: 'Bob',
+          stanzaId: 'stanza-batch-nick',
+        }),
+      ]
+
+      await indexMessages(messages)
+
+      const results = await search('batch')
+      expect(results).toHaveLength(2)
+
+      const roomResult = results.find((r) => r.isRoom)
+      const chatResult = results.find((r) => !r.isRoom)
+      expect(roomResult?.nick).toBe('Bob')
+      expect(chatResult?.nick).toBeUndefined()
     })
 
     it('should skip non-indexable messages in batch', async () => {

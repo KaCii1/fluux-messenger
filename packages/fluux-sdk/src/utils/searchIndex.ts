@@ -44,6 +44,7 @@ interface DocEntry {
   tokens: string[]
   conversationId: string
   from: string
+  nick?: string // sender nickname (room messages only)
   timestamp: number
   isRoom: boolean
   body: string
@@ -82,6 +83,7 @@ export interface SearchIndexResult {
   messageId: string
   conversationId: string
   from: string
+  nick?: string
   timestamp: number
   isRoom: boolean
   body: string
@@ -228,7 +230,7 @@ export async function indexMessage(message: Message | RoomMessage): Promise<void
   }
 
   // Write document entry
-  await docsStore.put({
+  const doc: DocEntry = {
     indexId,
     messageId: message.id,
     tokens,
@@ -237,7 +239,9 @@ export async function indexMessage(message: Message | RoomMessage): Promise<void
     timestamp: message.timestamp.getTime(),
     isRoom: message.type === 'groupchat',
     body: message.body,
-  })
+  }
+  if (message.type === 'groupchat') doc.nick = message.nick
+  await docsStore.put(doc)
 
   // Update posting lists for each token
   for (const token of tokens) {
@@ -303,7 +307,7 @@ async function indexBatch(messages: (Message | RoomMessage)[]): Promise<void> {
     const existing = await docsStore.get(indexId)
     if (existing) continue
 
-    await docsStore.put({
+    const doc: DocEntry = {
       indexId,
       messageId: message.id,
       tokens,
@@ -312,7 +316,9 @@ async function indexBatch(messages: (Message | RoomMessage)[]): Promise<void> {
       timestamp: message.timestamp.getTime(),
       isRoom: message.type === 'groupchat',
       body: message.body!,
-    })
+    }
+    if (message.type === 'groupchat') doc.nick = message.nick
+    await docsStore.put(doc)
 
     for (const token of tokens) {
       let entry = tokenCache.get(token)
@@ -468,6 +474,7 @@ export async function search(
     messageId: doc.messageId ?? doc.indexId.replace(/^(chat:|room:)/, ''),
     conversationId: doc.conversationId,
     from: doc.from,
+    ...(doc.nick ? { nick: doc.nick } : {}),
     timestamp: doc.timestamp,
     isRoom: doc.isRoom,
     body: doc.body,
