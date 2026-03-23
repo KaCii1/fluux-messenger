@@ -675,6 +675,10 @@ export function useMessageListScroll({
         const distFromBottom = currentScroller.scrollHeight - targetScrollTop - viewportHeight
         isAtBottomRef.current = distFromBottom < AT_BOTTOM_THRESHOLD
 
+        // Briefly highlight the target message (same effect as reply-to navigation)
+        messageElement.classList.add('message-highlight')
+        setTimeout(() => messageElement.classList.remove('message-highlight'), 1500)
+
         debugLog('TARGET MESSAGE: scrolled to target', {
           targetMessageId,
           elementTop,
