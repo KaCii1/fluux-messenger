@@ -86,6 +86,8 @@ export interface ReactionReceivedPayload {
   reactors: ReactionEntry[]
   /** First 80 chars of the reacted message */
   messagePreview?: string
+  /** When the reacted message is a poll, the poll title */
+  pollTitle?: string
 }
 
 export interface SystemEventPayload {

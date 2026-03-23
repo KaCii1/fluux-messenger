@@ -366,6 +366,8 @@
         "mucInvitation": "Boð í spjallrás {{room}}",
         "reactionReceived": "{{name}} brást við {{emojis}}",
         "reactionReceivedTo": " við \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} kaus {{emojis}} í könnun \"{{title}}\"",
+        "inConversation": " í {{conversation}}",
         "strangerMessage": "Skilaboð frá {{name}}",
         "resourceConflict": "Setu var skipt út",
         "authError": "Auðkenningarvilla",

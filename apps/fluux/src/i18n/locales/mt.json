@@ -368,6 +368,8 @@
         "mucInvitation": "Stedina għall-kamra {{room}}",
         "reactionReceived": "{{name}} irreaġixxa {{emojis}}",
         "reactionReceivedTo": " għal \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} ivvota {{emojis}} fil-poll \"{{title}}\"",
+        "inConversation": " fi {{conversation}}",
         "strangerMessage": "Messaġġ minn {{name}}",
         "resourceConflict": "Sessjoni sostitwita",
         "authError": "Żball fl-awtentikazzjoni",

@@ -366,6 +366,8 @@
         "mucInvitation": "Pozivnica u sobu {{room}}",
         "reactionReceived": "{{name}} je reagirao/la {{emojis}}",
         "reactionReceivedTo": " na \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} je glasao/la {{emojis}} u anketi \"{{title}}\"",
+        "inConversation": " u {{conversation}}",
         "strangerMessage": "Poruka od {{name}}",
         "resourceConflict": "Sesija zamijenjena",
         "authError": "Greška pri autentifikaciji",

@@ -366,6 +366,8 @@
         "mucInvitation": "Szobameghívó ide: {{room}}",
         "reactionReceived": "{{name}} reagált {{emojis}}",
         "reactionReceivedTo": " erre: \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} szavazott {{emojis}} a szavazásban: \"{{title}}\"",
+        "inConversation": " itt: {{conversation}}",
         "strangerMessage": "Üzenet tőle: {{name}}",
         "resourceConflict": "Munkamenet lecserélve",
         "authError": "Hitelesítési hiba",

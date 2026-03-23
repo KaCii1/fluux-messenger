@@ -366,6 +366,8 @@
         "mucInvitation": "Запрошення до кімнати {{room}}",
         "reactionReceived": "{{name}} відреагував(-ла) {{emojis}}",
         "reactionReceivedTo": " на \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} проголосував(-ла) {{emojis}} в опитуванні \"{{title}}\"",
+        "inConversation": " в {{conversation}}",
         "strangerMessage": "Повідомлення від {{name}}",
         "resourceConflict": "Сесію замінено",
         "authError": "Помилка автентифікації",

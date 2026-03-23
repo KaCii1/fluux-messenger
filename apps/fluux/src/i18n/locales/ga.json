@@ -366,6 +366,8 @@
         "mucInvitation": "Cuireadh seomra go {{room}}",
         "reactionReceived": "Rinne {{name}} imoibriú {{emojis}}",
         "reactionReceivedTo": " ar \"{{preview}}\"",
+        "pollVoteReceived": "Vótáil {{name}} {{emojis}} i bpobalbhreith \"{{title}}\"",
+        "inConversation": " i {{conversation}}",
         "strangerMessage": "Teachtaireacht ó {{name}}",
         "resourceConflict": "Seisiún ionadaithe",
         "authError": "Earráid fíordheimhnithe",

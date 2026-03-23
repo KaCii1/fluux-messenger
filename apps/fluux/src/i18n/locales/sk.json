@@ -367,6 +367,8 @@
         "mucInvitation": "Pozvánka do miestnosti {{room}}",
         "reactionReceived": "{{name}} reagoval(a) {{emojis}}",
         "reactionReceivedTo": " na \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} hlasoval(a) {{emojis}} v ankete \"{{title}}\"",
+        "inConversation": " v {{conversation}}",
         "strangerMessage": "Správa od {{name}}",
         "resourceConflict": "Relácia nahradená",
         "authError": "Chyba overenia",

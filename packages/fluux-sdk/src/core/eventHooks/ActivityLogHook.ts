@@ -90,7 +90,7 @@ export class ActivityLogHook extends EventHook {
       const message = findMessageById(chatMessages as Message[], messageId)
       if (!message?.isOutgoing) return
 
-      this.addOrUpdateReactionEvent(conversationId, messageId, reactorJid, emojis, message.body?.substring(0, 80))
+      this.addOrUpdateReactionEvent(conversationId, messageId, reactorJid, emojis, message.body?.substring(0, 80), message.poll?.title)
     })
 
     // Log reactions to own messages in MUC rooms (grouped by message)
@@ -106,7 +106,7 @@ export class ActivityLogHook extends EventHook {
       const message = state.getMessage(roomJid, messageId)
       if (!message || message.nick !== room.nickname) return
 
-      this.addOrUpdateReactionEvent(roomJid, messageId, reactorNick, emojis, message.body?.substring(0, 80))
+      this.addOrUpdateReactionEvent(roomJid, messageId, reactorNick, emojis, message.body?.substring(0, 80), message.poll?.title)
     })
   }
 
@@ -121,6 +121,7 @@ export class ActivityLogHook extends EventHook {
     reactorJid: string,
     emojis: string[],
     messagePreview?: string,
+    pollTitle?: string,
   ): void {
     const store = activityLogStore.getState()
 
@@ -155,6 +156,7 @@ export class ActivityLogHook extends EventHook {
           messageId,
           reactors,
           messagePreview: messagePreview ?? payload.messagePreview,
+          pollTitle: pollTitle ?? payload.pollTitle,
         },
       })
     } else {
@@ -168,6 +170,7 @@ export class ActivityLogHook extends EventHook {
           messageId,
           reactors: [{ reactorJid, emojis }],
           messagePreview,
+          pollTitle,
         },
       })
     }

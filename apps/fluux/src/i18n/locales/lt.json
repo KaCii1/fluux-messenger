@@ -366,6 +366,8 @@
         "mucInvitation": "Kvietimas į kambarį {{room}}",
         "reactionReceived": "{{name}} sureagavo {{emojis}}",
         "reactionReceivedTo": " į \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} balsavo {{emojis}} apklausoje \"{{title}}\"",
+        "inConversation": " pokalbyje {{conversation}}",
         "strangerMessage": "Žinutė nuo {{name}}",
         "resourceConflict": "Sesija pakeista",
         "authError": "Autentifikacijos klaida",

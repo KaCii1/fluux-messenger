@@ -366,6 +366,8 @@
         "mucInvitation": "Uitnodiging voor kamer {{room}}",
         "reactionReceived": "{{name}} reageerde {{emojis}}",
         "reactionReceivedTo": " op \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} stemde {{emojis}} op peiling \"{{title}}\"",
+        "inConversation": " in {{conversation}}",
         "strangerMessage": "Bericht van {{name}}",
         "resourceConflict": "Sessie vervangen",
         "authError": "Authenticatiefout",

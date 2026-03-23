@@ -366,6 +366,8 @@
         "mucInvitation": "Ruminvitation til {{room}}",
         "reactionReceived": "{{name}} reagerede {{emojis}}",
         "reactionReceivedTo": " på \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} stemte {{emojis}} i afstemning \"{{title}}\"",
+        "inConversation": " i {{conversation}}",
         "strangerMessage": "Besked fra {{name}}",
         "resourceConflict": "Session erstattet",
         "authError": "Godkendelsesfejl",

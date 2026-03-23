@@ -368,6 +368,8 @@
         "mucInvitation": "Pozvánka do místnosti {{room}}",
         "reactionReceived": "{{name}} reagoval(a) {{emojis}}",
         "reactionReceivedTo": " na \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} hlasoval(a) {{emojis}} v anketě \"{{title}}\"",
+        "inConversation": " v {{conversation}}",
         "strangerMessage": "Zpráva od {{name}}",
         "resourceConflict": "Relace nahrazena",
         "authError": "Chyba ověření",

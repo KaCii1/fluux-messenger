@@ -368,6 +368,8 @@
         "mucInvitation": "Ruumikutse kohta {{room}}",
         "reactionReceived": "{{name}} reageeris {{emojis}}",
         "reactionReceivedTo": " sõnumile \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} hääletas {{emojis}} küsitluses \"{{title}}\"",
+        "inConversation": " vestluses {{conversation}}",
         "strangerMessage": "Sõnum kasutajalt {{name}}",
         "resourceConflict": "Seanss asendatud",
         "authError": "Autentimise viga",

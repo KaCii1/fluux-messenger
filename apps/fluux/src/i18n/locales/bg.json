@@ -366,6 +366,8 @@
         "mucInvitation": "Покана за стая {{room}}",
         "reactionReceived": "{{name}} реагира {{emojis}}",
         "reactionReceivedTo": " на \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} гласува {{emojis}} в анкета \"{{title}}\"",
+        "inConversation": " в {{conversation}}",
         "strangerMessage": "Съобщение от {{name}}",
         "resourceConflict": "Сесията е заменена",
         "authError": "Грешка при удостоверяване",

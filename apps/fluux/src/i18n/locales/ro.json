@@ -368,6 +368,8 @@
         "mucInvitation": "Invitație în camera {{room}}",
         "reactionReceived": "{{name}} a reacționat {{emojis}}",
         "reactionReceivedTo": " la \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} a votat {{emojis}} în sondajul \"{{title}}\"",
+        "inConversation": " în {{conversation}}",
         "strangerMessage": "Mesaj de la {{name}}",
         "resourceConflict": "Sesiune înlocuită",
         "authError": "Eroare de autentificare",

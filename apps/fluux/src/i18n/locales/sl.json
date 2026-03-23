@@ -368,6 +368,8 @@
         "mucInvitation": "Povabilo v sobo {{room}}",
         "reactionReceived": "{{name}} je reagiral/a {{emojis}}",
         "reactionReceivedTo": " na \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} je glasoval/a {{emojis}} v anketi \"{{title}}\"",
+        "inConversation": " v {{conversation}}",
         "strangerMessage": "Sporočilo od {{name}}",
         "resourceConflict": "Seja zamenjana",
         "authError": "Napaka pri preverjanju pristnosti",

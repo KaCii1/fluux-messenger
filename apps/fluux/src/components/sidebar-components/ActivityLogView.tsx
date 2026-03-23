@@ -401,10 +401,20 @@ function getEventDescription(event: ActivityEvent, t: (key: string, opts?: Recor
       const nameStr = names.length <= 2
         ? names.join(' & ')
         : `${names[0]} +${names.length - 1}`
-      let desc = t('activityLog.reactionReceived', { name: nameStr, emojis: allEmojis })
-      if (rp.messagePreview) {
-        const preview = rp.messagePreview.length > 40 ? rp.messagePreview.substring(0, 40) + '…' : rp.messagePreview
-        desc += t('activityLog.reactionReceivedTo', { preview })
+      const conversationName = rp.conversationId.split('@')[0]
+      let desc: string
+      if (rp.pollTitle) {
+        // Poll vote: "nick voted on poll "Title": 1️⃣ in conversation"
+        const title = rp.pollTitle.length > 30 ? rp.pollTitle.substring(0, 30) + '…' : rp.pollTitle
+        desc = t('activityLog.pollVoteReceived', { name: nameStr, emojis: allEmojis, title })
+        desc += t('activityLog.inConversation', { conversation: conversationName })
+      } else {
+        desc = t('activityLog.reactionReceived', { name: nameStr, emojis: allEmojis })
+        if (rp.messagePreview) {
+          const preview = rp.messagePreview.length > 40 ? rp.messagePreview.substring(0, 40) + '…' : rp.messagePreview
+          desc += t('activityLog.reactionReceivedTo', { preview })
+        }
+        desc += t('activityLog.inConversation', { conversation: conversationName })
       }
       return desc
     }

@@ -366,6 +366,8 @@
         "mucInvitation": "Rumsinbjudan till {{room}}",
         "reactionReceived": "{{name}} reagerade {{emojis}}",
         "reactionReceivedTo": " på \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} röstade {{emojis}} i omröstning \"{{title}}\"",
+        "inConversation": " i {{conversation}}",
         "strangerMessage": "Meddelande från {{name}}",
         "resourceConflict": "Session ersatt",
         "authError": "Autentiseringsfel",

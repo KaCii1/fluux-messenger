@@ -367,6 +367,8 @@
         "mucInvitation": "Istabas uzaicinājums uz {{room}}",
         "reactionReceived": "{{name}} reaģēja {{emojis}}",
         "reactionReceivedTo": " uz \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} nobalsoja {{emojis}} aptaujā \"{{title}}\"",
+        "inConversation": " sarunā {{conversation}}",
         "strangerMessage": "Ziņojums no {{name}}",
         "resourceConflict": "Sesija aizstāta",
         "authError": "Autentifikācijas kļūda",

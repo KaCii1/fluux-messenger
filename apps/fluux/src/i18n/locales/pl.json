@@ -368,6 +368,8 @@
         "mucInvitation": "Zaproszenie do pokoju {{room}}",
         "reactionReceived": "{{name}} zareagował(a) {{emojis}}",
         "reactionReceivedTo": " na \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} zagłosował(a) {{emojis}} w ankiecie \"{{title}}\"",
+        "inConversation": " w {{conversation}}",
         "strangerMessage": "Wiadomość od {{name}}",
         "resourceConflict": "Sesja zastąpiona",
         "authError": "Błąd uwierzytelniania",

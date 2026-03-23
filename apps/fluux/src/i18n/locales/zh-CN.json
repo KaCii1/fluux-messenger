@@ -366,6 +366,8 @@
         "mucInvitation": "聊天室邀请：{{room}}",
         "reactionReceived": "{{name}} 回应了 {{emojis}}",
         "reactionReceivedTo": "「{{preview}}」",
+        "pollVoteReceived": "{{name}} 在投票「{{title}}」中投了 {{emojis}}",
+        "inConversation": "（{{conversation}}）",
         "strangerMessage": "来自 {{name}} 的消息",
         "resourceConflict": "会话已被替换",
         "authError": "认证错误",

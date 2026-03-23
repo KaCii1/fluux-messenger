@@ -368,6 +368,8 @@
         "mucInvitation": "Invitació a la sala {{room}}",
         "reactionReceived": "{{name}} ha reaccionat {{emojis}}",
         "reactionReceivedTo": " a \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} ha votat {{emojis}} a l'enquesta \"{{title}}\"",
+        "inConversation": " a {{conversation}}",
         "strangerMessage": "Missatge de {{name}}",
         "resourceConflict": "Sessió substituïda",
         "authError": "Error d'autenticació",

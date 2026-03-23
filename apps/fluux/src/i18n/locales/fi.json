@@ -366,6 +366,8 @@
         "mucInvitation": "Huonekutsu kohteeseen {{room}}",
         "reactionReceived": "{{name}} reagoi {{emojis}}",
         "reactionReceivedTo": " viestiin \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} äänesti {{emojis}} äänestyksessä \"{{title}}\"",
+        "inConversation": " kohteessa {{conversation}}",
         "strangerMessage": "Viesti käyttäjältä {{name}}",
         "resourceConflict": "Istunto korvattu",
         "authError": "Todennusvirhe",

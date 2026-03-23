@@ -367,6 +367,8 @@
         "mucInvitation": "Πρόσκληση σε δωμάτιο {{room}}",
         "reactionReceived": "Ο/Η {{name}} αντέδρασε {{emojis}}",
         "reactionReceivedTo": " στο \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} ψήφισε {{emojis}} στη δημοσκόπηση \"{{title}}\"",
+        "inConversation": " σε {{conversation}}",
         "strangerMessage": "Μήνυμα από {{name}}",
         "resourceConflict": "Η συνεδρία αντικαταστάθηκε",
         "authError": "Σφάλμα ελέγχου ταυτότητας",

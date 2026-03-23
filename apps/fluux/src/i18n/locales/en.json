@@ -366,6 +366,8 @@
         "mucInvitation": "Room invitation to {{room}}",
         "reactionReceived": "{{name}} reacted {{emojis}}",
         "reactionReceivedTo": " to \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} voted {{emojis}} on poll \"{{title}}\"",
+        "inConversation": " in {{conversation}}",
         "strangerMessage": "Message from {{name}}",
         "resourceConflict": "Session replaced",
         "authError": "Authentication error",

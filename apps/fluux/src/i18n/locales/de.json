@@ -368,6 +368,8 @@
         "mucInvitation": "Raumeinladung zu {{room}}",
         "reactionReceived": "{{name}} hat reagiert {{emojis}}",
         "reactionReceivedTo": " auf \"{{preview}}\"",
+        "pollVoteReceived": "{{name}} hat {{emojis}} bei Umfrage \"{{title}}\" abgestimmt",
+        "inConversation": " in {{conversation}}",
         "strangerMessage": "Nachricht von {{name}}",
         "resourceConflict": "Sitzung ersetzt",
         "authError": "Authentifizierungsfehler",
