@@ -409,7 +409,7 @@ export const searchStore = createStore<SearchState>((set) => ({
     }
 
     // Reset MAM results on new query
-    set({ query: trimmed, isSearching: true, error: null, mamResults: [], mamError: null, hasMoreMAMResults: false })
+    set({ query, isSearching: true, error: null, mamResults: [], mamError: null, hasMoreMAMResults: false })
     mamSearchGeneration++  // Cancel any in-flight MAM search
     mamRsmCursor = undefined
 

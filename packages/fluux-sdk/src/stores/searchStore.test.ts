@@ -101,10 +101,15 @@ describe('searchStore', () => {
       expect(searchIndex.search).toHaveBeenCalledWith('hello', { limit: 50 })
     })
 
-    it('should trim whitespace from query', () => {
+    it('should preserve raw query for controlled input but trim for search execution', () => {
       searchStore.getState().search('  hello  ')
 
-      expect(searchStore.getState().query).toBe('hello')
+      // Raw query preserved for controlled input display
+      expect(searchStore.getState().query).toBe('  hello  ')
+
+      // But the debounced search should use the trimmed value
+      vi.advanceTimersByTime(300)
+      expect(searchIndex.search).toHaveBeenCalledWith('hello', { limit: 50 })
     })
 
     it('should clear results for empty query', () => {
