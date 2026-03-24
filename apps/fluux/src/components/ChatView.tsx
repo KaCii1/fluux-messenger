@@ -19,6 +19,7 @@ import { ConfirmDialog } from './ConfirmDialog'
 interface ChatViewProps {
   onBack?: () => void
   onSwitchToMessages?: (conversationId: string) => void
+  onSearchInConversation?: (conversationId: string) => void
   // Focus zone refs for Tab cycling
   mainContentRef?: RefObject<HTMLElement | null>
   composerRef?: RefObject<HTMLElement | null>
@@ -26,7 +27,7 @@ interface ChatViewProps {
   findOnPageRef?: RefObject<(() => void) | null>
 }
 
-export function ChatView({ onBack, onSwitchToMessages, mainContentRef, composerRef, findOnPageRef }: ChatViewProps) {
+export function ChatView({ onBack, onSwitchToMessages, onSearchInConversation, mainContentRef, composerRef, findOnPageRef }: ChatViewProps) {
   detectRenderLoop('ChatView')
   const { t } = useTranslation()
   // Use useChatActive instead of useChat to avoid subscribing to the conversation list.
@@ -62,6 +63,11 @@ export function ChatView({ onBack, onSwitchToMessages, mainContentRef, composerR
 
   // Last message ID - reply button is disabled for last message (context is already clear)
   const lastMessageId = activeMessages.length > 0 ? activeMessages[activeMessages.length - 1].id : null
+
+  // Handler to open search scoped to this conversation
+  const handleSearchInConversation = activeConversation && onSearchInConversation
+    ? () => onSearchInConversation(activeConversation.id)
+    : undefined
 
   // Handler to edit the last outgoing message (triggered by Up arrow in empty composer)
   const handleEditLastMessage = () => {
@@ -257,6 +263,7 @@ export function ChatView({ onBack, onSwitchToMessages, mainContentRef, composerR
         contact={contact}
         jid={activeConversation.id}
         onBack={onBack}
+        onSearchInConversation={handleSearchInConversation}
       />
 
       {/* Messages - focusable zone for Tab cycling */}

@@ -1,6 +1,6 @@
 import { useRef, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSearch, generateConsistentColorHexSync } from '@fluux/sdk'
+import { useSearch, generateConsistentColorHexSync, chatStore, roomStore } from '@fluux/sdk'
 import type { SearchResult } from '@fluux/sdk'
 import { Avatar } from '../Avatar'
 import { useNavigateToTarget } from '@/hooks/useNavigateToTarget'
@@ -8,11 +8,22 @@ import { useListKeyboardNav } from '@/hooks'
 import { formatConversationTime } from '@/utils/dateFormat'
 import { useSettingsStore, type TimeFormat } from '@/stores/settingsStore'
 import { useSidebarZone } from './types'
-import { Search, X, Loader2, Hash, ExternalLink } from 'lucide-react'
+import { Search, X, Loader2, Hash, ExternalLink, Cloud } from 'lucide-react'
+
+function getConversationName(conversationId: string): string {
+  const room = roomStore.getState().rooms.get(conversationId)
+  if (room) return room.name || conversationId
+  const entity = chatStore.getState().conversationEntities.get(conversationId)
+  return entity?.name || conversationId
+}
 
 export function SearchView() {
   const { t, i18n } = useTranslation()
-  const { query, results, isSearching, error, search, clearSearch, previewResult, setPreviewResult } = useSearch()
+  const {
+    query, results, isSearching, error, search, clearSearch, previewResult, setPreviewResult,
+    isSearchingMAM, mamResults, hasMoreMAMResults, mamError, searchScope,
+    searchMAM, loadMoreMAMResults, setSearchScope,
+  } = useSearch()
   const { navigateToConversation, navigateToRoom } = useNavigateToTarget()
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
@@ -32,8 +43,10 @@ export function SearchView() {
     [setPreviewResult]
   )
 
+  const allResults = [...results, ...mamResults]
+
   const { selectedIndex, isKeyboardNav, getItemProps, getItemAttribute, getContainerProps } = useListKeyboardNav({
-    items: results,
+    items: allResults,
     onSelect: handleSelect,
     listRef,
     searchInputRef: inputRef,
@@ -82,6 +95,22 @@ export function SearchView() {
         </div>
       </div>
 
+      {/* Scope chip */}
+      {searchScope && (
+        <div className="flex items-center gap-1 px-3 pb-1">
+          <span className="text-xs bg-fluux-hover rounded px-2 py-0.5 text-fluux-muted truncate">
+            {t('search.scopeLabel', 'Searching in')} {getConversationName(searchScope)}
+          </span>
+          <button
+            onClick={() => setSearchScope(null)}
+            className="p-0.5 rounded hover:bg-fluux-hover text-fluux-muted flex-shrink-0"
+            title={t('search.clearScope', 'Search all conversations')}
+          >
+            <X className="w-3 h-3" />
+          </button>
+        </div>
+      )}
+
       {/* Results area */}
       <div ref={listRef} className="flex-1 overflow-y-auto px-1" {...getContainerProps()}>
         {isSearching && (
@@ -91,7 +120,7 @@ export function SearchView() {
           </div>
         )}
 
-        {!isSearching && query && results.length === 0 && (
+        {!isSearching && query && results.length === 0 && mamResults.length === 0 && !isSearchingMAM && (
           <div className="text-center py-8 text-fluux-muted text-sm">
             {t('search.noResults', 'No messages found')}
           </div>
@@ -101,6 +130,7 @@ export function SearchView() {
           <div className="text-center py-4 text-red-400 text-sm">{error}</div>
         )}
 
+        {/* Local results */}
         {!isSearching && results.length > 0 && (
           <div className="space-y-0.5">
             {results.map((result, index) => (
@@ -120,6 +150,77 @@ export function SearchView() {
               />
             ))}
           </div>
+        )}
+
+        {/* MAM search button */}
+        {!isSearching && query && !isSearchingMAM && mamResults.length === 0 && (
+          <div className="px-2 py-3">
+            <button
+              onClick={searchMAM}
+              className="w-full flex items-center justify-center gap-2 py-2 text-sm text-fluux-muted
+                         hover:text-fluux-text hover:bg-fluux-hover rounded-md transition-colors"
+            >
+              <Cloud className="w-4 h-4" />
+              {t('search.searchServer', 'Search server archive')}
+            </button>
+          </div>
+        )}
+
+        {/* MAM search loading */}
+        {isSearchingMAM && (
+          <div className="flex items-center justify-center gap-2 py-4 text-fluux-muted text-sm">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            {t('search.searchingServer', 'Searching server archive…')}
+          </div>
+        )}
+
+        {/* MAM results */}
+        {mamResults.length > 0 && (
+          <div className="space-y-0.5">
+            <div className="px-2 pt-2 pb-1">
+              <span className="text-xs text-fluux-muted font-medium flex items-center gap-1">
+                <Cloud className="w-3 h-3" />
+                {t('search.serverResults', 'Server archive')}
+              </span>
+            </div>
+            {mamResults.map((result, i) => {
+              const globalIndex = results.length + i
+              return (
+                <SearchResultItem
+                  key={result.indexId}
+                  result={result}
+                  isActive={previewResult?.indexId === result.indexId}
+                  isSelected={selectedIndex === globalIndex}
+                  isKeyboardNav={isKeyboardNav}
+                  onClick={() => handleSelect(result)}
+                  onGoToMessage={(e) => handleGoToMessage(e, result)}
+                  itemProps={getItemProps(globalIndex)}
+                  itemAttribute={getItemAttribute(globalIndex)}
+                  currentLang={currentLang}
+                  timeFormat={timeFormat}
+                  t={t}
+                />
+              )
+            })}
+          </div>
+        )}
+
+        {/* Load more MAM results */}
+        {hasMoreMAMResults && !isSearchingMAM && (
+          <div className="px-2 py-2">
+            <button
+              onClick={loadMoreMAMResults}
+              className="w-full flex items-center justify-center gap-2 py-1.5 text-xs text-fluux-muted
+                         hover:text-fluux-text hover:bg-fluux-hover rounded-md transition-colors"
+            >
+              {t('search.loadMore', 'Load more from server')}
+            </button>
+          </div>
+        )}
+
+        {/* MAM error */}
+        {mamError && (
+          <div className="text-center py-2 px-3 text-fluux-muted text-xs">{mamError}</div>
         )}
 
         {!query && (
@@ -193,6 +294,9 @@ function SearchResultItem({ result, isActive, isSelected, isKeyboardNav, onClick
             {result.conversationName}
           </span>
           <div className="flex items-center gap-1 flex-shrink-0">
+            {result.source === 'mam' && (
+              <Cloud className="w-3 h-3 text-fluux-muted" />
+            )}
             <span className="text-xs text-fluux-muted">
               {formatConversationTime(timestamp, t, currentLang, timeFormat)}
             </span>

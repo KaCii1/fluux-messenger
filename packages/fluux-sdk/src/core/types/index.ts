@@ -115,6 +115,9 @@ export type {
   MAMQueryState,
   RoomMAMQueryOptions,
   RoomMAMResult,
+  MAMSearchOptions,
+  RoomMAMSearchOptions,
+  MAMPagingSearchOptions,
 } from './pagination'
 
 // Admin types

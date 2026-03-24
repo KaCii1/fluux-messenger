@@ -56,12 +56,14 @@ interface RoomViewProps {
   onShowProfile?: (jid: string) => void
   /** Ref callback to trigger find-on-page from parent (e.g. Cmd+F) */
   findOnPageRef?: RefObject<(() => void) | null>
+  /** Callback to open search scoped to a room */
+  onSearchInConversation?: (conversationId: string) => void
 }
 
 // Max room size for sending typing indicators (to avoid noise in large rooms)
 const MAX_ROOM_SIZE_FOR_TYPING = 30
 
-export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = false, onShowOccupantsChange, onStartChat, onShowProfile, findOnPageRef }: RoomViewProps) {
+export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = false, onShowOccupantsChange, onStartChat, onShowProfile, findOnPageRef, onSearchInConversation }: RoomViewProps) {
   detectRenderLoop('RoomView')
   const { t } = useTranslation()
   const { activeRoom, activeMessages, activeTypingUsers, sendMessage, sendReaction, sendPoll, votePoll, closePoll, sendCorrection, retractMessage, moderateMessage, sendChatState, setRoomNotifyAll, activeAnimation, sendEasterEgg, clearAnimation, clearFirstNewMessageId, updateLastSeenMessageId, joinRoom, setRoomAvatar, clearRoomAvatar, fetchOlderHistory, activeMAMState, submitRoomConfig, setSubject, destroyRoom, setAffiliation, setRole, targetMessageId, clearTargetMessageId } = useRoomActive()
@@ -74,6 +76,11 @@ export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = 
   const { uploadFile, isUploading, progress, isSupported } = useFileUpload()
   const { processMessageForLinkPreview } = useLinkPreview()
   const { resolvedMode } = useMode()
+
+  // Handler to open search scoped to this room
+  const handleSearchInConversation = activeRoom && onSearchInConversation
+    ? () => onSearchInConversation(activeRoom.jid)
+    : undefined
 
   // Create a map of contacts by JID for quick lookup (used to show avatars for known contacts)
   const contactsByJid = (() => {
@@ -343,6 +350,7 @@ export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = 
           submitRoomConfig={submitRoomConfig}
           setSubject={setSubject}
           destroyRoom={destroyRoom}
+          onSearchInConversation={handleSearchInConversation}
         />
 
         {/* Unanswered poll banner */}

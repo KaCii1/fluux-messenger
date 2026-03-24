@@ -56,6 +56,9 @@ import type {
   RoomMAMQueryOptions,
   RoomMAMResult,
   RSMResponse,
+  MAMSearchOptions,
+  RoomMAMSearchOptions,
+  MAMPagingSearchOptions,
 } from '../types'
 import { parseMessageContent, parseOgpFastening, applyRetraction, applyCorrection } from './messagingUtils'
 import { getDomain } from '../jid'
@@ -398,6 +401,309 @@ export class MAM extends BaseModule {
     } finally {
       this.deps.emitSDK('room:mam-loading', { roomJid, isLoading: false })
     }
+  }
+
+  // ============================================================================
+  // MAM Fulltext Search
+  // ============================================================================
+
+  /**
+   * Search the message archive using server-side fulltext search.
+   *
+   * Requires server support for the `fulltext` form field in MAM queries
+   * (supported by ejabberd and some other servers). Use
+   * `connectionStore.mamFulltextSearch` to check availability.
+   *
+   * @param options - Search options
+   * @returns Messages matching the query, with pagination info
+   */
+  async searchArchive(options: MAMSearchOptions): Promise<MAMResult> {
+    const { query, with: withJid, max = 20, before } = options
+    const queryId = `mam_search_${generateUUID()}`
+
+    const formFields: Element[] = [
+      xml('field', { var: 'FORM_TYPE', type: 'hidden' }, xml('value', {}, NS_MAM)),
+      xml('field', { var: 'fulltext' }, xml('value', {}, query)),
+    ]
+
+    if (withJid) {
+      const conversationId = getBareJid(withJid)
+      formFields.push(xml('field', { var: 'with' }, xml('value', {}, conversationId)))
+    }
+
+    const iq = this.buildMAMQuery(queryId, formFields, max, before ?? '')
+
+    const collectedMessages: Message[] = []
+    const modifications: MAMModifications = { retractions: [], corrections: [], fastenings: [], reactions: [] }
+
+    const collectMessage = this.createMessageCollector(queryId, (forwarded, messageEl, archiveId) => {
+      if (this.collectModification(messageEl, modifications, (from) => getBareJid(from))) {
+        return
+      }
+      // Derive conversationId from the message's from/to
+      const currentJid = this.deps.getCurrentJid()
+      const from = getBareJid(messageEl.attrs.from || '')
+      const to = getBareJid(messageEl.attrs.to || '')
+      const ownBareJid = currentJid ? getBareJid(currentJid) : ''
+      const conversationId = from === ownBareJid ? to : from
+
+      const msg = this.parseArchiveMessage(forwarded, conversationId, archiveId)
+      if (msg) collectedMessages.push(msg)
+    })
+
+    let unregister: () => void
+    if (this.deps.registerMAMCollector) {
+      unregister = this.deps.registerMAMCollector(queryId, collectMessage)
+    } else {
+      const xmpp = this.deps.getXmpp()
+      xmpp?.on('stanza', collectMessage)
+      unregister = () => xmpp?.removeListener('stanza', collectMessage)
+    }
+
+    try {
+      logInfo(`MAM search: query="${query}"${withJid ? `, with=${getBareJid(withJid)}` : ''}, max=${max}`)
+      const response = await this.deps.sendIQ(iq)
+      const { complete, rsm } = this.parseMAMResponse(response)
+
+      this.applyModifications(collectedMessages, modifications, (msg, from) => msg.from === from)
+
+      logInfo(`MAM search result: ${collectedMessages.length} msg(s), complete=${complete}`)
+      return { messages: collectedMessages, complete, rsm }
+    } finally {
+      unregister()
+    }
+  }
+
+  /**
+   * Search a room's message archive using server-side fulltext search.
+   *
+   * @param options - Search options
+   * @returns Room messages matching the query, with pagination info
+   */
+  async searchRoomArchive(options: RoomMAMSearchOptions): Promise<RoomMAMResult> {
+    const { query, roomJid, max = 20, before } = options
+    const queryId = `mam_rsearch_${generateUUID()}`
+
+    const room = this.deps.stores?.room.getRoom(roomJid)
+    const myNickname = room?.nickname || ''
+
+    const formFields: Element[] = [
+      xml('field', { var: 'FORM_TYPE', type: 'hidden' }, xml('value', {}, NS_MAM)),
+      xml('field', { var: 'fulltext' }, xml('value', {}, query)),
+    ]
+
+    const iq = this.buildMAMQuery(queryId, formFields, max, before ?? '', roomJid)
+
+    const collectedMessages: RoomMessage[] = []
+    const modifications: MAMModifications = { retractions: [], corrections: [], fastenings: [], reactions: [] }
+
+    const collectMessage = this.createMessageCollector(queryId, (forwarded, messageEl, archiveId) => {
+      if (this.collectModification(messageEl, modifications, (from) => from)) {
+        return
+      }
+      const msg = this.parseRoomArchiveMessage(forwarded, roomJid, myNickname, archiveId)
+      if (msg) collectedMessages.push(msg)
+    })
+
+    let unregister: () => void
+    if (this.deps.registerMAMCollector) {
+      unregister = this.deps.registerMAMCollector(queryId, collectMessage)
+    } else {
+      const xmpp = this.deps.getXmpp()
+      xmpp?.on('stanza', collectMessage)
+      unregister = () => xmpp?.removeListener('stanza', collectMessage)
+    }
+
+    try {
+      logInfo(`Room MAM search: query="${query}", room=${roomJid}, max=${max}`)
+      const response = await this.deps.sendIQ(iq)
+      const { complete, rsm } = this.parseMAMResponse(response)
+
+      this.applyModifications(collectedMessages, modifications, (msg, from) => msg.from === from)
+
+      logInfo(`Room MAM search result: ${collectedMessages.length} msg(s), complete=${complete}`)
+      return { messages: collectedMessages, complete, rsm }
+    } finally {
+      unregister()
+    }
+  }
+
+  /**
+   * Search a conversation by paging through MAM history and matching client-side.
+   *
+   * Used when the server doesn't support fulltext MAM search. Pages backward
+   * through the archive, tokenizes each message body, and collects matches.
+   *
+   * @param options - Search options
+   * @param signal - Optional AbortSignal to cancel the search
+   * @returns Matching messages
+   */
+  async searchConversationByPaging(
+    options: MAMPagingSearchOptions,
+    signal?: AbortSignal
+  ): Promise<MAMResult> {
+    const { query, with: withJid, end, maxPages = 20, maxResults = 50 } = options
+    const queryTokens = this.tokenizeQuery(query)
+    if (queryTokens.length === 0) {
+      return { messages: [], complete: true, rsm: {} }
+    }
+
+    const matches: Message[] = []
+    let beforeCursor: string | undefined
+    let isComplete = false
+    let lastRsm: RSMResponse = {}
+
+    logInfo(`MAM paging search: query="${query}", with=${withJid}, maxPages=${maxPages}`)
+
+    for (let page = 0; page < maxPages; page++) {
+      if (signal?.aborted) break
+      if (matches.length >= maxResults) break
+
+      const result = await this.queryArchive({
+        with: withJid,
+        max: 100,
+        before: beforeCursor ?? '',
+        ...(page === 0 && end ? { end } : {}),
+      })
+
+      isComplete = result.complete
+      lastRsm = result.rsm
+
+      // Match messages client-side
+      for (const msg of result.messages) {
+        if (matches.length >= maxResults) break
+        if (msg.body && this.matchesQuery(msg.body, queryTokens)) {
+          matches.push(msg)
+        }
+      }
+
+      if (isComplete || !result.rsm.first) break
+      beforeCursor = result.rsm.first
+
+      // Small delay between pages to avoid overwhelming the server
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+
+    logInfo(`MAM paging search result: scanned to find ${matches.length} match(es), complete=${isComplete}`)
+    return { messages: matches, complete: isComplete, rsm: lastRsm }
+  }
+
+  /**
+   * Tokenize a query string into lowercase tokens for matching.
+   */
+  private tokenizeQuery(query: string): string[] {
+    return query.toLowerCase()
+      .split(/[^\p{L}\p{N}]+/u)
+      .filter(t => t.length >= 2)
+  }
+
+  /**
+   * Check if a message body matches all query tokens.
+   */
+  private matchesQuery(body: string, queryTokens: string[]): boolean {
+    const bodyLower = body.toLowerCase()
+    return queryTokens.every(token => bodyLower.includes(token))
+  }
+
+  /**
+   * Fetch context messages around a target timestamp from MAM and store in cache.
+   *
+   * Used by SearchContextView when previewing MAM search results — the target
+   * message may not be in the local cache yet.
+   *
+   * @param conversationId - Conversation JID
+   * @param isRoom - Whether this is a MUC room
+   * @param targetTimestamp - ISO 8601 timestamp of the target message
+   * @param contextSize - Number of messages to fetch on each side (default 50)
+   * @returns Messages around the target
+   */
+  async fetchContext(
+    conversationId: string,
+    isRoom: boolean,
+    targetTimestamp: string,
+    contextSize: number = 50
+  ): Promise<{ messages: (Message | RoomMessage)[] }> {
+    // Fetch messages before and after the target timestamp
+    const oneHourBefore = new Date(new Date(targetTimestamp).getTime() - 3600000).toISOString()
+
+    if (isRoom) {
+      const result = await this.queryRoomArchive({
+        roomJid: conversationId,
+        max: contextSize * 2,
+        start: oneHourBefore,
+      })
+      return { messages: result.messages }
+    } else {
+      const result = await this.queryArchive({
+        with: conversationId,
+        max: contextSize * 2,
+        start: oneHourBefore,
+        end: new Date(new Date(targetTimestamp).getTime() + 3600000).toISOString(),
+      })
+      return { messages: result.messages }
+    }
+  }
+
+  /**
+   * Catch up conversation history backward from the oldest locally-cached message
+   * until we reach (or pass) the target timestamp. Stores results in messageCache
+   * and search index but NOT in the in-memory store.
+   *
+   * This fills the gap between locally-cached messages and a MAM search result,
+   * ensuring the conversation history is continuous.
+   *
+   * @param conversationId - Conversation JID
+   * @param isRoom - Whether this is a MUC room
+   * @param targetTimestamp - ISO 8601 timestamp to catch up to
+   * @param oldestCachedTimestamp - ISO 8601 timestamp of oldest locally-cached message (or undefined to start from now)
+   */
+  async catchUpToTimestamp(
+    conversationId: string,
+    isRoom: boolean,
+    targetTimestamp: string,
+    oldestCachedTimestamp?: string
+  ): Promise<void> {
+    const targetTime = new Date(targetTimestamp).getTime()
+    const maxPages = 30 // Safety cap
+
+    logInfo(`MAM catch-up to ${targetTimestamp} for ${conversationId}`)
+
+    for (let page = 0; page < maxPages; page++) {
+      const endFilter = page === 0 && oldestCachedTimestamp
+        ? oldestCachedTimestamp
+        : undefined
+
+      if (isRoom) {
+        const result = await this.queryRoomArchive({
+          roomJid: conversationId,
+          max: 100,
+          before: page === 0 ? '' : undefined,
+          ...(endFilter ? {} : {}), // For rooms, we rely on RSM pagination
+        })
+        // Check if we've reached the target
+        const oldestInPage = result.messages.length > 0
+          ? result.messages[0].timestamp.getTime()
+          : targetTime
+        if (result.complete || oldestInPage <= targetTime) break
+      } else {
+        const result = await this.queryArchive({
+          with: conversationId,
+          max: 100,
+          ...(endFilter ? { end: endFilter } : {}),
+          before: '',
+        })
+        // Check if we've reached the target
+        const oldestInPage = result.messages.length > 0
+          ? result.messages[0].timestamp.getTime()
+          : targetTime
+        if (result.complete || oldestInPage <= targetTime) break
+      }
+
+      // Small delay between pages
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+
+    logInfo(`MAM catch-up complete for ${conversationId}`)
   }
 
   /**

@@ -24,6 +24,7 @@ import {
   type BaseMessage,
   type ContactIdentity,
 } from '@fluux/sdk'
+import { getSearchClient } from '@fluux/sdk/stores'
 import { useConnectionStore } from '@fluux/sdk/react'
 import { MessageBubble, MessageList, shouldShowAvatar, buildReplyContext } from './conversation'
 import { useNavigateToTarget } from '@/hooks/useNavigateToTarget'
@@ -109,6 +110,34 @@ export function SearchContextView({ onBack }: { onBack?: () => void }) {
             after: new Date(targetDate.getTime() - 1),
             limit: CONTEXT_BATCH_SIZE,
           })
+        }
+
+        // If local cache has insufficient context for a MAM result, fetch from server
+        const totalLocal = before.length + after.length
+        if (previewResult.source === 'mam' && totalLocal < 5) {
+          const client = getSearchClient()
+          if (client) {
+            try {
+              const mamContext = await client.mam.fetchContext(
+                previewResult.conversationId,
+                previewResult.isRoom,
+                targetDate.toISOString(),
+                CONTEXT_BATCH_SIZE
+              )
+              // Use MAM results as the context
+              before = mamContext.messages as (Message | RoomMessage)[]
+              after = []
+
+              // Trigger background catch-up to fill the gap (non-blocking)
+              void client.mam.catchUpToTimestamp(
+                previewResult.conversationId,
+                previewResult.isRoom,
+                targetDate.toISOString(),
+              )
+            } catch {
+              // MAM fetch failed — use whatever local context we have
+            }
+          }
         }
 
         // Merge and deduplicate by message ID

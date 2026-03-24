@@ -11,7 +11,7 @@ import { Avatar } from './Avatar'
 import { useWindowDrag } from '@/hooks'
 import { getTranslatedStatusText } from '@/utils/statusText'
 import { Tooltip } from './Tooltip'
-import { ArrowLeft, Clock, Hash } from 'lucide-react'
+import { ArrowLeft, Clock, Hash, Search } from 'lucide-react'
 
 export interface ChatHeaderProps {
   name: string
@@ -19,6 +19,7 @@ export interface ChatHeaderProps {
   contact?: ContactIdentity
   jid: string
   onBack?: () => void
+  onSearchInConversation?: () => void
 }
 
 export function ChatHeader({
@@ -26,7 +27,8 @@ export function ChatHeader({
   type,
   contact,
   jid,
-  onBack
+  onBack,
+  onSearchInConversation,
 }: ChatHeaderProps) {
   const { t } = useTranslation()
   const isGroupChat = type === 'groupchat'
@@ -86,6 +88,17 @@ export function ChatHeader({
           </div>
         )}
       </div>
+
+      {/* Search in conversation */}
+      {onSearchInConversation && (
+        <button
+          onClick={onSearchInConversation}
+          className="p-1.5 rounded hover:bg-fluux-hover text-fluux-muted hover:text-fluux-text transition-colors"
+          title={t('chat.searchInConversation', 'Search in conversation')}
+        >
+          <Search className="w-4 h-4" />
+        </button>
+      )}
     </header>
   )
 }

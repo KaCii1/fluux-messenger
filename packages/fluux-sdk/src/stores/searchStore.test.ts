@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { searchStore } from './searchStore'
+import { searchStore, setSearchClient, deduplicateMAMResults, type SearchResult } from './searchStore'
 import { chatStore } from './chatStore'
 import { roomStore } from './roomStore'
+import { connectionStore } from './connectionStore'
 import * as searchIndex from '../utils/searchIndex'
 import type { SearchIndexResult } from '../utils/searchIndex'
 
@@ -31,12 +32,18 @@ describe('searchStore', () => {
     vi.useFakeTimers()
     vi.clearAllMocks()
 
-    // Reset search store state
+    // Reset search store state (including MAM fields)
     searchStore.setState({
       query: '',
       isSearching: false,
       results: [],
       error: null,
+      previewResult: null,
+      isSearchingMAM: false,
+      mamResults: [],
+      hasMoreMAMResults: false,
+      mamError: null,
+      searchScope: null,
     })
 
     // Set up chatStore with test data for conversation name resolution
@@ -104,7 +111,7 @@ describe('searchStore', () => {
       // Set some existing state
       searchStore.setState({
         query: 'old',
-        results: [{ indexId: 'test', messageId: 'test', conversationId: 'x', conversationName: 'X', isRoom: false, from: 'y', timestamp: 0, body: 'z', matchSnippet: null }],
+        results: [{ indexId: 'test', messageId: 'test', conversationId: 'x', conversationName: 'X', isRoom: false, from: 'y', timestamp: 0, body: 'z', matchSnippet: null, source: 'local' as const }],
         isSearching: true,
       })
 
@@ -243,7 +250,7 @@ describe('searchStore', () => {
       searchStore.setState({
         query: 'test',
         isSearching: true,
-        results: [{ indexId: 'x', messageId: 'x', conversationId: 'y', conversationName: 'Y', isRoom: false, from: 'z', timestamp: 0, body: 'w', matchSnippet: null }],
+        results: [{ indexId: 'x', messageId: 'x', conversationId: 'y', conversationName: 'Y', isRoom: false, from: 'z', timestamp: 0, body: 'w', matchSnippet: null, source: 'local' as const }],
         error: 'some error',
       })
 
@@ -266,5 +273,353 @@ describe('searchStore', () => {
       // The search should not have been executed
       expect(searchIndex.search).not.toHaveBeenCalled()
     })
+
+    it('should also clear MAM state', () => {
+      searchStore.setState({
+        query: 'test',
+        mamResults: [{ indexId: 'mam:1', messageId: 'm1', conversationId: 'x', conversationName: 'X', isRoom: false, from: 'y', timestamp: 0, body: 'z', matchSnippet: null, source: 'mam' as const }],
+        isSearchingMAM: true,
+        hasMoreMAMResults: true,
+        mamError: 'some error',
+      })
+
+      searchStore.getState().clearSearch()
+
+      const state = searchStore.getState()
+      expect(state.mamResults).toEqual([])
+      expect(state.isSearchingMAM).toBe(false)
+      expect(state.hasMoreMAMResults).toBe(false)
+      expect(state.mamError).toBeNull()
+    })
+  })
+
+  // ===========================================================================
+  // deduplicateMAMResults
+  // ===========================================================================
+
+  describe('deduplicateMAMResults', () => {
+    const makeResult = (messageId: string, source: 'local' | 'mam'): SearchResult => ({
+      indexId: `${source}:${messageId}`,
+      messageId,
+      conversationId: 'alice@example.com',
+      conversationName: 'Alice',
+      isRoom: false,
+      from: 'alice@example.com',
+      timestamp: Date.now(),
+      body: 'test message',
+      matchSnippet: null,
+      source,
+    })
+
+    it('should filter out MAM results that already exist in local results', () => {
+      const local = [makeResult('msg-1', 'local'), makeResult('msg-2', 'local')]
+      const mam = [makeResult('msg-2', 'mam'), makeResult('msg-3', 'mam')]
+
+      const result = deduplicateMAMResults(local, mam)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].messageId).toBe('msg-3')
+    })
+
+    it('should return all MAM results when no overlap with local', () => {
+      const local = [makeResult('msg-1', 'local')]
+      const mam = [makeResult('msg-2', 'mam'), makeResult('msg-3', 'mam')]
+
+      const result = deduplicateMAMResults(local, mam)
+
+      expect(result).toHaveLength(2)
+    })
+
+    it('should return empty array when all MAM results are duplicates', () => {
+      const local = [makeResult('msg-1', 'local'), makeResult('msg-2', 'local')]
+      const mam = [makeResult('msg-1', 'mam'), makeResult('msg-2', 'mam')]
+
+      const result = deduplicateMAMResults(local, mam)
+
+      expect(result).toEqual([])
+    })
+
+    it('should handle empty inputs', () => {
+      expect(deduplicateMAMResults([], [])).toEqual([])
+      expect(deduplicateMAMResults([makeResult('msg-1', 'local')], [])).toEqual([])
+      expect(deduplicateMAMResults([], [makeResult('msg-1', 'mam')])).toHaveLength(1)
+    })
+  })
+
+  // ===========================================================================
+  // setSearchScope
+  // ===========================================================================
+
+  describe('setSearchScope', () => {
+    it('should set the search scope', () => {
+      searchStore.getState().setSearchScope('alice@example.com')
+
+      expect(searchStore.getState().searchScope).toBe('alice@example.com')
+    })
+
+    it('should clear the search scope', () => {
+      searchStore.setState({ searchScope: 'alice@example.com' })
+
+      searchStore.getState().setSearchScope(null)
+
+      expect(searchStore.getState().searchScope).toBeNull()
+    })
+
+    it('should reset results when scope changes', () => {
+      searchStore.setState({
+        results: [{ indexId: 'x', messageId: 'x', conversationId: 'y', conversationName: 'Y', isRoom: false, from: 'z', timestamp: 0, body: 'w', matchSnippet: null, source: 'local' as const }],
+        mamResults: [{ indexId: 'mam:x', messageId: 'x2', conversationId: 'y', conversationName: 'Y', isRoom: false, from: 'z', timestamp: 0, body: 'w', matchSnippet: null, source: 'mam' as const }],
+      })
+
+      searchStore.getState().setSearchScope('bob@example.com')
+
+      const state = searchStore.getState()
+      expect(state.results).toEqual([])
+      expect(state.mamResults).toEqual([])
+    })
+
+    it('should re-run local search with scope when query exists', () => {
+      searchStore.setState({ query: 'hello' })
+
+      searchStore.getState().setSearchScope('alice@example.com')
+      vi.advanceTimersByTime(0) // synchronous re-search
+
+      // executeSearch is called with conversationId filter
+      expect(searchStore.getState().isSearching).toBe(true)
+    })
+
+    it('should pass conversationId filter to searchIndex when scoped', async () => {
+      searchStore.setState({ query: 'hello', searchScope: 'alice@example.com' })
+      searchStore.getState().setSearchScope('alice@example.com')
+
+      // Manually trigger the search since setSearchScope calls executeSearch
+      await vi.runAllTimersAsync()
+
+      expect(searchIndex.search).toHaveBeenCalledWith('hello', expect.objectContaining({
+        conversationId: 'alice@example.com',
+      }))
+    })
+  })
+
+  // ===========================================================================
+  // searchMAM
+  // ===========================================================================
+
+  describe('searchMAM', () => {
+    it('should not execute MAM search without a client reference', () => {
+      setSearchClient(null)
+      searchStore.setState({ query: 'hello' })
+
+      searchStore.getState().searchMAM()
+
+      // Should not set isSearchingMAM since there's no client
+      expect(searchStore.getState().isSearchingMAM).toBe(false)
+    })
+
+    it('should not execute MAM search without a query', () => {
+      const mockClient = createMockMAMClient()
+      setSearchClient(mockClient as any)
+      searchStore.setState({ query: '' })
+
+      searchStore.getState().searchMAM()
+
+      expect(searchStore.getState().isSearchingMAM).toBe(false)
+    })
+
+    it('should set isSearchingMAM when starting a MAM search', async () => {
+      const mockClient = createMockMAMClient()
+      setSearchClient(mockClient as any)
+      connectionStore.getState().setMAMFulltextSearch(true)
+      searchStore.setState({ query: 'hello' })
+
+      searchStore.getState().searchMAM()
+
+      expect(searchStore.getState().isSearchingMAM).toBe(true)
+
+      // Clean up
+      await vi.runAllTimersAsync()
+    })
+
+    it('should show error for global search without fulltext support', async () => {
+      const mockClient = createMockMAMClient()
+      setSearchClient(mockClient as any)
+      connectionStore.getState().setMAMFulltextSearch(false)
+      searchStore.setState({ query: 'hello', searchScope: null })
+
+      searchStore.getState().searchMAM()
+      await vi.runAllTimersAsync()
+
+      const state = searchStore.getState()
+      expect(state.isSearchingMAM).toBe(false)
+      expect(state.mamError).toContain('does not support')
+    })
+
+    it('should call searchArchive for global fulltext search', async () => {
+      const mockClient = createMockMAMClient()
+      setSearchClient(mockClient as any)
+      connectionStore.getState().setMAMFulltextSearch(true)
+      searchStore.setState({ query: 'hello', searchScope: null })
+
+      searchStore.getState().searchMAM()
+      await vi.runAllTimersAsync()
+
+      expect(mockClient.mam.searchArchive).toHaveBeenCalledWith(expect.objectContaining({
+        query: 'hello',
+        max: 20,
+      }))
+    })
+
+    it('should call searchArchive with "with" filter for conversation-scoped fulltext search', async () => {
+      const mockClient = createMockMAMClient()
+      setSearchClient(mockClient as any)
+      connectionStore.getState().setMAMFulltextSearch(true)
+      searchStore.setState({ query: 'hello', searchScope: 'alice@example.com' })
+
+      searchStore.getState().searchMAM()
+      await vi.runAllTimersAsync()
+
+      expect(mockClient.mam.searchArchive).toHaveBeenCalledWith(expect.objectContaining({
+        query: 'hello',
+        with: 'alice@example.com',
+      }))
+    })
+
+    it('should call searchConversationByPaging for scoped search without fulltext', async () => {
+      const mockClient = createMockMAMClient()
+      setSearchClient(mockClient as any)
+      connectionStore.getState().setMAMFulltextSearch(false)
+      searchStore.setState({ query: 'hello', searchScope: 'alice@example.com' })
+
+      searchStore.getState().searchMAM()
+      await vi.runAllTimersAsync()
+
+      expect(mockClient.mam.searchConversationByPaging).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: 'hello',
+          with: 'alice@example.com',
+        }),
+        expect.any(AbortSignal)
+      )
+    })
+
+    it('should deduplicate MAM results against local results', async () => {
+      const mockClient = createMockMAMClient({
+        searchArchiveResults: [
+          { id: 'msg-1', conversationId: 'alice@example.com', from: 'alice@example.com', body: 'hello world', timestamp: new Date() },
+          { id: 'msg-2', conversationId: 'alice@example.com', from: 'alice@example.com', body: 'hello again', timestamp: new Date() },
+        ],
+      })
+      setSearchClient(mockClient as any)
+      connectionStore.getState().setMAMFulltextSearch(true)
+
+      // Set up local results that overlap with msg-1
+      searchStore.setState({
+        query: 'hello',
+        searchScope: null,
+        results: [{ indexId: 'local:msg-1', messageId: 'msg-1', conversationId: 'alice@example.com', conversationName: 'Alice', isRoom: false, from: 'alice@example.com', timestamp: Date.now(), body: 'hello world', matchSnippet: null, source: 'local' as const }],
+      })
+
+      searchStore.getState().searchMAM()
+      await vi.runAllTimersAsync()
+
+      const state = searchStore.getState()
+      // Only msg-2 should appear in MAM results (msg-1 is deduplicated)
+      expect(state.mamResults).toHaveLength(1)
+      expect(state.mamResults[0].messageId).toBe('msg-2')
+    })
+
+    it('should handle MAM search errors gracefully', async () => {
+      const mockClient = createMockMAMClient()
+      mockClient.mam.searchArchive.mockRejectedValueOnce(new Error('Server error'))
+      setSearchClient(mockClient as any)
+      connectionStore.getState().setMAMFulltextSearch(true)
+      searchStore.setState({ query: 'hello', searchScope: null })
+
+      searchStore.getState().searchMAM()
+      await vi.runAllTimersAsync()
+
+      const state = searchStore.getState()
+      expect(state.isSearchingMAM).toBe(false)
+      expect(state.mamError).toBe('Server error')
+    })
+
+    it('should reset MAM results when query changes', () => {
+      searchStore.setState({
+        query: 'old',
+        mamResults: [{ indexId: 'mam:1', messageId: 'm1', conversationId: 'x', conversationName: 'X', isRoom: false, from: 'y', timestamp: 0, body: 'z', matchSnippet: null, source: 'mam' as const }],
+        hasMoreMAMResults: true,
+      })
+
+      searchStore.getState().search('new query')
+
+      const state = searchStore.getState()
+      expect(state.mamResults).toEqual([])
+      expect(state.hasMoreMAMResults).toBe(false)
+    })
+  })
+
+  // ===========================================================================
+  // search with scope (local search filtering)
+  // ===========================================================================
+
+  describe('search with scope', () => {
+    it('should include source field in local results', async () => {
+      const mockResults: SearchIndexResult[] = [
+        {
+          indexId: 'chat:msg-1',
+          messageId: 'msg-1',
+          conversationId: 'alice@example.com',
+          from: 'alice@example.com',
+          timestamp: Date.now(),
+          isRoom: false,
+          body: 'Hello from Alice',
+        },
+      ]
+      vi.mocked(searchIndex.search).mockResolvedValueOnce(mockResults)
+
+      searchStore.getState().search('hello')
+      vi.advanceTimersByTime(300)
+      await vi.runAllTimersAsync()
+
+      const state = searchStore.getState()
+      expect(state.results[0].source).toBe('local')
+    })
   })
 })
+
+// ===========================================================================
+// Helper: create a mock MAM client for searchStore tests
+// ===========================================================================
+
+function createMockMAMClient(opts?: {
+  searchArchiveResults?: Array<{ id: string; conversationId: string; from: string; body: string; timestamp: Date }>
+}) {
+  const results = opts?.searchArchiveResults ?? []
+  return {
+    mam: {
+      searchArchive: vi.fn().mockResolvedValue({
+        messages: results.map(r => ({
+          id: r.id,
+          conversationId: r.conversationId,
+          from: r.from,
+          body: r.body,
+          timestamp: r.timestamp,
+          isOutgoing: false,
+          isDelayed: true,
+        })),
+        complete: true,
+        rsm: {},
+      }),
+      searchRoomArchive: vi.fn().mockResolvedValue({
+        messages: [],
+        complete: true,
+        rsm: {},
+      }),
+      searchConversationByPaging: vi.fn().mockResolvedValue({
+        messages: [],
+        complete: true,
+        rsm: {},
+      }),
+    },
+  }
+}

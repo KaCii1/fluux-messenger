@@ -105,6 +105,58 @@ export interface RoomMAMResult {
 }
 
 /**
+ * Options for fulltext search in message archive (XEP-0313 with fulltext extension).
+ *
+ * @category MAM
+ */
+export interface MAMSearchOptions {
+  /** Fulltext search query */
+  query: string
+  /** Optional: scope to a specific conversation (bare JID) */
+  with?: string
+  /** Maximum results to return (default 20) */
+  max?: number
+  /** RSM cursor for backward pagination */
+  before?: string
+}
+
+/**
+ * Options for fulltext search in room message archive.
+ *
+ * @category MAM
+ */
+export interface RoomMAMSearchOptions {
+  /** Fulltext search query */
+  query: string
+  /** Room JID to search */
+  roomJid: string
+  /** Maximum results to return (default 20) */
+  max?: number
+  /** RSM cursor for backward pagination */
+  before?: string
+}
+
+/**
+ * Options for paging-based conversation search (client-side text matching).
+ *
+ * Used when server doesn't support fulltext MAM search.
+ *
+ * @category MAM
+ */
+export interface MAMPagingSearchOptions {
+  /** Text query to match against message bodies */
+  query: string
+  /** Conversation partner bare JID */
+  with: string
+  /** Timestamp to start searching backward from (ISO 8601), defaults to now */
+  end?: string
+  /** Maximum pages to scan (default 20, each page ~100 messages) */
+  maxPages?: number
+  /** Maximum matching results to collect (default 50) */
+  maxResults?: number
+}
+
+/**
  * State of MAM queries for a conversation.
  *
  * MAM queries can go in two directions:

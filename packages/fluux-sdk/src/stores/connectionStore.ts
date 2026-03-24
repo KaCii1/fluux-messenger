@@ -69,6 +69,8 @@ interface ConnectionState {
   webPushServices: WebPushService[]
   /** Whether push notifications are enabled (persisted in localStorage) */
   webPushEnabled: boolean
+  // MAM fulltext search capability
+  mamFulltextSearch: boolean
   // Window visibility - used to determine if user can see new messages
   windowVisible: boolean
 
@@ -95,6 +97,8 @@ interface ConnectionState {
   setWebPushServices: (services: WebPushService[]) => void
   setWebPushServicesAndStatus: (services: WebPushService[], status: WebPushStatus) => void
   setWebPushEnabled: (enabled: boolean) => void
+  // MAM fulltext search capability
+  setMAMFulltextSearch: (supported: boolean) => void
   // Window visibility actions
   setWindowVisible: (visible: boolean) => void
   reset: () => void
@@ -124,6 +128,7 @@ const initialState = {
       return stored !== null ? stored === 'true' : true
     } catch { return true }
   })(),
+  mamFulltextSearch: false,
   windowVisible: true, // Assume visible on startup
 }
 
@@ -178,6 +183,7 @@ export const connectionStore = createStore<ConnectionState>()(
     set({ webPushEnabled: enabled })
   },
 
+  setMAMFulltextSearch: (supported) => set({ mamFulltextSearch: supported }),
   setWindowVisible: (visible) => set({ windowVisible: visible }),
 
   reset: () => set((state) => ({

@@ -51,6 +51,9 @@ export function createMockClient() {
     muc: {
       queryRoomMembers: vi.fn().mockResolvedValue([]),
     },
+    discovery: {
+      discoverMAMSearchCapability: vi.fn().mockResolvedValue(undefined),
+    },
     isConnected: vi.fn().mockReturnValue(true),
     on: vi.fn((event: string, handler: (...args: unknown[]) => void) => {
       if (!handlers.has(event)) handlers.set(event, new Set())

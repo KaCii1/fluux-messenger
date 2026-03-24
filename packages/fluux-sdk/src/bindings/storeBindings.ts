@@ -109,6 +109,11 @@ export function createStoreBindings(
     stores.connection.setHttpUploadService(service)
   })
 
+  on('connection:mam-fulltext-search', ({ supported }) => {
+    const stores = getStores()
+    stores.connection.setMAMFulltextSearch(supported)
+  })
+
   on('connection:own-avatar', ({ avatar, hash }) => {
     const stores = getStores()
     stores.connection.setOwnAvatar(avatar, hash ?? undefined)

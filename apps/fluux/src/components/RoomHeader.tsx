@@ -37,6 +37,7 @@ import {
   Image,
   Type,
   Award,
+  Search,
 } from 'lucide-react'
 
 // Notification mode for rooms
@@ -53,6 +54,7 @@ export interface RoomHeaderProps {
   submitRoomConfig: (roomJid: string, values: Record<string, string | string[]>) => Promise<void>
   setSubject: (roomJid: string, subject: string) => Promise<void>
   destroyRoom: (roomJid: string, reason?: string) => Promise<void>
+  onSearchInConversation?: () => void
 }
 
 export function RoomHeader({
@@ -66,6 +68,7 @@ export function RoomHeader({
   submitRoomConfig,
   setSubject,
   destroyRoom,
+  onSearchInConversation,
 }: RoomHeaderProps) {
   const { t } = useTranslation()
   const [showNotifyMenu, setShowNotifyMenu] = useState(false)
@@ -383,6 +386,18 @@ export function RoomHeader({
             </div>
           )}
         </div>
+      )}
+
+      {/* Search in room */}
+      {onSearchInConversation && (
+        <Tooltip content={t('chat.searchInConversation', 'Search in conversation')} position="bottom">
+          <button
+            onClick={onSearchInConversation}
+            className="p-1.5 rounded hover:bg-fluux-hover text-fluux-muted hover:text-fluux-text transition-colors"
+          >
+            <Search className="w-4 h-4" />
+          </button>
+        </Tooltip>
       )}
 
       {/* Occupant toggle button */}

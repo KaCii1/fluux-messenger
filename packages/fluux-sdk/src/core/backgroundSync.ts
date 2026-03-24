@@ -184,6 +184,9 @@ export function setupBackgroundSyncSideEffects(
 
     logInfo('Background sync: fresh session — checking MAM support')
 
+    // Discover MAM fulltext search capability (non-blocking, doesn't affect sync)
+    void client.discovery.discoverMAMSearchCapability()
+
     // Check if MAM is already supported (cached serverInfo from previous session)
     const supportsMAM = connectionStore.getState().serverInfo?.features?.includes(NS_MAM) ?? false
     if (supportsMAM) {

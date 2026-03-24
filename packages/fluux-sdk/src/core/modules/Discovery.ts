@@ -5,6 +5,7 @@ import { generateUUID } from '../../utils/uuid'
 import {
   NS_DISCO_INFO,
   NS_DISCO_ITEMS,
+  NS_DATA_FORMS,
   NS_HTTP_UPLOAD,
   NS_MAM,
   NS_CARBONS,
@@ -201,6 +202,56 @@ export class Discovery extends BaseModule {
       // disco#info/items not available
       logWarn(`HTTP Upload discovery failed: ${err instanceof Error ? err.message : String(err)}`)
       this.deps.emitSDK('connection:http-upload-service', { service: null })
+    }
+  }
+
+  /**
+   * Discover whether the server supports fulltext search in MAM queries.
+   *
+   * Sends disco#info to the user's bare JID (the MAM archive endpoint) and
+   * checks for a `fulltext` field in the MAM data form. This is supported
+   * by ejabberd and some other servers.
+   */
+  async discoverMAMSearchCapability(): Promise<void> {
+    const currentJid = this.deps.getCurrentJid()
+    if (!currentJid) return
+
+    try {
+      const iq = xml(
+        'iq',
+        { type: 'get', id: `mam_disco_${generateUUID()}` },
+        xml('query', { xmlns: NS_DISCO_INFO })
+      )
+
+      const result = await this.deps.sendIQ(iq)
+      const query = result.getChild('query', NS_DISCO_INFO)
+      if (!query) {
+        this.deps.emitSDK('connection:mam-fulltext-search', { supported: false })
+        return
+      }
+
+      // Look for the MAM data form with a fulltext field
+      const xForms = query.getChildren('x', NS_DATA_FORMS) || []
+      let supportsFulltext = false
+
+      for (const form of xForms) {
+        const fields = form.getChildren('field') || []
+        const formType = fields.find((f: Element) => f.attrs.var === 'FORM_TYPE')
+        if (formType?.getChildText('value') === NS_MAM) {
+          // Found the MAM form — check for fulltext field
+          supportsFulltext = fields.some((f: Element) => f.attrs.var === 'fulltext')
+          break
+        }
+      }
+
+      this.deps.emitSDK('connection:mam-fulltext-search', { supported: supportsFulltext })
+      if (supportsFulltext) {
+        logInfo('MAM fulltext search: supported')
+      }
+    } catch (err) {
+      // Disco query failed — assume no fulltext support
+      logWarn(`MAM search capability discovery failed: ${err instanceof Error ? err.message : String(err)}`)
+      this.deps.emitSDK('connection:mam-fulltext-search', { supported: false })
     }
   }
 

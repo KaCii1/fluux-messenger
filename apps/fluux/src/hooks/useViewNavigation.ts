@@ -44,6 +44,7 @@ export interface ViewNavigationResult {
   navigateToEvents: (options?: NavigateOptions) => void
   navigateToAdmin: (category?: string, options?: NavigateOptions) => void
   navigateToSettings: (category?: string, options?: NavigateOptions) => void
+  navigateToSearch: (options?: NavigateOptions) => void
 }
 
 /**
@@ -278,5 +279,6 @@ export function useViewNavigation(selectedContact: Contact | null): ViewNavigati
     navigateToEvents,
     navigateToAdmin,
     navigateToSettings,
+    navigateToSearch,
   }
 }

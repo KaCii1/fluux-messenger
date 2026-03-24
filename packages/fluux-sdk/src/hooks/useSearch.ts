@@ -1,12 +1,12 @@
 /**
  * React hook for full-text message search.
  *
- * Provides access to the search store state and actions.
+ * Provides access to local and MAM search state and actions.
  *
  * @example
  * ```tsx
  * function SearchPanel() {
- *   const { query, results, isSearching, search, clearSearch } = useSearch()
+ *   const { query, results, mamResults, isSearching, search, searchMAM } = useSearch()
  *
  *   return (
  *     <div>
@@ -17,6 +17,10 @@
  *       />
  *       {isSearching && <Spinner />}
  *       {results.map((r) => (
+ *         <SearchResultItem key={r.indexId} result={r} />
+ *       ))}
+ *       <button onClick={searchMAM}>Search server archive</button>
+ *       {mamResults.map((r) => (
  *         <SearchResultItem key={r.indexId} result={r} />
  *       ))}
  *     </div>
@@ -34,10 +38,22 @@ import { searchStore, type SearchResult } from '../stores/searchStore'
 /**
  * Hook for searching messages across all conversations and rooms.
  *
- * Search is debounced (300ms) and queries a local IndexedDB inverted index.
+ * Local search is debounced (300ms) and queries a local IndexedDB inverted index.
+ * MAM search queries the server archive on demand.
  */
 export function useSearch() {
-  const { query, isSearching, results, error, previewResult } = useStore(
+  const {
+    query,
+    isSearching,
+    results,
+    error,
+    previewResult,
+    isSearchingMAM,
+    mamResults,
+    hasMoreMAMResults,
+    mamError,
+    searchScope,
+  } = useStore(
     searchStore,
     useShallow((state) => ({
       query: state.query,
@@ -45,26 +61,47 @@ export function useSearch() {
       results: state.results,
       error: state.error,
       previewResult: state.previewResult,
+      isSearchingMAM: state.isSearchingMAM,
+      mamResults: state.mamResults,
+      hasMoreMAMResults: state.hasMoreMAMResults,
+      mamError: state.mamError,
+      searchScope: state.searchScope,
     }))
   )
 
   return {
     /** Current search query */
     query,
-    /** Whether a search is in progress */
+    /** Whether a local search is in progress */
     isSearching,
-    /** Search results sorted by recency */
+    /** Local search results sorted by recency */
     results,
-    /** Error message if search failed */
+    /** Error message if local search failed */
     error,
     /** Search result currently being previewed in context */
     previewResult,
-    /** Execute a search (debounced 300ms) */
+    /** Whether a MAM search is in progress */
+    isSearchingMAM,
+    /** MAM search results (deduplicated against local results) */
+    mamResults,
+    /** Whether more MAM results are available */
+    hasMoreMAMResults,
+    /** Error message if MAM search failed */
+    mamError,
+    /** Conversation scope: null = global, JID = conversation-scoped */
+    searchScope,
+    /** Execute a local search (debounced 300ms) */
     search: searchStore.getState().search,
-    /** Clear search state and results */
+    /** Clear all search state and results */
     clearSearch: searchStore.getState().clearSearch,
     /** Set the search result to preview in context */
     setPreviewResult: searchStore.getState().setPreviewResult,
+    /** Trigger MAM search for the current query */
+    searchMAM: searchStore.getState().searchMAM,
+    /** Load more MAM results (pagination) */
+    loadMoreMAMResults: searchStore.getState().loadMoreMAMResults,
+    /** Set conversation scope for search */
+    setSearchScope: searchStore.getState().setSearchScope,
   }
 }
 

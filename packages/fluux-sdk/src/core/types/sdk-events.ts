@@ -53,6 +53,11 @@ export interface ConnectionEvents {
     service: HttpUploadService | null
   }
 
+  /** MAM fulltext search capability discovered */
+  'connection:mam-fulltext-search': {
+    supported: boolean
+  }
+
   /** Own avatar changed */
   'connection:own-avatar': {
     avatar: string | null
