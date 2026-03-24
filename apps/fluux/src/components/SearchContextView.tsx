@@ -325,7 +325,7 @@ export function SearchContextView({ onBack }: { onBack?: () => void }) {
 // SearchContextMessageList — read-only message list
 // ============================================================================
 
-const SearchContextMessageList = memo(function SearchContextMessageList({
+export const SearchContextMessageList = memo(function SearchContextMessageList({
   messages,
   conversationId,
   isRoom,

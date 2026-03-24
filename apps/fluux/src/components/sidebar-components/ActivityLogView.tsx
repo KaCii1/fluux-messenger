@@ -93,12 +93,19 @@ export function ActivityLogView() {
     mutedReactionConversations, mutedReactionMessages,
     muteReactionsForConversation, unmuteReactionsForConversation,
     muteReactionsForMessage, unmuteReactionsForMessage,
+    setPreviewEvent,
   } = useActivityLog()
   const { pendingCount } = useEvents()
   const { navigateToConversation, navigateToRoom } = useNavigateToTarget()
   const hasRoom = useRoomStore((s) => (jid: string) => s.rooms.has(jid))
 
   const handleNavigate = useCallback((event: ActivityEvent) => {
+    // For reaction events, show inline context preview instead of navigating away
+    if (event.type === 'reaction-received') {
+      setPreviewEvent(event)
+      return
+    }
+
     const target = getNavigationTarget(event)
     if (!target) return
 
@@ -114,7 +121,7 @@ export function ActivityLogView() {
         navigateToConversation(target.jid, target.messageId)
       }
     }
-  }, [navigateToConversation, navigateToRoom, hasRoom])
+  }, [navigateToConversation, navigateToRoom, hasRoom, setPreviewEvent])
 
   const groupedEvents = useMemo(() => groupEventsByDate(events), [events])
 

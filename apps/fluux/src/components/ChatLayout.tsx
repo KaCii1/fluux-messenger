@@ -13,17 +13,18 @@ const SettingsView = lazy(() => import('./SettingsView').then(m => ({ default: m
 const AdminView = lazy(() => import('./AdminView').then(m => ({ default: m.AdminView })))
 const XmppConsole = lazy(() => import('./XmppConsole').then(m => ({ default: m.XmppConsole })))
 const SearchContextView = lazy(() => import('./SearchContextView').then(m => ({ default: m.SearchContextView })))
+const ActivityContextView = lazy(() => import('./ActivityContextView').then(m => ({ default: m.ActivityContextView })))
 import { ShortcutHelp } from './ShortcutHelp'
 import { CommandPalette } from './CommandPalette'
 import { ToastContainer } from './ToastContainer'
 import {
   // Vanilla stores for imperative .getState() access
-  chatStore, roomStore, consoleStore, adminStore, rosterStore, searchStore,
+  chatStore, roomStore, consoleStore, adminStore, rosterStore, searchStore, activityLogStore,
   useRosterActions,
   type Contact, type Conversation, type AdminCategory
 } from '@fluux/sdk'
 // React hook wrappers for reactive subscriptions
-import { useChatStore, useRoomStore, useRosterStore, useConnectionStore, useConsoleStore, useAdminStore, useSearchStore } from '@fluux/sdk/react'
+import { useChatStore, useRoomStore, useRosterStore, useConnectionStore, useConsoleStore, useAdminStore, useSearchStore, useActivityLogStore } from '@fluux/sdk/react'
 import { useNotificationBadge } from '@/hooks/useNotificationBadge'
 import { useDesktopNotifications } from '@/hooks/useDesktopNotifications'
 import { useWebPush } from '@/hooks/useWebPush'
@@ -133,6 +134,7 @@ function ChatLayoutContent() {
   const activeRoomJid = useRoomStore((s) => s.activeRoomJid)
   const setActiveRoom = useRoomStore((s) => s.setActiveRoom)
   const searchPreviewResult = useSearchStore((s) => s.previewResult)
+  const activityPreviewEvent = useActivityLogStore((s) => s.previewEvent)
 
   // NOTE: Don't use useRoster() hook here - it subscribes to ALL contacts and triggers
   // re-renders when ANY contact's presence changes. Use useRosterActions() for actions
@@ -431,7 +433,7 @@ function ChatLayoutContent() {
   const adminHasMainContent = adminSession || adminCategory === 'users' || adminCategory === 'rooms'
   // Settings: only show content when a category is explicitly selected (on mobile, let user choose from sidebar first)
   const settingsHasContent = sidebarView === 'settings' && !!settingsCategory
-  const hasActiveContent = !!(activeConversationId || activeRoomJid || selectedContact || adminHasMainContent || settingsHasContent || searchPreviewResult)
+  const hasActiveContent = !!(activeConversationId || activeRoomJid || selectedContact || adminHasMainContent || settingsHasContent || searchPreviewResult || activityPreviewEvent)
 
   // Toggle shortcut help overlay
   const toggleShortcutHelp = () => {
@@ -744,6 +746,10 @@ function ChatLayoutContent() {
           ) : searchPreviewResult ? (
             <Suspense fallback={<ViewLoadingFallback />}>
               <SearchContextView onBack={() => searchStore.getState().setPreviewResult(null)} />
+            </Suspense>
+          ) : activityPreviewEvent ? (
+            <Suspense fallback={<ViewLoadingFallback />}>
+              <ActivityContextView onBack={() => activityLogStore.getState().setPreviewEvent(null)} />
             </Suspense>
           ) : (
             <EmptyState sidebarView={sidebarView} />

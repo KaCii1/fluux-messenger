@@ -174,6 +174,7 @@ export {
   adminStore,
   blockingStore,
   searchStore,
+  activityLogStore,
 } from './stores'
 
 // React hook wrappers are available from '@fluux/sdk/react':

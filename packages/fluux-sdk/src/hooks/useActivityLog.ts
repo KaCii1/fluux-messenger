@@ -80,6 +80,12 @@ export function useActivityLog() {
     activityLogStore.getState().unmuteReactionsForMessage(messageId)
   }, [])
 
+  const previewEvent = useActivityLogStore((s) => s.previewEvent)
+
+  const setPreviewEvent = useCallback((event: import('../core/types/activity').ActivityEvent | null) => {
+    activityLogStore.getState().setPreviewEvent(event)
+  }, [])
+
   return useMemo(
     () => ({
       events,
@@ -94,8 +100,10 @@ export function useActivityLog() {
       unmuteReactionsForConversation,
       muteReactionsForMessage,
       unmuteReactionsForMessage,
+      previewEvent,
+      setPreviewEvent,
     }),
-    [events, unreadCount, actionableEvents, mutedReactionConversations, mutedReactionMessages, markRead, markAllRead, resolveEvent, muteReactionsForConversation, unmuteReactionsForConversation, muteReactionsForMessage, unmuteReactionsForMessage]
+    [events, unreadCount, actionableEvents, mutedReactionConversations, mutedReactionMessages, markRead, markAllRead, resolveEvent, muteReactionsForConversation, unmuteReactionsForConversation, muteReactionsForMessage, unmuteReactionsForMessage, previewEvent, setPreviewEvent]
   )
 }
 

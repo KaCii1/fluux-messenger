@@ -358,6 +358,29 @@ vi.mock('@fluux/sdk/react', () => ({
     }
     return selector ? selector(state) : state
   }),
+  useActivityLogStore: vi.fn((selector) => {
+    const state = {
+      events: [],
+      mutedReactionConversations: new Set(),
+      mutedReactionMessages: new Set(),
+      previewEvent: null,
+      addEvent: vi.fn(),
+      markRead: vi.fn(),
+      markAllRead: vi.fn(),
+      resolveEvent: vi.fn(),
+      findEvent: vi.fn(),
+      removeEvent: vi.fn(),
+      muteReactionsForConversation: vi.fn(),
+      unmuteReactionsForConversation: vi.fn(),
+      muteReactionsForMessage: vi.fn(),
+      unmuteReactionsForMessage: vi.fn(),
+      isReactionMuted: () => false,
+      unreadCount: () => 0,
+      setPreviewEvent: vi.fn(),
+      reset: vi.fn(),
+    }
+    return selector ? selector(state) : state
+  }),
   useContactTime: vi.fn(() => null),
   useLastActivity: vi.fn(),
 }))

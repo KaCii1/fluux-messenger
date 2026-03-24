@@ -87,6 +87,13 @@ interface ActivityLogState {
   isReactionMuted: (conversationId: string, messageId: string) => boolean
   /** Count of unread, non-muted events */
   unreadCount: () => number
+
+  // Preview state (ephemeral, not persisted)
+  /** The event currently being previewed in the main content area */
+  previewEvent: ActivityEvent | null
+  /** Set or clear the preview event */
+  setPreviewEvent: (event: ActivityEvent | null) => void
+
   /** Reset the store */
   reset: () => void
 }
@@ -95,6 +102,7 @@ const initialState = {
   events: [] as ActivityEvent[],
   mutedReactionConversations: new Set<string>(),
   mutedReactionMessages: new Set<string>(),
+  previewEvent: null as ActivityEvent | null,
 }
 
 export const activityLogStore = createStore<ActivityLogState>()(
@@ -211,6 +219,9 @@ export const activityLogStore = createStore<ActivityLogState>()(
         unreadCount: () => {
           return get().events.filter((e) => !e.read && !e.muted).length
         },
+
+        previewEvent: null,
+        setPreviewEvent: (event) => set({ previewEvent: event }),
 
         reset: () => {
           try {

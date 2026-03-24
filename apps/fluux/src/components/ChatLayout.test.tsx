@@ -195,6 +195,12 @@ vi.mock('@fluux/sdk', () => ({
       setPendingSelectedUserJid: vi.fn(),
     }),
   },
+  activityLogStore: {
+    getState: () => ({
+      previewEvent: null,
+      setPreviewEvent: vi.fn(),
+    }),
+  },
 }))
 
 // Mock React store hooks (from @fluux/sdk/react)
@@ -292,6 +298,9 @@ vi.mock('@fluux/sdk/react', () => ({
   useContactTime: () => null, useLastActivity: vi.fn(),
   useSearchStore: (selector: (state: { previewResult: null }) => unknown) => {
     return selector({ previewResult: null })
+  },
+  useActivityLogStore: (selector: (state: { previewEvent: null }) => unknown) => {
+    return selector({ previewEvent: null })
   },
 }))
 
