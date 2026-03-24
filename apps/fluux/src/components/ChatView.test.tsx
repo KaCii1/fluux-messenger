@@ -130,6 +130,7 @@ vi.mock('@fluux/sdk', () => ({
     })
     return map
   },
+  getMyReactions: () => [],
   useXMPP: () => ({
     client: { profile: { fetchVCard: vi.fn().mockResolvedValue(null) } },
     sendRawXml: vi.fn(),

@@ -186,6 +186,7 @@ vi.mock('@fluux/sdk', () => ({
   isPollExpired: () => false,
   tallyPollResults: () => [],
   getTotalVoters: () => 0,
+  getMyReactions: () => [],
   // Store mocks needed by child components
   connectionStore: {
     getState: () => ({ status: 'online', jid: 'me@example.com', windowVisible: true }),
