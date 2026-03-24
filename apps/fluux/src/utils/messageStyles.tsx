@@ -16,7 +16,10 @@
  */
 
 import React, { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { findMentionRanges, findIrcPrefixRange, type MentionReference } from '@fluux/sdk'
+import { Maximize2 } from 'lucide-react'
+import { ModalShell } from '../components/ModalShell'
 import { useHighlighter } from './codeHighlight'
 
 // URL regex pattern - excludes < and > to handle angle-bracketed URLs like <https://example.com>
@@ -267,69 +270,134 @@ function renderSegment(segment: StyledSegment, index: number): React.ReactNode {
   }
 }
 
-/**
- * Code block component with copy button
- */
-function CodeBlock({ code, language, keyProp }: { code: string; language?: string; keyProp: string }): React.ReactElement {
+/** Copy text to clipboard with fallback for older browsers */
+async function copyToClipboard(text: string): Promise<void> {
+  try {
+    await navigator.clipboard.writeText(text)
+  } catch {
+    const textarea = document.createElement('textarea')
+    textarea.value = text
+    document.body.appendChild(textarea)
+    textarea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textarea)
+  }
+}
+
+/** Copy button with checkmark feedback */
+function CopyButton({ text, className = '' }: { text: string; className?: string }) {
   const [copied, setCopied] = useState(false)
-  const { ready, highlight } = useHighlighter(language)
 
   const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(code)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch {
-      // Fallback for older browsers
-      const textarea = document.createElement('textarea')
-      textarea.value = code
-      document.body.appendChild(textarea)
-      textarea.select()
-      document.execCommand('copy')
-      document.body.removeChild(textarea)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    }
+    await copyToClipboard(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
+
+  return (
+    <button
+      onClick={handleCopy}
+      className={`p-1 rounded hover:bg-fluux-hover text-fluux-muted hover:text-fluux-text transition-colors ${className}`}
+      title={copied ? 'Copied!' : 'Copy code'}
+    >
+      {copied ? (
+        <svg className="w-3.5 h-3.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+      ) : (
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+      )}
+    </button>
+  )
+}
+
+/** Rendered code content (plain or syntax-highlighted) */
+function CodeContent({ code, highlightedHtml }: { code: string; highlightedHtml: string | null }) {
+  return highlightedHtml ? (
+    <code dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
+  ) : (
+    <code>{code}</code>
+  )
+}
+
+/** Expanded code modal — fullscreen on mobile, large centered panel on desktop */
+function CodeExpandModal({
+  code,
+  language,
+  highlightedHtml,
+  onClose,
+}: {
+  code: string
+  language?: string
+  highlightedHtml: string | null
+  onClose: () => void
+}) {
+  return createPortal(
+    <ModalShell
+      title={language || 'Code'}
+      onClose={onClose}
+      width="max-w-5xl"
+      panelClassName="max-h-dvh md:max-h-[90vh] h-dvh md:h-auto !mx-0 !rounded-none md:!mx-4 md:!rounded-lg flex flex-col"
+    >
+      <div className="flex-1 overflow-auto min-h-0">
+        <pre className="bg-fluux-bg/50 text-fluux-text px-4 py-3 font-mono text-sm min-h-full">
+          <CodeContent code={code} highlightedHtml={highlightedHtml} />
+        </pre>
+      </div>
+      <div className="flex justify-end px-3 py-2 border-t border-fluux-hover flex-shrink-0">
+        <CopyButton text={code} />
+      </div>
+    </ModalShell>,
+    document.body,
+  )
+}
+
+/**
+ * Code block component with copy button, expand button, and syntax highlighting
+ */
+function CodeBlock({ code, language, keyProp }: { code: string; language?: string; keyProp: string }): React.ReactElement {
+  const [expanded, setExpanded] = useState(false)
+  const { ready, highlight } = useHighlighter(language)
 
   const highlightedHtml = ready && language ? highlight(code, language) : null
 
   return (
-    <div key={keyProp} className="my-1 rounded-lg overflow-hidden border border-fluux-border">
-      {/* Header bar with language label and copy button */}
-      <div className="flex items-center justify-between px-2 bg-fluux-sidebar border-b border-fluux-border">
-        {language ? (
-          <span className="text-xs text-fluux-muted select-none py-1">{language}</span>
-        ) : (
-          <span />
-        )}
-        <button
-          onClick={handleCopy}
-          className="p-1 rounded hover:bg-fluux-hover text-fluux-muted hover:text-fluux-text transition-colors"
-          title={copied ? 'Copied!' : 'Copy code'}
-        >
-          {copied ? (
-            <svg className="w-3.5 h-3.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
+    <>
+      <div key={keyProp} className="my-1 rounded-lg overflow-hidden border border-fluux-border">
+        {/* Header bar with language label, expand and copy buttons */}
+        <div className="flex items-center justify-between px-2 bg-fluux-sidebar border-b border-fluux-border">
+          {language ? (
+            <span className="text-xs text-fluux-muted select-none py-1">{language}</span>
           ) : (
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
+            <span />
           )}
-        </button>
+          <div className="flex items-center gap-0.5">
+            <button
+              onClick={() => setExpanded(true)}
+              className="p-1 rounded hover:bg-fluux-hover text-fluux-muted hover:text-fluux-text transition-colors"
+              title="Expand code"
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+            </button>
+            <CopyButton text={code} />
+          </div>
+        </div>
+        {/* Code content */}
+        <pre className="bg-fluux-bg/50 text-fluux-text px-3 py-2 overflow-x-auto font-mono text-sm">
+          <CodeContent code={code} highlightedHtml={highlightedHtml} />
+        </pre>
       </div>
-      {/* Code content */}
-      <pre className="bg-fluux-bg/50 text-fluux-text px-3 py-2 overflow-x-auto font-mono text-sm">
-        {highlightedHtml ? (
-          // Shiki output is safe — it only produces <span> elements with
-          // inline style attributes referencing CSS variables
-          <code dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
-        ) : (
-          <code>{code}</code>
-        )}
-      </pre>
-    </div>
+      {expanded && (
+        <CodeExpandModal
+          code={code}
+          language={language}
+          highlightedHtml={highlightedHtml}
+          onClose={() => setExpanded(false)}
+        />
+      )}
+    </>
   )
 }
 
