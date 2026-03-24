@@ -525,7 +525,8 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): Shor
                          (shortcut.modifiers?.includes('meta') || shortcut.modifiers?.includes('ctrl'))
           const isCmdQ = shortcut.key.toLowerCase() === 'q' &&
                          (shortcut.modifiers?.includes('meta') || shortcut.modifiers?.includes('ctrl'))
-          const allowInInput = shortcut.key === '?' || shortcut.key === 'F12' || shortcut.key === 'Escape' || isAltArrow || isCmdK || isCmdU || isCmdF || isCmdQ
+          const isAltNumber = /^[0-9]$/.test(shortcut.key) && shortcut.modifiers?.includes('alt')
+          const allowInInput = shortcut.key === '?' || shortcut.key === 'F12' || shortcut.key === 'Escape' || isAltArrow || isAltNumber || isCmdK || isCmdU || isCmdF || isCmdQ
 
           if (!isInputField || allowInInput) {
             e.preventDefault()
