@@ -472,8 +472,23 @@ input[type="range"]::-moz-range-thumb {
 
 /* Persistent highlight for search context view */
 .message-highlight-persistent {
-  background-color: var(--fluux-bg-accent);
+  background-color: hsla(var(--fluux-accent-h), var(--fluux-accent-s), var(--fluux-accent-l), 0.25);
   border-radius: 0.5rem;
+}
+
+/* Search term highlight in message bodies */
+.search-match {
+  background-color: var(--fluux-search-highlight-bg);
+  color: var(--fluux-search-highlight-text);
+  border-radius: 0.125rem;
+}
+
+/* When search match is inside a highlighted message, use contrasting color */
+.message-highlight-persistent .search-match {
+  background-color: hsla(0, 0%, 100%, 0.45);
+}
+.light .message-highlight-persistent .search-match {
+  background-color: hsla(0, 0%, 0%, 0.2);
 }
 
 /* Bounce effect for keyboard navigation at boundaries */

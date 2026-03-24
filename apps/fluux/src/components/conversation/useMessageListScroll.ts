@@ -59,6 +59,11 @@ export interface UseMessageListScrollOptions {
   isHistoryComplete?: boolean
   typingUsersCount: number
   lastMessageReactionsKey: string
+  /** When true, disables all auto-scroll behaviors (conversation switch scroll,
+   *  ResizeObserver auto-scroll, new message scroll-to-bottom, target message scroll).
+   *  Used by read-only preview views (search context, activity context) that manage
+   *  their own scroll positioning. */
+  staticMode?: boolean
 }
 
 export interface UseMessageListScrollResult {
@@ -91,6 +96,7 @@ export function useMessageListScroll({
   isHistoryComplete,
   typingUsersCount,
   lastMessageReactionsKey,
+  staticMode = false,
 }: UseMessageListScrollOptions): UseMessageListScrollResult {
 
   // ==========================================================================
@@ -192,7 +198,7 @@ export function useMessageListScroll({
       if (!scroller) return
 
       // On mount: if we should be at bottom, scroll there immediately
-      if (isAtBottomRef.current) {
+      if (isAtBottomRef.current && !staticMode) {
         void scroller.offsetHeight // Force reflow
         scroller.scrollTop = scroller.scrollHeight
         requestAnimationFrame(() => {
@@ -235,7 +241,7 @@ export function useMessageListScroll({
         }
 
         // Content grew and we were at bottom -> stay at bottom
-        if (newHeight > lastHeight && isAtBottomRef.current) {
+        if (newHeight > lastHeight && isAtBottomRef.current && !staticMode) {
           debugLog('RESIZE SCROLL TO BOTTOM', {
             newHeight,
             lastHeight,
@@ -532,13 +538,13 @@ export function useMessageListScroll({
     // Track if user scrolled away from top (allows re-trigger of load)
     if (scrollTop > 50) scrolledAwayFromTopRef.current = true
 
-    // Auto-trigger load when at top
-    if (scrollTop === 0) triggerLoadOlder()
+    // Auto-trigger load when at top (disabled in static mode — preview starts at scrollTop=0)
+    if (scrollTop === 0 && !staticMode) triggerLoadOlder()
   }
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     const { scrollTop } = e.currentTarget
-    if (scrollTop === 0 && e.deltaY < 0) triggerLoadOlder()
+    if (scrollTop === 0 && e.deltaY < 0 && !staticMode) triggerLoadOlder()
     if (scrollTop === 0 && e.deltaY > 0) scrolledAwayFromTopRef.current = true
   }
 
@@ -578,105 +584,112 @@ export function useMessageListScroll({
     }
     mediaLoadSnapshotRef.current = null
 
-    // Decide: restore position or scroll to bottom?
-    const action = scrollStateManager.enterConversation(conversationId, messageCount)
-    const savedPos = scrollStateManager.getSavedScrollTop(conversationId)
+    // In static mode (read-only previews), skip all scroll positioning.
+    // The parent component handles its own scroll-to-target.
+    if (staticMode) {
+      isAtBottomRef.current = false
+      debugLog('CONVERSATION SWITCH: static mode, skipping scroll')
+    } else {
+      // Decide: restore position or scroll to bottom?
+      const action = scrollStateManager.enterConversation(conversationId, messageCount)
+      const savedPos = scrollStateManager.getSavedScrollTop(conversationId)
 
-    debugLog('CONVERSATION ACTION', { action, savedPos, scrollHeight: scroller.scrollHeight })
+      debugLog('CONVERSATION ACTION', { action, savedPos, scrollHeight: scroller.scrollHeight })
 
-    if (action === 'restore-position' && savedPos !== null) {
-      const maxScrollTop = scroller.scrollHeight - scroller.clientHeight
-      if (savedPos <= maxScrollTop && maxScrollTop > 0) {
-        // Position is valid — restore it
-        scroller.scrollTop = savedPos
-        isAtBottomRef.current = false
-      } else {
-        // Position is out of bounds (content not loaded yet) — scroll to bottom instead
-        debugLog('RESTORE POSITION OUT OF BOUNDS, scrolling to bottom', {
-          savedPos, maxScrollTop, scrollHeight: scroller.scrollHeight,
-        })
+      if (action === 'restore-position' && savedPos !== null) {
+        const maxScrollTop = scroller.scrollHeight - scroller.clientHeight
+        if (savedPos <= maxScrollTop && maxScrollTop > 0) {
+          // Position is valid — restore it
+          scroller.scrollTop = savedPos
+          isAtBottomRef.current = false
+        } else {
+          // Position is out of bounds (content not loaded yet) — scroll to bottom instead
+          debugLog('RESTORE POSITION OUT OF BOUNDS, scrolling to bottom', {
+            savedPos, maxScrollTop, scrollHeight: scroller.scrollHeight,
+          })
+          scroller.scrollTop = scroller.scrollHeight
+          isAtBottomRef.current = true
+        }
+        scrollStateManager.clearSavedScrollState(conversationId)
+      } else if (firstNewMessageId) {
+        // Has unread messages - scroll to show the new message marker with context
+        // We defer this because the message elements may not be in DOM yet
+        debugLog('CONVERSATION SWITCH: has unread, will scroll to marker', { firstNewMessageId })
+
+        // Immediately scroll to bottom as fallback (content may not be rendered yet)
         scroller.scrollTop = scroller.scrollHeight
+        isAtBottomRef.current = true  // Start as "at bottom", will update when we scroll to marker
+
+        // Deferred: scroll to the new message marker once it's rendered
+        const scrollToMarker = () => {
+          const markerScroller = scrollerRef.current
+          if (!markerScroller) return
+
+          const escapedId = CSS.escape(firstNewMessageId)
+          const messageElement = markerScroller.querySelector(`[data-message-id="${escapedId}"]`)
+
+          if (messageElement) {
+            // Scroll so the new message marker is visible near the top with context above
+            // We want to show some messages before the marker, so scroll to put the marker
+            // about 1/3 down from the top of the viewport
+            const elementTop = (messageElement as HTMLElement).offsetTop
+            const viewportHeight = markerScroller.clientHeight
+            const targetScrollTop = Math.max(0, elementTop - viewportHeight / 3)
+
+            markerScroller.scrollTop = targetScrollTop
+
+            // Update isAtBottom based on actual position after scrolling
+            const distFromBottom = markerScroller.scrollHeight - targetScrollTop - viewportHeight
+            isAtBottomRef.current = distFromBottom < AT_BOTTOM_THRESHOLD
+
+            debugLog('CONVERSATION SWITCH: scrolled to new message marker', {
+              firstNewMessageId,
+              elementTop,
+              targetScrollTop,
+              viewportHeight,
+              isAtBottom: isAtBottomRef.current,
+            })
+          } else {
+            // Element not found yet, try again on next frame
+            debugLog('CONVERSATION SWITCH: marker element not found, retrying', { firstNewMessageId })
+          }
+        }
+
+        // Try immediately, then with increasing delays to handle async rendering
+        requestAnimationFrame(scrollToMarker)
+        setTimeout(scrollToMarker, 50)
+        setTimeout(scrollToMarker, 150)
+      } else if (targetMessageId) {
+        // Has a target message to scroll to — skip scroll-to-bottom.
+        // The targetMessageId effect will handle scrolling.
+        // Mark as NOT at bottom so the ResizeObserver doesn't auto-scroll
+        // to bottom when content grows (messages loading from IndexedDB).
+        isAtBottomRef.current = false
+        debugLog('CONVERSATION SWITCH: has targetMessageId, deferring to target scroll', { targetMessageId })
+      } else {
+        // No unread messages - scroll to bottom
+        // We use both immediate and deferred scroll because:
+        // 1. Immediate: Works when content is already rendered (useLayoutEffect runs after DOM mutations)
+        // 2. Deferred: Catches edge cases where React's reconciliation hasn't finished
+        //    (e.g., navigating via Option+U or notification click from a different view)
+        //
+        // Note: Async content loading (MAM) is handled by the separate "new message" effect
+        // which triggers when messageCount changes.
+        void scroller.offsetHeight  // Force layout calculation
+        scroller.scrollTop = scroller.scrollHeight
+
+        requestAnimationFrame(() => {
+          if (scrollerRef.current) {
+            scrollerRef.current.scrollTop = scrollerRef.current.scrollHeight
+            debugLog('CONVERSATION SWITCH: scrolled to bottom (deferred)', {
+              scrollTop: scrollerRef.current.scrollTop,
+              scrollHeight: scrollerRef.current.scrollHeight,
+            })
+          }
+        })
+
         isAtBottomRef.current = true
       }
-      scrollStateManager.clearSavedScrollState(conversationId)
-    } else if (firstNewMessageId) {
-      // Has unread messages - scroll to show the new message marker with context
-      // We defer this because the message elements may not be in DOM yet
-      debugLog('CONVERSATION SWITCH: has unread, will scroll to marker', { firstNewMessageId })
-
-      // Immediately scroll to bottom as fallback (content may not be rendered yet)
-      scroller.scrollTop = scroller.scrollHeight
-      isAtBottomRef.current = true  // Start as "at bottom", will update when we scroll to marker
-
-      // Deferred: scroll to the new message marker once it's rendered
-      const scrollToMarker = () => {
-        const markerScroller = scrollerRef.current
-        if (!markerScroller) return
-
-        const escapedId = CSS.escape(firstNewMessageId)
-        const messageElement = markerScroller.querySelector(`[data-message-id="${escapedId}"]`)
-
-        if (messageElement) {
-          // Scroll so the new message marker is visible near the top with context above
-          // We want to show some messages before the marker, so scroll to put the marker
-          // about 1/3 down from the top of the viewport
-          const elementTop = (messageElement as HTMLElement).offsetTop
-          const viewportHeight = markerScroller.clientHeight
-          const targetScrollTop = Math.max(0, elementTop - viewportHeight / 3)
-
-          markerScroller.scrollTop = targetScrollTop
-
-          // Update isAtBottom based on actual position after scrolling
-          const distFromBottom = markerScroller.scrollHeight - targetScrollTop - viewportHeight
-          isAtBottomRef.current = distFromBottom < AT_BOTTOM_THRESHOLD
-
-          debugLog('CONVERSATION SWITCH: scrolled to new message marker', {
-            firstNewMessageId,
-            elementTop,
-            targetScrollTop,
-            viewportHeight,
-            isAtBottom: isAtBottomRef.current,
-          })
-        } else {
-          // Element not found yet, try again on next frame
-          debugLog('CONVERSATION SWITCH: marker element not found, retrying', { firstNewMessageId })
-        }
-      }
-
-      // Try immediately, then with increasing delays to handle async rendering
-      requestAnimationFrame(scrollToMarker)
-      setTimeout(scrollToMarker, 50)
-      setTimeout(scrollToMarker, 150)
-    } else if (targetMessageId) {
-      // Has a target message to scroll to — skip scroll-to-bottom.
-      // The targetMessageId effect will handle scrolling.
-      // Mark as NOT at bottom so the ResizeObserver doesn't auto-scroll
-      // to bottom when content grows (messages loading from IndexedDB).
-      isAtBottomRef.current = false
-      debugLog('CONVERSATION SWITCH: has targetMessageId, deferring to target scroll', { targetMessageId })
-    } else {
-      // No unread messages - scroll to bottom
-      // We use both immediate and deferred scroll because:
-      // 1. Immediate: Works when content is already rendered (useLayoutEffect runs after DOM mutations)
-      // 2. Deferred: Catches edge cases where React's reconciliation hasn't finished
-      //    (e.g., navigating via Option+U or notification click from a different view)
-      //
-      // Note: Async content loading (MAM) is handled by the separate "new message" effect
-      // which triggers when messageCount changes.
-      void scroller.offsetHeight  // Force layout calculation
-      scroller.scrollTop = scroller.scrollHeight
-
-      requestAnimationFrame(() => {
-        if (scrollerRef.current) {
-          scrollerRef.current.scrollTop = scrollerRef.current.scrollHeight
-          debugLog('CONVERSATION SWITCH: scrolled to bottom (deferred)', {
-            scrollTop: scrollerRef.current.scrollTop,
-            scrollHeight: scrollerRef.current.scrollHeight,
-          })
-        }
-      })
-
-      isAtBottomRef.current = true
     }
 
     // Update tracking
@@ -696,7 +709,7 @@ export function useMessageListScroll({
         }
       }
     }
-  }, [conversationId, messageCount, firstNewMessageId, targetMessageId, isAtBottomRef])
+  }, [conversationId, messageCount, firstNewMessageId, targetMessageId, isAtBottomRef, staticMode])
 
   // ==========================================================================
   // EFFECT: Scroll to target message (from activity log click, etc.)
@@ -707,11 +720,16 @@ export function useMessageListScroll({
   // as the unread marker scroll. Clears the target after consumption.
 
   useEffect(() => {
-    if (!targetMessageId) return
+    if (!targetMessageId || staticMode) return
     const scroller = scrollerRef.current
     if (!scroller) return
 
+    const timeouts: ReturnType<typeof setTimeout>[] = []
+    let rafId: number | null = null
+    let found = false
+
     const scrollToTarget = () => {
+      if (found) return
       const currentScroller = scrollerRef.current
       if (!currentScroller) return
 
@@ -719,6 +737,7 @@ export function useMessageListScroll({
       const messageElement = currentScroller.querySelector(`[data-message-id="${escapedId}"]`)
 
       if (messageElement) {
+        found = true
         const elementTop = (messageElement as HTMLElement).offsetTop
         const viewportHeight = currentScroller.clientHeight
         // Center the target message in the viewport
@@ -748,13 +767,15 @@ export function useMessageListScroll({
     }
 
     // Try with increasing delays to handle async rendering
-    requestAnimationFrame(scrollToTarget)
-    setTimeout(scrollToTarget, 50)
-    setTimeout(scrollToTarget, 150)
+    rafId = requestAnimationFrame(scrollToTarget)
+    timeouts.push(setTimeout(scrollToTarget, 50))
+    timeouts.push(setTimeout(scrollToTarget, 150))
+    timeouts.push(setTimeout(scrollToTarget, 300))
 
     // Safety fallback: if target message is never found after all attempts,
     // scroll to bottom and clear the target to avoid being stuck
-    setTimeout(() => {
+    timeouts.push(setTimeout(() => {
+      if (found) return
       const currentScroller = scrollerRef.current
       if (!currentScroller || !targetMessageId) return
       const escapedId = CSS.escape(targetMessageId)
@@ -765,11 +786,17 @@ export function useMessageListScroll({
         isAtBottomRef.current = true
         onTargetMessageConsumed?.()
       }
-    }, 500)
+    }, 500))
+
+    // Cleanup pending timeouts on re-run (e.g., when messageCount changes from async load)
+    return () => {
+      timeouts.forEach(clearTimeout)
+      if (rafId !== null) cancelAnimationFrame(rafId)
+    }
 
     // messageCount is in deps so this re-fires when messages load from async sources
     // (e.g., IndexedDB in search context view)
-  }, [targetMessageId, messageCount, isAtBottomRef, onTargetMessageConsumed])
+  }, [targetMessageId, messageCount, isAtBottomRef, onTargetMessageConsumed, staticMode])
 
   // ==========================================================================
   // EFFECT: Cleanup on unmount
@@ -798,6 +825,7 @@ export function useMessageListScroll({
   // falling back to distance-from-bottom math if the anchor element isn't found.
 
   useLayoutEffect(() => {
+    if (staticMode) return
     const scroller = scrollerRef.current
     const saved = prependRef.current
     if (!scroller || !saved) return
@@ -972,7 +1000,7 @@ export function useMessageListScroll({
         prependRef.current = null
       }
     }, PREPEND_COOLDOWN_MS)
-  }, [messageCount, firstMessageId])
+  }, [messageCount, firstMessageId, staticMode])
 
   // ==========================================================================
   // EFFECT: New message arrives
@@ -980,7 +1008,7 @@ export function useMessageListScroll({
 
   useEffect(() => {
     const scroller = scrollerRef.current
-    if (!scroller || !hasInitializedRef.current) return
+    if (!scroller || !hasInitializedRef.current || staticMode) return
 
     // Don't interfere with prepend that's actively in progress (not yet restored)
     // Once restored, allow new message auto-scroll even during cooldown period
@@ -1011,7 +1039,7 @@ export function useMessageListScroll({
     }
 
     prevMessageCountRef.current = messageCount
-  }, [messageCount, isAtBottomRef])
+  }, [messageCount, isAtBottomRef, staticMode])
 
   // ==========================================================================
   // EFFECT: Reset marker scroll tracking when firstNewMessageId changes

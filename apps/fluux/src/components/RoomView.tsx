@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, useImperativeHandle, useMemo, memo, type RefObject } from 'react'
 import { useTranslation } from 'react-i18next'
 import { detectRenderLoop } from '@/utils/renderLoopDetector'
-import { useRoomActive, useRoster, getBareJid, generateConsistentColorHexSync, getPresenceFromShow, createMessageLookup, isMessageFromIgnoredUser, isReplyToIgnoredUser, canKick, canBan, canModerate, getAvailableAffiliations, getAvailableRoles, type RoomMessage, type Room, type MentionReference, type ChatStateNotification, type Contact, type FileAttachment, type RoomAffiliation, type RoomRole, type PollData } from '@fluux/sdk'
+import { useRoomActive, useRoster, getBareJid, generateConsistentColorHexSync, getPresenceFromShow, createMessageLookup, isMessageFromIgnoredUser, isReplyToIgnoredUser, canKick, canBan, canModerate, getAvailableAffiliations, getAvailableRoles, getMyReactions, type RoomMessage, type Room, type MentionReference, type ChatStateNotification, type Contact, type FileAttachment, type RoomAffiliation, type RoomRole, type PollData } from '@fluux/sdk'
 import { useConnectionStore, useIgnoreStore } from '@fluux/sdk/react'
 import { ignoreStore, type IgnoredUser } from '@fluux/sdk/stores'
 import { useMentionAutocomplete, useFileUpload, useLinkPreview, useTypeToFocus, useMessageCopy, useMode, useMessageSelection, useDragAndDrop, useConversationDraft, useTimeFormat, useContextMenu, isSmallScreen } from '@/hooks'
@@ -1010,13 +1010,8 @@ const RoomMessageBubbleWrapper = memo(function RoomMessageBubbleWrapper({
       ? (isDarkMode ? contact.colorDark : contact.colorLight) || getConsistentTextColor(resolvedSenderName, isDarkMode)
       : getConsistentTextColor(resolvedSenderName, isDarkMode)
 
-  // Get my current reactions to this message
-  const myReactions = (() => {
-    if (!message.reactions || !myNick) return []
-    return Object.entries(message.reactions)
-      .filter(([, reactors]) => reactors.includes(myNick))
-      .map(([emoji]) => emoji)
-  })()
+  // Get my current reactions to this message (room — uses nick)
+  const myReactions = getMyReactions(message.reactions, myNick, undefined, true)
 
   // Handle reaction toggle
   const handleReaction = (emoji: string) => {

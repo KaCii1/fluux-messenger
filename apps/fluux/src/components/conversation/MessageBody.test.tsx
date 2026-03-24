@@ -276,13 +276,13 @@ describe('MessageBody', () => {
       expect(marks[0].textContent).toBe('$100')
     })
 
-    it('should apply yellow highlight styling to marks', () => {
+    it('should apply search-match styling to marks', () => {
       const { container } = render(
         <MessageBody {...defaultProps} body="Hello world" highlightTerms={['hello']} />
       )
 
       const mark = container.querySelector('mark')
-      expect(mark).toHaveClass('bg-yellow-300/50')
+      expect(mark).toHaveClass('search-match')
     })
   })
 

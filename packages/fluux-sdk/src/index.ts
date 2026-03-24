@@ -371,6 +371,7 @@ export {
   MAX_POLL_OPTIONS,
   tallyPollResults,
   getTotalVoters,
+  getMyReactions,
   hasVotedOnPoll,
   getPollOptionEmojis,
   isPollExpired,

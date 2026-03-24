@@ -18,6 +18,7 @@ import {
   createMessageLookup,
   getBareJid,
   getLocalPart,
+  getMyReactions,
   useContactIdentities,
   type Message,
   type RoomMessage,
@@ -166,22 +167,44 @@ export function SearchContextView({ onBack }: { onBack?: () => void }) {
     void loadMessages()
   }, [previewResult])
 
-  // Apply persistent highlight after the MessageList's targetMessageId scroll completes
+  // Scroll to the target message and apply persistent highlight.
+  // We handle this here instead of passing targetMessageId to MessageList/useMessageListScroll
+  // because the scroll hook's live-conversation behaviors (ResizeObserver auto-scroll,
+  // new message scroll-to-bottom, scroll state persistence) interfere with the static preview.
   useEffect(() => {
     if (!previewResult || isLoading || messages.length === 0) return
 
-    // Wait for useMessageListScroll's target scroll (rAF + 150ms) to finish,
-    // then replace the fading highlight with a persistent one
-    const timer = setTimeout(() => {
-      const escapedId = CSS.escape(previewResult.messageId)
-      const el = document.querySelector(`[data-message-id="${escapedId}"]`)
-      if (el) {
-        el.classList.remove('message-highlight')
-        el.classList.add('message-highlight-persistent')
-      }
-    }, 300)
+    const scroller = scrollRef.current
+    if (!scroller) return
 
-    return () => clearTimeout(timer)
+    const escapedId = CSS.escape(previewResult.messageId)
+
+    const scrollAndHighlight = () => {
+      const el = scroller.querySelector(`[data-message-id="${escapedId}"]`) as HTMLElement | null
+      if (!el) return false
+
+      // Position the target message ~1/3 down from the viewport top
+      const elementTop = el.offsetTop
+      const viewportHeight = scroller.clientHeight
+      scroller.scrollTop = Math.max(0, elementTop - viewportHeight / 3)
+
+      // Apply persistent highlight (no fade animation — this is a static preview)
+      el.classList.add('message-highlight-persistent')
+      return true
+    }
+
+    // Try immediately, then with a short delay for DOM to settle
+    if (!scrollAndHighlight()) {
+      requestAnimationFrame(() => {
+        scrollAndHighlight()
+      })
+    }
+
+    return () => {
+      // Clean up highlight when switching results
+      const el = scroller?.querySelector(`[data-message-id="${escapedId}"]`)
+      el?.classList.remove('message-highlight-persistent')
+    }
   }, [previewResult, isLoading, messages.length])
 
   // Load older messages on scroll to top
@@ -294,7 +317,6 @@ export function SearchContextView({ onBack }: { onBack?: () => void }) {
           highlightTerms={highlightTerms}
           scrollerRef={scrollRef}
           isAtBottomRef={isAtBottomRef}
-          targetMessageId={previewResult.messageId}
           onScrollToTop={handleScrollToTop}
           isLoadingOlder={isLoadingOlder}
           isHistoryComplete={isHistoryComplete}
@@ -339,7 +361,6 @@ export const SearchContextMessageList = memo(function SearchContextMessageList({
   highlightTerms,
   scrollerRef,
   isAtBottomRef,
-  targetMessageId,
   onScrollToTop,
   isLoadingOlder,
   isHistoryComplete,
@@ -358,7 +379,6 @@ export const SearchContextMessageList = memo(function SearchContextMessageList({
   highlightTerms?: string[]
   scrollerRef: React.RefObject<HTMLElement | null>
   isAtBottomRef: React.MutableRefObject<boolean>
-  targetMessageId?: string | null
   onScrollToTop?: () => void
   isLoadingOlder?: boolean
   isHistoryComplete?: boolean
@@ -441,13 +461,8 @@ export const SearchContextMessageList = memo(function SearchContextMessageList({
       isDarkMode
     )
 
-    // Get my current reactions
-    const myReactions = (() => {
-      if (!msg.reactions || !myBareJid) return []
-      return Object.entries(msg.reactions)
-        .filter(([, reactors]) => reactors.includes(myBareJid))
-        .map(([emoji]) => emoji)
-    })()
+    // Get my current reactions (room messages use nicks, 1:1 use bare JIDs)
+    const myReactions = getMyReactions(msg.reactions, ownNickname ?? undefined, myBareJid, isRoom && msg.type === 'groupchat')
 
     const getReactorName = (reactor: string) => {
       const bareJid = getBareJid(reactor)
@@ -494,11 +509,11 @@ export const SearchContextMessageList = memo(function SearchContextMessageList({
       conversationId={conversationId}
       scrollerRef={scrollerRef}
       isAtBottomRef={isAtBottomRef}
-      targetMessageId={targetMessageId}
       onScrollToTop={onScrollToTop}
       isLoadingOlder={isLoadingOlder}
       isHistoryComplete={isHistoryComplete}
       isLoading={isLoading}
+      staticMode
       renderMessage={renderMessage}
       loadingState={
         <div className="flex-1 flex items-center justify-center text-fluux-muted">

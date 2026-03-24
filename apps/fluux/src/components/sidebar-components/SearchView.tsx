@@ -366,7 +366,7 @@ function HighlightedSnippet({
     <p className="text-xs text-fluux-muted line-clamp-1 mt-0.5">
       {nick && <span className="font-medium text-fluux-text">{nick}: </span>}
       {before}
-      <mark className="rounded-sm px-0.5" style={{ backgroundColor: 'var(--fluux-search-highlight-bg)', color: 'var(--fluux-search-highlight-text)' }}>
+      <mark className="search-match px-0.5">
         {match}
       </mark>
       {after}

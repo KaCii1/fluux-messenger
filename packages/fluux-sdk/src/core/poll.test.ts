@@ -11,6 +11,7 @@ import {
   getTotalVoters,
   enforceSingleVote,
   enforceMultiVote,
+  getMyReactions,
   hasVotedOnPoll,
   getPollOptionEmojis,
   isPollExpired,
@@ -521,6 +522,47 @@ describe('poll utilities', () => {
     it('should add vote alongside existing ones', () => {
       const result = enforceMultiVote(['1️⃣'], '2️⃣')
       expect(result).toEqual(['1️⃣', '2️⃣'])
+    })
+  })
+
+  describe('getMyReactions', () => {
+    const reactions = { '1️⃣': ['alice', 'bob'], '2️⃣': ['charlie'], '👍': ['alice'] }
+
+    it('should match by nick for groupchat messages', () => {
+      expect(getMyReactions(reactions, 'alice', 'alice@server.com', true)).toEqual(['1️⃣', '👍'])
+    })
+
+    it('should match by bare JID for 1:1 messages', () => {
+      const chatReactions = { '1️⃣': ['alice@server.com', 'bob@server.com'], '👍': ['alice@server.com'] }
+      expect(getMyReactions(chatReactions, 'alice', 'alice@server.com', false)).toEqual(['1️⃣', '👍'])
+    })
+
+    it('should not match bare JID against nick-based reactors in groupchat', () => {
+      // Reactors are nicks ("alice"), not JIDs — bare JID should not match when nick is available
+      expect(getMyReactions(reactions, 'carol', 'alice@server.com', true)).toEqual([])
+    })
+
+    it('should fall back to bare JID when nick is missing in groupchat', () => {
+      // When nick is undefined, falls back to bare JID as last resort
+      const jidReactions = { '1️⃣': ['alice@server.com'] }
+      expect(getMyReactions(jidReactions, undefined, 'alice@server.com', true)).toEqual(['1️⃣'])
+    })
+
+    it('should return empty for undefined reactions', () => {
+      expect(getMyReactions(undefined, 'alice', 'alice@server.com', true)).toEqual([])
+    })
+
+    it('should return empty for empty reactions', () => {
+      expect(getMyReactions({}, 'alice', 'alice@server.com', true)).toEqual([])
+    })
+
+    it('should return empty when no identifiers provided', () => {
+      expect(getMyReactions(reactions, undefined, undefined, false)).toEqual([])
+    })
+
+    it('should match nick in groupchat even when bare JID differs', () => {
+      // The key scenario: nick "bob" doesn't look like "bob@example.com"
+      expect(getMyReactions(reactions, 'bob', 'bob@example.com', true)).toEqual(['1️⃣'])
     })
   })
 

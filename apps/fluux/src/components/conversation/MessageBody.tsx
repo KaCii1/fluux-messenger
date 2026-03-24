@@ -193,7 +193,7 @@ function highlightText(text: string, pattern: RegExp): ReactNode {
       parts.push(text.slice(lastIndex, match.index))
     }
     parts.push(
-      <mark key={match.index} className="rounded-sm" style={{ backgroundColor: 'var(--fluux-search-highlight-bg)', color: 'var(--fluux-search-highlight-text)' }}>
+      <mark key={match.index} className="search-match">
         {match[0]}
       </mark>
     )

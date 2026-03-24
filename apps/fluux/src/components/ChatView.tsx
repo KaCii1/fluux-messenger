@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useImperativeHandle, memo, type RefObject } from 'react'
 import { useTranslation } from 'react-i18next'
 import { detectRenderLoop } from '@/utils/renderLoopDetector'
-import { useChatActive, useContactIdentities, createMessageLookup, getBareJid, getLocalPart, type Message, type ContactIdentity } from '@fluux/sdk'
+import { useChatActive, useContactIdentities, createMessageLookup, getBareJid, getLocalPart, getMyReactions, type Message, type ContactIdentity } from '@fluux/sdk'
 import { useConnectionStore } from '@fluux/sdk/react'
 import { getConsistentTextColor } from './Avatar'
 import { useFileUpload, useLinkPreview, useTypeToFocus, useMessageCopy, useMode, useMessageSelection, useDragAndDrop, useConversationDraft, useTimeFormat } from '@/hooks'
@@ -639,13 +639,8 @@ const ChatMessageBubble = memo(function ChatMessageBubble({
       ? (isDarkMode ? senderContact.colorDark : senderContact.colorLight) || getConsistentTextColor(message.from.split('/')[0], isDarkMode)
       : getConsistentTextColor(message.from.split('/')[0], isDarkMode)
 
-  // Get my current reactions to this message
-  const myReactions = (() => {
-    if (!message.reactions || !myBareJid) return []
-    return Object.entries(message.reactions)
-      .filter(([, reactors]) => reactors.includes(myBareJid))
-      .map(([emoji]) => emoji)
-  })()
+  // Get my current reactions to this message (1:1 chat — always uses bare JID)
+  const myReactions = getMyReactions(message.reactions, undefined, myBareJid, false)
 
   // Handle reaction toggle
   const handleReaction = (emoji: string) => {

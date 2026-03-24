@@ -75,6 +75,9 @@ export interface MessageListProps<T extends BaseMessage> {
   onMessageSeen?: (messageId: string) => void
   /** Number of unread messages (displayed as badge on scroll-to-bottom FAB) */
   unreadCount?: number
+  /** Disables all auto-scroll behaviors. Used by read-only preview views
+   *  (search context, activity context) that manage their own scroll positioning. */
+  staticMode?: boolean
 }
 
 // ============================================================================
@@ -101,6 +104,7 @@ export function MessageList<T extends BaseMessage>({
   isHistoryComplete,
   onMessageSeen,
   unreadCount = 0,
+  staticMode,
 }: MessageListProps<T>) {
   // Detect render loops before they freeze the UI
   detectRenderLoop('MessageList')
@@ -163,6 +167,7 @@ export function MessageList<T extends BaseMessage>({
     isHistoryComplete,
     typingUsersCount: typingUsers.length,
     lastMessageReactionsKey,
+    staticMode,
   })
 
   // Combined ref setter for scroll container

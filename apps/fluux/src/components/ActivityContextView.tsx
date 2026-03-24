@@ -141,20 +141,39 @@ export function ActivityContextView({ onBack }: { onBack?: () => void }) {
     void loadMessages()
   }, [payload, conversationId, messageId, isRoom])
 
-  // Apply persistent highlight after scroll completes
+  // Scroll to the target message and apply persistent highlight.
+  // We handle this here instead of passing targetMessageId to MessageList/useMessageListScroll
+  // because the scroll hook's live-conversation behaviors interfere with the static preview.
   useEffect(() => {
     if (!messageId || isLoading || messages.length === 0) return
 
-    const timer = setTimeout(() => {
-      const escapedId = CSS.escape(messageId)
-      const el = document.querySelector(`[data-message-id="${escapedId}"]`)
-      if (el) {
-        el.classList.remove('message-highlight')
-        el.classList.add('message-highlight-persistent')
-      }
-    }, 300)
+    const scroller = scrollRef.current
+    if (!scroller) return
 
-    return () => clearTimeout(timer)
+    const escapedId = CSS.escape(messageId)
+
+    const scrollAndHighlight = () => {
+      const el = scroller.querySelector(`[data-message-id="${escapedId}"]`) as HTMLElement | null
+      if (!el) return false
+
+      const elementTop = el.offsetTop
+      const viewportHeight = scroller.clientHeight
+      scroller.scrollTop = Math.max(0, elementTop - viewportHeight / 3)
+
+      el.classList.add('message-highlight-persistent')
+      return true
+    }
+
+    if (!scrollAndHighlight()) {
+      requestAnimationFrame(() => {
+        scrollAndHighlight()
+      })
+    }
+
+    return () => {
+      const el = scroller?.querySelector(`[data-message-id="${escapedId}"]`)
+      el?.classList.remove('message-highlight-persistent')
+    }
   }, [messageId, isLoading, messages.length])
 
   // Load older messages on scroll to top
@@ -266,7 +285,6 @@ export function ActivityContextView({ onBack }: { onBack?: () => void }) {
           highlightTerms={[]}
           scrollerRef={scrollRef}
           isAtBottomRef={isAtBottomRef}
-          targetMessageId={messageId}
           onScrollToTop={handleScrollToTop}
           isLoadingOlder={isLoadingOlder}
           isHistoryComplete={isHistoryComplete}

@@ -240,6 +240,32 @@ export function enforceMultiVote(
 }
 
 /**
+ * Extract the emoji keys that the current user has reacted with.
+ *
+ * Room messages store reactors as occupant nicks, while 1:1 messages use bare JIDs.
+ * This helper picks the right identifier depending on context.
+ *
+ * @param reactions - The message's reactions map (emoji → reactor IDs)
+ * @param myNick - The user's room nickname (for groupchat messages)
+ * @param myBareJid - The user's bare JID (for 1:1 messages)
+ * @param isGroupchat - Whether the message is a groupchat (room) message
+ * @returns Array of emoji strings the user has reacted with
+ */
+export function getMyReactions(
+  reactions: Record<string, string[]> | undefined,
+  myNick: string | undefined,
+  myBareJid: string | undefined,
+  isGroupchat: boolean,
+): string[] {
+  if (!reactions) return []
+  const myId = (isGroupchat && myNick) ? myNick : myBareJid
+  if (!myId) return []
+  return Object.entries(reactions)
+    .filter(([, reactors]) => reactors.includes(myId))
+    .map(([emoji]) => emoji)
+}
+
+/**
  * Check whether a user has voted on a poll.
  *
  * @param poll - The poll data
