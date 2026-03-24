@@ -6,7 +6,7 @@
  * centered on the reacted message. Reuses SearchContextMessageList for
  * the read-only message list.
  */
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   useActivityLog,
@@ -141,16 +141,27 @@ export function ActivityContextView({ onBack }: { onBack?: () => void }) {
     void loadMessages()
   }, [payload, conversationId, messageId, isRoom])
 
+  // Resolve the DOM-usable message ID. The activity payload's messageId may be
+  // a stanzaId (server-assigned), while data-message-id uses the client-generated id.
+  const resolvedMessageId = useMemo(() => {
+    if (!messageId || messages.length === 0) return messageId
+    // Direct match by id
+    if (messages.some((m) => m.id === messageId)) return messageId
+    // Fallback: find by stanzaId
+    const match = messages.find((m) => m.stanzaId === messageId)
+    return match?.id ?? messageId
+  }, [messageId, messages])
+
   // Scroll to the target message and apply persistent highlight.
   // We handle this here instead of passing targetMessageId to MessageList/useMessageListScroll
   // because the scroll hook's live-conversation behaviors interfere with the static preview.
   useEffect(() => {
-    if (!messageId || isLoading || messages.length === 0) return
+    if (!resolvedMessageId || isLoading || messages.length === 0) return
 
     const scroller = scrollRef.current
     if (!scroller) return
 
-    const escapedId = CSS.escape(messageId)
+    const escapedId = CSS.escape(resolvedMessageId)
 
     const scrollAndHighlight = () => {
       const el = scroller.querySelector(`[data-message-id="${escapedId}"]`) as HTMLElement | null
@@ -174,7 +185,7 @@ export function ActivityContextView({ onBack }: { onBack?: () => void }) {
       const el = scroller?.querySelector(`[data-message-id="${escapedId}"]`)
       el?.classList.remove('message-highlight-persistent')
     }
-  }, [messageId, isLoading, messages.length])
+  }, [resolvedMessageId, isLoading, messages.length])
 
   // Load older messages on scroll to top
   const handleScrollToTop = useCallback(async () => {
@@ -275,7 +286,7 @@ export function ActivityContextView({ onBack }: { onBack?: () => void }) {
           messages={messages}
           conversationId={`activity-preview:${conversationId}`}
           isRoom={isRoom}
-          highlightedMessageId={messageId}
+          highlightedMessageId={resolvedMessageId}
           onHighlightedClick={handleHighlightedMessageClick}
           contactsByJid={contactsByJid}
           myBareJid={myBareJid}
