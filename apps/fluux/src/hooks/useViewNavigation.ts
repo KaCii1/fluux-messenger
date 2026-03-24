@@ -10,7 +10,7 @@
  * - Auto-select first item when switching to content views
  */
 import { useState, useRef, useEffect } from 'react'
-import { chatStore, roomStore, type Contact } from '@fluux/sdk'
+import { chatStore, roomStore, searchStore, activityLogStore, type Contact } from '@fluux/sdk'
 import { useChatStore, useRoomStore } from '@fluux/sdk/react'
 import { useRouteSync, type NavigateOptions } from './useRouteSync'
 import { isSmallScreen } from './useIsMobileWeb'
@@ -93,6 +93,10 @@ export function useViewNavigation(selectedContact: Contact | null): ViewNavigati
     // Skip on initial render or same view
     if (prevView === null || prevView === sidebarView) return
 
+    // Clear preview states when leaving search or events views
+    if (prevView === 'search') searchStore.getState().setPreviewResult(null)
+    if (prevView === 'events') activityLogStore.getState().setPreviewEvent(null)
+
     // Read current state directly from stores to avoid stale closures
     const currentRoomJid = roomStore.getState().activeRoomJid
     const currentConversationId = chatStore.getState().activeConversationId
@@ -151,6 +155,10 @@ export function useViewNavigation(selectedContact: Contact | null): ViewNavigati
       roomStore.getState().clearFirstNewMessageId(currentRoomJid)
     } else if (sidebarView === 'directory' && selectedContact) {
       setLastDirectoryContact(selectedContact)
+    } else if (sidebarView === 'search') {
+      searchStore.getState().setPreviewResult(null)
+    } else if (sidebarView === 'events') {
+      activityLogStore.getState().setPreviewEvent(null)
     }
 
     // Navigate to the new view via router
