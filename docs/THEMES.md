@@ -121,6 +121,8 @@ From these, the app computes:
 - `--fluux-bg-accent` — primary accent background (buttons, active icons)
 - `--fluux-bg-accent-hover` — darkened accent for hover
 - `--fluux-selection-bg` — translucent accent for text selection
+- `--fluux-search-highlight-bg` — translucent accent for search match highlighting
+- `--fluux-search-highlight-text` — text color inside search highlights
 - `--fluux-focus-ring` — translucent accent for focus outlines
 
 **Tip:** Lower the lightness by ~8-10% for light mode so the accent remains readable on light backgrounds.
@@ -167,6 +169,8 @@ These map foundation tokens to purposes. They cascade from Tier 1, so you rarely
 | `--fluux-border-color` | `rgba(0,0,0,0.1)` | Subtle dividers |
 | `--fluux-scrollbar-thumb` | `base-05` | Scrollbar color |
 | `--fluux-selection-bg` | Accent at 25% opacity | Text selection highlight |
+| `--fluux-search-highlight-bg` | Accent at 35% opacity | Search match background |
+| `--fluux-search-highlight-text` | `text-normal` | Search match text color |
 
 **When to override semantic variables:** When the automatic cascade from your base ramp doesn't produce the right result. Common cases:
 - `--fluux-bg-secondary` — if your ramp spacing makes `base-05` too similar to `base-10`

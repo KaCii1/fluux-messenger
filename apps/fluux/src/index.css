@@ -144,6 +144,10 @@
   /* Selection */
   --fluux-selection-bg: hsla(var(--fluux-accent-h), var(--fluux-accent-s), var(--fluux-accent-l), 0.25);
 
+  /* Search highlight */
+  --fluux-search-highlight-bg: hsla(var(--fluux-accent-h), var(--fluux-accent-s), var(--fluux-accent-l), 0.35);
+  --fluux-search-highlight-text: var(--fluux-text-normal);
+
   /* Scrollbar */
   --fluux-scrollbar-thumb: var(--fluux-base-05);
   --fluux-scrollbar-thumb-hover: var(--fluux-base-20);
@@ -293,6 +297,7 @@
   --fluux-bg-secondary: #d8dadf;
   --fluux-border-color: rgba(0, 0, 0, 0.15);
   --fluux-selection-bg: hsla(var(--fluux-accent-h), var(--fluux-accent-s), var(--fluux-accent-l), 0.15);
+  --fluux-search-highlight-bg: hsla(var(--fluux-accent-h), var(--fluux-accent-s), var(--fluux-accent-l), 0.25);
   --fluux-scrollbar-thumb: #c4c9ce;
   --fluux-scrollbar-thumb-hover: #a8adb3;
 
