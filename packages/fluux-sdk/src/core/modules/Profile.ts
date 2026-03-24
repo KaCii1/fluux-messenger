@@ -295,6 +295,8 @@ export class Profile extends BaseModule {
           const mimeType = 'image/png'
           const blobUrl = await cacheAvatar(avatarHash, data, mimeType)
           await clearNoAvatar(bareJid)
+          // Persist JID→hash mapping so we can restore from cache on next session
+          await saveAvatarHash(bareJid, avatarHash, 'contact')
           this.deps.emitSDK('room:occupant-avatar', {
             roomJid,
             nick,
@@ -326,6 +328,8 @@ export class Profile extends BaseModule {
           const base64 = binval.replace(/\s/g, '')
           const blobUrl = await cacheAvatar(avatarHash, base64, mimeType)
           await clearNoAvatar(bareJid)
+          // Persist JID→hash mapping so we can restore from cache on next session
+          await saveAvatarHash(bareJid, avatarHash, 'contact')
           this.deps.emitSDK('room:occupant-avatar', {
             roomJid,
             nick,
@@ -957,6 +961,40 @@ export class Profile extends BaseModule {
     } catch (error) {
       // Silently fail - avatar cache is optional
       console.warn('Failed to restore room avatar hashes:', error)
+    }
+  }
+
+  /**
+   * Restore cached avatars for MUC occupants whose presence didn't include
+   * a vcard-temp:x:update hash. Looks up each occupant's real JID in the
+   * IndexedDB avatar-hashes store and restores the blob URL if available.
+   * Called after room join to fill in avatars from previous sessions.
+   */
+  async restoreOccupantAvatarsFromCache(roomJid: string): Promise<void> {
+    try {
+      const room = this.deps.stores?.room.getRoom(roomJid)
+      if (!room) return
+
+      for (const [nick, occupant] of room.occupants) {
+        // Skip occupants that already have an avatar or don't have a real JID
+        if (occupant.avatar || !occupant.jid) continue
+
+        const bareJid = getBareJid(occupant.jid)
+        const hash = await getAvatarHash(bareJid)
+        if (!hash) continue
+
+        const cachedUrl = await getCachedAvatar(hash)
+        if (cachedUrl) {
+          this.deps.emitSDK('room:occupant-avatar', {
+            roomJid,
+            nick,
+            avatar: cachedUrl,
+            avatarHash: hash,
+          })
+        }
+      }
+    } catch {
+      // Silently fail - avatar cache is optional
     }
   }
 

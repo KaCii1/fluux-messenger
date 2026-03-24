@@ -633,6 +633,8 @@ export class XMPPClient {
         if (room && !room.avatar && !room.avatarFromPresence) {
           this.profile.fetchRoomAvatar(roomJid).catch(() => {})
         }
+        // Restore cached avatars for occupants whose presence lacked vcard-temp:x:update
+        this.profile.restoreOccupantAvatarsFromCache(roomJid).catch(() => {})
         // Fetch sidebar preview immediately for MAM-enabled rooms
         // For non-MAM rooms, history is requested via <history maxstanzas="50"/> on join
         // Skip on SM resumption — server already replayed all undelivered stanzas
