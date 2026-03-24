@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { checkForMention, findMentionRanges } from './mentionDetection'
+import { checkForMention, findMentionRanges, findIrcPrefixRange } from './mentionDetection'
 
 describe('checkForMention', () => {
   describe('@nick pattern (anywhere in message)', () => {
@@ -167,5 +167,58 @@ describe('findMentionRanges', () => {
     // nick: takes priority, bare nick should not also match
     const ranges = findMentionRanges('alice: check', 'alice')
     expect(ranges).toEqual([{ begin: 0, end: 5 }])
+  })
+})
+
+describe('findIrcPrefixRange', () => {
+  const knownNicks = new Set(['Holger', 'raver', 'MR', 'user.name'])
+
+  it('detects nick: at start of message when nick is known', () => {
+    expect(findIrcPrefixRange('Holger: check this', knownNicks)).toEqual({ begin: 0, end: 6 })
+  })
+
+  it('detects nick, at start of message when nick is known', () => {
+    expect(findIrcPrefixRange('raver, look at this', knownNicks)).toEqual({ begin: 0, end: 5 })
+  })
+
+  it('returns null when nick is not in known set', () => {
+    expect(findIrcPrefixRange('stranger: hello', knownNicks)).toBeNull()
+  })
+
+  it('returns null for no IRC prefix', () => {
+    expect(findIrcPrefixRange('hello world', knownNicks)).toBeNull()
+  })
+
+  it('returns null for empty body', () => {
+    expect(findIrcPrefixRange('', knownNicks)).toBeNull()
+  })
+
+  it('does not match colon mid-sentence', () => {
+    expect(findIrcPrefixRange('I told Holger: do this', knownNicks)).toBeNull()
+  })
+
+  it('handles short nicknames', () => {
+    expect(findIrcPrefixRange('MR: yes', knownNicks)).toEqual({ begin: 0, end: 2 })
+  })
+
+  it('handles nicknames with special characters', () => {
+    expect(findIrcPrefixRange('user.name: check', knownNicks)).toEqual({ begin: 0, end: 9 })
+  })
+
+  it('matches case-insensitively', () => {
+    expect(findIrcPrefixRange('holger: hey', knownNicks)).toEqual({ begin: 0, end: 6 })
+    expect(findIrcPrefixRange('HOLGER: hey', knownNicks)).toEqual({ begin: 0, end: 6 })
+  })
+
+  it('does not match formatting markers like **bold:**', () => {
+    expect(findIrcPrefixRange('**Important:** read this', knownNicks)).toBeNull()
+  })
+
+  it('accepts array of nicks', () => {
+    expect(findIrcPrefixRange('Holger: hey', ['Holger', 'raver'])).toEqual({ begin: 0, end: 6 })
+  })
+
+  it('returns null for empty known nicks', () => {
+    expect(findIrcPrefixRange('Holger: hey', new Set())).toBeNull()
   })
 })

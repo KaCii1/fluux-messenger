@@ -90,6 +90,9 @@ export interface MessageBubbleProps {
   // Room-specific: user's nickname for IRC-style mention detection fallback
   nickname?: string
 
+  // Room-specific: known occupant nicks for IRC-style prefix mention highlighting
+  knownNicks?: ReadonlySet<string>
+
   // XEP-0425: Whether the current user can moderate (retract) this message
   canModerate?: boolean
 
@@ -181,6 +184,7 @@ function arePropsEqual(prev: MessageBubbleProps, next: MessageBubbleProps): bool
   // Mentions - compare by reference (parent should memoize)
   if (prev.mentions !== next.mentions) return false
   if (prev.nickname !== next.nickname) return false
+  if (prev.knownNicks !== next.knownNicks) return false
 
   // nickExtras - ReactNode, compare by reference (accept some re-renders)
   if (prev.nickExtras !== next.nickExtras) return false
@@ -229,6 +233,7 @@ export const MessageBubble = memo(function MessageBubble({
   replyContext,
   mentions,
   nickname,
+  knownNicks,
   canModerate,
   onPollVote,
   onClosePoll,
@@ -418,6 +423,7 @@ export const MessageBubble = memo(function MessageBubble({
             senderColor={senderColor}
             mentions={mentions}
             nickname={nickname}
+            knownNicks={knownNicks}
             highlightTerms={highlightTerms}
           />
 

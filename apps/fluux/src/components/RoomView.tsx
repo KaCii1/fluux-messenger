@@ -760,6 +760,15 @@ const RoomMessageList = memo(function RoomMessageList({
     return ids
   }, [messages])
 
+  // Set of known occupant nicknames for IRC-style mention highlighting
+  const knownNicks = useMemo(() => {
+    const nicks = new Set<string>()
+    for (const nick of room.occupants.keys()) {
+      nicks.add(nick)
+    }
+    return nicks
+  }, [room.occupants])
+
   // Loading state: only show when joining room (SDK auto-loads cache in background)
   // No "loading messages" spinner - cache loads instantly, messages appear immediately
   const isInitialLoading = room.isJoining && !room.joined
@@ -803,6 +812,7 @@ const RoomMessageList = memo(function RoomMessageList({
       showAvatar={shouldShowAvatar(groupMessages, idx)}
       messagesById={messagesById}
       room={room}
+      knownNicks={knownNicks}
       contactsByJid={contactsByJid}
       ownAvatar={ownAvatar}
       sendReaction={sendReaction}
@@ -865,6 +875,7 @@ interface RoomMessageBubbleWrapperProps {
   showAvatar: boolean
   messagesById: Map<string, RoomMessage>
   room: Room
+  knownNicks: ReadonlySet<string>
   contactsByJid: Map<string, Contact>
   ownAvatar?: string | null
   sendReaction: (roomJid: string, messageId: string, emojis: string[]) => Promise<void>
@@ -908,6 +919,7 @@ const RoomMessageBubbleWrapper = memo(function RoomMessageBubbleWrapper({
   showAvatar,
   messagesById,
   room,
+  knownNicks,
   contactsByJid,
   ownAvatar,
   sendReaction,
@@ -1193,6 +1205,7 @@ const RoomMessageBubbleWrapper = memo(function RoomMessageBubbleWrapper({
         replyContext={replyContext}
         mentions={message.mentions}
         nickname={myNick}
+        knownNicks={knownNicks}
         onNickContextMenu={!message.isOutgoing ? handleNickContextMenu : undefined}
         onNickTouchStart={!message.isOutgoing ? handleNickTouchStart : undefined}
         onNickTouchEnd={!message.isOutgoing ? onNickTouchEnd : undefined}

@@ -68,3 +68,33 @@ export function findMentionRanges(body: string, nickname: string): { begin: numb
 
   return ranges.sort((a, b) => a.begin - b.begin)
 }
+
+/**
+ * Detect an IRC-style mention prefix at the start of a message,
+ * but only if the prefix matches a known room occupant nickname.
+ * Returns the range covering just the nickname (excluding the separator).
+ *
+ * This is used for visual highlighting of all IRC-prefix mentions,
+ * not just self-mentions. Notification logic remains self-only.
+ *
+ * @param body - The message body
+ * @param knownNicks - Set or array of known occupant nicknames in the room
+ */
+export function findIrcPrefixRange(body: string, knownNicks: ReadonlySet<string> | readonly string[]): { begin: number; end: number } | null {
+  if (!body || !knownNicks) return null
+  // Match nickname-like characters only (letters, numbers, dots, underscores, hyphens)
+  // This avoids matching formatting markers like **bold:** or *italic:*
+  const match = /^([\p{L}\p{N}._-]+)[,:]/u.exec(body)
+  if (!match) return null
+
+  const candidate = match[1]
+  // Check if the candidate matches a known nick (case-insensitive)
+  const nickSet = knownNicks instanceof Set ? knownNicks : new Set(knownNicks)
+  const candidateLower = candidate.toLowerCase()
+  for (const nick of nickSet) {
+    if (nick.toLowerCase() === candidateLower) {
+      return { begin: 0, end: candidate.length }
+    }
+  }
+  return null
+}

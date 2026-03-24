@@ -16,7 +16,7 @@
  */
 
 import React, { useState } from 'react'
-import { findMentionRanges, type MentionReference } from '@fluux/sdk'
+import { findMentionRanges, findIrcPrefixRange, type MentionReference } from '@fluux/sdk'
 
 // URL regex pattern - excludes < and > to handle angle-bracketed URLs like <https://example.com>
 const URL_REGEX = /(https?:\/\/[^\s<>]+[^\s<>.,;:!?)"'\]])/g
@@ -408,7 +408,7 @@ export function renderTextWithLinks(text: string): React.ReactNode {
  * @param mentions - Optional XEP-0372 mention references for precise highlighting
  * @param nickname - Optional user nickname for IRC-style mention detection fallback
  */
-export function renderStyledMessage(text: string, mentions?: MentionReference[], nickname?: string): React.ReactNode {
+export function renderStyledMessage(text: string, mentions?: MentionReference[], nickname?: string, knownNicks?: ReadonlySet<string>): React.ReactNode {
   // Normalize line endings: CRLF -> LF, CR -> LF
   const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
 
@@ -421,6 +421,22 @@ export function renderStyledMessage(text: string, mentions?: MentionReference[],
   } else if (nickname) {
     const detected = findMentionRanges(normalizedText, nickname)
     mentionRanges = detected.length > 0 ? detected : null
+  }
+
+  // When no XEP-0372 mentions, also detect IRC-style prefix mention for known occupants
+  // (e.g., "Holger:" or "raver," at message start) for visual highlighting
+  if ((!mentions || mentions.length === 0) && knownNicks && knownNicks.size > 0) {
+    const ircRange = findIrcPrefixRange(normalizedText, knownNicks)
+    if (ircRange) {
+      if (!mentionRanges) {
+        mentionRanges = [ircRange]
+      } else {
+        const overlaps = mentionRanges.some(r => r.begin < ircRange.end && r.end > ircRange.begin)
+        if (!overlaps) {
+          mentionRanges = [...mentionRanges, ircRange].sort((a, b) => a.begin - b.begin)
+        }
+      }
+    }
   }
 
   // Check for code blocks first (``` ... ```)

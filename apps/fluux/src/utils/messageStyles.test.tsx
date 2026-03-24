@@ -540,6 +540,52 @@ Steps to follow:
     })
   })
 
+  describe('IRC-style prefix mentions (nick: / nick,)', () => {
+    const knownNicks = new Set(['Holger', 'raver', 'alice'])
+
+    it('highlights known nick with colon at start', () => {
+      const { container } = render(<div>{renderStyledMessage('Holger: check this', undefined, undefined, knownNicks)}</div>)
+      const mention = container.querySelector('span.text-fluux-brand')
+      expect(mention).toBeTruthy()
+      expect(mention?.textContent).toBe('Holger')
+    })
+
+    it('highlights known nick with comma at start', () => {
+      const { container } = render(<div>{renderStyledMessage('raver, look at this', undefined, undefined, knownNicks)}</div>)
+      const mention = container.querySelector('span.text-fluux-brand')
+      expect(mention).toBeTruthy()
+      expect(mention?.textContent).toBe('raver')
+    })
+
+    it('does NOT highlight unknown nick', () => {
+      const { container } = render(<div>{renderStyledMessage('stranger: hello', undefined, undefined, knownNicks)}</div>)
+      const mention = container.querySelector('span.text-fluux-brand')
+      expect(mention).toBeFalsy()
+    })
+
+    it('does NOT highlight without knownNicks', () => {
+      const { container } = render(<div>{renderStyledMessage('Holger: check this')}</div>)
+      const mention = container.querySelector('span.text-fluux-brand')
+      expect(mention).toBeFalsy()
+    })
+
+    it('does NOT interfere with bold formatting', () => {
+      const { container } = render(<div>{renderStyledMessage('**Important:** read this', undefined, undefined, knownNicks)}</div>)
+      const mention = container.querySelector('span.text-fluux-brand')
+      expect(mention).toBeFalsy()
+      expect(container.querySelector('strong')).toBeTruthy()
+    })
+
+    it('coexists with self-mention nickname detection', () => {
+      // Message starts with "alice:" (IRC prefix) and self-nick is "alice"
+      const { container } = render(<div>{renderStyledMessage('alice: hey there', undefined, 'alice', knownNicks)}</div>)
+      const mentions = container.querySelectorAll('span.text-fluux-brand')
+      // Should highlight once (self-mention and IRC prefix overlap)
+      expect(mentions).toHaveLength(1)
+      expect(mentions[0].textContent).toBe('alice')
+    })
+  })
+
   describe('escape sequences', () => {
     it('escapes asterisks', () => {
       const container = renderText('Use \\*not bold\\*')

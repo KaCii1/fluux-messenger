@@ -568,7 +568,7 @@ export type { ProxyAdapter, ProxyStartResult } from './core/types'
 export { shortcodeToEmoji, convertShortcodes } from './core/emoji'
 
 // Mention detection utilities (for clients detecting IRC-style mentions)
-export { checkForMention, findMentionRanges } from './core/mentionDetection'
+export { checkForMention, findMentionRanges, findIrcPrefixRange } from './core/mentionDetection'
 
 // =============================================================================
 // INDEXEDDB MESSAGE CACHE
