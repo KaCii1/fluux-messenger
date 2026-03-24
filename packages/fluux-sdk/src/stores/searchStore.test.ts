@@ -5,6 +5,7 @@ import { chatStore } from './chatStore'
 import { connectionStore } from './connectionStore'
 import * as searchIndex from '../utils/searchIndex'
 import type { SearchIndexResult } from '../utils/searchIndex'
+import * as messageCache from '../utils/messageCache'
 
 // Mock the search index to avoid IDB dependency in store tests
 vi.mock('../utils/searchIndex', async () => {
@@ -19,6 +20,12 @@ vi.mock('../utils/searchIndex', async () => {
     tokenize: (actual as Record<string, unknown>).tokenize,
   }
 })
+
+// Mock messageCache to avoid IDB dependency
+vi.mock('../utils/messageCache', () => ({
+  getMessages: vi.fn().mockResolvedValue([]),
+  getRoomMessages: vi.fn().mockResolvedValue([]),
+}))
 
 // Mock localStorage for chatStore/roomStore (they use persist middleware)
 const localStorageMock = (() => {
@@ -49,6 +56,7 @@ describe('searchStore', () => {
       hasMoreMAMResults: false,
       mamError: null,
       searchScope: null,
+      resultContext: new Map(),
     })
 
     // Set up chatStore with test data for conversation name resolution
@@ -408,6 +416,107 @@ describe('searchStore', () => {
       expect(searchIndex.search).toHaveBeenCalledWith('hello', expect.objectContaining({
         conversationId: 'alice@example.com',
       }))
+    })
+  })
+
+  // ===========================================================================
+  // resultContext (context messages around search results)
+  // ===========================================================================
+
+  describe('resultContext', () => {
+    const now = Date.now()
+
+    it('should fetch context messages after local search completes', async () => {
+      const mockResults: SearchIndexResult[] = [
+        {
+          indexId: 'chat:msg-2',
+          messageId: 'msg-2',
+          conversationId: 'alice@example.com',
+          from: 'alice@example.com',
+          timestamp: now,
+          isRoom: false,
+          body: 'Hello from Alice',
+        },
+      ]
+      vi.mocked(searchIndex.search).mockResolvedValueOnce(mockResults)
+
+      // Set up messageCache to return context messages
+      vi.mocked(messageCache.getMessages)
+        .mockResolvedValueOnce([
+          { id: 'msg-1', conversationId: 'alice@example.com', from: 'alice@example.com', body: 'Previous message', timestamp: new Date(now - 5000), isOutgoing: false, type: 'chat' as const },
+        ]) // before
+        .mockResolvedValueOnce([
+          { id: 'msg-3', conversationId: 'alice@example.com', from: 'bob@example.com', body: 'Next message', timestamp: new Date(now + 5000), isOutgoing: false, type: 'chat' as const },
+        ]) // after
+
+      searchStore.getState().search('hello')
+      await vi.runAllTimersAsync()
+
+      // Wait for async context fetch
+      await vi.waitFor(() => {
+        expect(searchStore.getState().resultContext.size).toBe(1)
+      })
+
+      const ctx = searchStore.getState().resultContext.get('chat:msg-2')
+      expect(ctx).toBeDefined()
+      expect(ctx!.before).toHaveLength(1)
+      expect(ctx!.before[0].body).toBe('Previous message')
+      expect(ctx!.after).toHaveLength(1)
+      expect(ctx!.after[0].body).toBe('Next message')
+    })
+
+    it('should not include the matched message itself in context', async () => {
+      const mockResults: SearchIndexResult[] = [
+        {
+          indexId: 'chat:msg-2',
+          messageId: 'msg-2',
+          conversationId: 'alice@example.com',
+          from: 'alice@example.com',
+          timestamp: now,
+          isRoom: false,
+          body: 'Hello from Alice',
+        },
+      ]
+      vi.mocked(searchIndex.search).mockResolvedValueOnce(mockResults)
+
+      // "after" query returns the matched message + a next message
+      vi.mocked(messageCache.getMessages)
+        .mockResolvedValueOnce([]) // before: nothing
+        .mockResolvedValueOnce([
+          { id: 'msg-2', conversationId: 'alice@example.com', from: 'alice@example.com', body: 'Hello from Alice', timestamp: new Date(now), isOutgoing: false, type: 'chat' as const },
+          { id: 'msg-3', conversationId: 'alice@example.com', from: 'bob@example.com', body: 'Reply', timestamp: new Date(now + 5000), isOutgoing: false, type: 'chat' as const },
+        ]) // after: includes matched msg + next
+
+      searchStore.getState().search('hello')
+      await vi.runAllTimersAsync()
+
+      await vi.waitFor(() => {
+        expect(searchStore.getState().resultContext.size).toBe(1)
+      })
+
+      const ctx = searchStore.getState().resultContext.get('chat:msg-2')
+      expect(ctx!.after).toHaveLength(1)
+      expect(ctx!.after[0].body).toBe('Reply')
+    })
+
+    it('should clear resultContext when query changes', () => {
+      searchStore.setState({
+        resultContext: new Map([['test', { before: [], after: [] }]]),
+      })
+
+      searchStore.getState().search('new query')
+
+      expect(searchStore.getState().resultContext.size).toBe(0)
+    })
+
+    it('should clear resultContext on clearSearch', () => {
+      searchStore.setState({
+        resultContext: new Map([['test', { before: [], after: [] }]]),
+      })
+
+      searchStore.getState().clearSearch()
+
+      expect(searchStore.getState().resultContext.size).toBe(0)
     })
   })
 

@@ -1,7 +1,7 @@
 import { useRef, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSearch, generateConsistentColorHexSync, chatStore, roomStore } from '@fluux/sdk'
-import type { SearchResult } from '@fluux/sdk'
+import { useSearch, generateConsistentColorHexSync, chatStore, roomStore, getLocalPart } from '@fluux/sdk'
+import type { SearchResult, SearchResultContext } from '@fluux/sdk'
 import { Avatar } from '../Avatar'
 import { useNavigateToTarget } from '@/hooks/useNavigateToTarget'
 import { useListKeyboardNav } from '@/hooks'
@@ -22,7 +22,7 @@ export function SearchView() {
   const {
     query, results, isSearching, error, search, clearSearch, previewResult, setPreviewResult,
     isSearchingMAM, mamResults, hasMoreMAMResults, mamError, searchScope,
-    searchMAM, loadMoreMAMResults, setSearchScope,
+    searchMAM, loadMoreMAMResults, setSearchScope, resultContext,
   } = useSearch()
   const { navigateToConversation, navigateToRoom } = useNavigateToTarget()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -137,6 +137,7 @@ export function SearchView() {
               <SearchResultItem
                 key={result.indexId}
                 result={result}
+                context={resultContext.get(result.indexId)}
                 isActive={previewResult?.indexId === result.indexId}
                 isSelected={selectedIndex === index}
                 isKeyboardNav={isKeyboardNav}
@@ -189,6 +190,7 @@ export function SearchView() {
                 <SearchResultItem
                   key={result.indexId}
                   result={result}
+                  context={resultContext.get(result.indexId)}
                   isActive={previewResult?.indexId === result.indexId}
                   isSelected={selectedIndex === globalIndex}
                   isKeyboardNav={isKeyboardNav}
@@ -235,6 +237,7 @@ export function SearchView() {
 
 interface SearchResultItemProps {
   result: SearchResult
+  context?: SearchResultContext
   isActive: boolean
   isSelected: boolean
   isKeyboardNav: boolean
@@ -247,7 +250,7 @@ interface SearchResultItemProps {
   t: (key: string) => string
 }
 
-function SearchResultItem({ result, isActive, isSelected, isKeyboardNav, onClick, onGoToMessage, itemProps, itemAttribute, currentLang, timeFormat, t }: SearchResultItemProps) {
+function SearchResultItem({ result, context, isActive, isSelected, isKeyboardNav, onClick, onGoToMessage, itemProps, itemAttribute, currentLang, timeFormat, t }: SearchResultItemProps) {
   const timestamp = new Date(result.timestamp)
 
   const highlighted = isActive || isSelected
@@ -309,11 +312,42 @@ function SearchResultItem({ result, isActive, isSelected, isKeyboardNav, onClick
             </button>
           </div>
         </div>
+        {/* Context before */}
+        {context?.before.map((msg, i) => (
+          <ContextLine key={`before-${i}`} body={msg.body} nick={msg.nick} from={msg.from} isRoom={result.isRoom} />
+        ))}
+        {/* Match snippet */}
         {result.matchSnippet && (
           <HighlightedSnippet snippet={result.matchSnippet} nick={result.isRoom ? result.nick : undefined} />
         )}
+        {/* Context after */}
+        {context?.after.map((msg, i) => (
+          <ContextLine key={`after-${i}`} body={msg.body} nick={msg.nick} from={msg.from} isRoom={result.isRoom} />
+        ))}
       </div>
     </button>
+  )
+}
+
+function ContextLine({
+  body,
+  nick,
+  from,
+  isRoom,
+}: {
+  body: string
+  nick?: string
+  from: string
+  isRoom: boolean
+}) {
+  if (!body) return null
+  const senderName = isRoom ? nick : getLocalPart(from)
+  const truncated = body.length > 80 ? body.slice(0, 80) + '…' : body
+  return (
+    <p className="text-xs text-fluux-muted/60 line-clamp-1 mt-0.5">
+      {senderName && <span className="font-medium">{senderName}: </span>}
+      {truncated}
+    </p>
   )
 }
 
@@ -329,7 +363,7 @@ function HighlightedSnippet({
   const after = snippet.text.slice(snippet.matchEnd)
 
   return (
-    <p className="text-xs text-fluux-muted line-clamp-2 mt-0.5">
+    <p className="text-xs text-fluux-muted line-clamp-1 mt-0.5">
       {nick && <span className="font-medium text-fluux-text">{nick}: </span>}
       {before}
       <mark className="bg-fluux-brand/20 text-fluux-text rounded-sm px-0.5">

@@ -33,7 +33,7 @@
 
 import { useStore } from 'zustand'
 import { useShallow } from 'zustand/react/shallow'
-import { searchStore, type SearchResult } from '../stores/searchStore'
+import { searchStore, type SearchResult, type SearchResultContext } from '../stores/searchStore'
 
 /**
  * Hook for searching messages across all conversations and rooms.
@@ -53,6 +53,7 @@ export function useSearch() {
     hasMoreMAMResults,
     mamError,
     searchScope,
+    resultContext,
   } = useStore(
     searchStore,
     useShallow((state) => ({
@@ -66,6 +67,7 @@ export function useSearch() {
       hasMoreMAMResults: state.hasMoreMAMResults,
       mamError: state.mamError,
       searchScope: state.searchScope,
+      resultContext: state.resultContext,
     }))
   )
 
@@ -90,6 +92,8 @@ export function useSearch() {
     mamError,
     /** Conversation scope: null = global, JID = conversation-scoped */
     searchScope,
+    /** Context messages around search results (keyed by indexId) */
+    resultContext,
     /** Execute a local search (debounced 300ms) */
     search: searchStore.getState().search,
     /** Clear all search state and results */
@@ -105,4 +109,4 @@ export function useSearch() {
   }
 }
 
-export type { SearchResult }
+export type { SearchResult, SearchResultContext }

@@ -18,6 +18,7 @@ import { generateMatchSnippet, type MatchSnippet } from '../utils/searchUtils'
 import { chatStore } from './chatStore'
 import { roomStore } from './roomStore'
 import { connectionStore } from './connectionStore'
+import { getMessages, getRoomMessages } from '../utils/messageCache'
 import type { XMPPClient } from '../core/XMPPClient'
 import type { Message, RoomMessage } from '../core/types'
 
@@ -49,6 +50,24 @@ export interface SearchResult {
   source: 'local' | 'mam'
 }
 
+/**
+ * Lightweight context message for display in search result previews.
+ */
+export interface ContextMessage {
+  body: string
+  nick?: string
+  from: string
+  timestamp: number
+}
+
+/**
+ * Context messages surrounding a search result (before and after).
+ */
+export interface SearchResultContext {
+  before: ContextMessage[]
+  after: ContextMessage[]
+}
+
 export interface SearchState {
   /** Current search query */
   query: string
@@ -69,6 +88,9 @@ export interface SearchState {
   hasMoreMAMResults: boolean
   /** Error message if MAM search failed */
   mamError: string | null
+
+  /** Context messages around search results (keyed by indexId) */
+  resultContext: Map<string, SearchResultContext>
 
   /** Conversation scope: null = global, JID = conversation-scoped */
   searchScope: string | null
@@ -183,6 +205,65 @@ export function deduplicateMAMResults(
 }
 
 /**
+ * Fetch context messages (1 before, 1 after) for local search results.
+ * Called after results are set — updates resultContext asynchronously.
+ */
+async function fetchResultContexts(results: SearchResult[], query: string): Promise<void> {
+  const localResults = results.filter(r => r.source === 'local')
+  if (localResults.length === 0) return
+
+  const contextMap = new Map<string, SearchResultContext>()
+
+  await Promise.all(
+    localResults.map(async (result) => {
+      try {
+        const ts = new Date(result.timestamp)
+
+        let before: ContextMessage[] = []
+        let after: ContextMessage[] = []
+
+        if (result.isRoom) {
+          const [beforeMsgs, afterMsgs] = await Promise.all([
+            getRoomMessages(result.conversationId, { before: ts, limit: 1 }),
+            getRoomMessages(result.conversationId, { after: ts, limit: 2 }),
+          ])
+          before = beforeMsgs
+            .filter(m => m.id !== result.messageId)
+            .map(m => ({ body: m.body || '', nick: m.nick, from: m.from, timestamp: m.timestamp.getTime() }))
+          after = afterMsgs
+            .filter(m => m.id !== result.messageId)
+            .slice(0, 1)
+            .map(m => ({ body: m.body || '', nick: m.nick, from: m.from, timestamp: m.timestamp.getTime() }))
+        } else {
+          const [beforeMsgs, afterMsgs] = await Promise.all([
+            getMessages(result.conversationId, { before: ts, limit: 1 }),
+            getMessages(result.conversationId, { after: ts, limit: 2 }),
+          ])
+          before = beforeMsgs
+            .filter(m => m.id !== result.messageId)
+            .map(m => ({ body: m.body || '', from: m.from, timestamp: m.timestamp.getTime() }))
+          after = afterMsgs
+            .filter(m => m.id !== result.messageId)
+            .slice(0, 1)
+            .map(m => ({ body: m.body || '', from: m.from, timestamp: m.timestamp.getTime() }))
+        }
+
+        if (before.length > 0 || after.length > 0) {
+          contextMap.set(result.indexId, { before, after })
+        }
+      } catch {
+        // Skip context for this result on error
+      }
+    })
+  )
+
+  // Guard against stale query
+  if (searchStore.getState().query.trim() === query && contextMap.size > 0) {
+    searchStore.setState({ resultContext: contextMap })
+  }
+}
+
+/**
  * Perform the actual local search and update the store.
  */
 async function executeSearch(query: string): Promise<void> {
@@ -212,6 +293,8 @@ async function executeSearch(query: string): Promise<void> {
     // Only update if the query hasn't changed while we were searching
     if (searchStore.getState().query === query) {
       searchStore.setState({ results, isSearching: false, error: null })
+      // Fire-and-forget: load context messages for results
+      void fetchResultContexts(results, query)
     }
   } catch (err) {
     if (searchStore.getState().query === query) {
@@ -398,6 +481,7 @@ export const searchStore = createStore<SearchState>((set) => ({
   mamResults: [],
   hasMoreMAMResults: false,
   mamError: null,
+  resultContext: new Map(),
   searchScope: null,
 
   search: (query: string) => {
@@ -413,8 +497,8 @@ export const searchStore = createStore<SearchState>((set) => ({
       return
     }
 
-    // Reset MAM results on new query
-    set({ query, isSearching: true, error: null, mamResults: [], mamError: null, hasMoreMAMResults: false })
+    // Reset MAM results and context on new query
+    set({ query, isSearching: true, error: null, mamResults: [], mamError: null, hasMoreMAMResults: false, resultContext: new Map() })
     mamSearchGeneration++  // Cancel any in-flight MAM search
     mamRsmCursor = undefined
 
@@ -445,6 +529,7 @@ export const searchStore = createStore<SearchState>((set) => ({
       mamResults: [],
       hasMoreMAMResults: false,
       mamError: null,
+      resultContext: new Map(),
     })
   },
 

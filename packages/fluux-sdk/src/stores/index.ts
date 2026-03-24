@@ -73,4 +73,4 @@ export { activityLogStore } from './activityLogStore'
 export type { ActivityLogState } from './activityLogStore'
 
 export { searchStore, setSearchClient, getSearchClient } from './searchStore'
-export type { SearchState, SearchResult } from './searchStore'
+export type { SearchState, SearchResult, ContextMessage, SearchResultContext } from './searchStore'
