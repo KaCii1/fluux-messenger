@@ -617,3 +617,5 @@ export {
 // =============================================================================
 
 export { DemoClient } from './demo/DemoClient'
+export type { DemoData, DemoSelf, DemoPresence, DemoRoomData, DemoAnimationStep } from './demo/types'
+export { minutesAgo, hoursAgo, daysAgo } from './demo/timeHelpers'

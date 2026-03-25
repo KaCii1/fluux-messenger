@@ -32,26 +32,30 @@ The demo populates the UI with:
 `apps/fluux/demo.html` loads `apps/fluux/src/demo.tsx`, which:
 
 1. Clears all persisted state (localStorage and IndexedDB) to prevent stale data
-2. Creates a `DemoClient` instance and calls `populateDemo()`
-3. Renders the app with the demo client injected via `<XMPPProvider client={demoClient}>`
-4. Starts live animations after React mounts
+2. Builds demo data via `buildDemoData()` and `buildDemoAnimation()` from `apps/fluux/src/demo/demoData.ts`
+3. Creates a `DemoClient` instance and calls `populateDemo(data)` with the built data
+4. Renders the app with the demo client injected via `<XMPPProvider client={demoClient}>`
+5. Starts live animations after React mounts via `startAnimation(steps)`
 
-### DemoClient
+### DemoClient (SDK)
 
 `packages/fluux-sdk/src/demo/DemoClient.ts` extends `XMPPClient`:
 
 - Overrides `sendStanza()` and `sendIQ()` as no-ops (no real XMPP connection)
-- `populateDemo()` seeds all Zustand stores synchronously via `emitSDK()` calls
-- `startAnimation()` schedules timed events (typing, messages, reactions) on `setTimeout`s
+- `populateDemo(data: DemoData)` seeds all Zustand stores synchronously via `emitSDK()` calls
+- `startAnimation(steps: DemoAnimationStep[])` schedules timed events (typing, messages, reactions) on `setTimeout`s
 - Sets MAM query state to "history complete" so no loading spinners appear
 
-### Demo Data
+The SDK also exports the `DemoData`, `DemoAnimationStep`, and related type interfaces, plus time-offset helpers (`minutesAgo`, `hoursAgo`, `daysAgo`) so any app can build its own demo data.
 
-`packages/fluux-sdk/src/demo/demoData.ts` contains all typed demo content:
+### Demo Data (App)
 
-- Contacts, presence events, conversations, messages, room, occupants, room messages
+`apps/fluux/src/demo/demoData.ts` contains all Fluux-specific demo content:
+
+- Contacts, presence events, conversations, messages, rooms, occupants, room messages, activity events
 - All message IDs are stable strings (e.g., `demo-emma-1`) to prevent duplicates across reloads
 - Timestamps are relative to `Date.now()` so the demo always looks fresh
+- Exports `buildDemoData(): DemoData` and `buildDemoAnimation(): DemoAnimationStep[]`
 
 ### Demo Assets
 
@@ -80,6 +84,6 @@ Demo assets are **never included** in production builds:
 
 ## Adding or Modifying Demo Content
 
-- Edit `packages/fluux-sdk/src/demo/demoData.ts` to change conversations, messages, or contacts
+- Edit `apps/fluux/src/demo/demoData.ts` to change conversations, messages, or contacts
 - Add new assets to `apps/fluux/public/demo/`
-- The `DemoClient` is exported from `@fluux/sdk` so third-party apps can also use it
+- The `DemoClient` is exported from `@fluux/sdk` so third-party apps can build their own demo data using the `DemoData` interface and time helpers

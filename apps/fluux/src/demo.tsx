@@ -11,6 +11,7 @@ import { HashRouter } from 'react-router-dom'
 import { XMPPProvider, DemoClient } from '@fluux/sdk'
 import { ThemeProvider } from './providers/ThemeProvider'
 import { RenderLoopBoundary } from './components/RenderLoopBoundary'
+import { buildDemoData, buildDemoAnimation } from './demo/demoData'
 import App from './App'
 import './i18n'
 import './index.css'
@@ -29,8 +30,11 @@ indexedDB.deleteDatabase('fluux-message-cache')
 indexedDB.deleteDatabase('fluux-avatar-cache')
 
 // Create demo client and populate stores synchronously before first render
+const demoData = buildDemoData()
+const demoAnimation = buildDemoAnimation()
+
 const demoClient = new DemoClient()
-demoClient.populateDemo()
+demoClient.populateDemo(demoData)
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -48,5 +52,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
 // Start live animations after React has mounted
 setTimeout(() => {
-  demoClient.startAnimation()
+  demoClient.startAnimation(demoAnimation)
 }, 100)

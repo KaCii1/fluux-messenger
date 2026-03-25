@@ -8,9 +8,11 @@
  * @example
  * ```tsx
  * import { DemoClient, XMPPProvider } from '@fluux/sdk'
+ * import { buildDemoData, buildDemoAnimation } from './demoData'
  *
  * const client = new DemoClient()
- * client.populateDemo()
+ * client.populateDemo(buildDemoData())
+ * client.startAnimation(buildDemoAnimation())
  *
  * <XMPPProvider client={client}>
  *   <App />
@@ -26,19 +28,10 @@ import { connectionStore } from '../stores/connectionStore'
 import { chatStore } from '../stores/chatStore'
 import { roomStore } from '../stores/roomStore'
 import { activityLogStore } from '../stores/activityLogStore'
-import {
-  DEMO_CONTACTS,
-  DEMO_PRESENCES,
-  SELF,
-  getDemoConversations,
-  getDemoMessages,
-  getDemoRooms,
-  getDemoAnimation,
-  getDemoActivityEvents,
-} from './demoData'
+import type { DemoData, DemoAnimationStep } from './types'
 
 /**
- * A demo XMPPClient that populates stores with realistic data.
+ * A demo XMPPClient that populates stores with app-provided data.
  *
  * Call {@link populateDemo} after construction to seed all stores.
  * Optionally call {@link startAnimation} to schedule live events
@@ -61,43 +54,44 @@ export class DemoClient extends XMPPClient {
    *
    * Must be called after construction and before React renders
    * so the UI sees the populated state on first paint.
+   *
+   * @param data - All demo content (contacts, messages, rooms, etc.)
    */
-  populateDemo(): void {
+  populateDemo(data: DemoData): void {
     // Set the current JID so modules (e.g., chat.sendMessage) can read it
-    this.currentJid = SELF.jid
+    this.currentJid = data.self.jid
 
     // Connection store is updated directly (not via SDK events)
     // because Connection.ts handles these outside of store bindings.
     connectionStore.getState().setStatus('online')
-    connectionStore.getState().setJid(SELF.jid)
-    connectionStore.getState().setOwnAvatar('./demo/avatar-self.webp')
+    connectionStore.getState().setJid(data.self.jid)
+    if (data.self.avatar) {
+      connectionStore.getState().setOwnAvatar(data.self.avatar)
+    }
 
     // Roster: load contacts then set presence per-resource
-    this.emitSDK('roster:loaded', { contacts: DEMO_CONTACTS })
-    for (const presence of DEMO_PRESENCES) {
+    this.emitSDK('roster:loaded', { contacts: data.contacts })
+    for (const presence of data.presences) {
       this.emitSDK('roster:presence', presence)
     }
 
     // Conversations: create each, then add messages
-    const conversations = getDemoConversations()
-    for (const conversation of conversations) {
+    for (const conversation of data.conversations) {
       this.emitSDK('chat:conversation', { conversation })
     }
 
-    const allMessages = getDemoMessages()
-    for (const [, messages] of allMessages) {
+    for (const [, messages] of data.messages) {
       for (const message of messages) {
         this.emitSDK('chat:message', { message })
       }
     }
 
     // Rooms: add, mark joined, populate occupants and messages
-    const rooms = getDemoRooms()
-    for (const { room, occupants, messages } of rooms) {
+    for (const { room, occupants, messages } of data.rooms) {
       this.emitSDK('room:added', { room })
       this.emitSDK('room:joined', { roomJid: room.jid, joined: true })
 
-      const selfOccupant = occupants.find(o => o.jid === SELF.jid)
+      const selfOccupant = occupants.find(o => o.jid === data.self.jid)
       if (selfOccupant) {
         this.emitSDK('room:self-occupant', { roomJid: room.jid, occupant: selfOccupant })
       }
@@ -118,20 +112,20 @@ export class DemoClient extends XMPPClient {
       isCaughtUpToLive: true,
     }
     const chatMAM = new Map<string, typeof completedState>()
-    for (const conv of conversations) {
+    for (const conv of data.conversations) {
       chatMAM.set(conv.id, completedState)
     }
     chatStore.setState({ mamQueryStates: chatMAM })
 
     const roomMAM = new Map<string, typeof completedState>()
-    for (const { room } of rooms) {
+    for (const { room } of data.rooms) {
       roomMAM.set(room.jid, completedState)
     }
     roomStore.setState({ mamQueryStates: roomMAM })
 
     // Activity log: seed with demo events (direct store access since
     // ActivityLogHook may not be registered yet at this point)
-    for (const event of getDemoActivityEvents()) {
+    for (const event of data.activityEvents) {
       activityLogStore.getState().addEvent(event)
     }
   }
@@ -140,11 +134,10 @@ export class DemoClient extends XMPPClient {
    * Start animated demo sequence — scheduled events that make the
    * UI feel alive. Call after {@link populateDemo}.
    *
+   * @param steps - Timed animation events to schedule.
    * @returns A cleanup function that cancels all pending timers.
    */
-  startAnimation(): () => void {
-    const steps = getDemoAnimation()
-
+  startAnimation(steps: DemoAnimationStep[]): () => void {
     for (const step of steps) {
       const timer = setTimeout(() => {
         switch (step.action) {

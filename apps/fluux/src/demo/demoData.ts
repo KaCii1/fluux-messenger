@@ -2,35 +2,15 @@
  * Demo data for populating the Fluux UI with realistic content.
  *
  * All data is generated with relative timestamps so the demo always
- * looks fresh. Used by {@link DemoClient} to seed stores.
- *
- * @packageDocumentation
- * @module Demo
+ * looks fresh. Called from demo.tsx and passed to DemoClient.
  */
 
-import type { Contact } from '../core/types/roster'
-import type { Message, Conversation } from '../core/types/chat'
-import type { Room, RoomMessage, RoomOccupant } from '../core/types/room'
-import type { ActivityEventInput } from '../core/types/activity'
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/** Minutes ago from now */
-function minutesAgo(minutes: number): Date {
-  return new Date(Date.now() - minutes * 60_000)
-}
-
-/** Hours ago from now */
-function hoursAgo(hours: number): Date {
-  return new Date(Date.now() - hours * 3_600_000)
-}
-
-/** Days ago from now */
-function daysAgo(days: number): Date {
-  return new Date(Date.now() - days * 86_400_000)
-}
+import type { Contact } from '@fluux/sdk'
+import type { Message, Conversation } from '@fluux/sdk'
+import type { RoomMessage } from '@fluux/sdk'
+import type { ActivityEventInput } from '@fluux/sdk'
+import type { DemoPresence, DemoRoomData, DemoAnimationStep, DemoData } from '@fluux/sdk'
+import { minutesAgo, hoursAgo, daysAgo } from '@fluux/sdk'
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -43,14 +23,14 @@ const SELF_NICK = 'You'
 const ROOM_JID = `team@${CONFERENCE}`
 const DESIGN_ROOM_JID = `design@${CONFERENCE}`
 
+// Avatar base path — files are served from apps/fluux/public/demo/
+const AVATAR_BASE = './demo'
+
 // ---------------------------------------------------------------------------
 // Contacts
 // ---------------------------------------------------------------------------
 
-// Avatar base path — files are served from apps/fluux/public/demo/
-const AVATAR_BASE = './demo'
-
-export const DEMO_CONTACTS: Contact[] = [
+const DEMO_CONTACTS: Contact[] = [
   {
     jid: `emma@${DOMAIN}`,
     name: 'Emma Wilson',
@@ -100,15 +80,7 @@ export const DEMO_CONTACTS: Contact[] = [
 // Presence events (for roster:presence bindings — fullJid required)
 // ---------------------------------------------------------------------------
 
-export interface DemoPresence {
-  fullJid: string
-  show: 'chat' | 'away' | 'xa' | 'dnd' | null
-  priority: number
-  statusMessage?: string
-  client?: string
-}
-
-export const DEMO_PRESENCES: DemoPresence[] = [
+const DEMO_PRESENCES: DemoPresence[] = [
   { fullJid: `emma@${DOMAIN}/desktop`, show: null, priority: 5, client: 'Fluux' },
   { fullJid: `james@${DOMAIN}/mobile`, show: 'away', priority: 0, statusMessage: 'In a meeting until 3pm', client: 'Fluux' },
   { fullJid: `sophia@${DOMAIN}/laptop`, show: 'dnd', priority: 5, statusMessage: 'Deep work — ping me only if urgent', client: 'Fluux' },
@@ -432,7 +404,7 @@ const MIA_MESSAGES: Message[] = (() => {
 // Conversations
 // ---------------------------------------------------------------------------
 
-export function getDemoConversations(): Conversation[] {
+function getDemoConversations(): Conversation[] {
   return [
     {
       id: `emma@${DOMAIN}`,
@@ -472,7 +444,7 @@ export function getDemoConversations(): Conversation[] {
   ]
 }
 
-export function getDemoMessages(): Map<string, Message[]> {
+function getDemoMessages(): Map<string, Message[]> {
   const map = new Map<string, Message[]>()
   map.set(`emma@${DOMAIN}`, EMMA_MESSAGES)
   map.set(`james@${DOMAIN}`, JAMES_MESSAGES)
@@ -485,12 +457,6 @@ export function getDemoMessages(): Map<string, Message[]> {
 // ---------------------------------------------------------------------------
 // Room data
 // ---------------------------------------------------------------------------
-
-export interface DemoRoomData {
-  room: Room
-  occupants: RoomOccupant[]
-  messages: RoomMessage[]
-}
 
 const TEAM_ROOM_MESSAGES: RoomMessage[] = [
   {
@@ -613,7 +579,7 @@ const DESIGN_ROOM_MESSAGES: RoomMessage[] = [
   },
 ]
 
-export function getDemoRooms(): DemoRoomData[] {
+function getDemoRooms(): DemoRoomData[] {
   return [
     {
       room: {
@@ -668,87 +634,11 @@ export function getDemoRooms(): DemoRoomData[] {
   ]
 }
 
-// Keep backward-compatible exports for any code still using the old API
-export function getDemoRoom(): Room {
-  return getDemoRooms()[0].room
-}
-
-export function getDemoRoomOccupants(): RoomOccupant[] {
-  return getDemoRooms()[0].occupants
-}
-
-export function getDemoRoomMessages(): RoomMessage[] {
-  return getDemoRooms()[0].messages
-}
-
-// ---------------------------------------------------------------------------
-// Animation data (timed events for live demo)
-// ---------------------------------------------------------------------------
-
-export interface DemoAnimationStep {
-  delayMs: number
-  action: 'typing' | 'message' | 'presence' | 'stop-typing' | 'room-message' | 'reaction'
-  data: Record<string, unknown>
-}
-
-export function getDemoAnimation(): DemoAnimationStep[] {
-  return [
-    // Emma starts typing
-    {
-      delayMs: 3000,
-      action: 'typing',
-      data: { conversationId: `emma@${DOMAIN}`, jid: `emma@${DOMAIN}`, isTyping: true },
-    },
-    // Emma sends a message
-    {
-      delayMs: 5500,
-      action: 'stop-typing',
-      data: { conversationId: `emma@${DOMAIN}`, jid: `emma@${DOMAIN}`, isTyping: false },
-    },
-    {
-      delayMs: 5600,
-      action: 'message',
-      data: {
-        message: {
-          type: 'chat', id: 'demo-anim-emma-reply', from: `emma@${DOMAIN}`,
-          body: '4pm works for me! See you then 😊',
-          timestamp: new Date(), isOutgoing: false, conversationId: `emma@${DOMAIN}`,
-        },
-      },
-    },
-    // Room message from Oliver
-    {
-      delayMs: 8000,
-      action: 'room-message',
-      data: {
-        roomJid: ROOM_JID,
-        message: {
-          type: 'groupchat', id: 'demo-anim-room-oliver', from: `${ROOM_JID}/Oliver`, nick: 'Oliver',
-          body: 'Just finished the responsive breakpoints — looks great on mobile 📱',
-          timestamp: new Date(), isOutgoing: false, roomJid: ROOM_JID,
-        },
-        incrementUnread: true,
-      },
-    },
-    // Reaction on the room message
-    {
-      delayMs: 11000,
-      action: 'reaction',
-      data: {
-        roomJid: ROOM_JID,
-        messageId: 'demo-room-6', // "Great work everyone"
-        reactorNick: 'Oliver',
-        emojis: ['🎉'],
-      },
-    },
-  ]
-}
-
 // ---------------------------------------------------------------------------
 // Activity log demo events
 // ---------------------------------------------------------------------------
 
-export function getDemoActivityEvents(): ActivityEventInput[] {
+function getDemoActivityEvents(): ActivityEventInput[] {
   return [
     // Yesterday: a contact request was accepted
     {
@@ -838,8 +728,72 @@ export function getDemoActivityEvents(): ActivityEventInput[] {
 }
 
 // ---------------------------------------------------------------------------
-// Exports
+// Public API
 // ---------------------------------------------------------------------------
 
-export const SELF = { jid: SELF_JID, nick: SELF_NICK, domain: DOMAIN }
-export const ROOM = { jid: ROOM_JID, conference: CONFERENCE }
+/** Build all demo data with fresh relative timestamps. */
+export function buildDemoData(): DemoData {
+  return {
+    self: { jid: SELF_JID, nick: SELF_NICK, domain: DOMAIN, avatar: `${AVATAR_BASE}/avatar-self.webp` },
+    contacts: DEMO_CONTACTS,
+    presences: DEMO_PRESENCES,
+    conversations: getDemoConversations(),
+    messages: getDemoMessages(),
+    rooms: getDemoRooms(),
+    activityEvents: getDemoActivityEvents(),
+  }
+}
+
+/** Build animation steps for the live demo sequence. */
+export function buildDemoAnimation(): DemoAnimationStep[] {
+  return [
+    // Emma starts typing
+    {
+      delayMs: 3000,
+      action: 'typing',
+      data: { conversationId: `emma@${DOMAIN}`, jid: `emma@${DOMAIN}`, isTyping: true },
+    },
+    // Emma sends a message
+    {
+      delayMs: 5500,
+      action: 'stop-typing',
+      data: { conversationId: `emma@${DOMAIN}`, jid: `emma@${DOMAIN}`, isTyping: false },
+    },
+    {
+      delayMs: 5600,
+      action: 'message',
+      data: {
+        message: {
+          type: 'chat', id: 'demo-anim-emma-reply', from: `emma@${DOMAIN}`,
+          body: '4pm works for me! See you then 😊',
+          timestamp: new Date(), isOutgoing: false, conversationId: `emma@${DOMAIN}`,
+        },
+      },
+    },
+    // Room message from Oliver
+    {
+      delayMs: 8000,
+      action: 'room-message',
+      data: {
+        roomJid: ROOM_JID,
+        message: {
+          type: 'groupchat', id: 'demo-anim-room-oliver', from: `${ROOM_JID}/Oliver`, nick: 'Oliver',
+          body: 'Just finished the responsive breakpoints — looks great on mobile 📱',
+          timestamp: new Date(), isOutgoing: false, roomJid: ROOM_JID,
+        },
+        incrementUnread: true,
+      },
+    },
+    // Reaction on the room message
+    {
+      delayMs: 11000,
+      action: 'reaction',
+      data: {
+        roomJid: ROOM_JID,
+        messageId: 'demo-room-6', // "Great work everyone"
+        reactorNick: 'Oliver',
+        emojis: ['🎉'],
+      },
+    },
+  ]
+}
