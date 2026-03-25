@@ -1,6 +1,7 @@
 import { useChat, useRoster, type PresenceStatus } from '@fluux/sdk'
 import { useConnectionStore } from '@fluux/sdk/react'
 import { Avatar } from './Avatar'
+import { UserInfoPopover } from './conversation/UserInfoPopover'
 
 export function MemberList() {
   const { activeConversation } = useChat()
@@ -87,9 +88,11 @@ function MemberItem({ member }: { member: Member }) {
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-fluux-text truncate">
-          {member.name}
-        </p>
+        <UserInfoPopover jid={member.jid}>
+          <p className="text-sm font-medium text-fluux-text truncate">
+            {member.name}
+          </p>
+        </UserInfoPopover>
         {member.status && (
           <p className="text-xs text-fluux-muted truncate">
             {member.status}

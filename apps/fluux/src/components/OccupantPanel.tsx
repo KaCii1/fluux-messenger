@@ -23,6 +23,7 @@ import { useContextMenu, useWindowDrag } from '@/hooks'
 import { useToastStore } from '@/stores/toastStore'
 import { getTranslatedShowText } from '@/utils/presence'
 import { OccupantModerationModal } from './OccupantModerationModal'
+import { UserInfoPopover } from './conversation/UserInfoPopover'
 import { Shield, Crown, UserCheck, X, ArrowLeft, MessageCircle, EyeOff, User, Settings } from 'lucide-react'
 
 // Type for grouped occupants (multiple connections from same bare JID)
@@ -389,10 +390,24 @@ export function OccupantPanel({
                     {/* Nick and badges */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className={`truncate text-sm ${isMe ? 'font-semibold text-fluux-text' : 'text-fluux-text'}`}>
-                          {group.primaryNick}
-                          {isMe && <span className="text-fluux-muted font-normal"> {t('rooms.you')}</span>}
-                        </span>
+                        {isMe ? (
+                          <span className="truncate text-sm font-semibold text-fluux-text">
+                            {group.primaryNick}
+                            <span className="text-fluux-muted font-normal"> {t('rooms.you')}</span>
+                          </span>
+                        ) : (
+                          <UserInfoPopover
+                            contact={group.bareJid ? contactsByJid.get(group.bareJid) : undefined}
+                            jid={group.bareJid}
+                            occupantJid={`${room.jid}/${group.primaryNick}`}
+                            role={primaryOccupant.role}
+                            affiliation={bestAffiliation as RoomAffiliation}
+                          >
+                            <span className="truncate text-sm text-fluux-text">
+                              {group.primaryNick}
+                            </span>
+                          </UserInfoPopover>
+                        )}
                         {/* Connection count badge */}
                         {hasMultipleConnections && (
                           <span className="flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-medium rounded-full bg-fluux-muted/20 text-fluux-muted">

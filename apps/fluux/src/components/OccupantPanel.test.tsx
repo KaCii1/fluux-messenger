@@ -38,6 +38,11 @@ vi.mock('./Avatar', () => ({
   ),
 }))
 
+// Mock UserInfoPopover to avoid XMPPProvider dependency
+vi.mock('./conversation/UserInfoPopover', () => ({
+  UserInfoPopover: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}))
+
 // Mock @fluux/sdk functions
 vi.mock('@fluux/sdk', async () => {
   const actual = await vi.importActual('@fluux/sdk')
