@@ -1,49 +1,72 @@
 /**
- * Lazy-loaded Shiki syntax highlighter singleton.
+ * Lazy-loaded Shiki syntax highlighter with per-language lazy loading.
  *
- * All Shiki imports use dynamic import() so Vite code-splits Shiki
- * (core + WASM + grammars) into its own chunk, loaded only when
- * a code block with a language hint is first encountered.
+ * The Shiki core + WASM engine is code-split via dynamic import and loaded
+ * only when a code block is first encountered. Individual language grammars
+ * are then loaded on demand — only the languages actually used get fetched.
  */
 import { useState, useEffect } from 'react'
 
-type Highlighter = Awaited<ReturnType<typeof import('shiki')['createHighlighter']>>
+type HighlighterCore = Awaited<ReturnType<typeof import('shiki/core')['createHighlighterCore']>>
 
-let highlighterPromise: Promise<Highlighter> | null = null
-let highlighterInstance: Highlighter | null = null
+let highlighterPromise: Promise<HighlighterCore> | null = null
+let highlighterInstance: HighlighterCore | null = null
 
-const COMMON_LANGS = [
+/** Tracks in-flight language loads to avoid duplicate imports */
+const langLoadPromises = new Map<string, Promise<void>>()
+
+/** Allowlist of supported languages — prevents arbitrary dynamic imports */
+const SUPPORTED_LANGS = new Set([
   'javascript', 'typescript', 'python', 'html', 'css', 'json',
   'bash', 'shell', 'xml', 'rust', 'go', 'java', 'c', 'cpp',
   'sql', 'yaml', 'toml', 'markdown', 'swift', 'kotlin', 'lua',
   'ruby', 'php', 'elixir', 'erlang', 'zig', 'haskell', 'jsx', 'tsx',
-] as const
+])
 
-/**
- * Lazily initialize the Shiki highlighter. Returns a cached promise
- * on subsequent calls. Only triggers the dynamic import when first called.
- */
-/** Custom theme name registered with the highlighter */
 const THEME_NAME = 'fluux-css-vars'
 
-export function ensureHighlighter(): Promise<Highlighter> {
+/**
+ * Lazily initialize the Shiki highlighter core with no languages.
+ * Languages are loaded individually via ensureLanguage().
+ */
+function ensureHighlighter(): Promise<HighlighterCore> {
   if (!highlighterPromise) {
-    highlighterPromise = import('shiki').then(async ({ createHighlighter, createCssVariablesTheme }) => {
+    highlighterPromise = import('shiki/core').then(async ({ createHighlighterCore, createCssVariablesTheme }) => {
       const cssVarsTheme = createCssVariablesTheme({
         name: THEME_NAME,
         variablePrefix: '--shiki-',
         variableDefaults: {},
         fontStyle: true,
       })
-      const instance = await createHighlighter({
+      const instance = await createHighlighterCore({
         themes: [cssVarsTheme],
-        langs: [...COMMON_LANGS],
+        langs: [],
+        engine: import('shiki/engine/oniguruma').then(m => m.createOnigurumaEngine(import('shiki/wasm'))),
       })
       highlighterInstance = instance
       return instance
     })
   }
   return highlighterPromise
+}
+
+/**
+ * Ensure a specific language grammar is loaded. Returns immediately
+ * if already loaded; deduplicates concurrent requests for the same language.
+ */
+async function ensureLanguage(lang: string): Promise<void> {
+  if (!SUPPORTED_LANGS.has(lang)) return
+
+  const hl = await ensureHighlighter()
+  if (hl.getLoadedLanguages().includes(lang as never)) return
+
+  if (!langLoadPromises.has(lang)) {
+    const promise = import(`shiki/langs/${lang}.mjs`)
+      .then(mod => hl.loadLanguage(mod.default ?? mod))
+      .finally(() => langLoadPromises.delete(lang))
+    langLoadPromises.set(lang, promise)
+  }
+  await langLoadPromises.get(lang)
 }
 
 /**
@@ -81,13 +104,16 @@ export function useHighlighter(language?: string): {
   ready: boolean
   highlight: (code: string, lang: string) => string | null
 } {
-  const [ready, setReady] = useState(highlighterInstance !== null)
+  const [ready, setReady] = useState(() =>
+    highlighterInstance !== null &&
+    (!language || highlighterInstance.getLoadedLanguages().includes(language as never))
+  )
 
   useEffect(() => {
     if (!language || ready) return
 
     let cancelled = false
-    void ensureHighlighter().then(() => {
+    void ensureLanguage(language).then(() => {
       if (!cancelled) setReady(true)
     })
     return () => { cancelled = true }
