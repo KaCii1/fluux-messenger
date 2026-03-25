@@ -1,6 +1,7 @@
-import { memo, useMemo } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Tooltip } from '../Tooltip'
+import { ReactionBurst } from './ReactionBurst'
 
 export interface MessageReactionsProps {
   /** Reactions map: emoji -> list of reactor identifiers */
@@ -30,6 +31,8 @@ export const MessageReactions = memo(function MessageReactions({
   const { t } = useTranslation()
   const MAX_INLINE = 9
   const MAX_OVERFLOW = 9
+  const [burst, setBurst] = useState<{ x: number; y: number } | null>(null)
+  const clearBurst = useCallback(() => setBurst(null), [])
 
   // Don't show reactions for retracted messages or if no reactions
   const hasReactions = reactions && Object.keys(reactions).length > 0
@@ -66,7 +69,14 @@ export const MessageReactions = memo(function MessageReactions({
           delay={300}
         >
           <button
-            onClick={onReaction ? () => onReaction(emoji) : undefined}
+            onClick={onReaction ? (e: React.MouseEvent) => {
+              // Burst only when adding a reaction, not removing
+              if (!myReactions.includes(emoji)) {
+                const rect = e.currentTarget.getBoundingClientRect()
+                setBurst({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 })
+              }
+              onReaction(emoji)
+            } : undefined}
             className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs
                        border transition-colors ${
                          myReactions.includes(emoji)
@@ -98,6 +108,7 @@ export const MessageReactions = memo(function MessageReactions({
           </span>
         </Tooltip>
       )}
+      {burst && <ReactionBurst x={burst.x} y={burst.y} onDone={clearBurst} />}
     </div>
   )
 })

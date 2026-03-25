@@ -1,8 +1,9 @@
-import { useRef, memo, Suspense, lazy } from 'react'
+import { useCallback, useRef, memo, Suspense, lazy, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SmilePlus, Pencil, Forward, MoreHorizontal, Reply, Trash2 } from 'lucide-react'
 import { useClickOutside } from '@/hooks'
 import { Tooltip } from '../Tooltip'
+import { ReactionBurst } from './ReactionBurst'
 
 // Quick reaction emojis shown directly in toolbar
 const TOOLBAR_REACTIONS = ['👍', '❤️', '😂']
@@ -94,6 +95,10 @@ export const MessageToolbar = memo(function MessageToolbar({
   const closeMoreMenu = () => setShowMoreMenu(false)
   useClickOutside(moreMenuRef, closeMoreMenu, showMoreMenu)
 
+  // Reaction burst state
+  const [burst, setBurst] = useState<{ x: number; y: number } | null>(null)
+  const clearBurst = useCallback(() => setBurst(null), [])
+
   // Handle reaction click - close picker and notify parent
   const handleReaction = onReaction ? (emoji: string) => {
     onReaction(emoji)
@@ -136,7 +141,13 @@ export const MessageToolbar = memo(function MessageToolbar({
       {handleReaction && TOOLBAR_REACTIONS.map(emoji => (
         <button
           key={emoji}
-          onClick={() => handleReaction(emoji)}
+          onClick={(e: React.MouseEvent) => {
+            if (!myReactions.includes(emoji)) {
+              const rect = e.currentTarget.getBoundingClientRect()
+              setBurst({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 })
+            }
+            handleReaction(emoji)
+          }}
           className={`px-2 py-1.5 transition-colors text-base ${
             showReactionPicker || showMoreMenu ? '' : 'hover:bg-fluux-hover'
           } ${myReactions.includes(emoji) ? 'bg-fluux-brand/20' : ''}`}
@@ -258,6 +269,7 @@ export const MessageToolbar = memo(function MessageToolbar({
       {/* End more options */}
       </div>
       {/* End visible toolbar */}
+      {burst && <ReactionBurst x={burst.x} y={burst.y} onDone={clearBurst} />}
     </div>
   )
 })
