@@ -167,7 +167,9 @@ export function ActivityContextView({ onBack }: { onBack?: () => void }) {
       const el = scroller.querySelector(`[data-message-id="${escapedId}"]`) as HTMLElement | null
       if (!el) return false
 
-      const elementTop = el.offsetTop
+      const scrollerRect = scroller.getBoundingClientRect()
+      const elementRect = el.getBoundingClientRect()
+      const elementTop = elementRect.top - scrollerRect.top + scroller.scrollTop
       const viewportHeight = scroller.clientHeight
       scroller.scrollTop = Math.max(0, elementTop - viewportHeight / 3)
 

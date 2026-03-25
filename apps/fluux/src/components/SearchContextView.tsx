@@ -184,7 +184,9 @@ export function SearchContextView({ onBack }: { onBack?: () => void }) {
       if (!el) return false
 
       // Position the target message ~1/3 down from the viewport top
-      const elementTop = el.offsetTop
+      const scrollerRect = scroller.getBoundingClientRect()
+      const elementRect = el.getBoundingClientRect()
+      const elementTop = elementRect.top - scrollerRect.top + scroller.scrollTop
       const viewportHeight = scroller.clientHeight
       scroller.scrollTop = Math.max(0, elementTop - viewportHeight / 3)
 
