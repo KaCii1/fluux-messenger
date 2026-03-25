@@ -305,7 +305,7 @@ export function Sidebar({ onSelectContact, onStartChat, onManageUser, adminCateg
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header - with drag region for window movement */}
-        <div className={`h-12 ${titleBarClass} px-4 flex items-center border-b border-fluux-bg shadow-sm`} {...dragRegionProps}>
+        <div className={`h-14 ${titleBarClass} px-4 flex items-center border-b border-fluux-bg shadow-sm`} {...dragRegionProps}>
           <h1 className="flex-1 font-semibold text-fluux-text truncate">
             {sidebarView === 'messages' ? t('sidebar.messages')
               : sidebarView === 'rooms' ? t('sidebar.rooms')

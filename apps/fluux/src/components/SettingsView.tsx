@@ -65,7 +65,7 @@ export function SettingsView({ onBack }: SettingsViewProps) {
   return (
     <div className="h-full flex flex-col bg-fluux-chat">
       {/* Header */}
-      <div className={`h-12 ${titleBarClass} px-4 flex items-center border-b border-fluux-bg shadow-sm`} {...dragRegionProps}>
+      <div className={`h-14 ${titleBarClass} px-4 flex items-center border-b border-fluux-bg shadow-sm`} {...dragRegionProps}>
         {/* Back button - mobile only */}
         {onBack && (
           <button
