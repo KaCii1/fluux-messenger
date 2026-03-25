@@ -78,6 +78,8 @@ export interface MessageListProps<T extends BaseMessage> {
   /** Disables all auto-scroll behaviors. Used by read-only preview views
    *  (search context, activity context) that manage their own scroll positioning. */
   staticMode?: boolean
+  /** ID of the last message sent by the user (for send animation) */
+  lastSentMessageId?: string | null
 }
 
 // ============================================================================
@@ -105,6 +107,7 @@ export function MessageList<T extends BaseMessage>({
   onMessageSeen,
   unreadCount = 0,
   staticMode,
+  lastSentMessageId,
 }: MessageListProps<T>) {
   // Detect render loops before they freeze the UI
   detectRenderLoop('MessageList')
@@ -267,7 +270,11 @@ export function MessageList<T extends BaseMessage>({
                 const showNewMarker = firstNewMessageId === msg.id
 
                 return (
-                  <div key={msg.id} data-message-id={msg.id}>
+                  <div
+                    key={msg.id}
+                    data-message-id={msg.id}
+                    style={msg.id === lastSentMessageId ? { animation: 'message-send 300ms ease-out' } : undefined}
+                  >
                     {showNewMarker && <NewMessageMarker />}
                     {renderMessage(msg, idx, group.messages, showNewMarker, handleMediaLoad)}
                   </div>

@@ -563,6 +563,18 @@ input[type="range"]::-moz-range-thumb {
   animation-delay: 0.4s;
 }
 
+/* Message send animation - slide up and fade in */
+@keyframes message-send {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Reaction burst animation - particles radiate outward and fade */
 @keyframes reaction-burst {
   0% {

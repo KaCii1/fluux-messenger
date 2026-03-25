@@ -57,6 +57,10 @@ export function ChatView({ onBack, onSwitchToMessages, onSearchInConversation, m
   // Pending attachment state - staged file ready to send with next message
   const [pendingAttachment, setPendingAttachment] = useState<PendingAttachment | null>(null)
 
+  // Track last sent message ID for send animation
+  const [lastSentMessageId, setLastSentMessageId] = useState<string | null>(null)
+  const lastSentTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
 
   // Find the last outgoing message ID for edit button visibility (skip retracted)
   const lastOutgoingMessageId = findLastEditableMessageId(activeMessages)
@@ -320,6 +324,7 @@ export function ChatView({ onBack, onSwitchToMessages, onSearchInConversation, m
           // SDK auto-fetches cache + MAM in background, no blocking spinner needed
           isInitialLoading={false}
           highlightTerms={find.highlightTerms}
+          lastSentMessageId={lastSentMessageId}
         />
       </div>
 
@@ -331,6 +336,11 @@ export function ChatView({ onBack, onSwitchToMessages, onSearchInConversation, m
         conversationName={activeConversation.name}
         type={activeConversation.type}
         onMessageSent={scrollToBottom}
+        onMessageIdSent={(id) => {
+          if (lastSentTimerRef.current) clearTimeout(lastSentTimerRef.current)
+          setLastSentMessageId(id)
+          lastSentTimerRef.current = setTimeout(() => setLastSentMessageId(null), 400)
+        }}
         onInputResize={handleInputResize}
         replyingTo={replyingTo}
         onCancelReply={handleCancelReply}
@@ -398,6 +408,7 @@ const ChatMessageList = memo(function ChatMessageList({
   isHistoryComplete,
   isInitialLoading,
   highlightTerms,
+  lastSentMessageId,
 }: {
   messages: Message[]
   contactsByJid: Map<string, ContactIdentity>
@@ -435,6 +446,7 @@ const ChatMessageList = memo(function ChatMessageList({
   isHistoryComplete?: boolean
   isInitialLoading?: boolean
   highlightTerms?: string[]
+  lastSentMessageId?: string | null
 }) {
   const { t } = useTranslation()
   const { formatTime, effectiveTimeFormat } = useTimeFormat()
@@ -538,6 +550,7 @@ const ChatMessageList = memo(function ChatMessageList({
       typingUsers={typingUsers}
       formatTypingUser={formatTypingUser}
       renderMessage={renderMessage}
+      lastSentMessageId={lastSentMessageId}
       onScrollToTop={onScrollToTop}
       isLoadingOlder={isLoadingOlder}
       isHistoryComplete={isHistoryComplete}
@@ -786,6 +799,7 @@ function MessageInput({
   onRemovePendingAttachment,
   processLinkPreview,
   onSwitchToMessages,
+  onMessageIdSent,
 }: {
   composerRef: React.RefObject<MessageComposerHandle | null>
   textareaRef?: React.RefObject<HTMLTextAreaElement | null>
@@ -793,6 +807,7 @@ function MessageInput({
   conversationName: string
   type: 'chat' | 'groupchat'
   onMessageSent?: () => void
+  onMessageIdSent?: (messageId: string) => void
   onInputResize?: () => void
   replyingTo: Message | null
   onCancelReply: () => void
@@ -886,6 +901,9 @@ function MessageInput({
     // The body is the file URL if no text was entered, otherwise the user's text
     const body = text || attachment?.url || ''
     const messageId = await sendMessage(conversationId, body, type, replyTo, attachment ?? undefined)
+
+    // Notify parent of sent message ID for animation
+    onMessageIdSent?.(messageId)
 
     // Clear pending attachment after sending
     if (pendingAttachment) {

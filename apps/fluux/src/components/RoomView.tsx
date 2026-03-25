@@ -120,6 +120,10 @@ export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = 
   // Pending attachment state - staged file ready to send with next message
   const [pendingAttachment, setPendingAttachment] = useState<PendingAttachment | null>(null)
 
+  // Track last sent message ID for send animation
+  const [lastSentMessageId, setLastSentMessageId] = useState<string | null>(null)
+  const lastSentTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   // Dismissed poll IDs — session-scoped, resets on room switch or reconnect
   const [dismissedPollIds, setDismissedPollIds] = useState<Set<string>>(new Set())
   const handleDismissPoll = useCallback((messageId: string) => {
@@ -418,6 +422,7 @@ export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = 
             onNickTouchEnd={handleNickTouchEnd}
             setAffiliation={setAffiliation}
             highlightTerms={find.highlightTerms}
+            lastSentMessageId={lastSentMessageId}
           />
         </div>
 
@@ -449,6 +454,11 @@ export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = 
             onRemovePendingAttachment={handleRemovePendingAttachment}
             processLinkPreview={processMessageForLinkPreview}
             isConnected={isConnected}
+            onMessageIdSent={(id) => {
+              if (lastSentTimerRef.current) clearTimeout(lastSentTimerRef.current)
+              setLastSentMessageId(id)
+              lastSentTimerRef.current = setTimeout(() => setLastSentMessageId(null), 400)
+            }}
           />
         ) : (
           <RoomJoinPrompt
@@ -652,6 +662,7 @@ const RoomMessageList = memo(function RoomMessageList({
   onNickTouchEnd,
   setAffiliation,
   highlightTerms,
+  lastSentMessageId,
 }: {
   messages: RoomMessage[]
   messagesById: Map<string, RoomMessage>
@@ -693,6 +704,7 @@ const RoomMessageList = memo(function RoomMessageList({
   onNickTouchEnd?: () => void
   setAffiliation: (roomJid: string, userJid: string, affiliation: RoomAffiliation, reason?: string) => Promise<void>
   highlightTerms?: string[]
+  lastSentMessageId?: string | null
 }) {
   const { t } = useTranslation()
   const { formatTime, effectiveTimeFormat } = useTimeFormat()
@@ -857,6 +869,7 @@ const RoomMessageList = memo(function RoomMessageList({
       isLoadingOlder={isLoadingOlder}
       isHistoryComplete={isHistoryComplete}
       renderMessage={renderMessage}
+      lastSentMessageId={lastSentMessageId}
     />
   )
 })
@@ -1327,6 +1340,7 @@ interface RoomMessageInputProps {
   onRemovePendingAttachment?: () => void
   processLinkPreview?: (messageId: string, body: string, to: string, type: 'chat' | 'groupchat') => Promise<void>
   isConnected: boolean
+  onMessageIdSent?: (messageId: string) => void
 }
 
 function RoomMessageInput({
@@ -1354,6 +1368,7 @@ function RoomMessageInput({
   onRemovePendingAttachment,
   processLinkPreview,
   isConnected,
+  onMessageIdSent,
   ref,
 }: RoomMessageInputProps & { ref?: React.Ref<MessageComposerHandle> }) {
   const { t } = useTranslation()
@@ -1493,6 +1508,9 @@ function RoomMessageInput({
     const body = sendText || attachment?.url || ''
     const messageId = await sendMessage(room.jid, body, replyTo, references.length > 0 ? references : undefined, attachment ?? undefined)
     setReferences([])
+
+    // Notify parent of sent message ID for animation
+    onMessageIdSent?.(messageId)
 
     // Clear pending attachment after sending
     if (pendingAttachment) {
