@@ -232,7 +232,7 @@ export function ProfileSettings() {
               size="xl"
               presence={presenceShow}
               presenceBorderColor="border-fluux-chat"
-              fallbackColor="#23a559"
+              fallbackColor="var(--fluux-bg-accent)"
             />
             {/* Camera overlay on hover */}
             <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">

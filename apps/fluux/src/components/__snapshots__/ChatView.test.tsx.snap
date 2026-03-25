@@ -358,7 +358,7 @@ exports[`ChatView > Snapshots > should match snapshot with messages 1`] = `
                       >
                         <span
                           class="font-medium"
-                          style="color: var(--fluux-green);"
+                          style="color: var(--fluux-text-accent);"
                         >
                           Me
                         </span>

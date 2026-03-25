@@ -196,7 +196,6 @@ export function Avatar({
   const connectionStatus = useConnectionStore((s) => s.status)
 
   // Generate consistent background color from identifier, or use custom fallbackColor
-  // Own avatars also use consistent color (green is only used for own nickname text)
   const backgroundColor = fallbackColor
     ? ensureContrastWithWhite(fallbackColor)
     : generateConsistentColorHexSync(identifier, { saturation: 60, lightness: 45 })

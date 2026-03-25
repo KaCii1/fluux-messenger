@@ -446,7 +446,7 @@ export function Sidebar({ onSelectContact, onStartChat, onManageUser, adminCateg
                   name={ownNickname || jid?.split('@')[0]}
                   avatarUrl={ownAvatar || undefined}
                   size="lg"
-                  fallbackColor="#23a559"
+                  fallbackColor="var(--fluux-bg-accent)"
                 />
               </div>
             </Tooltip>

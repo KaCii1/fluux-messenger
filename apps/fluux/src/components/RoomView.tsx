@@ -1003,9 +1003,9 @@ const RoomMessageBubbleWrapper = memo(function RoomMessageBubbleWrapper({
     || (contact?.name && !occupant ? contact.name : null)
     || message.nick
 
-  // Get sender color: green for own messages, contact's pre-calculated color, or fallback to nick-based generation
+  // Get sender color: accent for own messages, contact's pre-calculated color, or fallback to nick-based generation
   const senderColor = message.isOutgoing
-    ? 'var(--fluux-green)'
+    ? 'var(--fluux-text-accent)'
     : contact
       ? (isDarkMode ? contact.colorDark : contact.colorLight) || getConsistentTextColor(resolvedSenderName, isDarkMode)
       : getConsistentTextColor(resolvedSenderName, isDarkMode)
@@ -1039,8 +1039,8 @@ const RoomMessageBubbleWrapper = memo(function RoomMessageBubbleWrapper({
       return fallbackId ? fallbackId.split('/').pop() || 'Unknown' : 'Unknown'
     },
     (originalMsg, fallbackId, dark) => {
-      // Own messages: use green color
-      if (originalMsg?.isOutgoing) return 'var(--fluux-green)'
+      // Own messages: use accent color
+      if (originalMsg?.isOutgoing) return 'var(--fluux-text-accent)'
       const nick = originalMsg?.nick || (fallbackId ? fallbackId.split('/').pop() : undefined)
       return nick ? getConsistentTextColor(nick, dark) : 'var(--fluux-brand)'
     },

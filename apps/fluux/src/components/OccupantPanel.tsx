@@ -383,7 +383,7 @@ export function OccupantPanel({
                       size="sm"
                       presence={getPresenceFromShow(group.bestPresence)}
                       presenceBorderColor="border-fluux-sidebar"
-                      fallbackColor={isMe ? '#23a559' : undefined}
+                      fallbackColor={isMe ? 'var(--fluux-bg-accent)' : undefined}
                     />
 
                     {/* Nick and badges */}

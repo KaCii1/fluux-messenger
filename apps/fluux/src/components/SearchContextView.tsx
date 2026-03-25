@@ -414,7 +414,7 @@ export const SearchContextMessageList = memo(function SearchContextMessageList({
       // Check if it's own message
       if (roomMsg.isOutgoing) {
         senderName = ownNickname || roomMsg.nick
-        senderColor = 'var(--fluux-green)'
+        senderColor = 'var(--fluux-text-accent)'
         avatarUrl = ownAvatar || undefined
       }
     } else {
@@ -423,7 +423,7 @@ export const SearchContextMessageList = memo(function SearchContextMessageList({
         ? (ownNickname || msg.from.split('@')[0])
         : (contact?.name || msg.from.split('@')[0])
       senderColor = msg.isOutgoing
-        ? 'var(--fluux-green)'
+        ? 'var(--fluux-text-accent)'
         : contact
           ? (isDarkMode ? contact.colorDark : contact.colorLight) || getConsistentTextColor(msg.from.split('/')[0], isDarkMode)
           : getConsistentTextColor(msg.from.split('/')[0], isDarkMode)
@@ -443,7 +443,7 @@ export const SearchContextMessageList = memo(function SearchContextMessageList({
         return fallbackId ? fallbackId.split('@')[0] : 'Unknown'
       },
       (originalMsg, fallbackId, dark) => {
-        if (originalMsg?.isOutgoing) return 'var(--fluux-green)'
+        if (originalMsg?.isOutgoing) return 'var(--fluux-text-accent)'
         const senderId = originalMsg?.from.split('/')[0] || fallbackId?.split('/')[0]
         if (!senderId) return 'var(--fluux-brand)'
         const contact = contactsByJid.get(senderId)
