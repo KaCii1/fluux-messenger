@@ -8,6 +8,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { DataForm, DataFormField } from '@fluux/sdk'
 import { HelpCircle } from 'lucide-react'
+import { TextInput, TextArea } from './ui/TextInput'
 import { Tooltip } from './Tooltip'
 
 /**
@@ -77,7 +78,7 @@ export function FormField({ field, value, onChange, disabled }: FormFieldProps) 
       case 'text-single':
       case 'jid-single':
         return (
-          <input
+          <TextInput
             type="text"
             value={(value as string) || ''}
             onChange={e => onChange(field.var, e.target.value)}
@@ -104,7 +105,7 @@ export function FormField({ field, value, onChange, disabled }: FormFieldProps) 
       case 'text-multi':
       case 'jid-multi':
         return (
-          <textarea
+          <TextArea
             value={Array.isArray(value) ? value.join('\n') : (value as string) || ''}
             onChange={e => onChange(field.var, e.target.value.split('\n'))}
             disabled={disabled}
@@ -182,7 +183,7 @@ export function FormField({ field, value, onChange, disabled }: FormFieldProps) 
 
       default:
         return (
-          <input
+          <TextInput
             type="text"
             value={(value as string) || ''}
             onChange={e => onChange(field.var, e.target.value)}

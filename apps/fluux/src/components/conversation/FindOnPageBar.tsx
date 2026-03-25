@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react'
+import { TextInput } from '../ui/TextInput'
 import { useTranslation } from 'react-i18next'
 import { ChevronUp, ChevronDown, X } from 'lucide-react'
 
@@ -54,7 +55,7 @@ export function FindOnPageBar({
   return (
     <div className="absolute top-0 right-0 z-30 m-2">
       <div className="flex items-center gap-1 px-2 py-1.5 bg-fluux-bg border border-fluux-border rounded-lg shadow-lg">
-        <input
+        <TextInput
           ref={inputRef}
           type="text"
           value={searchText}

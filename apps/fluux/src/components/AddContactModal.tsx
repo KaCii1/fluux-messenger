@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { TextInput } from './ui/TextInput'
 import { useTranslation } from 'react-i18next'
 import { useRoster } from '@fluux/sdk'
 import { useModalInput } from '@/hooks'
@@ -53,7 +54,7 @@ export function AddContactModal({ onClose }: AddContactModalProps) {
           <label htmlFor="contact-jid" className="block text-xs font-semibold text-fluux-muted uppercase mb-2">
             {t('contacts.jidLabel')}
           </label>
-          <input
+          <TextInput
             ref={inputRef}
             id="contact-jid"
             type="text"
@@ -71,7 +72,7 @@ export function AddContactModal({ onClose }: AddContactModalProps) {
           <label htmlFor="contact-nick" className="block text-xs font-semibold text-fluux-muted uppercase mb-2">
             {t('contacts.nicknameLabel')} <span className="font-normal normal-case">{t('contacts.nicknameOptional')}</span>
           </label>
-          <input
+          <TextInput
             id="contact-nick"
             type="text"
             value={nick}

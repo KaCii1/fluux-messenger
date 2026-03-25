@@ -7,6 +7,7 @@ import { Avatar } from '../Avatar'
 import { APP_OFFLINE_PRESENCE_COLOR, PRESENCE_COLORS } from '@/constants/ui'
 import { getShowColor } from '@/utils/presence'
 import { isTauri } from '@/utils/tauri'
+import { TextInput } from '../ui/TextInput'
 import { AvatarCropModal } from '../AvatarCropModal'
 import { ChangePasswordModal } from '../ChangePasswordModal'
 import { Tooltip } from '../Tooltip'
@@ -256,7 +257,7 @@ export function ProfileSettings() {
         {/* Name - editable */}
         {isEditing ? (
           <div className="flex flex-col items-center gap-1 mb-1 w-full max-w-xs">
-            <input
+            <TextInput
               ref={inputRef}
               type="text"
               value={editName}
@@ -339,7 +340,7 @@ export function ProfileSettings() {
                   {editingVCardField === key ? (
                     <div className="flex items-center gap-2 px-3 py-1.5">
                       <Icon className="w-4 h-4 text-fluux-muted flex-shrink-0" />
-                      <input
+                      <TextInput
                         ref={vcardInputRef}
                         type="text"
                         value={vcardEditValue}
@@ -384,7 +385,7 @@ export function ProfileSettings() {
                 return (
                   <div className="flex items-center gap-2 px-3 py-1.5">
                     <Icon className="w-4 h-4 text-fluux-muted flex-shrink-0" />
-                    <input
+                    <TextInput
                       ref={vcardInputRef}
                       type="text"
                       value={vcardEditValue}

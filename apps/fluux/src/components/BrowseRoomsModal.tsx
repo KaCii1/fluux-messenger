@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { TextInput } from './ui/TextInput'
 import { useTranslation } from 'react-i18next'
 import { useModalInput, useListKeyboardNav } from '@/hooks'
 import {
@@ -281,7 +282,7 @@ export function BrowseRoomsModal({ onClose }: BrowseRoomsModalProps) {
           </label>
           {showCustomInput ? (
             <div className="flex gap-2">
-              <input
+              <TextInput
                 type="text"
                 value={customService}
                 onChange={(e) => setCustomService(e.target.value)}
@@ -350,7 +351,7 @@ export function BrowseRoomsModal({ onClose }: BrowseRoomsModalProps) {
           <label htmlFor="browse-nickname" className="block text-xs font-semibold text-fluux-muted uppercase mb-2">
             {t('rooms.nickname')}
           </label>
-          <input
+          <TextInput
             ref={inputRef}
             id="browse-nickname"
             type="text"
@@ -367,7 +368,7 @@ export function BrowseRoomsModal({ onClose }: BrowseRoomsModalProps) {
         <div className="px-4 py-3 border-b border-fluux-hover flex-shrink-0">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-fluux-muted" />
-            <input
+            <TextInput
               ref={searchInputRef}
               type="text"
               value={searchQuery}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { TextInput } from './ui/TextInput'
 import { useTranslation } from 'react-i18next'
 import { useRoom, type Room } from '@fluux/sdk'
 import { UserPlus, Send } from 'lucide-react'
@@ -91,7 +92,7 @@ export function InviteToRoomModal({ isOpen, onClose, room }: InviteToRoomModalPr
           <label className="block text-sm text-fluux-muted mb-1">
             {t('rooms.inviteReason')}
           </label>
-          <input
+          <TextInput
             type="text"
             value={reason}
             onChange={(e) => setReason(e.target.value)}

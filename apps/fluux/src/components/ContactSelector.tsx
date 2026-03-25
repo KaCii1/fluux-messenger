@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useLayoutEffect } from 'react'
+import { TextInput } from './ui/TextInput'
 import { useTranslation } from 'react-i18next'
 import { useRoster, useChat, matchNameOrJid } from '@fluux/sdk'
 import { useConnectionStore } from '@fluux/sdk/react'
@@ -306,7 +307,7 @@ export function ContactSelector({
 
       {/* Contact search with keyboard navigation */}
       <div ref={containerRef} className="relative">
-        <input
+        <TextInput
           ref={inputRef}
           type="text"
           value={search}

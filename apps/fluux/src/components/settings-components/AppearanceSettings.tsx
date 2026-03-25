@@ -6,6 +6,7 @@ import { useThemeStore } from '@/stores/themeStore'
 import type { ThemeDefinition, AccentPreset } from '@/themes/types'
 import { getBuiltinTheme } from '@/themes/builtins'
 import { ModalShell } from '@/components/ModalShell'
+import { TextInput, TextArea } from '../ui/TextInput'
 
 const themeOptions: { value: ThemeMode; labelKey: string; icon: typeof Sun; descriptionKey: string }[] = [
   { value: 'dark', labelKey: 'settings.dark', icon: Moon, descriptionKey: 'settings.darkDescription' },
@@ -127,7 +128,7 @@ function SnippetEditorModal({
         {/* Name field */}
         <div className="space-y-1">
           <label className="text-xs font-medium text-fluux-muted">{t('settings.snippetName')}</label>
-          <input
+          <TextInput
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -139,7 +140,7 @@ function SnippetEditorModal({
         {/* CSS editor */}
         <div className="space-y-1">
           <label className="text-xs font-medium text-fluux-muted">CSS</label>
-          <textarea
+          <TextArea
             value={css}
             onChange={(e) => setCss(e.target.value)}
             className="w-full h-48 px-3 py-2 text-sm font-mono bg-fluux-bg text-fluux-text rounded-lg border border-fluux-hover focus:border-fluux-brand outline-none resize-y"

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { TextInput } from './ui/TextInput'
 import { useTranslation } from 'react-i18next'
 import { type Contact } from '@fluux/sdk'
 import { useModalInput } from '@/hooks'
@@ -54,7 +55,7 @@ export function RenameContactModal({
           <label htmlFor="contact-name" className="block text-xs font-semibold text-fluux-muted uppercase mb-2">
             {t('contacts.displayName')}
           </label>
-          <input
+          <TextInput
             ref={inputRef}
             id="contact-name"
             type="text"

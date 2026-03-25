@@ -9,6 +9,7 @@ import { formatConversationTime } from '@/utils/dateFormat'
 import { useSettingsStore, type TimeFormat } from '@/stores/settingsStore'
 import { useSidebarZone } from './types'
 import { Search, X, Loader2, ExternalLink, Cloud } from 'lucide-react'
+import { TextInput } from '../ui/TextInput'
 
 function getConversationName(conversationId: string): string {
   const room = roomStore.getState().rooms.get(conversationId)
@@ -75,7 +76,7 @@ export function SearchView() {
       <div className="px-3 pt-3 pb-2">
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-fluux-muted pointer-events-none" />
-          <input
+          <TextInput
             ref={inputRef}
             type="text"
             value={query}

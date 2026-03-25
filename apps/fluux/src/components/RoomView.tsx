@@ -12,6 +12,7 @@ import { Avatar, getConsistentTextColor } from './Avatar'
 import { format } from 'date-fns'
 import { Shield, Crown, Upload, Loader2, LogIn, AlertCircle, Users, MessageCircle, EyeOff, User, Settings } from 'lucide-react'
 import { ChristmasAnimation } from './ChristmasAnimation'
+import { TextInput, TextArea } from './ui/TextInput'
 import { MessageComposer, type ReplyInfo, type EditInfo, type MessageComposerHandle, type PendingAttachment, MESSAGE_INPUT_BASE_CLASSES, MESSAGE_INPUT_OVERLAY_CLASSES } from './MessageComposer'
 import { RoomHeader } from './RoomHeader'
 import { OccupantPanel } from './OccupantPanel'
@@ -1245,7 +1246,7 @@ const RoomMessageBubbleWrapper = memo(function RoomMessageBubbleWrapper({
             <p className="text-sm text-fluux-muted mb-3">{t('chat.moderateMessageConfirm')}</p>
             <div className="mb-3">
               <label className="block text-xs text-fluux-muted mb-1">{t('chat.moderateReason')}</label>
-              <input
+              <TextInput
                 type="text"
                 value={moderateReason}
                 onChange={(e) => setModerateReason(e.target.value)}
@@ -1700,7 +1701,7 @@ function RoomMessageInput({
           {renderInputWithMentions(value, references)}
         </div>
         {/* Transparent textarea on top - uses shared base classes for consistency */}
-        <textarea
+        <TextArea
           ref={mergedRef}
           value={value}
           onChange={onChange}

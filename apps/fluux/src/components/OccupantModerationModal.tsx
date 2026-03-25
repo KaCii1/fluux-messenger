@@ -3,6 +3,7 @@
  * Opened from the occupant context menu's "Manage" item.
  */
 import { useState } from 'react'
+import { TextInput } from './ui/TextInput'
 import { useTranslation } from 'react-i18next'
 import type { RoomAffiliation, RoomRole } from '@fluux/sdk'
 import { canKick, canBan, getAvailableAffiliations, getAvailableRoles } from '@fluux/sdk'
@@ -229,7 +230,7 @@ export function OccupantModerationModal({
                     ? t('rooms.kickConfirm', { nick: occupant.nick })
                     : t('rooms.banConfirm', { jid: occupant.bareJid || occupant.nick })}
                 </p>
-                <input
+                <TextInput
                   type="text"
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}

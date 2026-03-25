@@ -1,4 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import { TextInput } from './ui/TextInput'
 import { useTranslation } from 'react-i18next'
 import {
   MessageSquare,
@@ -481,7 +482,7 @@ export function CommandPalette({
         {/* Search Input */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-fluux-hover">
           <Search className="w-5 h-5 text-fluux-muted flex-shrink-0" />
-          <input
+          <TextInput
             ref={inputRef}
             type="text"
             value={query}

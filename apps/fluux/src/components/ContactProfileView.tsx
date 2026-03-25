@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MessageCircle, Trash2, Pencil, Monitor, Smartphone, Globe, ArrowLeft, Ban, UserPlus, Building2, Mail, MapPin, User } from 'lucide-react'
+import { TextInput } from './ui/TextInput'
 import { Tooltip } from './Tooltip'
 import { type Contact, type VCardInfo, getClientType, useBlocking } from '@fluux/sdk'
 import { useConnectionStore, useBlockingStore, useLastActivity } from '@fluux/sdk/react'
@@ -188,7 +189,7 @@ export function ContactProfileView({
           {/* Name - editable only for roster contacts */}
           {isInRoster && isEditing ? (
             <div className="flex flex-col items-center gap-1 mb-1 w-full max-w-xs">
-              <input
+              <TextInput
                 ref={inputRef}
                 type="text"
                 value={editName}

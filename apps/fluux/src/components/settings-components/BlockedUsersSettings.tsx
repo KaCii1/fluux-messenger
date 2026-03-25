@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, Ban, Loader2, Plus, X } from 'lucide-react'
 import { useBlocking, getLocalPart } from '@fluux/sdk'
+import { TextInput } from '../ui/TextInput'
 import { Avatar } from '../Avatar'
 
 export function BlockedUsersSettings() {
@@ -101,7 +102,7 @@ export function BlockedUsersSettings() {
       {showAddForm ? (
         <div className="mb-4 p-3 rounded-lg border border-fluux-hover bg-fluux-bg">
           <div className="flex items-center gap-2 mb-2">
-            <input
+            <TextInput
               type="text"
               value={newJid}
               onChange={(e) => {
@@ -161,7 +162,7 @@ export function BlockedUsersSettings() {
       {blockedJids.length > 5 && (
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-fluux-muted" />
-          <input
+          <TextInput
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

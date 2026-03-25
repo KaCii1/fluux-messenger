@@ -7,6 +7,7 @@
  */
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { TextInput } from './ui/TextInput'
 import type { Room, DataForm } from '@fluux/sdk'
 import { useAdmin } from '@fluux/sdk'
 import { ModalShell } from './ModalShell'
@@ -185,7 +186,7 @@ function ConfigFormContent({
           <label className="block text-sm font-medium text-fluux-text">
             {t('rooms.subject')}
           </label>
-          <input
+          <TextInput
             type="text"
             value={subject}
             onChange={e => onSubjectChange(e.target.value)}

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useClickOutside } from '@/hooks'
 import { usePresence, type PresenceStatus } from '@fluux/sdk'
 import { ChevronDown, Check, RefreshCw } from 'lucide-react'
+import { TextInput } from '../ui/TextInput'
 import { Tooltip } from '../Tooltip'
 
 const presenceOptions: { value: PresenceStatus; labelKey: string; color: string }[] = [
@@ -166,7 +167,7 @@ export function PresenceSelector({ isOpen: isOpenProp, onOpenChange }: PresenceS
           <form onSubmit={(e) => void handleStatusSubmit(e)} className="px-3 py-2">
             <label className="text-xs text-fluux-muted mb-1.5 block">{t('presence.statusMessage')}</label>
             <div className="flex gap-2">
-              <input
+              <TextInput
                 ref={inputRef}
                 type="text"
                 value={statusInput}

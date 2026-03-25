@@ -8,6 +8,7 @@
  * Owner-only: visibility is enforced by the caller (RoomHeader).
  */
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { TextInput } from './ui/TextInput'
 import { useTranslation } from 'react-i18next'
 import type { Room, Hat } from '@fluux/sdk'
 import { useRoom, generateConsistentColorHexSync } from '@fluux/sdk'
@@ -332,7 +333,7 @@ export function RoomHatsModal({ room, onClose }: RoomHatsModalProps) {
       <div className="px-4 py-2 border-b border-fluux-hover">
         <div className="relative">
           <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-fluux-muted" />
-          <input
+          <TextInput
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -444,7 +445,7 @@ export function RoomHatsModal({ room, onClose }: RoomHatsModalProps) {
           <div className="flex items-end gap-2">
             <div className="flex-1 space-y-1">
               <label className="block text-xs text-fluux-muted">{t('rooms.hatTitle')}</label>
-              <input
+              <TextInput
                 type="text"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
@@ -458,7 +459,7 @@ export function RoomHatsModal({ room, onClose }: RoomHatsModalProps) {
           <div className="flex items-end gap-2">
             <div className="flex-1 space-y-1">
               <label className="block text-xs text-fluux-muted">{t('rooms.hatUri')}</label>
-              <input
+              <TextInput
                 type="text"
                 value={newUri}
                 onChange={(e) => setNewUri(e.target.value)}

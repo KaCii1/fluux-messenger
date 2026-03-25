@@ -6,6 +6,7 @@ import { useConsole, useXMPP, type XmppPacket } from '@fluux/sdk'
 import { useConnectionStore } from '@fluux/sdk/react'
 import { formatStanzaPreview, formatStanzaXml } from '@/utils/stanzaPreviewFormatter'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import { TextInput, TextArea } from './ui/TextInput'
 import { Tooltip } from './Tooltip'
 import { isTauri } from '@/utils/tauri'
 
@@ -555,7 +556,7 @@ export function XmppConsole() {
           {/* Search input */}
           <div className="relative">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-fluux-muted" />
-            <input
+            <TextInput
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -694,7 +695,7 @@ export function XmppConsole() {
           <div className="text-red-400 text-xs mb-2">{error}</div>
         )}
         <div className="flex gap-2">
-          <textarea
+          <TextArea
             ref={textareaRef}
             value={inputXml}
             onChange={(e) => setInputXml(e.target.value)}

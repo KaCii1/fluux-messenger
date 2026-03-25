@@ -5,6 +5,7 @@
  * address, description, visibility, and optionally invite contacts.
  */
 import { useState, useEffect } from 'react'
+import { TextInput, TextArea } from './ui/TextInput'
 import { useTranslation } from 'react-i18next'
 import { useRoom } from '@fluux/sdk'
 import { useConnectionStore } from '@fluux/sdk/react'
@@ -98,7 +99,7 @@ export function CreateRoomModal({ onClose }: CreateRoomModalProps) {
             {t('rooms.roomAddress')}
             <span className="text-red-400 ml-1">*</span>
           </label>
-          <input
+          <TextInput
             type="text"
             value={roomLocal}
             onChange={e => setRoomLocal(e.target.value.toLowerCase().replace(/[^a-z0-9._-]/g, ''))}
@@ -118,7 +119,7 @@ export function CreateRoomModal({ onClose }: CreateRoomModalProps) {
             {t('rooms.roomName')}
             <span className="text-red-400 ml-1">*</span>
           </label>
-          <input
+          <TextInput
             type="text"
             value={roomName}
             onChange={e => setRoomName(e.target.value)}
@@ -134,7 +135,7 @@ export function CreateRoomModal({ onClose }: CreateRoomModalProps) {
           <label className="block text-sm font-medium text-fluux-text">
             {t('rooms.roomDescription')}
           </label>
-          <textarea
+          <TextArea
             value={description}
             onChange={e => setDescription(e.target.value)}
             disabled={creating}
@@ -150,7 +151,7 @@ export function CreateRoomModal({ onClose }: CreateRoomModalProps) {
             {t('rooms.nickname')}
             <span className="text-red-400 ml-1">*</span>
           </label>
-          <input
+          <TextInput
             type="text"
             value={nickname}
             onChange={e => setNickname(e.target.value)}

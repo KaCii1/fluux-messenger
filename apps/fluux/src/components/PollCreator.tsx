@@ -7,6 +7,7 @@ import { Plus, Trash2, Loader2 } from 'lucide-react'
 import { MAX_POLL_OPTIONS, POLL_OPTION_EMOJIS, type PollSettings } from '@fluux/sdk'
 import { useClickOutside } from '@/hooks'
 import { ModalShell } from './ModalShell'
+import { TextInput } from './ui/TextInput'
 
 const EmojiPicker = lazy(() => import('./EmojiPicker').then(m => ({ default: m.EmojiPicker })))
 
@@ -93,7 +94,7 @@ export function PollCreator({ onClose, onCreatePoll }: PollCreatorProps) {
           <label className="text-sm font-medium text-fluux-text">
             {t('poll.title', 'Title')}
           </label>
-          <input
+          <TextInput
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -112,7 +113,7 @@ export function PollCreator({ onClose, onCreatePoll }: PollCreatorProps) {
               {t('common.optional', '(optional)')}
             </span>
           </label>
-          <input
+          <TextInput
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -153,7 +154,7 @@ export function PollCreator({ onClose, onCreatePoll }: PollCreatorProps) {
                   </div>
                 )}
               </div>
-              <input
+              <TextInput
                 type="text"
                 value={option}
                 onChange={(e) => updateOption(index, e.target.value)}

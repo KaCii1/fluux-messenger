@@ -1,6 +1,7 @@
 import { useRef, useEffect, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, Loader2 } from 'lucide-react'
+import { TextInput } from './ui/TextInput'
 
 interface EntityListViewProps<T> {
   title: string
@@ -71,7 +72,7 @@ export function EntityListView<T>({
       {/* Search input */}
       <div className="relative mb-3">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-fluux-muted" />
-        <input
+        <TextInput
           type="text"
           value={searchValue}
           onChange={(e) => onSearchChange(e.target.value)}

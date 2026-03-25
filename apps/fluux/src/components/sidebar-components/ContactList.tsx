@@ -9,6 +9,7 @@ import { Tooltip } from '../Tooltip'
 import { useSidebarZone, ContactTooltipContent } from './types'
 import { getTranslatedStatusText } from '@/utils/statusText'
 import { MessageCircle, Trash2, Pencil, Wrench } from 'lucide-react'
+import { TextInput } from '../ui/TextInput'
 
 interface ContactListProps {
   onStartChat?: (contact: Contact) => void
@@ -84,7 +85,7 @@ export function ContactList({ onStartChat, onSelectContact, onManageUser, active
     <div className="flex flex-col h-full">
       {/* Search input */}
       <div className="px-2 pt-2 pb-3">
-        <input
+        <TextInput
           ref={searchInputRef}
           type="text"
           value={searchQuery}

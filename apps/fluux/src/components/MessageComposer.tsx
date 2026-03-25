@@ -4,6 +4,7 @@ import { detectRenderLoop } from '@/utils/renderLoopDetector'
 import { Send, Smile, Paperclip, Reply, X, Pencil, Loader2, Image, FileText, Trash2, BarChart3, Plus } from 'lucide-react'
 import { useClickOutside, useSlashCommands } from '@/hooks'
 import { Tooltip } from './Tooltip'
+import { TextArea } from './ui/TextInput'
 
 // Lazy-load emoji picker — keeps ~150KB of emoji data out of the main bundle
 const emojiPickerImport = () => import('./EmojiPicker').then(m => ({ default: m.EmojiPicker }))
@@ -295,37 +296,10 @@ export function MessageComposer({
     onInputResize?.()
   }, [text, onInputResize])
 
+  // Control character filtering (Tauri macOS arrow-key bug) is handled by
+  // the TextArea component — see ui/TextInput.tsx
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const rawValue = e.target.value
-    // Filter out control characters that Tauri's unstable feature incorrectly inserts
-    // when arrow keys are pressed at text boundaries (macOS bug)
-    // See: https://github.com/tauri-apps/tauri/issues/10194
-    // Keep newlines (\n) and tabs (\t), filter other C0 control chars and DEL
-    // eslint-disable-next-line no-control-regex
-    const controlCharRegex = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g
-    const newText = rawValue.replace(controlCharRegex, '')
-
-    // If we filtered out control characters, preserve the cursor position
-    // to prevent the cursor from jumping (e.g., wrapping from start to end)
-    if (rawValue !== newText) {
-      const cursorPos = e.target.selectionStart
-      // Calculate how many control chars were before the cursor
-      const textBeforeCursor = rawValue.slice(0, cursorPos)
-      const controlCharsBefore = (textBeforeCursor.match(controlCharRegex) || []).length
-      const adjustedCursorPos = Math.max(0, cursorPos - controlCharsBefore)
-
-      setText(newText)
-
-      // Restore cursor position after React re-renders
-      setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.setSelectionRange(adjustedCursorPos, adjustedCursorPos)
-        }
-      }, 0)
-      return
-    }
-
-    setText(newText)
+    setText(e.target.value)
 
     // Update toolbar visibility based on typing activity
     onComposingChange?.(true)
@@ -346,7 +320,7 @@ export function MessageComposer({
     }
 
     // Don't send composing for empty text
-    if (!newText.trim()) {
+    if (!e.target.value.trim()) {
       if (lastComposingSentRef.current > 0) {
         onSendTypingState('paused')
         lastComposingSentRef.current = 0
@@ -548,7 +522,7 @@ export function MessageComposer({
 
   // Default input renderer (simple textarea)
   const defaultRenderInput = () => (
-    <textarea
+    <TextArea
       ref={mergedInputRef}
       value={text}
       onChange={handleTextChange}

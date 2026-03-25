@@ -10,6 +10,7 @@
  * - Permission-aware: only shows actions the current user can perform
  */
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { TextInput } from './ui/TextInput'
 import { useTranslation } from 'react-i18next'
 import type { Room, RoomAffiliation } from '@fluux/sdk'
 import { useRoom, getAvailableAffiliations } from '@fluux/sdk'
@@ -256,7 +257,7 @@ export function RoomMembersModal({ room, onClose }: RoomMembersModalProps) {
       <div className="px-4 py-2 border-b border-fluux-hover">
         <div className="relative">
           <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-fluux-muted" />
-          <input
+          <TextInput
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

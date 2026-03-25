@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { TextInput } from './ui/TextInput'
 import { useTranslation } from 'react-i18next'
 import { Zap } from 'lucide-react'
 import { useConnection, useRoom } from '@fluux/sdk'
@@ -77,7 +78,7 @@ export function CreateQuickChatModal({ onClose }: CreateQuickChatModalProps) {
           <label htmlFor="quick-chat-topic" className="block text-xs font-semibold text-fluux-muted uppercase mb-2">
             {t('rooms.topic')} <span className="normal-case font-normal">({t('common.optional')})</span>
           </label>
-          <input
+          <TextInput
             ref={inputRef}
             id="quick-chat-topic"
             type="text"
@@ -95,7 +96,7 @@ export function CreateQuickChatModal({ onClose }: CreateQuickChatModalProps) {
           <label htmlFor="quick-chat-nickname" className="block text-xs font-semibold text-fluux-muted uppercase mb-2">
             {t('rooms.nickname')}
           </label>
-          <input
+          <TextInput
             id="quick-chat-nickname"
             type="text"
             value={nickname}

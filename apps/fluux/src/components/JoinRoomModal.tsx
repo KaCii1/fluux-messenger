@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { TextInput } from './ui/TextInput'
 import { useTranslation } from 'react-i18next'
 import { useConnection, useRoom } from '@fluux/sdk'
 import { useChatStore } from '@fluux/sdk/react'
@@ -77,7 +78,7 @@ export function JoinRoomModal({ onClose }: JoinRoomModalProps) {
           <label htmlFor="room-jid" className="block text-xs font-semibold text-fluux-muted uppercase mb-2">
             {t('rooms.roomAddress')}
           </label>
-          <input
+          <TextInput
             ref={inputRef}
             id="room-jid"
             type="text"
@@ -95,7 +96,7 @@ export function JoinRoomModal({ onClose }: JoinRoomModalProps) {
           <label htmlFor="room-nickname" className="block text-xs font-semibold text-fluux-muted uppercase mb-2">
             {t('rooms.nickname')}
           </label>
-          <input
+          <TextInput
             id="room-nickname"
             type="text"
             value={nickname}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { TextInput } from './ui/TextInput'
 import { useTranslation } from 'react-i18next'
 import { detectRenderLoop } from '@/utils/renderLoopDetector'
 import { useConnection, deleteFastToken } from '@fluux/sdk'
@@ -320,7 +321,7 @@ export function LoginScreen({ claimConnection }: LoginScreenProps) {
             <label htmlFor="jid" className="block text-xs font-semibold text-fluux-muted uppercase mb-2">
               {t('login.jidLabel')}
             </label>
-            <input
+            <TextInput
               id="jid"
               name="username"
               type="text"
@@ -396,7 +397,7 @@ export function LoginScreen({ claimConnection }: LoginScreenProps) {
             </button>
             {showServerField && (
               <>
-                <input
+                <TextInput
                   id="server"
                   type="text"
                   value={server}

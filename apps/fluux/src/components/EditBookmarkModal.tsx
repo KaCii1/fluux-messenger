@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { TextInput } from './ui/TextInput'
 import { useTranslation } from 'react-i18next'
 import { type Room } from '@fluux/sdk'
 import { useModalInput } from '@/hooks'
@@ -62,7 +63,7 @@ export function EditBookmarkModal({
           <label htmlFor="bookmark-nickname" className="block text-xs font-semibold text-fluux-muted uppercase mb-2">
             {t('rooms.nickname')}
           </label>
-          <input
+          <TextInput
             ref={inputRef}
             id="bookmark-nickname"
             type="text"

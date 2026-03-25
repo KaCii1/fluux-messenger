@@ -6,6 +6,7 @@ import { useWindowDrag, useModalInput } from '@/hooks'
 import { Tooltip } from './Tooltip'
 import { ModalShell } from './ModalShell'
 import { AdminCommandForm, AdminCommandResult } from './AdminCommandForm'
+import { TextInput } from './ui/TextInput'
 import { EntityListView } from './EntityListView'
 import { UserListItem } from './UserListItem'
 import { RoomListItem } from './RoomListItem'
@@ -488,7 +489,7 @@ function AddUserModal({ vhost, onSubmit, onClose }: AddUserModalProps) {
             {t('admin.addUser.username')}
           </label>
           <div className="flex items-center gap-2">
-            <input
+            <TextInput
               ref={inputRef}
               id="add-user-username"
               type="text"
