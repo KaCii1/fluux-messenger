@@ -830,25 +830,20 @@ export const createMockXMPPClientForHooks = () => ({
 
 export type MockXMPPClientForHooks = ReturnType<typeof createMockXMPPClientForHooks>
 
-/**
- * Setup mock for @xmpp/client module
- * Must be called before importing XMPPClient
- */
-export const setupXmppClientMock = (mockInstance: MockXmppClient) => {
-  vi.mock('@xmpp/client', () => ({
-    client: vi.fn(() => mockInstance),
-    xml: vi.fn((name: string, attrs?: Record<string, string>, ...children: unknown[]) => ({
-      name,
-      attrs: attrs || {},
-      children,
-      toString: () => `<${name}/>`,
-    })),
-  }))
+// Top-level module mocks — Vitest hoists these before any test runs.
+vi.mock('@xmpp/client', () => ({
+  client: vi.fn(() => ({})),
+  xml: vi.fn((name: string, attrs?: Record<string, string>, ...children: unknown[]) => ({
+    name,
+    attrs: attrs || {},
+    children,
+    toString: () => `<${name}/>`,
+  })),
+}))
 
-  vi.mock('@xmpp/debug', () => ({
-    default: vi.fn(),
-  }))
-}
+vi.mock('@xmpp/debug', () => ({
+  default: vi.fn(),
+}))
 
 // ============================================================================
 // SDK Event Testing Utilities
