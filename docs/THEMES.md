@@ -237,7 +237,11 @@ Per-widget overrides for surgical changes. These default to semantic values.
   "swatches": {
     "dark": ["#color1", "#color2", "#color3", "#color4"],
     "light": ["#color1", "#color2", "#color3", "#color4"]
-  }
+  },
+  "accentPresets": [
+    { "name": "Coral", "dark": { "h": 5, "s": 80, "l": 65 }, "light": { "h": 0, "s": 75, "l": 50 } },
+    { "name": "Sage",  "dark": { "h": 140, "s": 35, "l": 60 }, "light": { "h": 138, "s": 40, "l": 38 } }
+  ]
 }
 ```
 
@@ -254,6 +258,7 @@ Per-widget overrides for surgical changes. These default to semantic values.
 | `variables.light` | No       | CSS variable overrides for light mode                    |
 | `swatches.dark`   | No       | 3-5 hex colors for the preview strip in the theme picker |
 | `swatches.light`  | No       | Same for light mode                                      |
+| `accentPresets`   | No       | Curated accent colors for the accent picker (see below)  |
 
 ### Swatches
 
@@ -269,6 +274,22 @@ Swatches are a small row of colored rectangles displayed on each theme card in t
 Pick 3-5 representative colors from your palette — typically two surface colors and two or three accent/status colors. The field is optional and purely cosmetic; it has no effect on the actual theme rendering.
 
 A theme can provide `dark` only, `light` only, or both. Users independently choose the mode (dark/light/system) — the theme provides the palette for each mode.
+
+### Accent Presets
+
+Themes can optionally provide a curated list of accent color presets that pair well with the theme's palette. Each preset defines HSL values for both dark and light modes:
+
+```json
+"accentPresets": [
+  { "name": "Coral",    "dark": { "h": 5,   "s": 80, "l": 65 }, "light": { "h": 0,   "s": 75, "l": 50 } },
+  { "name": "Marigold", "dark": { "h": 42,  "s": 85, "l": 62 }, "light": { "h": 38,  "s": 80, "l": 45 } },
+  { "name": "Sage",     "dark": { "h": 140, "s": 35, "l": 60 }, "light": { "h": 138, "s": 40, "l": 38 } }
+]
+```
+
+When a theme provides accent presets, they replace the default accent picker options in Settings. Users can pick any of these presets, or reset to the theme's default accent (defined by the `--fluux-accent-*` variables). When a theme doesn't provide presets, a built-in default list (Blue, Purple, Pink, etc.) is shown instead.
+
+**Tip:** Lower the lightness by ~10-15% for light mode values to maintain readability on light surfaces. See the built-in Catppuccin theme for an example with 14 curated presets.
 
 ## CSS Snippets
 

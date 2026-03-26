@@ -35,7 +35,8 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['var(--fluux-font-ui)'],
+        mono: ['var(--fluux-font-mono)'],
       },
       keyframes: {
         'tooltip-in': {
