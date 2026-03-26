@@ -10,6 +10,14 @@ npm run dev
 
 Then open **http://localhost:5173/demo.html**
 
+### URL Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `tutorial` | `true` | Set to `false` to disable tutorial tooltips (useful for video recording and screenshots) |
+
+Example: **http://localhost:5173/demo.html?tutorial=false**
+
 ## What's Included
 
 The demo populates the UI with:
