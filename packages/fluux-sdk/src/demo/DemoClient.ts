@@ -32,6 +32,8 @@ import type { ActivityEventInput } from '../core/types/activity'
 import type { Contact } from '../core/types/roster'
 import type { Room, RoomMessage, RoomOccupant } from '../core/types/room'
 import type { DemoData, DemoAnimationStep } from './types'
+import { parsePollElement, parsePollClosedElement, parsePollCheckpointElement } from '../core/poll'
+import type { PollData, PollClosedData, PollCheckpointData } from '../core/types/message-base'
 
 type AnimationState = 'idle' | 'playing' | 'paused' | 'stopped'
 
@@ -453,6 +455,11 @@ export class DemoClient extends XMPPClient {
     const room = roomStore.getState().getRoom(roomJid)
     if (!room) return
 
+    // Reaction stanzas (votes, emoji reactions): Chat.sendReaction() already
+    // emits room:reactions directly after sendStanza(), so no echo needed.
+    // Returning early prevents a spurious empty message in the room.
+    if (stanza.getChild('reactions')) return
+
     const nick = room.nickname
     const body = stanza.getChildText('body') ?? ''
     const id = stanza.attrs.id as string
@@ -509,6 +516,16 @@ export class DemoClient extends XMPPClient {
       }
     }
 
+    // Parse poll elements so creating/closing polls works in demo
+    const pollEl = stanza.getChild('poll')
+    const poll: PollData | null = pollEl ? parsePollElement(pollEl) : null
+
+    const pollClosedEl = stanza.getChild('poll-closed')
+    const pollClosed: PollClosedData | null = pollClosedEl ? parsePollClosedElement(pollClosedEl) : null
+
+    const pollCheckpointEl = stanza.getChild('poll-checkpoint')
+    const pollCheckpoint: PollCheckpointData | null = pollCheckpointEl ? parsePollCheckpointElement(pollCheckpointEl) : null
+
     const message: RoomMessage = {
       type: 'groupchat',
       id,
@@ -521,6 +538,9 @@ export class DemoClient extends XMPPClient {
       isOutgoing: true,
       ...(replyTo && { replyTo }),
       ...(attachment && { attachment }),
+      ...(poll && { poll }),
+      ...(pollClosed && { pollClosed }),
+      ...(pollCheckpoint && { pollCheckpoint }),
     }
 
     this.emitSDK('room:message', { roomJid, message, incrementUnread: false })

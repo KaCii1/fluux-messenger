@@ -22,6 +22,39 @@ export const TEAM_ROOM_MESSAGES: RoomMessage[] = [
     body: 'Agreed, big improvement over the old set', timestamp: hoursAgo(2.3), isOutgoing: false, roomJid: ROOM_JID,
     reactions: { '👍': [SELF_NICK, 'Emma'], '💯': ['Oliver'] },
   },
+  // Closed poll — showcases PollClosedCard (historical result)
+  {
+    type: 'groupchat', id: 'demo-room-poll-old', from: `${ROOM_JID}/Emma`, nick: 'Emma',
+    body: '', timestamp: hoursAgo(2), isOutgoing: false, roomJid: ROOM_JID,
+    poll: {
+      title: 'Team lunch spot this week?',
+      options: [
+        { emoji: '1️⃣', label: 'Pizza Place' },
+        { emoji: '2️⃣', label: 'Sushi Bar' },
+        { emoji: '3️⃣', label: 'Taco Stand' },
+      ],
+      settings: { allowMultiple: false, hideResultsBeforeVote: false },
+    },
+    reactions: {
+      '1️⃣': ['Oliver', 'Liam'],
+      '2️⃣': ['James', SELF_NICK],
+      '3️⃣': ['Emma'],
+    },
+    pollClosedAt: hoursAgo(1.7),
+  },
+  {
+    type: 'groupchat', id: 'demo-room-poll-old-closed', from: `${ROOM_JID}/Emma`, nick: 'Emma',
+    body: '', timestamp: hoursAgo(1.7), isOutgoing: false, roomJid: ROOM_JID,
+    pollClosed: {
+      pollMessageId: 'demo-room-poll-old',
+      title: 'Team lunch spot this week?',
+      results: [
+        { emoji: '1️⃣', label: 'Pizza Place', count: 2, voters: ['Oliver', 'Liam'] },
+        { emoji: '2️⃣', label: 'Sushi Bar', count: 2, voters: ['James', SELF_NICK] },
+        { emoji: '3️⃣', label: 'Taco Stand', count: 1, voters: ['Emma'] },
+      ],
+    },
+  },
   {
     type: 'groupchat', id: 'demo-room-5', from: `${ROOM_JID}/Emma`, nick: 'Emma',
     body: 'Quick update: the deployment pipeline is green again after the fix this morning',
@@ -73,7 +106,7 @@ export const TEAM_ROOM_MESSAGES: RoomMessage[] = [
     body: 'I\'ll sync with Sophia on the API docs — we should align the examples with the new SDK hooks',
     timestamp: minutesAgo(30), isOutgoing: false, roomJid: ROOM_JID,
   },
-  // Poll — showcases poll feature
+  // Poll — showcases single-vote poll (user has voted)
   {
     type: 'groupchat', id: 'demo-room-poll-1', from: `${ROOM_JID}/${SELF_NICK}`, nick: SELF_NICK,
     body: '', timestamp: minutesAgo(25), isOutgoing: true, roomJid: ROOM_JID,
@@ -90,6 +123,27 @@ export const TEAM_ROOM_MESSAGES: RoomMessage[] = [
       '1️⃣': ['Emma', 'Liam'],
       '2️⃣': ['Oliver', 'James'],
       '3️⃣': [SELF_NICK],
+    },
+  },
+  // Multi-vote poll — user has NOT voted (triggers PollBanner)
+  {
+    type: 'groupchat', id: 'demo-room-poll-2', from: `${ROOM_JID}/Oliver`, nick: 'Oliver',
+    body: '', timestamp: minutesAgo(12), isOutgoing: false, roomJid: ROOM_JID,
+    poll: {
+      title: 'Sprint retrospective format?',
+      description: 'Let\'s try something new for the next retro — pick all that sound good',
+      options: [
+        { emoji: '1️⃣', label: 'Start / Stop / Continue' },
+        { emoji: '2️⃣', label: '4Ls — Liked, Learned, Lacked, Longed for' },
+        { emoji: '3️⃣', label: 'Mad / Sad / Glad' },
+        { emoji: '4️⃣', label: 'Silent brainstorm + dot voting' },
+      ],
+      settings: { allowMultiple: true, hideResultsBeforeVote: false },
+    },
+    reactions: {
+      '1️⃣': ['Emma'],
+      '3️⃣': ['Emma', 'James'],
+      '4️⃣': ['James', 'Liam'],
     },
   },
 ]

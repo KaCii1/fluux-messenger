@@ -67,6 +67,25 @@ export const DESIGN_ROOM_MESSAGES: RoomMessage[] = [
     timestamp: hoursAgo(2), isOutgoing: false, roomJid: DESIGN_ROOM_JID,
     reactions: { '📋': [SELF_NICK] },
   },
+  // Poll with hidden results — user has NOT voted (showcases hideResultsBeforeVote)
+  {
+    type: 'groupchat', id: 'demo-design-poll-1', from: `${DESIGN_ROOM_JID}/Mia`, nick: 'Mia',
+    body: '', timestamp: hoursAgo(1.5), isOutgoing: false, roomJid: DESIGN_ROOM_JID,
+    poll: {
+      title: 'Preferred icon style for v0.14?',
+      description: 'Vote before peeking at what others picked',
+      options: [
+        { emoji: '1️⃣', label: 'Outlined' },
+        { emoji: '2️⃣', label: 'Filled' },
+        { emoji: '3️⃣', label: 'Duotone' },
+      ],
+      settings: { allowMultiple: false, hideResultsBeforeVote: true },
+    },
+    reactions: {
+      '1️⃣': ['Oliver'],
+      '3️⃣': ['Emma'],
+    },
+  },
 ]
 
 export function getDesignRoom(): DemoRoomData {
