@@ -15,7 +15,7 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     version: '0.15.0',
-    date: '2026-03-23',
+    date: '2026-03-26',
     sections: [
       {
         type: 'added',
@@ -66,6 +66,11 @@ export const changelog: ChangelogEntry[] = [
           'Lazy-loaded syntax highlighting grammars per language',
           'Web persistent media cache with improved unavailable media UI',
           'Inline context preview for reaction and vote events in activity log',
+          'Interactive demo mode with guided tutorial, room browsing, mock IQ responses, and admin panel',
+          'Theme font-family override via CSS variables',
+          'Poll checkpoint reconciliation with full voter state sync',
+          'Font size adjustment buttons in Appearance settings',
+          'Smooth color transition on avatar presence dot',
         ],
       },
       {
@@ -81,6 +86,8 @@ export const changelog: ChangelogEntry[] = [
           'External links now open in system default browser instead of Tauri webview',
           'Renamed --shiki-* CSS variables to --syntax-* for consistency',
           'Demo data moved from SDK to Fluux web app',
+          'Demo tutorial flow reworked to show basics first',
+          'Read/unread state removed from activity events',
         ],
       },
       {
@@ -125,6 +132,13 @@ export const changelog: ChangelogEntry[] = [
           'Theme-aware highlight colors for search matches',
           'Search/activity preview cleared when leaving those views',
           'Tauri control characters filtered from text input fields',
+          'Use last valid reaction as vote in single-vote polls',
+          'Poll checkpoint consistency with timestamp ordering, union-merge, and deferred verification',
+          'Horizontal overflow scrolling for preformatted text in messages',
+          'Stale client cleaned up on reconnect timeout to prevent hang after wake',
+          'Delayed messages skipped when computing MAM catch-up cursor',
+          'Admin user list refreshed after closing completed command',
+          'New messages marker cleared when user scrolls past it',
         ],
       },
     ],
