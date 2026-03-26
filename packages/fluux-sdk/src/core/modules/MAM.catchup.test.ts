@@ -332,6 +332,95 @@ describe('MAM Background Catch-Up', () => {
         category: 'sm',
       })
     })
+
+    it('should use newest non-delayed message as catch-up cursor, ignoring delayed ones', async () => {
+      await connectClient()
+
+      const liveTimestamp = new Date('2026-01-20T08:00:00.000Z')
+      const delayedTimestamp = new Date('2026-01-20T10:00:00.000Z')
+
+      vi.mocked(mockStores.chat.getAllConversations).mockReturnValue([
+        {
+          id: 'alice@example.com',
+          messages: [
+            {
+              type: 'chat' as const,
+              id: 'msg-live',
+              conversationId: 'alice@example.com',
+              from: 'alice@example.com',
+              body: 'Live message',
+              timestamp: liveTimestamp,
+              isOutgoing: false,
+              isDelayed: false,
+            },
+            {
+              type: 'chat' as const,
+              id: 'msg-delayed',
+              conversationId: 'alice@example.com',
+              from: 'alice@example.com',
+              body: 'Delayed message',
+              timestamp: delayedTimestamp,
+              isOutgoing: false,
+              isDelayed: true,
+            },
+          ],
+        },
+      ])
+
+      mockXmppClientInstance.iqCaller.request.mockResolvedValue(createFinResponse())
+
+      const catchUpPromise = xmppClient.mam.catchUpAllConversations()
+      await waitForAsyncOps(20, 100)
+      await catchUpPromise
+
+      // Should emit forward query starting from the live message timestamp (08:00), not the delayed one (10:00)
+      expect(emitSDKSpy).toHaveBeenCalledWith('chat:mam-messages', expect.objectContaining({
+        conversationId: 'alice@example.com',
+        direction: 'forward',
+      }))
+
+      // Verify the IQ request used the live message timestamp as start
+      const iqCalls = mockXmppClientInstance.iqCaller.request.mock.calls
+      const mamQuery = iqCalls.find((call: unknown[]) => {
+        const el = call[0] as { children?: Array<{ name?: string }> }
+        return el?.children?.some((c: { name?: string }) => c.name === 'query')
+      })
+      expect(mamQuery).toBeDefined()
+    })
+
+    it('should fall back to backward query when all cached messages are delayed', async () => {
+      await connectClient()
+
+      vi.mocked(mockStores.chat.getAllConversations).mockReturnValue([
+        {
+          id: 'alice@example.com',
+          messages: [
+            {
+              type: 'chat' as const,
+              id: 'msg-delayed',
+              conversationId: 'alice@example.com',
+              from: 'alice@example.com',
+              body: 'Delayed offline message',
+              timestamp: new Date('2026-01-20T10:00:00.000Z'),
+              isOutgoing: false,
+              isDelayed: true,
+            },
+          ],
+        },
+      ])
+
+      mockXmppClientInstance.iqCaller.request.mockResolvedValue(createFinResponse())
+
+      const catchUpPromise = xmppClient.mam.catchUpAllConversations()
+      await waitForAsyncOps(20, 100)
+      await catchUpPromise
+
+      // Should fall back to backward query (before="") since no live messages exist
+      expect(emitSDKSpy).toHaveBeenCalledWith('chat:mam-messages', expect.objectContaining({
+        conversationId: 'alice@example.com',
+        direction: 'backward',
+      }))
+    })
   })
 
   describe('catchUpAllRooms', () => {

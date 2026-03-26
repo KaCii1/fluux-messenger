@@ -2245,6 +2245,95 @@ describe('XMPPClient MAM', () => {
       })
     })
 
+    it('should preserve originalBody from cached message when emitting unresolved corrections', async () => {
+      let stanzaListener: ((stanza: any) => void) | null = null
+      const originalOn = mockXmppClientInstance.on
+      mockXmppClientInstance.on = vi.fn().mockImplementation((event: string, listener: Function) => {
+        if (event === 'stanza') stanzaListener = listener as (stanza: any) => void
+        return originalOn.call(mockXmppClientInstance, event, listener)
+      }) as typeof mockXmppClientInstance.on
+      await connectClient()
+
+      // Mock the store to return a cached message with the original body
+      vi.mocked(mockStores.chat.getMessage).mockReturnValue({
+        type: 'chat',
+        id: 'old-msg-with-body',
+        conversationId: 'alice@example.com',
+        from: 'alice@example.com',
+        body: 'https://example.com/original-link',
+        timestamp: new Date('2024-01-15T11:00:00Z'),
+        isOutgoing: false,
+      })
+
+      const mamResponse = createMockElement('iq', { type: 'result' }, [
+        {
+          name: 'fin',
+          attrs: { xmlns: 'urn:xmpp:mam:2', complete: 'true' },
+          children: [],
+        },
+      ])
+
+      mockXmppClientInstance.iqCaller.request = vi.fn().mockImplementation(async (iq) => {
+        const queryChild = iq.children?.find((c: any) => c.name === 'query')
+        const queryId = queryChild?.attrs?.queryid || 'test'
+
+        if (stanzaListener) {
+          // Correction stanza targeting a message already in the store
+          const correctionMsg = createMockElement('message', { from: 'example.com' }, [
+            {
+              name: 'result',
+              attrs: { xmlns: 'urn:xmpp:mam:2', queryid: queryId, id: 'archive-correction' },
+              children: [
+                {
+                  name: 'forwarded',
+                  attrs: { xmlns: 'urn:xmpp:forward:0' },
+                  children: [
+                    {
+                      name: 'delay',
+                      attrs: { xmlns: 'urn:xmpp:delay', stamp: '2024-01-15T12:00:00Z' },
+                    },
+                    {
+                      name: 'message',
+                      attrs: { from: 'alice@example.com/resource', to: 'me@example.com', type: 'chat', id: 'correction-stanza' },
+                      children: [
+                        { name: 'body', text: 'Edited message without link' },
+                        {
+                          name: 'replace',
+                          attrs: { xmlns: 'urn:xmpp:message-correct:0', id: 'old-msg-with-body' },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ])
+          stanzaListener(correctionMsg)
+        }
+
+        return mamResponse
+      })
+
+      vi.mocked(mockStores.connection.getJid).mockReturnValue('me@example.com/myresource')
+
+      await xmppClient.chat.queryMAM({ with: 'alice@example.com' })
+
+      // The unresolved correction should include originalBody from the cached message
+      const updateEvents = emitSDKSpy.mock.calls.filter(
+        ([event]: [string, ...unknown[]]) => event === 'chat:message-updated'
+      )
+      expect(updateEvents.length).toBe(1)
+      expect(updateEvents[0][1]).toMatchObject({
+        conversationId: 'alice@example.com',
+        messageId: 'old-msg-with-body',
+        updates: {
+          body: 'Edited message without link',
+          isEdited: true,
+          originalBody: 'https://example.com/original-link',
+        },
+      })
+    })
+
     it('should emit unresolved retractions as events for messages already in store', async () => {
       let stanzaListener: ((stanza: any) => void) | null = null
       const originalOn = mockXmppClientInstance.on

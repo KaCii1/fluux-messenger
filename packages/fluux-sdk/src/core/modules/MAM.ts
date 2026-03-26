@@ -87,6 +87,18 @@ interface UnresolvedModifications {
 }
 
 /**
+ * Find the newest message in an array that was NOT delivered with delay (offline).
+ * Delayed messages should not advance the MAM catch-up cursor, otherwise the
+ * forward query skips the gap where originals of corrections may live.
+ */
+function findNewestLiveMessage(messages: Array<{ isDelayed?: boolean; timestamp?: Date }>): { timestamp: Date } | undefined {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (!messages[i].isDelayed && messages[i].timestamp) return messages[i] as { timestamp: Date }
+  }
+  return undefined
+}
+
+/**
  * Message Archive Management (XEP-0313) module.
  *
  * Retrieves archived messages from the server's message archive for both
@@ -807,18 +819,21 @@ export class MAM extends BaseModule {
           if (this.deps.stores?.connection.getStatus() !== 'online') return
 
           const messages = conv.messages || []
-          const newestCachedMessage = messages[messages.length - 1]
+          // Use the newest non-delayed (live) message as the catch-up cursor.
+          // Delayed messages (offline delivery) should not advance the cursor,
+          // otherwise MAM catch-up skips the gap where originals of corrections live.
+          const newestLiveMessage = findNewestLiveMessage(messages)
 
-          if (newestCachedMessage?.timestamp) {
-            // Forward query from newest cached message
-            const startTime = new Date(newestCachedMessage.timestamp.getTime() + 1)
+          if (newestLiveMessage?.timestamp) {
+            // Forward query from the last live message
+            const startTime = new Date(newestLiveMessage.timestamp.getTime() + 1)
             await this.queryArchive({
               with: conv.id,
               start: startTime.toISOString(),
               max: 100,
             })
           } else {
-            // No cached messages — fetch latest
+            // No live messages (all delayed or empty) — fetch latest from MAM
             await this.queryArchive({
               with: conv.id,
               before: '',
@@ -932,18 +947,19 @@ export class MAM extends BaseModule {
           // Re-read room after cache load (store was mutated)
           const updatedRoom = this.deps.stores?.room.getRoom(room.jid)
           const messages = updatedRoom?.messages || []
-          const newestCachedMessage = messages[messages.length - 1]
+          // Use the newest non-delayed (live) message as the catch-up cursor.
+          const newestLiveMessage = findNewestLiveMessage(messages)
 
-          if (newestCachedMessage?.timestamp) {
-            // Forward query from newest cached message
-            const startTime = new Date(newestCachedMessage.timestamp.getTime() + 1)
+          if (newestLiveMessage?.timestamp) {
+            // Forward query from the last live message
+            const startTime = new Date(newestLiveMessage.timestamp.getTime() + 1)
             await this.queryRoomArchive({
               roomJid: room.jid,
               start: startTime.toISOString(),
               max: 100,
             })
           } else {
-            // No cached messages — fetch latest
+            // No live messages (all delayed or empty) — fetch latest from MAM
             await this.queryRoomArchive({
               roomJid: room.jid,
               before: '',
@@ -1385,13 +1401,17 @@ export class MAM extends BaseModule {
     }
 
     for (const correction of unresolved.corrections) {
-      const correctionData = applyCorrection(correction.messageEl, correction.body, '')
+      // Read the original body from the cached message in the store
+      const cachedMessage = this.deps.stores?.chat.getMessage(conversationId, correction.targetId)
+      const originalBody = cachedMessage?.originalBody ?? cachedMessage?.body ?? ''
+      const correctionData = applyCorrection(correction.messageEl, correction.body, originalBody)
       this.deps.emitSDK('chat:message-updated', {
         conversationId,
         messageId: correction.targetId,
         updates: {
           body: correctionData.body,
           isEdited: correctionData.isEdited,
+          originalBody: correctionData.originalBody,
           ...(correctionData.attachment ? { attachment: correctionData.attachment } : {}),
         },
       })
@@ -1435,13 +1455,17 @@ export class MAM extends BaseModule {
     }
 
     for (const correction of unresolved.corrections) {
-      const correctionData = applyCorrection(correction.messageEl, correction.body, '')
+      // Read the original body from the cached message in the store
+      const cachedMessage = this.deps.stores?.room.getMessage(roomJid, correction.targetId)
+      const originalBody = cachedMessage?.originalBody ?? cachedMessage?.body ?? ''
+      const correctionData = applyCorrection(correction.messageEl, correction.body, originalBody)
       this.deps.emitSDK('room:message-updated', {
         roomJid,
         messageId: correction.targetId,
         updates: {
           body: correctionData.body,
           isEdited: correctionData.isEdited,
+          originalBody: correctionData.originalBody,
           ...(correctionData.attachment ? { attachment: correctionData.attachment } : {}),
         },
       })

@@ -18,6 +18,17 @@ import { logInfo } from './logger'
 import { getDomain } from './jid'
 
 /**
+ * Find the newest message that was NOT delivered with delay (offline).
+ * Delayed messages should not advance the MAM catch-up cursor.
+ */
+function findNewestLiveMessage(messages: Array<{ isDelayed?: boolean; timestamp?: Date }>): { timestamp: Date } | undefined {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (!messages[i].isDelayed && messages[i].timestamp) return messages[i] as { timestamp: Date }
+  }
+  return undefined
+}
+
+/**
  * Options for configuring side effects behavior.
  */
 export interface SideEffectsOptions {
@@ -90,12 +101,15 @@ export function setupChatSideEffects(
       await chatStore.getState().loadMessagesFromCache(conversationId, { limit: 100 })
 
       // Re-read messages after cache load (store was mutated)
-      const cachedMessages = chatStore.getState().messages.get(conversationId)
-      const newestCachedMessage = cachedMessages?.[cachedMessages.length - 1]
+      const cachedMessages = chatStore.getState().messages.get(conversationId) || []
+      // Use the newest non-delayed (live) message as the catch-up cursor.
+      // Delayed messages (offline delivery) should not advance the cursor,
+      // otherwise MAM catch-up skips the gap where originals of corrections live.
+      const newestLiveMessage = findNewestLiveMessage(cachedMessages)
 
       const queryOptions: { with: string; start?: string } = { with: conversation.id }
-      if (newestCachedMessage?.timestamp) {
-        const startTime = new Date(newestCachedMessage.timestamp.getTime() + 1)
+      if (newestLiveMessage?.timestamp) {
+        const startTime = new Date(newestLiveMessage.timestamp.getTime() + 1)
         queryOptions.start = startTime.toISOString()
       }
 
