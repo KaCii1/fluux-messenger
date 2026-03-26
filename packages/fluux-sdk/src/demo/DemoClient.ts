@@ -29,6 +29,7 @@ import { chatStore } from '../stores/chatStore'
 import { roomStore } from '../stores/roomStore'
 import { activityLogStore } from '../stores/activityLogStore'
 import type { ActivityEventInput } from '../core/types/activity'
+import type { RoomMessage } from '../core/types/room'
 import type { DemoData, DemoAnimationStep } from './types'
 
 type AnimationState = 'idle' | 'playing' | 'paused' | 'stopped'
@@ -59,7 +60,89 @@ export class DemoClient extends XMPPClient {
   // Modules call sendStanza/sendIQ via the deps closure, which dispatches
   // to these overrides. This allows chat.sendMessage() etc. to work:
   // the stanza is silently dropped but the SDK events still fire.
-  protected override async sendStanza(): Promise<void> {}
+  //
+  // For groupchat messages we simulate the server echo: a real MUC server
+  // reflects the message back to the sender, which is what triggers the
+  // store update. Without this echo the sent message would vanish.
+  protected override async sendStanza(stanza: any): Promise<void> {
+    if (stanza?.attrs?.type !== 'groupchat' || stanza?.name !== 'message') return
+
+    const roomJid = stanza.attrs.to as string
+    const room = roomStore.getState().getRoom(roomJid)
+    if (!room) return
+
+    const nick = room.nickname
+    const body = stanza.getChildText('body') ?? ''
+    const id = stanza.attrs.id as string
+
+    // Parse reply info from the stanza (XEP-0461)
+    const replyEl = stanza.getChild('reply')
+    const replyTo = replyEl
+      ? { id: replyEl.attrs.id as string, to: replyEl.attrs.to as string | undefined }
+      : undefined
+
+    // Parse attachment from OOB element (XEP-0066)
+    const oobEl = stanza.getChild('x')
+    const fileEl = stanza.getChild('file')
+    let attachment: RoomMessage['attachment'] | undefined
+    if (oobEl?.getChildText('url')) {
+      const thumbEl = oobEl.getChild('thumbnail')
+      attachment = {
+        url: oobEl.getChildText('url')!,
+        ...(fileEl?.getChildText('media-type') && { mediaType: fileEl.getChildText('media-type')! }),
+        ...(fileEl?.getChildText('name') && { name: fileEl.getChildText('name')! }),
+        ...(fileEl?.getChildText('size') && { size: Number(fileEl.getChildText('size')) }),
+        ...(fileEl?.getChildText('width') && { width: Number(fileEl.getChildText('width')) }),
+        ...(fileEl?.getChildText('height') && { height: Number(fileEl.getChildText('height')) }),
+        ...(thumbEl && {
+          thumbnail: {
+            uri: thumbEl.attrs.uri as string,
+            mediaType: thumbEl.attrs['media-type'] as string,
+            width: Number(thumbEl.attrs.width),
+            height: Number(thumbEl.attrs.height),
+          },
+        }),
+      }
+    }
+
+    // Strip reply fallback from body (everything before user's actual text)
+    const fallbackEl = stanza.getChildren('fallback')?.find(
+      (f: any) => f.attrs?.for?.includes('reply')
+    )
+    let processedBody = body
+    if (fallbackEl) {
+      const bodyRange = fallbackEl.getChild('body')
+      if (bodyRange?.attrs?.end) {
+        processedBody = body.slice(Number(bodyRange.attrs.end))
+      }
+    }
+    // Also strip OOB fallback (URL appended at end)
+    const oobFallbackEl = stanza.getChildren('fallback')?.find(
+      (f: any) => f.attrs?.for?.includes('oob')
+    )
+    if (oobFallbackEl) {
+      const bodyRange = oobFallbackEl.getChild('body')
+      if (bodyRange?.attrs?.start) {
+        processedBody = processedBody.slice(0, Number(bodyRange.attrs.start)).trimEnd()
+      }
+    }
+
+    const message: RoomMessage = {
+      type: 'groupchat',
+      id,
+      originId: id,
+      roomJid,
+      from: `${roomJid}/${nick}`,
+      nick,
+      body: processedBody,
+      timestamp: new Date(),
+      isOutgoing: true,
+      ...(replyTo && { replyTo }),
+      ...(attachment && { attachment }),
+    }
+
+    this.emitSDK('room:message', { roomJid, message, incrementUnread: false })
+  }
   protected override async sendIQ(): Promise<any> {
     // Return a stub Element-like object so callers using .getChild()
     // etc. get null/empty results instead of crashing on null.
