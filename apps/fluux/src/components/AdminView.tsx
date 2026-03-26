@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Wrench, Users, Hash, User, Plus, ArrowLeft } from 'lucide-react'
-import { useAdmin, type AdminCategory, type AdminUser, type AdminRoom } from '@fluux/sdk'
+import { useAdmin, useXMPP, type AdminCategory, type AdminUser, type AdminRoom } from '@fluux/sdk'
 import { useWindowDrag, useModalInput } from '@/hooks'
 import { Tooltip } from './Tooltip'
 import { ModalShell } from './ModalShell'
@@ -21,6 +21,7 @@ interface AdminViewProps {
 export function AdminView({ activeCategory, onBack }: AdminViewProps) {
   const { t } = useTranslation()
   const { titleBarClass } = useWindowDrag()
+  const { client } = useXMPP()
   const {
     currentSession,
     isExecuting,
@@ -203,10 +204,15 @@ export function AdminView({ activeCategory, onBack }: AdminViewProps) {
     void fetchUsers()
   }
 
-  // Room action handlers (these would need MUC admin commands)
-  const handleDestroyRoom = (_jid: string) => {
-    // TODO: Implement room destruction via MUC admin
-    console.log('Destroy room:', _jid)
+  const handleDestroyRoom = async (jid: string) => {
+    try {
+      await client.muc.destroyRoom(jid)
+      setSelectedRoom(null)
+      resetRoomList()
+      void fetchRooms()
+    } catch (err) {
+      console.error('Failed to destroy room:', err)
+    }
   }
 
 
