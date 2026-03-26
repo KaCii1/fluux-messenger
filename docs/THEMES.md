@@ -127,6 +127,22 @@ From these, the app computes:
 
 **Tip:** Lower the lightness by ~8-10% for light mode so the accent remains readable on light backgrounds.
 
+### Typography
+
+Themes can optionally override the UI and monospace font families. Font overrides reference system-installed or user-provided fonts — themes never bundle font files. Always include a fallback stack ending with the default:
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `--fluux-font-ui` | `'Inter', sans-serif` | UI typeface for all text |
+| `--fluux-font-mono` | `monospace` | Code blocks, console, fixed-width text |
+
+```json
+"--fluux-font-ui": "\"SF Pro Display\", \"Segoe UI\", system-ui, sans-serif",
+"--fluux-font-mono": "\"JetBrains Mono\", \"Fira Code\", monospace"
+```
+
+If the specified fonts aren't installed on the user's system, the browser falls through the fallback stack gracefully. The built-in GitHub theme demonstrates this pattern with a system font stack.
+
 ### Palette Colors
 
 Named colors for status indicators and semantic meaning:

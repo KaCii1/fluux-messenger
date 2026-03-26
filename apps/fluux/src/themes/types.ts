@@ -38,7 +38,18 @@ export interface ThemeDefinition {
   version: string
   /** Short description */
   description: string
-  /** CSS variable overrides keyed by mode */
+  /**
+   * CSS variable overrides keyed by mode.
+   *
+   * In addition to color variables, themes may override typography variables:
+   *   --fluux-font-ui   — UI typeface (default: 'Inter', sans-serif)
+   *   --fluux-font-mono  — Monospace typeface (default: monospace)
+   *
+   * Font overrides should reference system-installed or user-provided fonts
+   * (never bundled). Always include a sensible fallback stack ending with
+   * the default value, e.g.:
+   *   '--fluux-font-ui': '"SF Pro Display", "Segoe UI", system-ui, sans-serif'
+   */
   variables: {
     dark?: Record<string, string>
     light?: Record<string, string>

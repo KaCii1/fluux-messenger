@@ -8,6 +8,8 @@ export const githubTheme: ThemeDefinition = {
   description: 'GitHub\'s clean design system from the Primer color palette',
   variables: {
     dark: {
+      // Foundation — typography (GitHub system font stack)
+      '--fluux-font-ui': '"SF Pro Display", "Segoe UI", system-ui, sans-serif',
       // Foundation — neutral ramp (GitHub Dark Default)
       '--fluux-base-00': '#010409',
       '--fluux-base-05': '#0d1117', // canvas.default
@@ -49,6 +51,8 @@ export const githubTheme: ThemeDefinition = {
       '--syntax-token-link': '#2f81f7',
     },
     light: {
+      // Foundation — typography (GitHub system font stack)
+      '--fluux-font-ui': '"SF Pro Display", "Segoe UI", system-ui, sans-serif',
       // Foundation — neutral ramp (GitHub Light Default)
       '--fluux-base-00': '#ffffff', // canvas.default
       '--fluux-base-05': '#f6f8fa', // canvas.muted
