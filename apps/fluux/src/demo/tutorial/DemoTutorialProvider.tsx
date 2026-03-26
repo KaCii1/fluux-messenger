@@ -4,7 +4,7 @@
  */
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
-import type { DemoClient } from '@fluux/sdk'
+import type { DemoClient, DemoAnimationStep } from '@fluux/sdk'
 import { DemoTooltip } from './DemoTooltip'
 import { getTutorialStep } from './tutorialSteps'
 import { useDemoUploadSimulation, type DemoUploadState } from '../useDemoUploadSimulation'
@@ -27,10 +27,11 @@ export function useDemoTutorial() {
 interface DemoTutorialProviderProps {
   enabled: boolean
   client: DemoClient
+  animation?: DemoAnimationStep[]
   children: React.ReactNode
 }
 
-export function DemoTutorialProvider({ enabled, client, children }: DemoTutorialProviderProps) {
+export function DemoTutorialProvider({ enabled, client, animation, children }: DemoTutorialProviderProps) {
   const [activeStep, setActiveStep] = useState<TutorialStep | null>(null)
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set())
   const clientRef = useRef(client)
@@ -67,6 +68,14 @@ export function DemoTutorialProvider({ enabled, client, children }: DemoTutorial
     const unsubscribe = client.subscribe('demo:custom', handler)
     return unsubscribe
   }, [enabled, client, completedSteps])
+
+  // Start animation inside React lifecycle so StrictMode's
+  // destroy/remount cycle cannot kill timers permanently.
+  useEffect(() => {
+    if (!animation || animation.length === 0) return
+    const stop = client.startAnimation(animation)
+    return stop
+  }, [client, animation])
 
   const handleComplete = useCallback(() => {
     if (activeStep) {

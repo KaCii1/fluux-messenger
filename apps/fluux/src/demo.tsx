@@ -155,7 +155,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <RenderLoopBoundary>
       <XMPPProvider client={demoClient}>
         <ThemeProvider>
-          <DemoTutorialProvider enabled={tutorialEnabled} client={demoClient}>
+          <DemoTutorialProvider enabled={tutorialEnabled} client={demoClient} animation={demoAnimation}>
             <HashRouter>
               <App />
             </HashRouter>
@@ -166,7 +166,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   </React.StrictMode>,
 )
 
-// Start live animations after React has mounted
-setTimeout(() => {
-  demoClient.startAnimation(demoAnimation)
-}, 100)
+// Animation is started inside DemoTutorialProvider's useEffect to avoid
+// a timing race with React StrictMode's mount/destroy/remount cycle.
