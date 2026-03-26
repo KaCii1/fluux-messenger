@@ -342,7 +342,7 @@ function CodeExpandModal({
       panelClassName="max-h-dvh md:max-h-[90vh] h-dvh md:h-auto !mx-0 !rounded-none md:!mx-4 md:!rounded-lg flex flex-col"
     >
       <div className="flex-1 overflow-auto min-h-0">
-        <pre className="bg-fluux-bg/50 text-fluux-text px-4 py-3 font-mono text-sm min-h-full">
+        <pre className="bg-fluux-bg/50 text-fluux-text px-4 py-3 overflow-x-auto font-mono text-sm min-h-full">
           <CodeContent code={code} highlightedHtml={highlightedHtml} />
         </pre>
       </div>
