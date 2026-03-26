@@ -96,6 +96,11 @@ export const TEAM_ROOM_MESSAGES: RoomMessage[] = [
     timestamp: minutesAgo(40), isOutgoing: false, roomJid: ROOM_JID,
   },
   {
+    type: 'groupchat', id: 'demo-room-7b2', from: `${ROOM_JID}/Noah`, nick: 'Noah',
+    body: 'Hey team — just joined! I\'ll be helping with the backend migration this sprint',
+    timestamp: minutesAgo(38), isOutgoing: false, roomJid: ROOM_JID,
+  },
+  {
     type: 'groupchat', id: 'demo-room-7c', from: `${ROOM_JID}/Emma`, nick: 'Emma',
     body: 'Feature request from the beta testers: they want message search to support date filters',
     timestamp: minutesAgo(35), isOutgoing: false, roomJid: ROOM_JID,
@@ -173,6 +178,7 @@ export function getTeamRoom(): DemoRoomData {
       { nick: 'James', jid: `james@${DOMAIN}`, affiliation: 'member', role: 'participant', show: 'away' },
       { nick: 'Sophia', jid: `sophia@${DOMAIN}`, affiliation: 'member', role: 'participant', show: 'dnd' },
       { nick: 'Liam', jid: `liam@${DOMAIN}`, affiliation: 'member', role: 'participant' },
+      { nick: 'Noah', jid: `noah@${DOMAIN}`, affiliation: 'member', role: 'participant' },
     ],
     messages: TEAM_ROOM_MESSAGES,
   }

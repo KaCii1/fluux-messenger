@@ -61,52 +61,27 @@ describe('Avatar', () => {
     })
   })
 
-  describe('ensureContrastWithWhite (via fallbackColor)', () => {
-    it('darkens a very light color for avatar background', () => {
-      const { container } = render(
-        <Avatar identifier="alice" name="Alice" fallbackColor="#ffffff" />
-      )
-      // Find the div with inline style (the letter background)
-      const styledDiv = container.querySelector('[style*="background"]')
-      expect(styledDiv).toBeTruthy()
-      const style = styledDiv?.getAttribute('style') || ''
-      // White (#ffffff) should be darkened to ensure contrast with white text
-      // The result should NOT be #ffffff
-      expect(style).not.toContain('#ffffff')
-      expect(style).not.toContain('rgb(255, 255, 255)')
-    })
-
-    it('keeps a dark color unchanged', () => {
-      const { container } = render(
-        <Avatar identifier="alice" name="Alice" fallbackColor="#222222" />
-      )
-      const styledDiv = container.querySelector('[style*="background"]')
-      expect(styledDiv).toBeTruthy()
-      const style = styledDiv?.getAttribute('style') || ''
-      // Dark color should be unchanged (browser converts to rgb(34, 34, 34))
-      expect(style).toContain('rgb(34, 34, 34)')
-    })
-
-    it('darkens a light pastel color', () => {
-      const { container } = render(
-        <Avatar identifier="alice" name="Alice" fallbackColor="#aaccff" />
-      )
-      const styledDiv = container.querySelector('[style*="background"]')
-      expect(styledDiv).toBeTruthy()
-      const style = styledDiv?.getAttribute('style') || ''
-      // Light blue should be darkened
-      expect(style).not.toContain('#aaccff')
-    })
-
-    it('keeps a medium-dark color unchanged', () => {
+  describe('fallbackColor used directly (matches nickname color)', () => {
+    it('uses fallbackColor as-is without contrast adjustment', () => {
       const { container } = render(
         <Avatar identifier="alice" name="Alice" fallbackColor="#336699" />
       )
       const styledDiv = container.querySelector('[style*="background"]')
       expect(styledDiv).toBeTruthy()
       const style = styledDiv?.getAttribute('style') || ''
-      // Medium blue has enough contrast, should be kept (browser converts to rgb(51, 102, 153))
+      // fallbackColor is used directly to match nickname text color
       expect(style).toContain('rgb(51, 102, 153)')
+    })
+
+    it('uses fallbackColor even for light colors', () => {
+      const { container } = render(
+        <Avatar identifier="alice" name="Alice" fallbackColor="#aaccff" />
+      )
+      const styledDiv = container.querySelector('[style*="background"]')
+      expect(styledDiv).toBeTruthy()
+      const style = styledDiv?.getAttribute('style') || ''
+      // Light color is kept as-is for consistency with nickname
+      expect(style).toContain('rgb(170, 204, 255)')
     })
   })
 

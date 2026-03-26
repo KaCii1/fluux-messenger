@@ -197,8 +197,7 @@ export function Avatar({
 
   // Generate consistent background color from identifier, or use custom fallbackColor
   const backgroundColor = fallbackColor
-    ? ensureContrastWithWhite(fallbackColor)
-    : generateConsistentColorHexSync(identifier, { saturation: 60, lightness: 45 })
+    || ensureContrastWithWhite(generateConsistentColorHexSync(identifier, { saturation: 60, lightness: 45 }))
 
   // Get the display name and first letter
   const displayName = name || identifier
