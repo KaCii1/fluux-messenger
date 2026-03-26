@@ -5,21 +5,25 @@
  * Each step has a `content` (main text) and optional `actionHint` (bold CTA).
  */
 const tutorialFR = {
-  'lightbox-hint': {
+  'welcome-hint': {
+    content: 'Bienvenue sur Fluux ! Voici votre espace de messagerie — les conversations à gauche, les messages à droite.',
+    actionHint: 'Commençons par explorer vos conversations',
+  },
+  'conversations-hint': {
+    content: 'L\'onglet Messages affiche vos conversations individuelles. Emma vient de vous envoyer une capture d\'écran.',
+    actionHint: 'Cliquez sur une conversation pour la consulter',
+  },
+  'rooms-hint': {
+    content: 'Les salons sont des conversations de groupe où votre équipe collabore en temps réel.',
+    actionHint: 'Cliquez sur l\'icône Salons pour voir ce que fait votre équipe',
+  },
+  'image-hint': {
     content: 'Les images peuvent être affichées en plein écran avec une option de téléchargement.',
     actionHint: 'Cliquez sur une image pour ouvrir la visionneuse',
-  },
-  'image-lightbox': {
-    content: 'La visionneuse permet le téléchargement et l\'affichage en plein écran.',
-    actionHint: 'Cliquez sur la nouvelle image pour la voir dans la visionneuse',
   },
   'file-upload-hint': {
     content: 'Vous pouvez partager des fichiers, images et documents avec vos contacts.',
     actionHint: 'Essayez le bouton joindre pour envoyer un fichier',
-  },
-  'poll-hint': {
-    content: 'Les sondages permettent aux membres de voter sur des décisions directement dans le chat.',
-    actionHint: 'Ouvrez Team Chat pour trouver le sondage et voter',
   },
   'activity-log-hint': {
     content: 'L\'onglet Activité affiche les demandes d\'abonnement, réactions et invitations.',
@@ -38,24 +42,8 @@ const tutorialFR = {
     actionHint: 'Appuyez sur ? pour voir les raccourcis clavier',
   },
   'theme-hint': {
-    content: 'Personnalisez l\'apparence avec des thèmes, couleurs d\'accentuation, polices et extraits CSS.',
-    actionHint: 'Ouvrez Paramètres > Apparence pour essayer les couleurs et les thèmes',
-  },
-  'language-hint': {
-    content: 'L\'interface est disponible en plus de 30 langues. Le changement est instantané.',
-    actionHint: 'Essayez Paramètres > Langue pour changer la langue de l\'interface',
-  },
-  'message-deletion-hint': {
-    content: 'Les modérateurs peuvent supprimer des messages avec un motif. Les messages supprimés affichent un espace réservé.',
-    actionHint: 'Consultez Design Review — un message a été modéré par Oliver',
-  },
-  'muc-management-hint': {
-    content: 'En tant que propriétaire du salon, vous pouvez gérer les rôles, expulser/bannir des utilisateurs et configurer le salon.',
-    actionHint: 'Dans Team Chat, cliquez sur le nom d\'un membre pour voir les options de modération',
-  },
-  'room-members-hint': {
-    content: 'Le panneau Membres affiche les propriétaires, administrateurs, membres et utilisateurs bannis.',
-    actionHint: 'Essayez le bouton Membres dans l\'en-tête du salon',
+    content: 'Personnalisez Fluux — thèmes, couleurs d\'accentuation, polices et plus de 30 langues en un clic.',
+    actionHint: 'Ouvrez les Paramètres pour essayer les couleurs, thèmes et le changement de langue',
   },
   'admin-hint': {
     content: 'Le tableau de bord Admin permet aux opérateurs de gérer les utilisateurs, salons et paramètres du serveur.',
@@ -64,10 +52,6 @@ const tutorialFR = {
   'xmpp-console-hint': {
     content: 'Pour les développeurs : la console XMPP affiche tout le trafic protocolaire — stanzas entrants et sortants.',
     actionHint: 'Ouvrez Paramètres > Console XMPP pour voir les paquets en direct',
-  },
-  'history-hint': {
-    content: 'Les messages sont synchronisés depuis l\'archive du serveur (MAM). Faites défiler vers le haut pour charger l\'historique.',
-    actionHint: 'Remontez en haut d\'une conversation pour voir l\'historique complet',
   },
   'tour-complete': {
     content: 'C\'est la fin de la visite ! Toutes les fonctionnalités sont actives — explorez librement. Profitez de Fluux ! ✨',

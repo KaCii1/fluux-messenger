@@ -1,17 +1,17 @@
 /**
- * Act 5 — Rich Features & Management (3:15–4:15)
- * Theme, language, code highlights, delete/retract, room management.
+ * Act 5 — Customization & Power Features (3:15–4:15)
+ * Keyboard shortcuts, theme/language, code highlights, moderation (ambient).
  */
 
 import type { DemoAnimationStep } from '@fluux/sdk'
 import { DOMAIN, ROOM_JID, DESIGN_ROOM_JID } from '../constants'
 
 export const act5Steps: DemoAnimationStep[] = [
-  // Tutorial: theme/accent
+  // Tutorial: keyboard shortcuts
   {
     delayMs: 195_000,
     action: 'custom',
-    data: { type: 'tutorial', stepId: 'theme-hint' },
+    data: { type: 'tutorial', stepId: 'keyboard-shortcuts-hint' },
   },
   // James sends a Python code block
   {
@@ -25,15 +25,15 @@ export const act5Steps: DemoAnimationStep[] = [
       },
     },
   },
-  // Tutorial: language switch
+  // Tutorial: theme/language/customization
   {
-    delayMs: 215_000,
+    delayMs: 210_000,
     action: 'custom',
-    data: { type: 'tutorial', stepId: 'language-hint' },
+    data: { type: 'tutorial', stepId: 'theme-hint' },
   },
-  // Mia retracts a message in Design room (moderator action)
+  // Mia posts a message in Design room (will be moderated)
   {
-    delayMs: 225_000,
+    delayMs: 220_000,
     action: 'room-message',
     data: {
       roomJid: DESIGN_ROOM_JID,
@@ -47,7 +47,7 @@ export const act5Steps: DemoAnimationStep[] = [
   },
   // Moderator deletes it
   {
-    delayMs: 230_000,
+    delayMs: 225_000,
     action: 'room-message-updated',
     data: {
       roomJid: DESIGN_ROOM_JID,
@@ -62,27 +62,9 @@ export const act5Steps: DemoAnimationStep[] = [
       },
     },
   },
-  // Tutorial: message deletion
+  // More poll votes trickle in
   {
-    delayMs: 232_000,
-    action: 'custom',
-    data: { type: 'tutorial', stepId: 'message-deletion-hint' },
-  },
-  // Tutorial: MUC management
-  {
-    delayMs: 237_000,
-    action: 'custom',
-    data: { type: 'tutorial', stepId: 'muc-management-hint' },
-  },
-  // Tutorial: room members
-  {
-    delayMs: 242_000,
-    action: 'custom',
-    data: { type: 'tutorial', stepId: 'room-members-hint' },
-  },
-  // Reaction burst on poll
-  {
-    delayMs: 248_000,
+    delayMs: 235_000,
     action: 'room-reaction',
     data: {
       roomJid: ROOM_JID,
@@ -92,7 +74,7 @@ export const act5Steps: DemoAnimationStep[] = [
     },
   },
   {
-    delayMs: 250_000,
+    delayMs: 237_000,
     action: 'room-reaction',
     data: {
       roomJid: ROOM_JID,
@@ -102,7 +84,7 @@ export const act5Steps: DemoAnimationStep[] = [
     },
   },
   {
-    delayMs: 252_000,
+    delayMs: 239_000,
     action: 'room-reaction',
     data: {
       roomJid: ROOM_JID,

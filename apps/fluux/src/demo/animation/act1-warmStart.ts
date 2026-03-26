@@ -1,26 +1,38 @@
 /**
- * Act 1 — Warm Start (0:00–0:30)
- * Shows the app is alive. Typing indicator, incoming message, presence change.
+ * Act 1 — Welcome & Navigation (0:00–0:45)
+ * Orients the user, then shows the app is alive with typing and presence.
  */
 
 import type { DemoAnimationStep } from '@fluux/sdk'
 import { DOMAIN } from '../constants'
 
 export const act1Steps: DemoAnimationStep[] = [
-  // Emma starts typing
+  // Tutorial: welcome orientation
   {
     delayMs: 3_000,
+    action: 'custom',
+    data: { type: 'tutorial', stepId: 'welcome-hint' },
+  },
+  // Tutorial: conversations sidebar
+  {
+    delayMs: 12_000,
+    action: 'custom',
+    data: { type: 'tutorial', stepId: 'conversations-hint' },
+  },
+  // Emma starts typing
+  {
+    delayMs: 25_000,
     action: 'typing',
     data: { conversationId: `emma@${DOMAIN}`, jid: `emma@${DOMAIN}`, isTyping: true },
   },
   // Emma sends a message
   {
-    delayMs: 5_500,
+    delayMs: 28_000,
     action: 'stop-typing',
     data: { conversationId: `emma@${DOMAIN}`, jid: `emma@${DOMAIN}`, isTyping: false },
   },
   {
-    delayMs: 5_600,
+    delayMs: 28_100,
     action: 'message',
     data: {
       message: {
@@ -30,15 +42,9 @@ export const act1Steps: DemoAnimationStep[] = [
       },
     },
   },
-  // Tutorial: lightbox hint
-  {
-    delayMs: 10_000,
-    action: 'custom',
-    data: { type: 'tutorial', stepId: 'lightbox-hint' },
-  },
   // James comes online
   {
-    delayMs: 15_000,
+    delayMs: 35_000,
     action: 'presence',
     data: { fullJid: `james@${DOMAIN}/mobile`, show: null, priority: 5, client: 'Fluux' },
   },

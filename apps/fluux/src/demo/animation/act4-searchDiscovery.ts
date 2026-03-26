@@ -1,15 +1,75 @@
 /**
- * Act 4 — Search, Mentions & Discovery (2:30–3:15)
- * Prompts user to try search, showcases mentions and muting.
+ * Act 4 — Activity, Search & Mentions (2:15–3:15)
+ * Stranger messages, polls, search, link previews, @mentions.
  */
 
 import type { DemoAnimationStep } from '@fluux/sdk'
 import { DOMAIN, SELF_JID, SELF_NICK, ROOM_JID } from '../constants'
 
 export const act4Steps: DemoAnimationStep[] = [
+  // Stranger message in activity log
+  {
+    delayMs: 130_000,
+    action: 'activity-event',
+    data: {
+      type: 'stranger-message',
+      kind: 'actionable',
+      timestamp: new Date(),
+      resolution: 'pending',
+      payload: { type: 'stranger-message', from: 'hiring@techcorp.example', body: 'We loved your Fluux talk at FOSDEM — are you open to discussing a role?' },
+    },
+  },
+  // Tutorial: activity log
+  {
+    delayMs: 135_000,
+    action: 'custom',
+    data: { type: 'tutorial', stepId: 'activity-log-hint' },
+  },
+  // Poll creation in Team Chat
+  {
+    delayMs: 140_000,
+    action: 'room-message',
+    data: {
+      roomJid: ROOM_JID,
+      message: {
+        type: 'groupchat', id: 'demo-anim-poll', from: `${ROOM_JID}/${SELF_NICK}`, nick: SELF_NICK,
+        body: '', timestamp: new Date(), isOutgoing: true, roomJid: ROOM_JID,
+        poll: {
+          title: 'Release v0.14 — when are we ready?',
+          options: [
+            { emoji: '1️⃣', label: 'Ship this Friday' },
+            { emoji: '2️⃣', label: 'Next Monday after testing' },
+            { emoji: '3️⃣', label: 'Need one more week' },
+          ],
+          settings: { allowMultiple: false, hideResultsBeforeVote: false },
+        },
+      },
+    },
+  },
+  // Votes come in
+  {
+    delayMs: 145_000,
+    action: 'room-reaction',
+    data: {
+      roomJid: ROOM_JID,
+      messageId: 'demo-anim-poll',
+      reactorNick: 'Emma',
+      emojis: ['1️⃣'],
+    },
+  },
+  {
+    delayMs: 147_000,
+    action: 'room-reaction',
+    data: {
+      roomJid: ROOM_JID,
+      messageId: 'demo-anim-poll',
+      reactorNick: 'Oliver',
+      emojis: ['2️⃣'],
+    },
+  },
   // Tutorial: search
   {
-    delayMs: 150_000,
+    delayMs: 155_000,
     action: 'custom',
     data: { type: 'tutorial', stepId: 'search-hint' },
   },
@@ -44,7 +104,7 @@ export const act4Steps: DemoAnimationStep[] = [
   },
   // Oliver mentions @You in Team Chat
   {
-    delayMs: 180_000,
+    delayMs: 170_000,
     action: 'room-message',
     data: {
       roomJid: ROOM_JID,
@@ -60,14 +120,34 @@ export const act4Steps: DemoAnimationStep[] = [
   },
   // Tutorial: mention
   {
-    delayMs: 185_000,
+    delayMs: 175_000,
     action: 'custom',
     data: { type: 'tutorial', stepId: 'mention-hint' },
   },
-  // Tutorial: keyboard shortcut hint (Cmd+K / ?)
+  // Liam sends a casual DM
   {
-    delayMs: 190_000,
-    action: 'custom',
-    data: { type: 'tutorial', stepId: 'keyboard-shortcuts-hint' },
+    delayMs: 180_000,
+    action: 'message',
+    data: {
+      message: {
+        type: 'chat', id: 'demo-anim-liam-dm', from: `liam@${DOMAIN}`,
+        body: 'Docker build is killing me today 😤 anyone else having issues?',
+        timestamp: new Date(), isOutgoing: false, conversationId: `liam@${DOMAIN}`,
+      },
+    },
+  },
+  // James edits his earlier message
+  {
+    delayMs: 185_000,
+    action: 'room-message-updated',
+    data: {
+      roomJid: ROOM_JID,
+      messageId: 'demo-anim-james-fix',
+      updates: {
+        body: 'Just pushed a fix for the notification handler memory leak — turns out we were holding stale refs in the event listener cleanup. Also added a WeakRef-based cache to prevent it from recurring.',
+        isEdited: true,
+        originalBody: 'Just pushed a fix for the notification handler memory leak — turns out we were holding stale refs in the event listener cleanup',
+      },
+    },
   },
 ]

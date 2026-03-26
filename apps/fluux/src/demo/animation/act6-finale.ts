@@ -1,6 +1,6 @@
 /**
- * Act 6 — Grand Finale (4:15–5:00)
- * Fill end state, admin showcase, XMPP console, last flurry.
+ * Act 6 — Admin & Wrap-up (4:15–5:00)
+ * Admin showcase, XMPP console, presence changes, narrative closure.
  */
 
 import type { DemoAnimationStep } from '@fluux/sdk'
@@ -9,24 +9,24 @@ import { DOMAIN, SELF_NICK, ROOM_JID } from '../constants'
 export const act6Steps: DemoAnimationStep[] = [
   // Presence changes
   {
-    delayMs: 255_000,
+    delayMs: 250_000,
     action: 'presence',
     data: { fullJid: `sophia@${DOMAIN}/laptop`, show: 'dnd', priority: 5, statusMessage: 'Do not disturb — wrapping up docs', client: 'Fluux' },
   },
   {
-    delayMs: 257_000,
+    delayMs: 252_000,
     action: 'presence',
     data: { fullJid: `james@${DOMAIN}/mobile`, show: 'away', priority: 0, statusMessage: 'Grabbing coffee', client: 'Fluux' },
   },
   // Tutorial: admin panel
   {
-    delayMs: 260_000,
+    delayMs: 255_000,
     action: 'custom',
     data: { type: 'tutorial', stepId: 'admin-hint' },
   },
   // Emma summary in Team room
   {
-    delayMs: 265_000,
+    delayMs: 262_000,
     action: 'room-message',
     data: {
       roomJid: ROOM_JID,
@@ -40,7 +40,7 @@ export const act6Steps: DemoAnimationStep[] = [
   },
   // New subscription request
   {
-    delayMs: 270_000,
+    delayMs: 266_000,
     action: 'activity-event',
     data: {
       type: 'subscription-request',
@@ -52,7 +52,7 @@ export const act6Steps: DemoAnimationStep[] = [
   },
   // MUC invitation
   {
-    delayMs: 273_000,
+    delayMs: 269_000,
     action: 'activity-event',
     data: {
       type: 'muc-invitation',
@@ -71,17 +71,17 @@ export const act6Steps: DemoAnimationStep[] = [
   },
   // Ava sends a DM
   {
-    delayMs: 275_000,
+    delayMs: 271_000,
     action: 'typing',
     data: { conversationId: `ava@${DOMAIN}`, jid: `ava@${DOMAIN}`, isTyping: true },
   },
   {
-    delayMs: 278_000,
+    delayMs: 274_000,
     action: 'stop-typing',
     data: { conversationId: `ava@${DOMAIN}`, jid: `ava@${DOMAIN}`, isTyping: false },
   },
   {
-    delayMs: 278_200,
+    delayMs: 274_200,
     action: 'message',
     data: {
       message: {
@@ -93,19 +93,13 @@ export const act6Steps: DemoAnimationStep[] = [
   },
   // Tutorial: XMPP console (for developers)
   {
-    delayMs: 282_000,
+    delayMs: 278_000,
     action: 'custom',
     data: { type: 'tutorial', stepId: 'xmpp-console-hint' },
   },
-  // Tutorial: history/MAM hint
-  {
-    delayMs: 286_000,
-    action: 'custom',
-    data: { type: 'tutorial', stepId: 'history-hint' },
-  },
   // Poll closed
   {
-    delayMs: 288_000,
+    delayMs: 283_000,
     action: 'room-message',
     data: {
       roomJid: ROOM_JID,
@@ -126,7 +120,7 @@ export const act6Steps: DemoAnimationStep[] = [
   },
   // Final Emma DM wrapping up
   {
-    delayMs: 292_000,
+    delayMs: 287_000,
     action: 'message',
     data: {
       message: {
@@ -138,7 +132,7 @@ export const act6Steps: DemoAnimationStep[] = [
   },
   // Tutorial: closing
   {
-    delayMs: 295_000,
+    delayMs: 290_000,
     action: 'custom',
     data: { type: 'tutorial', stepId: 'tour-complete' },
   },
