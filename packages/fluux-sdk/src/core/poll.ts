@@ -140,8 +140,9 @@ export interface PollTally {
  * in the same order as the poll options.
  *
  * In single-vote mode, if a voter has reacted with multiple poll-option emojis,
- * only their first vote (in option order) is counted. This provides a graceful
- * best-effort handling of malformed votes from legacy or buggy clients.
+ * only their last vote (in option order) is counted. This is consistent with
+ * vote replacement semantics and provides graceful handling of malformed votes
+ * from legacy or buggy clients.
  * In multi-vote mode, all votes are counted as-is.
  */
 export function tallyPollResults(
@@ -156,17 +157,20 @@ export function tallyPollResults(
     })
   }
 
-  // Single-vote: each voter is counted in their first option only (in option order).
-  // This handles the case where a legacy client sent multiple poll-option reactions.
-  const voterAssigned = new Set<string>()
+  // Single-vote: each voter is counted in their last option only (in option order).
+  // This handles the case where a legacy client sent multiple poll-option reactions,
+  // preferring the latest option which is more consistent with vote replacement.
+  const voterLastOptionIdx = new Map<string, number>()
+  poll.options.forEach((opt, idx) => {
+    for (const voter of reactions?.[opt.emoji] ?? []) {
+      voterLastOptionIdx.set(voter, idx) // last write wins
+    }
+  })
 
-  return poll.options.map((opt) => {
-    const rawVoters = reactions?.[opt.emoji] ?? []
-    const voters = rawVoters.filter((voter) => {
-      if (voterAssigned.has(voter)) return false
-      voterAssigned.add(voter)
-      return true
-    })
+  return poll.options.map((opt, idx) => {
+    const voters = (reactions?.[opt.emoji] ?? []).filter(
+      (voter) => voterLastOptionIdx.get(voter) === idx,
+    )
     return { emoji: opt.emoji, label: opt.label, voters, count: voters.length }
   })
 }

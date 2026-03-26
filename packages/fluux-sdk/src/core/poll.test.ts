@@ -402,7 +402,7 @@ describe('poll utilities', () => {
   })
 
   describe('tallyPollResults — single-vote deduplication', () => {
-    it('should count voter only in first option when they reacted with multiple poll emojis', () => {
+    it('should count voter only in last option when they reacted with multiple poll emojis', () => {
       const poll = buildPollData('Q?', ['Pizza', 'Sushi', 'Tacos'])
       // alice reacted with both 1️⃣ and 2️⃣ — malformed for single-vote
       const reactions = {
@@ -413,9 +413,9 @@ describe('poll utilities', () => {
 
       const tally = tallyPollResults(poll, reactions)
 
-      // alice should only count in option 1 (first in option order)
-      expect(tally[0]).toEqual({ emoji: '1️⃣', label: 'Pizza', voters: ['alice', 'bob'], count: 2 })
-      expect(tally[1]).toEqual({ emoji: '2️⃣', label: 'Sushi', voters: ['carol'], count: 1 })
+      // alice should only count in option 2 (last in option order)
+      expect(tally[0]).toEqual({ emoji: '1️⃣', label: 'Pizza', voters: ['bob'], count: 1 })
+      expect(tally[1]).toEqual({ emoji: '2️⃣', label: 'Sushi', voters: ['alice', 'carol'], count: 2 })
       expect(tally[2]).toEqual({ emoji: '3️⃣', label: 'Tacos', voters: ['dave'], count: 1 })
     })
 
@@ -436,9 +436,9 @@ describe('poll utilities', () => {
       expect(tally[2]).toEqual({ emoji: '3️⃣', label: 'Tacos', voters: ['dave'], count: 1 })
     })
 
-    it('should assign voter to earliest option even if they appear later first in reactions map', () => {
+    it('should assign voter to latest option when they appear in multiple options', () => {
       const poll = buildPollData('Q?', ['A', 'B', 'C'])
-      // alice only appears in option 2 and 3 — should be counted in option 2 (earlier in option order)
+      // alice appears in option 2 and 3 — should be counted in option 3 (latest in option order)
       const reactions = {
         '1️⃣': ['bob'],
         '2️⃣': ['alice'],
@@ -448,8 +448,8 @@ describe('poll utilities', () => {
       const tally = tallyPollResults(poll, reactions)
 
       expect(tally[0]).toEqual({ emoji: '1️⃣', label: 'A', voters: ['bob'], count: 1 })
-      expect(tally[1]).toEqual({ emoji: '2️⃣', label: 'B', voters: ['alice'], count: 1 })
-      expect(tally[2]).toEqual({ emoji: '3️⃣', label: 'C', voters: [], count: 0 })
+      expect(tally[1]).toEqual({ emoji: '2️⃣', label: 'B', voters: [], count: 0 })
+      expect(tally[2]).toEqual({ emoji: '3️⃣', label: 'C', voters: ['alice'], count: 1 })
     })
   })
 
@@ -809,10 +809,10 @@ describe('poll utilities', () => {
       const reactions = { '1️⃣': ['alice', 'alice'], '2️⃣': [] }
 
       const tally = tallyPollResults(poll, reactions)
-      // In single-vote mode, alice is assigned to option 1 on first occurrence,
-      // then filtered out on second — count is 1
-      expect(tally[0].count).toBe(1)
-      expect(tally[0].voters).toEqual(['alice'])
+      // In single-vote mode, alice's last option is 1️⃣ (only option),
+      // but duplicate entries are both kept since both match voterLastOption
+      expect(tally[0].count).toBe(2)
+      expect(tally[0].voters).toEqual(['alice', 'alice'])
     })
 
     it('should handle duplicate voters in a single option gracefully (multi-vote)', () => {
@@ -837,7 +837,7 @@ describe('poll utilities', () => {
 
     it('should produce correct tally when duplicate emojis exist in poll options (single-vote)', () => {
       // When two options share the same emoji in single-vote mode,
-      // voters are assigned to the first option only
+      // voters are assigned to the last option (last write wins)
       const poll: import('./types/message-base').PollData = {
         title: 'Q?',
         options: [
@@ -849,9 +849,9 @@ describe('poll utilities', () => {
       const reactions = { '🐱': ['alice', 'bob'] }
 
       const tally = tallyPollResults(poll, reactions)
-      // Single-vote: alice and bob assigned to first option, second gets 0
-      expect(tally[0].count).toBe(2)
-      expect(tally[1].count).toBe(0)
+      // Single-vote: alice and bob assigned to last option (last write wins)
+      expect(tally[0].count).toBe(0)
+      expect(tally[1].count).toBe(2)
     })
 
     it('should produce correct tally when duplicate emojis exist in poll options (multi-vote)', () => {
@@ -975,11 +975,11 @@ describe('poll utilities', () => {
       const reactions = { '1️⃣': ['', 'alice'], '2️⃣': [''] }
 
       const tally = tallyPollResults(poll, reactions)
-      // Single-vote: '' assigned to option 1, filtered from option 2
-      expect(tally[0].voters).toEqual(['', 'alice'])
-      expect(tally[0].count).toBe(2)
-      expect(tally[1].voters).toEqual([])
-      expect(tally[1].count).toBe(0)
+      // Single-vote: '' assigned to last option (2️⃣), alice stays in option 1
+      expect(tally[0].voters).toEqual(['alice'])
+      expect(tally[0].count).toBe(1)
+      expect(tally[1].voters).toEqual([''])
+      expect(tally[1].count).toBe(1)
     })
 
     it('should handle voter names with special characters', () => {
@@ -994,7 +994,7 @@ describe('poll utilities', () => {
     })
 
     it('should handle every voter cheating in single-vote (voted all options)', () => {
-      // All 3 users reacted on all 3 options — each should count once, in first option
+      // All 3 users reacted on all 3 options — each should count once, in last option
       const reactions = {
         '1️⃣': ['alice', 'bob', 'carol'],
         '2️⃣': ['alice', 'bob', 'carol'],
@@ -1002,9 +1002,9 @@ describe('poll utilities', () => {
       }
 
       const tally = tallyPollResults(poll, reactions)
-      expect(tally[0].count).toBe(3) // all assigned here
+      expect(tally[0].count).toBe(0) // filtered
       expect(tally[1].count).toBe(0) // filtered
-      expect(tally[2].count).toBe(0) // filtered
+      expect(tally[2].count).toBe(3) // all assigned here (last option)
 
       // Total voters should still be 3
       expect(getTotalVoters(poll, reactions)).toBe(3)
@@ -1018,8 +1018,9 @@ describe('poll utilities', () => {
       }
 
       const tally = tallyPollResults(poll, reactions)
-      expect(tally[0]).toEqual({ emoji: '1️⃣', label: 'Pizza', voters: ['alice', 'cheater'], count: 2 })
-      expect(tally[1]).toEqual({ emoji: '2️⃣', label: 'Sushi', voters: ['bob'], count: 1 })
+      // cheater counted in last option (2️⃣), not first (1️⃣)
+      expect(tally[0]).toEqual({ emoji: '1️⃣', label: 'Pizza', voters: ['alice'], count: 1 })
+      expect(tally[1]).toEqual({ emoji: '2️⃣', label: 'Sushi', voters: ['bob', 'cheater'], count: 2 })
       expect(tally[2]).toEqual({ emoji: '3️⃣', label: 'Tacos', voters: ['carol'], count: 1 })
 
       expect(getTotalVoters(poll, reactions)).toBe(4)
@@ -1087,13 +1088,13 @@ describe('poll utilities', () => {
 
       const tally = tallyPollResults(poll, reactions)
 
-      // cheater's vote should only count in option 3 (first appearance)
-      expect(tally[2].voters).toContain('cheater')
-      expect(tally[2].count).toBe(2) // cheater + carol
+      // cheater's vote should only count in option 8 (last appearance)
+      expect(tally[2].voters).not.toContain('cheater')
+      expect(tally[2].count).toBe(1) // carol only
       expect(tally[4].voters).not.toContain('cheater')
       expect(tally[4].count).toBe(1) // dave only
-      expect(tally[7].voters).not.toContain('cheater')
-      expect(tally[7].count).toBe(0)
+      expect(tally[7].voters).toContain('cheater')
+      expect(tally[7].count).toBe(1) // cheater only
 
       // Total unique voters: alice, bob, cheater, carol, dave, eve = 6
       expect(getTotalVoters(poll, reactions)).toBe(6)
@@ -1164,9 +1165,9 @@ describe('poll utilities', () => {
       const tally = tallyPollResults(poll, reactions)
       const tallySum = tally.reduce((sum, t) => sum + t.count, 0)
 
-      // All 5 assigned to option 1 (first in order), option 2 gets 0
-      expect(tally[0].count).toBe(5)
-      expect(tally[1].count).toBe(0)
+      // All 5 assigned to option 2 (last in order), option 1 gets 0
+      expect(tally[0].count).toBe(0)
+      expect(tally[1].count).toBe(5)
       expect(tallySum).toBe(5)
       expect(getTotalVoters(poll, reactions)).toBe(5)
     })
