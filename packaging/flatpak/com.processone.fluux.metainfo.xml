@@ -90,7 +90,12 @@
   </content_rating>
 
   <releases>
-    <release version="0.14.0" date="2026-03-16">
+    <release version="0.15.0" date="2026-03-26">
+      <description>
+        <p>See release notes for details.</p>
+      </description>
+    </release>
+        <release version="0.14.0" date="2026-03-16">
       <description>
         <p>MUC room management, message moderation, vCard support, and dependency fixes for older Linux distros.</p>
       </description>
