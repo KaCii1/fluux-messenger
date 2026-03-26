@@ -62,16 +62,25 @@ function ThemeCard({
         {theme.name}
       </span>
       {!isBuiltIn && onRemove && (
-        <button
+        <div
+          role="button"
+          tabIndex={0}
           onClick={(e) => {
             e.stopPropagation()
             onRemove()
           }}
-          className="absolute top-1 right-1 p-0.5 rounded text-fluux-muted hover:text-fluux-red hover:bg-fluux-hover transition-colors"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.stopPropagation()
+              e.preventDefault()
+              onRemove()
+            }
+          }}
+          className="absolute -top-1.5 -right-1.5 p-0.5 rounded-full bg-fluux-surface text-fluux-muted hover:text-fluux-red hover:bg-fluux-hover transition-colors cursor-pointer"
           title="Remove"
         >
           <Trash2 className="w-3 h-3" />
-        </button>
+        </div>
       )}
     </button>
   )
