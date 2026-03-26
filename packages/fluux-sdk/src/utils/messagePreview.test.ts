@@ -305,6 +305,30 @@ describe('messagePreview', () => {
       expect(stripMessageStyling('**Bold** and *also bold* and _italic_'))
         .toBe('Bold and also bold and italic')
     })
+
+    it('should strip H1 heading marker', () => {
+      expect(stripMessageStyling('# Title')).toBe('Title')
+    })
+
+    it('should strip H2 heading marker', () => {
+      expect(stripMessageStyling('## Subtitle')).toBe('Subtitle')
+    })
+
+    it('should strip H3 heading marker', () => {
+      expect(stripMessageStyling('### Section')).toBe('Section')
+    })
+
+    it('should strip heading in multiline text', () => {
+      expect(stripMessageStyling('# Title\nBody text')).toBe('Title\nBody text')
+    })
+
+    it('should not strip # without space', () => {
+      expect(stripMessageStyling('#hashtag')).toBe('#hashtag')
+    })
+
+    it('should strip heading combined with other markup', () => {
+      expect(stripMessageStyling('# *Bold Title*')).toBe('Bold Title')
+    })
   })
 
   describe('stripReplyQuote', () => {

@@ -10,9 +10,10 @@
  * - > blockquote (lines starting with >)
  * - Unordered lists (lines starting with -, +, or * followed by space)
  * - Ordered lists (lines starting with 1., 2., etc.)
+ * - Headings (# H1, ## H2, ### H3, #### H4)
  * - URLs (auto-linked)
  * - @mentions (highlighted)
- * - Escape sequences (\* \_ \~ \` \>)
+ * - Escape sequences (\* \_ \~ \` \> \#)
  */
 
 import React, { useState } from 'react'
@@ -57,7 +58,7 @@ function parseInlineStyles(
   const escapeMap: Map<string, string> = new Map()
   let escapeIndex = 0
 
-  escaped = escaped.replace(/\\([*_~`>])/g, (_, char) => {
+  escaped = escaped.replace(/\\([*_~`>#])/g, (_, char) => {
     const placeholder = `${ESCAPE_PLACEHOLDER}${escapeIndex}${ESCAPE_PLACEHOLDER}`
     escapeMap.set(placeholder, char)
     escapeIndex++
@@ -436,6 +437,18 @@ function isOrderedListItem(line: string): { isList: boolean; number: number; con
 }
 
 /**
+ * Check if a line is a heading (starts with # followed by space)
+ * Supports levels 1-4 (# through ####)
+ */
+function isHeading(line: string): { isHeading: boolean; level: number; content: string } {
+  const match = line.match(/^(#{1,4})\s+(.+)$/)
+  if (match) {
+    return { isHeading: true, level: match[1].length, content: match[2] }
+  }
+  return { isHeading: false, level: 0, content: line }
+}
+
+/**
  * Render text with clickable links only (no other styling)
  * Useful for room subjects and other simple text that may contain URLs
  */
@@ -698,6 +711,28 @@ function renderTextBlock(
         content: olCheck.content,
         offset: lineOffset + prefixLength
       })
+      currentOffset += line.length + 1
+      continue
+    }
+
+    // Check for heading (# Title, ## Subtitle, etc.)
+    const headingCheck = isHeading(line)
+    if (headingCheck.isHeading) {
+      flushAllBuffers()
+
+      const level = headingCheck.level
+      const prefixLength = line.length - headingCheck.content.length
+      const headingClasses =
+        level === 1 ? 'text-lg font-bold' :
+        level === 2 ? 'text-base font-semibold' :
+        'text-sm font-semibold'
+
+      result.push(
+        <div key={`heading-${index++}`} className={`${headingClasses} my-1`}>
+          {renderInline(headingCheck.content, index, mentionRanges, lineOffset + prefixLength)}
+        </div>
+      )
+
       currentOffset += line.length + 1
       continue
     }

@@ -125,6 +125,10 @@ export function stripMessageStyling(text: string): string {
 
   let result = text
 
+  // Strip heading markers (# Title, ## Title, ### Title, #### Title)
+  // Must be at start of line, followed by space
+  result = result.replace(/^#{1,4}\s+/gm, '')
+
   // Strip inline code (backticks) - do this first to avoid processing markup inside code
   // Matches `code` but not ```code blocks```
   result = result.replace(/(?<!`)`([^`\n]+)`(?!`)/g, '$1')

@@ -334,6 +334,89 @@ describe('renderStyledMessage', () => {
     })
   })
 
+  describe('headings (# text)', () => {
+    it('renders H1 heading', () => {
+      const container = renderText('# Hello World')
+      const heading = container.querySelector('div.text-lg')
+      expect(heading).toBeTruthy()
+      expect(heading?.textContent).toBe('Hello World')
+      expect(heading?.classList.contains('font-bold')).toBe(true)
+    })
+
+    it('renders H2 heading', () => {
+      const container = renderText('## Subtitle')
+      const heading = container.querySelector('div.text-base')
+      expect(heading).toBeTruthy()
+      expect(heading?.textContent).toBe('Subtitle')
+      expect(heading?.classList.contains('font-semibold')).toBe(true)
+    })
+
+    it('renders H3 heading', () => {
+      const container = renderText('### Section')
+      const heading = container.querySelector('div.text-sm')
+      expect(heading).toBeTruthy()
+      expect(heading?.textContent).toBe('Section')
+      expect(heading?.classList.contains('font-semibold')).toBe(true)
+    })
+
+    it('renders H4 heading same as H3', () => {
+      const container = renderText('#### Subsection')
+      const heading = container.querySelector('div.text-sm')
+      expect(heading).toBeTruthy()
+      expect(heading?.textContent).toBe('Subsection')
+    })
+
+    it('renders inline styles within heading', () => {
+      const container = renderText('# This is *important*')
+      const heading = container.querySelector('div.text-lg')
+      expect(heading).toBeTruthy()
+      expect(heading?.querySelector('strong')?.textContent).toBe('important')
+    })
+
+    it('renders URL within heading', () => {
+      const container = renderText('# Check https://example.com')
+      const heading = container.querySelector('div.text-lg')
+      expect(heading?.querySelector('a')).toBeTruthy()
+    })
+
+    it('does not treat # without space as heading', () => {
+      const container = renderText('#hashtag')
+      expect(container.querySelector('div.text-lg')).toBeFalsy()
+      expect(container.textContent).toContain('#hashtag')
+    })
+
+    it('does not treat # in middle of line as heading', () => {
+      const container = renderText('Use # for heading')
+      expect(container.querySelector('div.text-lg')).toBeFalsy()
+    })
+
+    it('renders multiple headings', () => {
+      const container = renderText('# First\n## Second')
+      expect(container.querySelector('div.text-lg')).toBeTruthy()
+      expect(container.querySelector('div.text-base')).toBeTruthy()
+    })
+
+    it('renders heading after list (flushes list)', () => {
+      const container = renderText('- item\n# Title')
+      expect(container.querySelector('ul')).toBeTruthy()
+      expect(container.querySelector('div.text-lg')).toBeTruthy()
+    })
+
+    it('renders heading mixed with other block elements', () => {
+      const container = renderText('# Title\n- item\n> quote')
+      expect(container.querySelector('div.text-lg')).toBeTruthy()
+      expect(container.querySelector('ul')).toBeTruthy()
+      expect(container.querySelector('blockquote')).toBeTruthy()
+    })
+
+    it('does not render five hashes as heading', () => {
+      const container = renderText('##### Not a heading')
+      expect(container.querySelector('div.text-lg')).toBeFalsy()
+      expect(container.querySelector('div.text-base')).toBeFalsy()
+      expect(container.querySelector('div.text-sm')).toBeFalsy()
+    })
+  })
+
   describe('mixed lists and other block elements', () => {
     it('handles unordered list followed by ordered list', () => {
       const container = renderText('- Bullet 1\n- Bullet 2\n1. Number 1\n2. Number 2')
