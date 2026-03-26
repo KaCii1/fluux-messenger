@@ -269,7 +269,12 @@ export function AppearanceSettings() {
             <span className="text-sm text-fluux-muted">{fontSize}%</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-fluux-muted shrink-0">A</span>
+            <button
+              type="button"
+              onClick={() => setFontSize(fontSize - FONT_SIZE_STEP)}
+              className="text-xs text-fluux-muted shrink-0 cursor-pointer hover:text-fluux-text transition-colors"
+              aria-label="Decrease font size"
+            >A</button>
             <input
               type="range"
               min={FONT_SIZE_MIN}
@@ -279,7 +284,12 @@ export function AppearanceSettings() {
               onChange={(e) => setFontSize(Number(e.target.value))}
               className="w-full accent-fluux-brand"
             />
-            <span className="text-base font-medium text-fluux-muted shrink-0">A</span>
+            <button
+              type="button"
+              onClick={() => setFontSize(fontSize + FONT_SIZE_STEP)}
+              className="text-base font-medium text-fluux-muted shrink-0 cursor-pointer hover:text-fluux-text transition-colors"
+              aria-label="Increase font size"
+            >A</button>
           </div>
           <p className="text-xs text-fluux-muted">
             {t('settings.fontSizeDescription')}
