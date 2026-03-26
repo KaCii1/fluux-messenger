@@ -5,6 +5,7 @@
 
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import type { TutorialStep } from './types'
 
 interface DemoTooltipProps {
@@ -17,6 +18,7 @@ const ARROW_SIZE = 8
 const TOOLTIP_MARGIN = 12
 
 export function DemoTooltip({ step, onSkip, onComplete }: DemoTooltipProps) {
+  const { t } = useTranslation('tutorial')
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null)
   const [arrowStyle, setArrowStyle] = useState<React.CSSProperties>({})
   const [visible, setVisible] = useState(false)
@@ -213,10 +215,12 @@ export function DemoTooltip({ step, onSkip, onComplete }: DemoTooltipProps) {
         )}
 
         {/* Content */}
-        <p style={{ margin: 0 }}>{step.content}</p>
-        {step.actionHint && (
+        <p style={{ margin: 0 }}>
+          {t(`${step.id}.content`, { defaultValue: step.content ?? '' })}
+        </p>
+        {t(`${step.id}.actionHint`, { defaultValue: '' }) && (
           <p style={{ margin: '6px 0 0', fontWeight: 600, color: '#60a5fa' }}>
-            {step.actionHint}
+            {t(`${step.id}.actionHint`, { defaultValue: step.actionHint ?? '' })}
           </p>
         )}
 
@@ -235,7 +239,7 @@ export function DemoTooltip({ step, onSkip, onComplete }: DemoTooltipProps) {
               cursor: 'pointer',
             }}
           >
-            Skip
+            {t('skip', { defaultValue: 'Skip' })}
           </button>
         )}
       </div>

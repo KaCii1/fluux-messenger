@@ -16,9 +16,9 @@ export interface TutorialStep {
   id: string
   /** CSS selector for the target element to point at. */
   targetSelector: string
-  /** Main tooltip text. */
-  content: string
-  /** Bold call-to-action line (e.g., "Try clicking the image"). */
+  /** Main tooltip text (fallback — prefer tutorial i18n namespace). */
+  content?: string
+  /** Bold call-to-action line (fallback — prefer tutorial i18n namespace). */
   actionHint?: string
   /** Position relative to target. */
   position: 'top' | 'bottom' | 'left' | 'right'

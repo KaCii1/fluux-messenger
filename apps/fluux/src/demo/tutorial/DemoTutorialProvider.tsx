@@ -1,9 +1,13 @@
 /**
  * Tutorial provider — listens for demo:custom events, pauses animation,
  * shows tooltips, and resumes on user action or skip.
+ *
+ * Tutorial translations live in ./locales/ and are loaded lazily via
+ * i18next.addResourceBundle so they never bloat the main translation files.
  */
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { DemoClient, DemoAnimationStep } from '@fluux/sdk'
 import { DemoTooltip } from './DemoTooltip'
 import { getTutorialStep } from './tutorialSteps'
@@ -24,6 +28,31 @@ export function useDemoTutorial() {
   return useContext(DemoTutorialContext)
 }
 
+/**
+ * All tutorial locale modules, keyed by language code.
+ * Vite resolves this glob at build time — only the requested language is loaded at runtime.
+ */
+const localeModules = import.meta.glob<{ default: Record<string, unknown> }>('./locales/*.ts')
+
+/** Dynamically import tutorial translations for the given language. */
+async function loadTutorialLocale(lang: string): Promise<Record<string, unknown> | null> {
+  const key = `./locales/${lang}.ts`
+  const loader = localeModules[key]
+  if (loader) {
+    const mod = await loader()
+    return mod.default
+  }
+  // Language not available — fall back to English
+  if (lang !== 'en') {
+    const enLoader = localeModules['./locales/en.ts']
+    if (enLoader) {
+      const mod = await enLoader()
+      return mod.default
+    }
+  }
+  return null
+}
+
 interface DemoTutorialProviderProps {
   enabled: boolean
   client: DemoClient
@@ -36,6 +65,23 @@ export function DemoTutorialProvider({ enabled, client, animation, children }: D
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set())
   const clientRef = useRef(client)
   clientRef.current = client
+
+  const { i18n } = useTranslation()
+
+  // Load tutorial translations for the current language
+  useEffect(() => {
+    if (!enabled) return
+
+    const lang = i18n.language ?? 'en'
+    // Skip if already loaded for this language
+    if (i18n.hasResourceBundle(lang, 'tutorial')) return
+
+    void loadTutorialLocale(lang).then(resources => {
+      if (resources) {
+        i18n.addResourceBundle(lang, 'tutorial', resources, true, true)
+      }
+    })
+  }, [enabled, i18n, i18n.language])
 
   // Upload simulation runs regardless of tutorial mode
   const uploadState = useDemoUploadSimulation(client)
