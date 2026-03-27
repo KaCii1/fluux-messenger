@@ -244,6 +244,26 @@ export class MUC extends BaseModule {
         })
       }
 
+      // Re-query room capabilities if initial disco#info failed before join.
+      // Now that we've joined, the room definitely exists and should respond.
+      // This recovers from transient disco failures (e.g. IRC gateways that
+      // only respond after join) while keeping genuinely unsupported rooms disabled.
+      if (room && room.supportsReactions === false) {
+        this.queryRoomFeatures(roomJid).then(features => {
+          if (features) {
+            const updates: Partial<Room> = {}
+            if (features.supportsReactions === true) updates.supportsReactions = true
+            if (features.supportsMAM === true && !room.supportsMAM) updates.supportsMAM = true
+            if (features.supportsHats === true && !room.supportsHats) updates.supportsHats = true
+            if (Object.keys(updates).length > 0) {
+              this.deps.emitSDK('room:updated', { roomJid, updates })
+            }
+          }
+        }).catch(() => {
+          // Ignore re-query errors - room was already joined with conservative defaults
+        })
+      }
+
       // SDK event only - binding calls store.addOccupant
       this.deps.emitSDK('room:occupant-joined', { roomJid, occupant })
 
@@ -429,7 +449,7 @@ export class MUC extends BaseModule {
     // but skip MAM since quickchats are transient
     const roomFeatures = await this.queryRoomFeatures(roomJid)
     const supportsMAM = isQuickChat ? false : (roomFeatures?.supportsMAM ?? false)
-    const supportsReactions = roomFeatures?.supportsReactions ?? true
+    const supportsReactions = roomFeatures?.supportsReactions ?? false
     const supportsHats = roomFeatures?.supportsHats ?? false
     const roomName = roomFeatures?.name || existingRoom?.name || getLocalPart(roomJid)
 

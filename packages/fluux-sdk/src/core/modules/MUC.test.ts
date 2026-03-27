@@ -1440,10 +1440,11 @@ describe('MUC Module', () => {
         })
       )
 
-      // supportsMAM should be false when detection fails
+      // supportsMAM and supportsReactions should be false when detection fails
       expect(mockEmitSDK).toHaveBeenCalledWith('room:added', {
         room: expect.objectContaining({
           supportsMAM: false,
+          supportsReactions: false,
         }),
       })
       warnSpy.mockRestore()
