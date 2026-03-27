@@ -47,6 +47,9 @@ const demoClient = new DemoClient()
 demoClient.populateDemo(demoData)
 demoClient.setDiscoverableRooms(getDiscoverableRooms())
 
+// Expose demo client for automation (screenshot scripts, testing)
+;(window as any).__demoClient = demoClient
+
 // Seed admin store so the Admin panel is accessible in demo
 adminStore.getState().setIsAdmin(true)
 adminStore.getState().setVhosts(['fluux.chat'])
