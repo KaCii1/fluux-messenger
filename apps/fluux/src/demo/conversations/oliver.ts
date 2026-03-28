@@ -27,6 +27,32 @@ export const OLIVER_MESSAGES: Message[] = [
     timestamp: daysAgo(1), isOutgoing: false, conversationId: conv,
   },
   {
+    type: 'chat', id: 'demo-oliver-5b', from: conv,
+    body: 'Here\'s how the chat looks in dark mode',
+    timestamp: daysAgo(1), isOutgoing: false, conversationId: conv,
+    attachment: {
+      url: './demo/screenshot-chat-dark.png',
+      name: 'chat-dark-mode.png',
+      mediaType: 'image/png',
+      size: 157_430,
+      width: 1280,
+      height: 800,
+    },
+  },
+  {
+    type: 'chat', id: 'demo-oliver-5c', from: conv,
+    body: 'And the light theme for comparison',
+    timestamp: daysAgo(1), isOutgoing: false, conversationId: conv,
+    attachment: {
+      url: './demo/screenshot-chat-light.png',
+      name: 'chat-light-mode.png',
+      mediaType: 'image/png',
+      size: 158_168,
+      width: 1280,
+      height: 800,
+    },
+  },
+  {
     type: 'chat', id: 'demo-oliver-6', from: SELF_JID, body: 'Can you share the Figma link? I want to review the button variants',
     timestamp: hoursAgo(8), isOutgoing: true, conversationId: conv,
   },

@@ -72,12 +72,12 @@ export function useDemoUploadSimulation(client: DemoClient) {
               isOutgoing: true,
               conversationId,
               attachment: {
-                url: `./demo/screenshot-fluux-contacts.png`, // reuse existing asset
+                url: './demo/screenshot-chat-dark.png',
                 name: file.name,
                 mediaType: file.mediaType,
                 size: file.size,
-                width: file.mediaType.startsWith('image/') ? 1456 : undefined,
-                height: file.mediaType.startsWith('image/') ? 816 : undefined,
+                width: file.mediaType.startsWith('image/') ? 1280 : undefined,
+                height: file.mediaType.startsWith('image/') ? 800 : undefined,
               },
             },
           })

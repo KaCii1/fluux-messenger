@@ -25,15 +25,15 @@ export const act3Steps: DemoAnimationStep[] = [
     data: {
       message: {
         type: 'chat', id: 'demo-anim-oliver-img', from: `oliver@${DOMAIN}`,
-        body: 'Here\'s the updated architecture diagram — the new module layout is much cleaner',
+        body: 'Here\'s how the dark mode turned out — the contrast ratios are all passing now',
         timestamp: new Date(), isOutgoing: false, conversationId: `oliver@${DOMAIN}`,
         attachment: {
-          url: './demo/screenshot-fluux-contacts.png',
-          name: 'architecture-diagram.png',
+          url: './demo/screenshot-chat-dark.png',
+          name: 'chat-dark-mode.png',
           mediaType: 'image/png',
-          size: 206_620,
-          width: 1456,
-          height: 816,
+          size: 157_430,
+          width: 1280,
+          height: 800,
         },
       },
     },

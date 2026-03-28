@@ -77,7 +77,11 @@ The SDK also exports the `DemoData`, `DemoAnimationStep`, and related type inter
 | `avatar-oliver.webp`            | Contact avatar                                    |
 | `avatar-mia.webp`               | Contact avatar                                    |
 | `avatar-self.webp`              | Own user avatar                                   |
-| `screenshot-fluux-contacts.png` | Image attachment in Emma's conversation           |
+| `screenshot-contacts.png`       | Contacts view screenshot (Emma's conversation)    |
+| `screenshot-chat-dark.png`      | Chat dark mode screenshot (Oliver's conversation) |
+| `screenshot-chat-light.png`     | Chat light mode screenshot (Oliver's conversation)|
+| `screenshot-code-block.png`     | Code block screenshot (James's conversation)      |
+| `screenshot-poll.png`           | Poll feature screenshot (Team Chat)               |
 | `fluux-sdk-api-reference.pdf`   | PDF attachment in Sophia's conversation           |
 | `sdk-walkthrough.mp4`           | Video attachment in Sophia's conversation         |
 | `link-preview-fluux-013.png`    | OG image for link preview in James's conversation |

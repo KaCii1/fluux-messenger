@@ -56,6 +56,19 @@ export const TEAM_ROOM_MESSAGES: RoomMessage[] = [
     },
   },
   {
+    type: 'groupchat', id: 'demo-room-4b', from: `${ROOM_JID}/Emma`, nick: 'Emma',
+    body: 'The poll UI turned out really nice',
+    timestamp: hoursAgo(1.6), isOutgoing: false, roomJid: ROOM_JID,
+    attachment: {
+      url: './demo/screenshot-poll.png',
+      name: 'poll-feature.png',
+      mediaType: 'image/png',
+      size: 109_010,
+      width: 1280,
+      height: 800,
+    },
+  },
+  {
     type: 'groupchat', id: 'demo-room-5', from: `${ROOM_JID}/Emma`, nick: 'Emma',
     body: 'Quick update: the deployment pipeline is green again after the fix this morning',
     timestamp: hoursAgo(1.5), isOutgoing: false, roomJid: ROOM_JID,

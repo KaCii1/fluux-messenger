@@ -54,12 +54,12 @@ export const EMMA_MESSAGES: Message[] = [
     type: 'chat', id: 'demo-emma-6', from: conv, body: 'Here\'s a screenshot of the contacts view',
     timestamp: minutesAgo(15), isOutgoing: false, conversationId: conv,
     attachment: {
-      url: './demo/screenshot-fluux-contacts.png',
-      name: 'fluux-contacts-screenshot.png',
+      url: './demo/screenshot-contacts.png',
+      name: 'contacts-view.png',
       mediaType: 'image/png',
-      size: 206_620,
-      width: 1456,
-      height: 816,
+      size: 79_504,
+      width: 1280,
+      height: 800,
     },
   },
   {

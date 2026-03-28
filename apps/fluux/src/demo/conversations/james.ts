@@ -76,6 +76,19 @@ export const JAMES_MESSAGES: Message[] = [
     reactions: { '🔥': [SELF_JID] } as Record<string, string[]>,
   },
   {
+    type: 'chat', id: 'demo-james-7c', from: SELF_JID,
+    body: 'The code block rendering looks great — syntax highlighting is working well',
+    timestamp: hoursAgo(2.3), isOutgoing: true, conversationId: conv,
+    attachment: {
+      url: './demo/screenshot-code-block.png',
+      name: 'code-block-rendering.png',
+      mediaType: 'image/png',
+      size: 134_847,
+      width: 1280,
+      height: 800,
+    },
+  },
+  {
     type: 'chat', id: 'demo-james-8', from: conv, body: 'By the way, I found a bug in the error handling — when the server returns a 503, we retry immediately instead of backing off',
     timestamp: hoursAgo(2), isOutgoing: false, conversationId: conv,
   },
