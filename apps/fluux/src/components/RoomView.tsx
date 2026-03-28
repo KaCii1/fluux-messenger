@@ -439,6 +439,7 @@ export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = 
         {/* Input - show composer if joined, join prompt if not */}
         {activeRoom.joined ? (
           <RoomMessageInput
+            key={activeRoom.jid}
             ref={composerHandleRef}
             room={activeRoom}
             textareaRef={composerRef as React.RefObject<HTMLTextAreaElement | null>}
