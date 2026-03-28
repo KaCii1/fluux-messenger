@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { rosterStore, usePresence } from '@fluux/sdk'
 import type { Conversation, Message, Room, RoomMessage } from '@fluux/sdk'
-import { sendNotification } from '@tauri-apps/plugin-notification'
+import { sendNotification, onAction } from '@tauri-apps/plugin-notification'
+import type { Options as NotificationOptions } from '@tauri-apps/plugin-notification'
 import { useNotificationEvents } from './useNotificationEvents'
 import { useNavigateToTarget } from './useNavigateToTarget'
 import { useNotificationPermission, isTauri } from './useNotificationPermission'
@@ -9,29 +10,19 @@ import { getNotificationAvatarUrl } from '@/utils/notificationAvatar'
 import { formatMessagePreview } from '@fluux/sdk'
 import { notificationDebug } from '@/utils/notificationDebug'
 
-// Pending navigation target for notification click handling on macOS
-// Since onAction() is mobile-only, we use app activation as a proxy for notification clicks
-interface PendingNavigation {
-  type: 'conversation' | 'room'
-  target: string
-  timestamp: number
-}
-// Time window (ms) to consider a pending navigation valid after app activation
-const NOTIFICATION_CLICK_WINDOW = 3000
-
 /**
  * Hook to show desktop notifications for new messages and room mentions.
  * - Requests permission on mount (after login)
  * - Shows notification for messages in non-active conversations
  * - Shows notification for mentions in MUC rooms
  * - Clicking notification focuses the conversation/room and switches view
- * - Uses Tauri notification API when available, falls back to web API
+ * - Uses Tauri notification API with onAction() for click handling
+ * - Falls back to web Notification API for non-Tauri environments
  */
 export function useDesktopNotifications(): void {
   const { navigateToConversation, navigateToRoom } = useNavigateToTarget()
   const permissionGranted = useNotificationPermission()
   const { presenceStatus } = usePresence()
-  const pendingNavigation = useRef<PendingNavigation | null>(null)
 
   // Refs for stable access in async callbacks (useNavigateToTarget uses refs internally)
   const navigateToConversationRef = useRef(navigateToConversation)
@@ -47,35 +38,28 @@ export function useDesktopNotifications(): void {
     presenceStatusRef.current = presenceStatus
   }, [presenceStatus])
 
-  // Handle notification clicks via app activation (macOS workaround)
-  // The onAction() API is mobile-only, so on desktop we detect when the app
-  // becomes visible shortly after sending a notification
+  // Handle notification clicks via Tauri onAction listener
   useEffect(() => {
     if (!isTauri) return
 
-    const handleVisibilityChange = () => {
-      if (document.visibilityState !== 'visible') return
-      if (!pendingNavigation.current) return
+    let unlisten: (() => void) | undefined
 
-      const elapsed = Date.now() - pendingNavigation.current.timestamp
-      if (elapsed > NOTIFICATION_CLICK_WINDOW) {
-        // Too old, user probably just switched to the app normally
-        pendingNavigation.current = null
-        return
-      }
+    onAction((notification: NotificationOptions) => {
+      const navType = notification.extra?.navType as string | undefined
+      const navTarget = notification.extra?.navTarget as string | undefined
+      if (!navTarget) return
 
-      // Navigate to the pending target
-      if (pendingNavigation.current.type === 'conversation') {
-        navigateToConversationRef.current(pendingNavigation.current.target)
+      if (navType === 'room') {
+        navigateToRoomRef.current(navTarget)
       } else {
-        navigateToRoomRef.current(pendingNavigation.current.target)
+        navigateToConversationRef.current(navTarget)
       }
-      pendingNavigation.current = null
-    }
+    }).then((listener) => {
+      unlisten = listener.unregister
+    })
 
-    document.addEventListener('visibilitychange', handleVisibilityChange)
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      unlisten?.()
     }
   }, [])
 
@@ -106,16 +90,11 @@ export function useDesktopNotifications(): void {
     const avatarUrl = await getNotificationAvatarUrl(contact?.avatar, contact?.avatarHash)
 
     if (isTauri) {
-      // Set pending navigation for app activation handler (macOS workaround)
-      pendingNavigation.current = {
-        type: 'conversation',
-        target: conv.id,
-        timestamp: Date.now(),
-      }
       sendNotification({
         title,
         body,
         attachments: avatarUrl ? [{ id: 'avatar', url: avatarUrl }] : undefined,
+        extra: { navType: 'conversation', navTarget: conv.id },
       })
     } else {
       if (typeof Notification === 'undefined') return
@@ -162,16 +141,11 @@ export function useDesktopNotifications(): void {
     const avatarUrl = await getNotificationAvatarUrl(room.avatar, room.avatarHash)
 
     if (isTauri) {
-      // Set pending navigation for app activation handler (macOS workaround)
-      pendingNavigation.current = {
-        type: 'room',
-        target: room.jid,
-        timestamp: Date.now(),
-      }
       sendNotification({
         title,
         body,
         attachments: avatarUrl ? [{ id: 'avatar', url: avatarUrl }] : undefined,
+        extra: { navType: 'room', navTarget: room.jid },
       })
     } else {
       if (typeof Notification === 'undefined') return

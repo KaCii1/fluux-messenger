@@ -65,16 +65,28 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
 
+  // Build a hash-router deep link from notification data
+  const data = event.notification.data as { from?: string; type?: string } | undefined
+  let deepLink = './'
+  if (data?.from) {
+    const jid = encodeURIComponent(data.from)
+    const route = data.type === 'room' ? 'rooms' : 'messages'
+    deepLink = `./#/${route}/${jid}`
+  }
+
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
-      // Focus existing window if available
+      // Focus existing window and navigate to the conversation
       for (const client of clients) {
         if (client.url.includes(self.location.origin) && 'focus' in client) {
+          if (data?.from) {
+            void (client as WindowClient).navigate(deepLink)
+          }
           return client.focus()
         }
       }
-      // Open new window if none found
-      return self.clients.openWindow('./')
+      // Open new window at the deep link URL
+      return self.clients.openWindow(deepLink)
     })
   )
 })
