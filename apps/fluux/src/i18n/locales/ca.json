@@ -804,7 +804,8 @@
         "filterCommands": "comandes",
         "filteringContacts": "Filtrant contactes...",
         "filteringRooms": "Filtrant sales...",
-        "filteringCommands": "Filtrant comandes..."
+        "filteringCommands": "Filtrant comandes...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "El nom visible que es mostra a la llista de sales i a la capçalera.",

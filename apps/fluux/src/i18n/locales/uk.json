@@ -802,7 +802,8 @@
         "filterCommands": "команди",
         "filteringContacts": "Фільтрація контактів...",
         "filteringRooms": "Фільтрація кімнат...",
-        "filteringCommands": "Фільтрація команд..."
+        "filteringCommands": "Фільтрація команд...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "Ім'я, що відображається у списку кімнат та в заголовку.",

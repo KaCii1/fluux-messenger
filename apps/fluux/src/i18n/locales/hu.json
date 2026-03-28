@@ -802,7 +802,8 @@
         "filterCommands": "parancsok",
         "filteringContacts": "Névjegyek szűrése...",
         "filteringRooms": "Szobák szűrése...",
-        "filteringCommands": "Parancsok szűrése..."
+        "filteringCommands": "Parancsok szűrése...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "A szobalistákban és a fejlécben megjelenő megjelenítési név.",

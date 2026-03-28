@@ -802,7 +802,8 @@
         "filterCommands": "komennot",
         "filteringContacts": "Suodatetaan yhteystietoja...",
         "filteringRooms": "Suodatetaan huoneita...",
-        "filteringCommands": "Suodatetaan komentoja..."
+        "filteringCommands": "Suodatetaan komentoja...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "Huoneluettelossa ja otsikossa näkyvä nimi.",

@@ -802,7 +802,8 @@
         "filterCommands": "skipanir",
         "filteringContacts": "Sía tengiliði...",
         "filteringRooms": "Sía herbergi...",
-        "filteringCommands": "Sía skipanir..."
+        "filteringCommands": "Sía skipanir...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "Birtingarnafnið sem birtist í herbergjalista og haus.",

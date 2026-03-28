@@ -802,7 +802,8 @@
         "filterCommands": "komandos",
         "filteringContacts": "Filtruojami kontaktai...",
         "filteringRooms": "Filtruojami kambariai...",
-        "filteringCommands": "Filtruojamos komandos..."
+        "filteringCommands": "Filtruojamos komandos...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "Rodomas pavadinimas kambarių sąraše ir antraštėje.",

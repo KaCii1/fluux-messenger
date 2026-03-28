@@ -804,7 +804,8 @@
         "filterCommands": "comandi",
         "filteringContacts": "Filtraggio contatti...",
         "filteringRooms": "Filtraggio stanze...",
-        "filteringCommands": "Filtraggio comandi..."
+        "filteringCommands": "Filtraggio comandi...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "Il nome visualizzato nell'elenco delle stanze e nell'intestazione.",

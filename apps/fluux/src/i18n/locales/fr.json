@@ -803,7 +803,8 @@
         "filterCommands": "commandes",
         "filteringContacts": "Filtrage des contacts...",
         "filteringRooms": "Filtrage des salons...",
-        "filteringCommands": "Filtrage des commandes..."
+        "filteringCommands": "Filtrage des commandes...",
+        "searchMessages": "Rechercher dans les messages \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "Le nom affiché dans les listes de salons et l'en-tête.",

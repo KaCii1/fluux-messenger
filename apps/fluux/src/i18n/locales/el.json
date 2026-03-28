@@ -803,7 +803,8 @@
         "filterCommands": "εντολές",
         "filteringContacts": "Φιλτράρισμα επαφών...",
         "filteringRooms": "Φιλτράρισμα δωματίων...",
-        "filteringCommands": "Φιλτράρισμα εντολών..."
+        "filteringCommands": "Φιλτράρισμα εντολών...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "Το εμφανιζόμενο όνομα στη λίστα δωματίων και στην κεφαλίδα.",

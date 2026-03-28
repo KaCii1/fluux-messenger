@@ -804,7 +804,8 @@
         "filterCommands": "polecenia",
         "filteringContacts": "Filtrowanie kontaktów...",
         "filteringRooms": "Filtrowanie pokoi...",
-        "filteringCommands": "Filtrowanie poleceń..."
+        "filteringCommands": "Filtrowanie poleceń...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "Wyświetlana nazwa na liście pokojów i w nagłówku.",

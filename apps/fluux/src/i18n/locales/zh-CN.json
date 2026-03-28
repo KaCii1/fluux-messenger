@@ -802,7 +802,8 @@
         "filterCommands": "命令",
         "filteringContacts": "正在筛选联系人…",
         "filteringRooms": "正在筛选房间…",
-        "filteringCommands": "正在筛选命令…"
+        "filteringCommands": "正在筛选命令…",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "在房间列表和标题中显示的名称。",

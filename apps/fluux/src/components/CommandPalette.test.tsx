@@ -8,13 +8,13 @@ beforeAll(() => {
 })
 
 // Mock data
-const mockConversations = [
-  { id: 'alice@example.com', name: 'Alice Smith', unreadCount: 0, type: 'chat' as const },
-  { id: 'bob@example.com', name: 'Bob Jones', unreadCount: 2, type: 'chat' as const },
+const mockConversations: Array<{ id: string; name: string; unreadCount: number; type: 'chat'; lastMessage?: { body: string } }> = [
+  { id: 'alice@example.com', name: 'Alice Smith', unreadCount: 0, type: 'chat', lastMessage: { body: 'Can we discuss the deployment?' } },
+  { id: 'bob@example.com', name: 'Bob Jones', unreadCount: 2, type: 'chat', lastMessage: { body: 'The exponential backoff is working now' } },
 ]
 
-const mockRooms = [
-  { jid: 'dev@conference.example.com', name: 'Development', joined: true },
+const mockRooms: Array<{ jid: string; name: string; joined: boolean; lastMessage?: { body: string } }> = [
+  { jid: 'dev@conference.example.com', name: 'Development', joined: true, lastMessage: { body: 'PR merged successfully' } },
   { jid: 'general@conference.example.com', name: 'General Chat', joined: true },
 ]
 
@@ -33,6 +33,8 @@ const mockIsArchived = vi.fn((_jid: string) => false)
 let mockArchivedConversations: typeof mockConversations = []
 
 // Mock SDK hooks
+const mockSearchFn = vi.fn()
+
 vi.mock('@fluux/sdk', () => ({
   useChat: () => ({
     conversations: mockConversations,
@@ -55,6 +57,8 @@ vi.mock('@fluux/sdk', () => ({
     const usernameMatch = jid.split('@')[0].toLowerCase().includes(lowerQuery)
     return nameMatch || usernameMatch
   },
+  formatMessagePreview: (msg: { body?: string }) => msg?.body || '',
+  searchStore: { getState: () => ({ search: mockSearchFn }) },
 }))
 
 // Mock React store hooks (from @fluux/sdk/react)
@@ -70,7 +74,7 @@ vi.mock('@fluux/sdk/react', () => ({
 // Mock i18n
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => {
+    t: (key: string, opts?: Record<string, string>) => {
       const translations: Record<string, string> = {
         'commandPalette.placeholder': 'Go to...',
         'commandPalette.noResults': 'No results found',
@@ -84,6 +88,7 @@ vi.mock('react-i18next', () => ({
         'commandPalette.filteringContacts': 'Filtering contacts...',
         'commandPalette.filteringRooms': 'Filtering rooms...',
         'commandPalette.filteringCommands': 'Filtering commands...',
+        'commandPalette.searchMessages': 'Search messages for "{{query}}"',
         'sidebar.messages': 'Messages',
         'sidebar.rooms': 'Rooms',
         'sidebar.connections': 'Connections',
@@ -97,7 +102,13 @@ vi.mock('react-i18next', () => ({
         'shortcuts.title': 'Keyboard Shortcuts',
         'console.title': 'XMPP Console',
       }
-      return translations[key] || key
+      let result = translations[key] || key
+      if (opts) {
+        for (const [k, v] of Object.entries(opts)) {
+          result = result.replace(`{{${k}}}`, v)
+        }
+      }
+      return result
     },
   }),
 }))
@@ -189,6 +200,27 @@ describe('CommandPalette', () => {
       expect(labelTexts).toContain('Rooms')
       expect(labelTexts).toContain('Connections')
     })
+
+    it('should show last message preview for conversations', () => {
+      render(<CommandPalette {...defaultProps} />)
+      expect(screen.getByText('Can we discuss the deployment?')).toBeInTheDocument()
+      expect(screen.getByText('The exponential backoff is working now')).toBeInTheDocument()
+    })
+
+    it('should show last message preview for rooms', () => {
+      render(<CommandPalette {...defaultProps} />)
+      expect(screen.getByText('PR merged successfully')).toBeInTheDocument()
+    })
+
+    it('should not show preview when conversation has no lastMessage', () => {
+      render(<CommandPalette {...defaultProps} />)
+      // General Chat room has no lastMessage — should only show JID, not a preview
+      const generalChatJid = screen.getByText('general@conference.example.com')
+      // The next sibling should not be a preview line
+      const parentDiv = generalChatJid.closest('.min-w-0')
+      const italicElements = parentDiv?.querySelectorAll('.italic')
+      expect(italicElements?.length ?? 0).toBe(0)
+    })
   })
 
   describe('Search Filtering', () => {
@@ -235,13 +267,15 @@ describe('CommandPalette', () => {
       expect(screen.queryByText('Alice Smith')).not.toBeInTheDocument()
     })
 
-    it('should show no results message when nothing matches', () => {
+    it('should show search gateway when nothing matches by name', () => {
       render(<CommandPalette {...defaultProps} />)
       const input = screen.getByPlaceholderText('Go to...')
 
       fireEvent.change(input, { target: { value: 'xyznonexistent' } })
 
-      expect(screen.getByText('No results found')).toBeInTheDocument()
+      // No name/JID matches, but the search gateway item should appear
+      expect(screen.queryByText('No results found')).not.toBeInTheDocument()
+      expect(screen.getByText(/Search messages for/)).toBeInTheDocument()
     })
 
     it('should be case insensitive', () => {
@@ -260,6 +294,57 @@ describe('CommandPalette', () => {
       fireEvent.change(input, { target: { value: 'settings' } })
 
       expect(screen.getByText('Settings')).toBeInTheDocument()
+    })
+
+    it('should match conversations by last message body', () => {
+      render(<CommandPalette {...defaultProps} />)
+      const input = screen.getByPlaceholderText('Go to...')
+
+      // 'backoff' is in Bob's last message, not in his name or JID
+      fireEvent.change(input, { target: { value: 'backoff' } })
+
+      expect(screen.getByText('Bob Jones')).toBeInTheDocument()
+      expect(screen.queryByText('Alice Smith')).not.toBeInTheDocument()
+    })
+
+    it('should match rooms by last message body', () => {
+      render(<CommandPalette {...defaultProps} />)
+      const input = screen.getByPlaceholderText('Go to...')
+
+      // 'merged' is in Development room's last message
+      fireEvent.change(input, { target: { value: 'merged' } })
+
+      expect(screen.getByText('Development')).toBeInTheDocument()
+      expect(screen.queryByText('General Chat')).not.toBeInTheDocument()
+    })
+
+    it('should show search gateway with interpolated query', () => {
+      render(<CommandPalette {...defaultProps} />)
+      const input = screen.getByPlaceholderText('Go to...')
+
+      fireEvent.change(input, { target: { value: 'hello world' } })
+
+      expect(screen.getByText('Search messages for "hello world"')).toBeInTheDocument()
+    })
+
+    it('should not show search gateway when using > prefix', () => {
+      render(<CommandPalette {...defaultProps} />)
+      const input = screen.getByPlaceholderText('Go to...')
+
+      fireEvent.change(input, { target: { value: '>nonexistent' } })
+
+      expect(screen.queryByText(/Search messages for/)).not.toBeInTheDocument()
+    })
+
+    it('should show search gateway alongside name matches', () => {
+      render(<CommandPalette {...defaultProps} />)
+      const input = screen.getByPlaceholderText('Go to...')
+
+      fireEvent.change(input, { target: { value: 'alice' } })
+
+      // Both the name match and the gateway should appear
+      expect(screen.getByText('Alice Smith')).toBeInTheDocument()
+      expect(screen.getByText('Search messages for "alice"')).toBeInTheDocument()
     })
   })
 
@@ -750,8 +835,8 @@ describe('CommandPalette', () => {
       const input = screen.getByPlaceholderText('Go to...')
       const container = input.closest('div')?.parentElement
 
-      // Filter to get no results
-      fireEvent.change(input, { target: { value: 'xyznonexistent123' } })
+      // Use commands filter prefix to get truly no results (no search gateway)
+      fireEvent.change(input, { target: { value: '>xyznonexistent123' } })
       expect(screen.getByText('No results found')).toBeInTheDocument()
 
       // Should not crash or call any action
@@ -767,7 +852,8 @@ describe('CommandPalette', () => {
       const input = screen.getByPlaceholderText('Go to...')
       const container = input.closest('div')?.parentElement
 
-      fireEvent.change(input, { target: { value: 'xyznonexistent123' } })
+      // Use commands filter prefix to get truly no results (no search gateway)
+      fireEvent.change(input, { target: { value: '>xyznonexistent123' } })
 
       // Should not crash
       fireEvent.keyDown(container!, { key: 'ArrowDown' })

@@ -802,7 +802,8 @@
         "filterCommands": "orduithe",
         "filteringContacts": "Ag scagadh teagmhálacha...",
         "filteringRooms": "Ag scagadh seomraí...",
-        "filteringCommands": "Ag scagadh orduithe..."
+        "filteringCommands": "Ag scagadh orduithe...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "An t-ainm taispeána a thaispeántar i liostaí seomraí agus sa cheanntásc.",

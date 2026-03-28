@@ -803,7 +803,8 @@
         "filterCommands": "komandas",
         "filteringContacts": "Filtrē kontaktus...",
         "filteringRooms": "Filtrē istabas...",
-        "filteringCommands": "Filtrē komandas..."
+        "filteringCommands": "Filtrē komandas...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "Attēlojamais nosaukums istabu sarakstā un galvenē.",

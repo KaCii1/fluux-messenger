@@ -14,7 +14,7 @@ import {
   Users,
   Search,
 } from 'lucide-react'
-import { useChat, useRoom, useRoster, matchNameOrJid, getLocalPart } from '@fluux/sdk'
+import { useChat, useRoom, useRoster, matchNameOrJid, getLocalPart, formatMessagePreview, searchStore } from '@fluux/sdk'
 import { useChatStore, useConnectionStore } from '@fluux/sdk/react'
 import type { PresenceStatus } from '@fluux/sdk'
 import type { SidebarView } from './Sidebar'
@@ -32,6 +32,8 @@ interface CommandItem {
   type: ItemType
   label: string
   sublabel?: string
+  lastMessagePreview?: string
+  lastMessageBody?: string // Raw body for search matching
   icon: React.ReactNode
   action: () => void
   keywords?: string[]
@@ -86,7 +88,12 @@ function itemMatchesQuery(item: CommandItem, searchQuery: string): boolean {
 
   // For JID-based items, match name or username (not domain)
   if (['conversation', 'room', 'contact'].includes(item.type) && item.sublabel) {
-    return matchNameOrJid(item.label, item.sublabel, searchQuery)
+    if (matchNameOrJid(item.label, item.sublabel, searchQuery)) return true
+  }
+
+  // Check last message body for conversations/rooms
+  if (item.lastMessageBody?.toLowerCase().includes(searchQuery)) {
+    return true
   }
 
   // For other items, match label
@@ -212,11 +219,14 @@ export function CommandPalette({
     for (const conv of conversations) {
       if (conv.type !== 'chat') continue
       const contact = contacts.find((c) => c.jid === conv.id)
+      const preview = conv.lastMessage ? formatMessagePreview(conv.lastMessage) : undefined
       items.push({
         id: `conv-${conv.id}`,
         type: 'conversation',
         label: contact?.name || conv.name,
         sublabel: conv.id,
+        lastMessagePreview: preview,
+        lastMessageBody: conv.lastMessage?.body,
         icon: <MessageSquare className="w-4 h-4" />,
         action: () => selectConversation(conv.id),
         keywords: [getLocalPart(conv.id), 'message', 'chat'],
@@ -256,11 +266,14 @@ export function CommandPalette({
 
     // 3. Joined rooms
     for (const room of joinedRooms) {
+      const preview = room.lastMessage ? formatMessagePreview(room.lastMessage) : undefined
       items.push({
         id: `room-${room.jid}`,
         type: 'room',
         label: room.name || room.jid.split('@')[0],
         sublabel: room.jid,
+        lastMessagePreview: preview,
+        lastMessageBody: room.lastMessage?.body,
         icon: <Hash className="w-4 h-4" />,
         action: () => selectRoom(room.jid),
         keywords: [getLocalPart(room.jid), 'room', 'muc', 'group'],
@@ -353,6 +366,29 @@ export function CommandPalette({
     }
 
     const grouped = groupItemsByType(filtered, t)
+
+    // Append "Search messages" gateway when user has typed a query
+    if (searchQuery && filterMode !== 'commands') {
+      const gatewayItem: CommandItem = {
+        id: 'search-gateway',
+        type: 'action',
+        label: t('commandPalette.searchMessages', { query: searchQuery }),
+        icon: <Search className="w-4 h-4" />,
+        action: () => {
+          searchStore.getState().search(searchQuery)
+          closeAndNavigate('search')
+        },
+        keywords: [],
+      }
+      // Append to existing actions group, or create one
+      const actionsGroup = grouped.find((g) => g.type === 'action')
+      if (actionsGroup) {
+        actionsGroup.items.push(gatewayItem)
+      } else {
+        grouped.push({ type: 'action', label: t('commandPalette.actions'), items: [gatewayItem] })
+      }
+    }
+
     const flat = grouped.flatMap((g) => g.items)
 
     return { flatItems: flat, groupedItems: grouped, filterMode }
@@ -536,6 +572,13 @@ export function CommandPalette({
                         <div className="truncate">{item.label}</div>
                         {item.sublabel && (
                           <div className="text-xs text-fluux-muted truncate">{item.sublabel}</div>
+                        )}
+                        {item.lastMessagePreview && (
+                          <div className="text-xs text-fluux-muted/70 truncate italic">
+                            {item.lastMessagePreview.length > 60
+                              ? item.lastMessagePreview.slice(0, 60) + '…'
+                              : item.lastMessagePreview}
+                          </div>
                         )}
                       </div>
                       {isSelected && (

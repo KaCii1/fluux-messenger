@@ -802,7 +802,8 @@
         "filterCommands": "commands",
         "filteringContacts": "Filtering contacts...",
         "filteringRooms": "Filtering rooms...",
-        "filteringCommands": "Filtering commands..."
+        "filteringCommands": "Filtering commands...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "The display name shown in room listings and the header.",

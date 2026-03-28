@@ -802,7 +802,8 @@
         "filterCommands": "naredbe",
         "filteringContacts": "Filtriranje kontakata...",
         "filteringRooms": "Filtriranje soba...",
-        "filteringCommands": "Filtriranje naredbi..."
+        "filteringCommands": "Filtriranje naredbi...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "Prikazano ime na popisu soba i u zaglavlju.",

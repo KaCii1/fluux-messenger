@@ -802,7 +802,8 @@
         "filterCommands": "commando's",
         "filteringContacts": "Contacten filteren...",
         "filteringRooms": "Groepen filteren...",
-        "filteringCommands": "Commando's filteren..."
+        "filteringCommands": "Commando's filteren...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "De weergavenaam in de kamerlijst en de koptekst.",

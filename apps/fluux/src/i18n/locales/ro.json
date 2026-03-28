@@ -804,7 +804,8 @@
         "filterCommands": "comenzi",
         "filteringContacts": "Se filtrează contactele...",
         "filteringRooms": "Se filtrează camerele...",
-        "filteringCommands": "Se filtrează comenzile..."
+        "filteringCommands": "Se filtrează comenzile...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "Numele afișat în lista camerelor și în antet.",

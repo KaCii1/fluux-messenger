@@ -802,7 +802,8 @@
         "filterCommands": "kommandon",
         "filteringContacts": "Filtrerar kontakter...",
         "filteringRooms": "Filtrerar rum...",
-        "filteringCommands": "Filtrerar kommandon..."
+        "filteringCommands": "Filtrerar kommandon...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "Visningsnamnet som visas i rumslistor och rubriken.",

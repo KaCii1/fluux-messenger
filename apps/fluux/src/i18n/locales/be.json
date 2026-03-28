@@ -802,7 +802,8 @@
         "filterCommands": "каманды",
         "filteringContacts": "Фільтрацыя кантактаў...",
         "filteringRooms": "Фільтрацыя пакояў...",
-        "filteringCommands": "Фільтрацыя каманд..."
+        "filteringCommands": "Фільтрацыя каманд...",
+        "searchMessages": "Search messages for \"{{query}}\""
     },
     "dataFormHints": {
         "muc#roomconfig_roomname": "Імя, якое адлюстроўваецца ў спісе пакояў і ў загалоўку.",
