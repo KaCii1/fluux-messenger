@@ -2755,7 +2755,7 @@ describe('roomStore', () => {
 
       expect(result).toEqual(cachedMessage)
       expect(messageCache.getRoomMessages).toHaveBeenCalledWith(roomJid, {
-        limit: 1,
+        limit: 10,
         latest: true,
       })
 

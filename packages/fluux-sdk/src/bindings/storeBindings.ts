@@ -28,7 +28,8 @@ import type {
   consoleStore,
   ignoreStore,
 } from '../stores'
-import { isMessageFromIgnoredUser, isReplyToIgnoredUser } from '../stores'
+import { isMessageFromIgnoredUser, isReplyToIgnoredUser, ignoreStore as ignoreStoreInstance } from '../stores'
+import { findLastNonIgnoredMessage } from '../stores/shared/lastMessageUtils'
 
 /**
  * Store references for binding SDK events.
@@ -530,6 +531,34 @@ export function createStoreBindings(
     const stores = getStores()
     stores.console.addPacket(direction, xml)
   })
+
+  // Recalculate room lastMessage previews when users are un-ignored
+  let prevIgnoredUsers = ignoreStoreInstance.getState().ignoredUsers
+  const unsubIgnore = ignoreStoreInstance.subscribe((state) => {
+    const curr = state.ignoredUsers
+    if (curr === prevIgnoredUsers) return
+    const prev = prevIgnoredUsers
+    prevIgnoredUsers = curr
+
+    const stores = getStores()
+    // Find rooms where the ignore list changed (user ignored or un-ignored)
+    const allRoomJids = new Set([...Object.keys(prev), ...Object.keys(curr)])
+    for (const roomJid of allRoomJids) {
+      const prevList = prev[roomJid]
+      const currList = curr[roomJid]
+      if (prevList === currList) continue
+
+      // Recalculate lastMessage from in-memory messages
+      const room = stores.room.getRoom(roomJid)
+      if (room && room.messages.length > 0) {
+        const newLast = findLastNonIgnoredMessage(room.messages, roomJid, room.nickToJidCache)
+        if (newLast) {
+          stores.room.updateLastMessagePreview(roomJid, newLast)
+        }
+      }
+    }
+  })
+  unsubscribers.push(unsubIgnore)
 
   // Return cleanup function
   return () => {

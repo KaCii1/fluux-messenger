@@ -22,7 +22,8 @@ import * as mamState from './shared/mamState'
 import type { MAMQueryDirection } from './shared/mamState'
 import * as draftState from './shared/draftState'
 import { buildMessageKeySet, isMessageDuplicate, sortMessagesByTimestamp, trimMessages, prependOlderMessages, mergeAndProcessMessages } from './shared/messageArrayUtils'
-import { shouldUpdateLastMessage } from './shared/lastMessageUtils'
+import { shouldUpdateLastMessage, findLastNonIgnoredMessage } from './shared/lastMessageUtils'
+import { ignoreStore, isMessageFromIgnoredUser } from './ignoreStore'
 import * as notifState from './shared/notificationState'
 import { connectionStore } from './connectionStore'
 import { buildScopedStorageKey } from '../utils/storageScope'
@@ -376,7 +377,7 @@ export const roomStore = createStore<RoomState>()(
         lastReadAt: room.lastReadAt,
         lastSeenMessageId: room.lastSeenMessageId,
         firstNewMessageId: room.firstNewMessageId,
-        lastMessage: room.messages?.length > 0 ? room.messages[room.messages.length - 1] : undefined,
+        lastMessage: room.messages?.length > 0 ? findLastNonIgnoredMessage(room.messages, room.jid, room.nickToJidCache) : undefined,
         lastInteractedAt: room.lastInteractedAt,
       }
       const runtime: RoomRuntime = {
@@ -899,8 +900,8 @@ export const roomStore = createStore<RoomState>()(
         { incrementUnread, incrementMentions }
       )
 
-      // Get the last message for both the combined room and metadata
-      const lastMessage = newMessages[newMessages.length - 1]
+      // Get the last non-ignored message for sidebar preview
+      const lastMessage = findLastNonIgnoredMessage(newMessages, roomJid, existing.nickToJidCache) ?? existing.lastMessage
 
       // Update lastInteractedAt so the room bubbles up in the sidebar:
       // - Active room: always update (user is viewing it)
@@ -909,7 +910,7 @@ export const roomStore = createStore<RoomState>()(
       const entity = state.roomEntities.get(roomJid)
       const isMuted = entity?.muted ?? existing.muted ?? false
       const newLastInteractedAt = isActive || !isMuted
-        ? (lastMessage.timestamp ?? existing.lastInteractedAt)
+        ? (lastMessage?.timestamp ?? existing.lastInteractedAt)
         : existing.lastInteractedAt
 
       newRooms.set(roomJid, {
@@ -1569,8 +1570,8 @@ export const roomStore = createStore<RoomState>()(
           const sorted = sortMessagesByTimestamp(combined)
           const merged = trimMessages(sorted, MAX_MESSAGES_PER_ROOM)
 
-          // Get lastMessage from merged messages for sidebar preview
-          const lastMessage = merged.length > 0 ? merged[merged.length - 1] : existing.lastMessage
+          // Get last non-ignored message from merged messages for sidebar preview
+          const lastMessage = (merged.length > 0 ? findLastNonIgnoredMessage(merged, roomJid, existing.nickToJidCache) : undefined) ?? existing.lastMessage
 
           newRooms.set(roomJid, { ...existing, messages: merged, lastMessage })
 
@@ -1659,7 +1660,7 @@ export const roomStore = createStore<RoomState>()(
     }
   },
 
-  // Load only the latest message from cache for sidebar preview
+  // Load the latest non-ignored message from cache for sidebar preview
   // This doesn't modify the messages array - it only updates lastMessage
   loadPreviewFromCache: async (roomJid) => {
     if (!messageCache.isMessageCacheAvailable()) {
@@ -1673,14 +1674,15 @@ export const roomStore = createStore<RoomState>()(
     }
 
     try {
-      // Query for just the latest message
+      // Fetch a small batch so we can skip ignored users' messages
       const cachedMessages = await messageCache.getRoomMessages(roomJid, {
-        limit: 1,
+        limit: 10,
         latest: true,
       })
 
       if (cachedMessages.length > 0) {
-        const latestMessage = cachedMessages[0]
+        const latestMessage = findLastNonIgnoredMessage(cachedMessages, roomJid, room.nickToJidCache)
+        if (!latestMessage) return null
 
         // Update only lastMessage in metadata and combined room
         set((state) => {
@@ -1772,8 +1774,8 @@ export const roomStore = createStore<RoomState>()(
         searchIndex.indexMessages(persistableMessages).catch((e) => console.warn('[searchIndex] indexMessages failed:', e))
       }
 
-      // Get the last message from merged messages for sidebar preview
-      const lastMessage = merged.length > 0 ? merged[merged.length - 1] : room.lastMessage
+      // Get the last non-ignored message from merged messages for sidebar preview
+      const lastMessage = (merged.length > 0 ? findLastNonIgnoredMessage(merged, roomJid, room.nickToJidCache) : undefined) ?? room.lastMessage
 
       // Update room messages (only when we have new messages)
       const newRooms = new Map(state.rooms)
@@ -1826,6 +1828,10 @@ export const roomStore = createStore<RoomState>()(
       const room = state.rooms.get(roomJid)
       const meta = state.roomMeta.get(roomJid)
       if (!room || !meta) return state
+
+      // Skip messages from ignored users
+      const ignoredUsers = ignoreStore.getState().getIgnoredForRoom(roomJid)
+      if (isMessageFromIgnoredUser(ignoredUsers, lastMessage, room.nickToJidCache)) return state
 
       // Only update if this message is newer than existing lastMessage
       if (!shouldUpdateLastMessage(meta.lastMessage, lastMessage)) return state
