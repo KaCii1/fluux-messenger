@@ -96,6 +96,8 @@ export interface StoreBindings {
     clearNeedsCatchUp: (conversationId: string) => void
     // Update sidebar preview without affecting message history
     updateLastMessagePreview: (conversationId: string, lastMessage: Message) => void
+    // Load messages from IndexedDB cache into the conversation's in-memory message array
+    loadMessagesFromCache?: (conversationId: string, options?: { limit?: number }) => Promise<unknown>
     // Get all conversations for MAM catch-up
     getAllConversations: () => Array<{ id: string; messages: Message[] }>
     // Smart MAM: archived conversation preview refresh

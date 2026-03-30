@@ -125,6 +125,7 @@ export function createDefaultStoreBindings(options: DefaultStoreBindingsOptions 
       markAllNeedsCatchUp: chatStore.getState().markAllNeedsCatchUp,
       clearNeedsCatchUp: chatStore.getState().clearNeedsCatchUp,
       updateLastMessagePreview: chatStore.getState().updateLastMessagePreview,
+      loadMessagesFromCache: chatStore.getState().loadMessagesFromCache,
       getAllConversations: () => {
         const state = chatStore.getState()
         // Use activeConversations() which efficiently returns only non-archived

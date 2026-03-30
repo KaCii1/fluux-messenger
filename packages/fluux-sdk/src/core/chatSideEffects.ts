@@ -16,24 +16,12 @@ import { chatStore, connectionStore } from '../stores'
 import { NS_MAM } from './namespaces'
 import { logInfo } from './logger'
 import { getDomain } from './jid'
-
-/**
- * Find the newest message in the array (regardless of delay status).
- *
- * Used as the catch-up cursor for MAM forward queries. Previously this
- * skipped delayed messages, but that caused a subtle bug: when ALL cached
- * messages are delayed (common after previous MAM catch-ups), the cursor
- * returned undefined, triggering a backward query. The backward query's
- * merge (`prependOlderMessages`) incorrectly placed newer messages (sent
- * from another client while offline) at the top of the list, making them
- * invisible to the user and preventing the sidebar lastMessage update.
- */
-function findNewestMessage(messages: Array<{ timestamp?: Date }>): { timestamp: Date } | undefined {
-  for (let i = messages.length - 1; i >= 0; i--) {
-    if (messages[i].timestamp) return messages[i] as { timestamp: Date }
-  }
-  return undefined
-}
+import {
+  findNewestMessage,
+  buildCatchUpStartTime,
+  isConnectionError,
+  MAM_CACHE_LOAD_LIMIT,
+} from '../utils/mamCatchUpUtils'
 
 /**
  * Options for configuring side effects behavior.
@@ -105,7 +93,7 @@ export function setupChatSideEffects(
       // handler races with the conversation subscriber's cache load, and
       // messages may be empty — causing a backward query instead of a
       // forward catch-up from the newest cached message.
-      await chatStore.getState().loadMessagesFromCache(conversationId, { limit: 100 })
+      await chatStore.getState().loadMessagesFromCache(conversationId, { limit: MAM_CACHE_LOAD_LIMIT })
 
       // Re-read messages after cache load (store was mutated)
       const cachedMessages = chatStore.getState().messages.get(conversationId) || []
@@ -113,20 +101,16 @@ export function setupChatSideEffects(
 
       const queryOptions: { with: string; start?: string } = { with: conversation.id }
       if (newestMessage?.timestamp) {
-        const startTime = new Date(newestMessage.timestamp.getTime() + 1)
-        queryOptions.start = startTime.toISOString()
+        queryOptions.start = buildCatchUpStartTime(newestMessage.timestamp)
       }
 
       await client.chat.queryMAM(queryOptions)
       logInfo('Chat: MAM sync complete')
     } catch (error) {
-      // Only log if it's not a disconnection error (those are expected during reconnect)
-      const isConnectionError = error instanceof Error &&
-        (error.message.includes('disconnected') ||
-         error.message.includes('Not connected') ||
-         error.message.includes('Socket not available'))
+      // Allow retry on next conversation switch or reconnect
+      fetchInitiated.delete(conversationId)
 
-      if (isConnectionError) {
+      if (isConnectionError(error)) {
         if (debug) console.log('[SideEffects] Chat: MAM skipped - client disconnected')
       } else {
         console.error('[SideEffects] Chat: MAM fetch failed:', error)
@@ -163,7 +147,7 @@ export function setupChatSideEffects(
         // Step 1: Always load from IndexedDB cache (deduplication is handled by loadMessagesFromCache).
         // This is a fallback for cases where the hook's cache load didn't run (e.g., reconnection).
         if (debug) console.log('[SideEffects] Chat: Loading from cache')
-        await chatStore.getState().loadMessagesFromCache(activeConversationId, { limit: 100 })
+        await chatStore.getState().loadMessagesFromCache(activeConversationId, { limit: MAM_CACHE_LOAD_LIMIT })
 
         // Step 2: Background MAM fetch (skip if already initiated this session)
         if (fetchInitiated.has(activeConversationId)) {

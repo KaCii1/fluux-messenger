@@ -34,6 +34,14 @@ import { generateUUID, generateStableMessageId } from '../../utils/uuid'
 import { executeWithConcurrency } from '../../utils/concurrencyUtils'
 import { parseRSMResponse } from '../../utils/rsm'
 import {
+  findNewestMessage,
+  buildCatchUpStartTime,
+  isConnectionError,
+  MAM_CATCHUP_FORWARD_MAX,
+  MAM_CATCHUP_BACKWARD_MAX,
+  MAM_CACHE_LOAD_LIMIT,
+} from '../../utils/mamCatchUpUtils'
+import {
   NS_MAM,
   NS_RSM,
   NS_DATA_FORMS,
@@ -86,21 +94,6 @@ interface UnresolvedModifications {
   reactions: { targetId: string; from: string; emojis: string[] }[]
 }
 
-/**
- * Find the newest message in an array (regardless of delay status).
- *
- * Used as the catch-up cursor for MAM forward queries. Including delayed
- * messages ensures the catch-up always uses a forward query, which merges
- * correctly via full sort. Previously skipping delayed messages caused
- * backward queries whose prepend-based merge put newer messages (sent
- * from another client while offline) at the wrong position.
- */
-function findNewestMessage(messages: Array<{ timestamp?: Date }>): { timestamp: Date } | undefined {
-  for (let i = messages.length - 1; i >= 0; i--) {
-    if (messages[i].timestamp) return messages[i] as { timestamp: Date }
-  }
-  return undefined
-}
 
 /**
  * Message Archive Management (XEP-0313) module.
@@ -272,8 +265,7 @@ export class MAM extends BaseModule {
       return { messages: allMessages, complete: isComplete, rsm: lastRsm }
     } catch (error) {
       const msg = error instanceof Error ? error.message : 'Unknown error'
-      const isConnectionError = msg.includes('Not connected') || msg.includes('Socket not available')
-      if (isConnectionError) {
+      if (isConnectionError(error)) {
         logInfo(`MAM skipped: ...@${getDomain(conversationId) || '*'} — ${msg}`)
       } else {
         logErr(`MAM error: ...@${getDomain(conversationId) || '*'} — ${msg}`)
@@ -407,8 +399,7 @@ export class MAM extends BaseModule {
       return { messages: allMessages, complete: isComplete, rsm: lastRsm }
     } catch (error) {
       const msg = error instanceof Error ? error.message : 'Unknown error'
-      const isConnectionError = msg.includes('Not connected') || msg.includes('Socket not available')
-      if (isConnectionError) {
+      if (isConnectionError(error)) {
         logInfo(`Room MAM skipped: ${roomJid} — ${msg}`)
       } else {
         logErr(`Room MAM error: ${roomJid} — ${msg}`)
@@ -822,23 +813,30 @@ export class MAM extends BaseModule {
           // Skip if disconnected (avoid queuing doomed queries)
           if (this.deps.stores?.connection.getStatus() !== 'online') return
 
-          const messages = conv.messages || []
+          // Load IndexedDB cache first so we know the newest cached message
+          // and can do a proper forward catch-up instead of fetching only latest.
+          // Without this, conv.messages is empty after app restart (runtime-only),
+          // causing a backward "before:''" query that creates gaps with old cache.
+          await this.deps.stores?.chat.loadMessagesFromCache?.(conv.id, { limit: MAM_CACHE_LOAD_LIMIT })
+
+          // Re-read messages after cache load (store was mutated)
+          const updatedConv = this.deps.stores?.chat.getAllConversations()?.find(c => c.id === conv.id)
+          const messages = updatedConv?.messages || conv.messages || []
           const newestMessage = findNewestMessage(messages)
 
           if (newestMessage?.timestamp) {
             // Forward query from the last known message
-            const startTime = new Date(newestMessage.timestamp.getTime() + 1)
             await this.queryArchive({
               with: conv.id,
-              start: startTime.toISOString(),
-              max: 100,
+              start: buildCatchUpStartTime(newestMessage.timestamp),
+              max: MAM_CATCHUP_FORWARD_MAX,
             })
           } else {
             // No messages (empty) — fetch latest from MAM
             await this.queryArchive({
               with: conv.id,
               before: '',
-              max: 50,
+              max: MAM_CATCHUP_BACKWARD_MAX,
             })
           }
         } catch (_error) {
@@ -940,10 +938,10 @@ export class MAM extends BaseModule {
           if (this.deps.stores?.connection.getStatus() !== 'online') return
 
           // Load IndexedDB cache first so we know the newest cached message
-          // and can do a proper forward catch-up instead of fetching only latest 50.
+          // and can do a proper forward catch-up instead of fetching only latest.
           // Without this, room.messages is empty after app restart (runtime-only),
           // causing a backward "before:''" query that creates gaps with old cache.
-          await this.deps.stores?.room.loadMessagesFromCache(room.jid, { limit: 100 })
+          await this.deps.stores?.room.loadMessagesFromCache(room.jid, { limit: MAM_CACHE_LOAD_LIMIT })
 
           // Re-read room after cache load (store was mutated)
           const updatedRoom = this.deps.stores?.room.getRoom(room.jid)
@@ -952,18 +950,17 @@ export class MAM extends BaseModule {
 
           if (newestMessage?.timestamp) {
             // Forward query from the last known message
-            const startTime = new Date(newestMessage.timestamp.getTime() + 1)
             await this.queryRoomArchive({
               roomJid: room.jid,
-              start: startTime.toISOString(),
-              max: 100,
+              start: buildCatchUpStartTime(newestMessage.timestamp),
+              max: MAM_CATCHUP_FORWARD_MAX,
             })
           } else {
             // No messages (empty) — fetch latest from MAM
             await this.queryRoomArchive({
               roomJid: room.jid,
               before: '',
-              max: 50,
+              max: MAM_CATCHUP_BACKWARD_MAX,
             })
           }
         } catch (_error) {

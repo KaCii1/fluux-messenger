@@ -20,6 +20,7 @@ import { connectionStore, chatStore, roomStore } from '../stores'
 import { NS_MAM } from './namespaces'
 import { logInfo } from './logger'
 import { buildScopedStorageKey } from '../utils/storageScope'
+import { MAM_ROOM_CATCHUP_DELAY_MS } from '../utils/mamCatchUpUtils'
 
 /**
  * Sets up background sync side effects that run after a fresh session.
@@ -173,7 +174,7 @@ export function setupBackgroundSyncSideEffects(
           // Silently ignore member discovery errors
         }
       })()
-    }, 10_000)
+    }, MAM_ROOM_CATCHUP_DELAY_MS)
   }
 
   // Fresh session: 'online' fires only on fresh sessions (not SM resumption).

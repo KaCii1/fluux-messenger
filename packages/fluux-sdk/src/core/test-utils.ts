@@ -642,6 +642,7 @@ export const createMockStores = (): MockStoreBindings => ({
     markAllNeedsCatchUp: vi.fn(),
     clearNeedsCatchUp: vi.fn(),
     updateLastMessagePreview: vi.fn(),
+    loadMessagesFromCache: vi.fn().mockResolvedValue([]),
     getAllConversations: vi.fn().mockReturnValue([]),
     getArchivedConversations: vi.fn().mockReturnValue([]),
     archiveConversation: vi.fn(),

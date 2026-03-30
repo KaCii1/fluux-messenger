@@ -18,20 +18,14 @@ import type { XMPPClient } from './XMPPClient'
 import type { SideEffectsOptions } from './chatSideEffects'
 import { roomStore, connectionStore } from '../stores'
 import { logInfo } from './logger'
-
-/**
- * Find the newest message in the array (regardless of delay status).
- *
- * Used as the catch-up cursor for MAM forward queries. Including delayed
- * messages ensures the catch-up always uses a forward query, which merges
- * correctly via full sort.
- */
-function findNewestMessage(messages: Array<{ timestamp?: Date }>): { timestamp: Date } | undefined {
-  for (let i = messages.length - 1; i >= 0; i--) {
-    if (messages[i].timestamp) return messages[i] as { timestamp: Date }
-  }
-  return undefined
-}
+import {
+  findNewestMessage,
+  buildCatchUpStartTime,
+  isConnectionError,
+  MAM_CATCHUP_FORWARD_MAX,
+  MAM_CATCHUP_BACKWARD_MAX,
+  MAM_CACHE_LOAD_LIMIT,
+} from '../utils/mamCatchUpUtils'
 
 /**
  * Sets up room-related side effects.
@@ -111,7 +105,7 @@ export function setupRoomSideEffects(
       // handler races with the conversation subscriber's cache load, and
       // room.messages may be empty — causing a backward "before:''" query
       // instead of a forward catch-up from the newest cached message.
-      await roomStore.getState().loadMessagesFromCache(roomJid, { limit: 100 })
+      await roomStore.getState().loadMessagesFromCache(roomJid, { limit: MAM_CACHE_LOAD_LIMIT })
 
       // Re-read room after cache load (store was mutated)
       const roomAfterCache = roomStore.getState().rooms.get(roomJid)
@@ -120,18 +114,17 @@ export function setupRoomSideEffects(
 
       if (newestMessage?.timestamp) {
         // Query for messages AFTER the newest known message (catchup)
-        const startTime = new Date(newestMessage.timestamp.getTime() + 1)
         await client.chat.queryRoomMAM({
           roomJid,
-          start: startTime.toISOString(),
-          max: 100,
+          start: buildCatchUpStartTime(newestMessage.timestamp),
+          max: MAM_CATCHUP_FORWARD_MAX,
         })
       } else {
         // No cached messages - fetch latest
         await client.chat.queryRoomMAM({
           roomJid,
           before: '', // Empty = get latest
-          max: 50,
+          max: MAM_CATCHUP_BACKWARD_MAX,
         })
       }
       logInfo('Room: MAM catch-up complete')
@@ -139,13 +132,7 @@ export function setupRoomSideEffects(
       // Allow backup handlers (room:joined, supportsMAM watcher) to retry
       fetchInitiated.delete(roomJid)
 
-      // Only log if it's not a disconnection error (those are expected during reconnect)
-      const isConnectionError = error instanceof Error &&
-        (error.message.includes('disconnected') ||
-         error.message.includes('Not connected') ||
-         error.message.includes('Socket not available'))
-
-      if (isConnectionError) {
+      if (isConnectionError(error)) {
         if (debug) console.log('[SideEffects] Room: MAM skipped - client disconnected')
       } else {
         console.error('[SideEffects] Room: MAM catchup failed:', error)
@@ -187,7 +174,7 @@ export function setupRoomSideEffects(
         // Step 1: Always load from IndexedDB cache (deduplication is handled by loadMessagesFromCache).
         // This is a fallback for cases where the hook's cache load didn't run (e.g., reconnection).
         if (debug) console.log('[SideEffects] Room: Loading from cache')
-        await roomStore.getState().loadMessagesFromCache(activeRoomJid, { limit: 100 })
+        await roomStore.getState().loadMessagesFromCache(activeRoomJid, { limit: MAM_CACHE_LOAD_LIMIT })
 
         // Step 2: Background MAM fetch for catchup (skip if already initiated this session)
         if (fetchInitiated.has(activeRoomJid)) {
