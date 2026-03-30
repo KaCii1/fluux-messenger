@@ -286,6 +286,7 @@
         "sendPrivateMessage": "Privát üzenet küldése",
         "ignoreUser": "Mellőzés ebben a szobában",
         "stopIgnoring": "Mellőzés befejezése",
+        "ignoredUsers": "Mellőzöttek",
         "subject": "Tárgy",
         "saveSettings": "Beállítások mentése",
         "savingSettings": "Mentés...",

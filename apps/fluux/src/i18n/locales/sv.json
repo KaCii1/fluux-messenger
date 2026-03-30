@@ -286,6 +286,7 @@
         "sendPrivateMessage": "Skicka privat meddelande",
         "ignoreUser": "Ignorera i detta rum",
         "stopIgnoring": "Sluta ignorera",
+        "ignoredUsers": "Ignorerade",
         "subject": "Ämne",
         "saveSettings": "Spara inställningar",
         "savingSettings": "Sparar...",

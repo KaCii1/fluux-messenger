@@ -288,6 +288,7 @@
         "sendPrivateMessage": "Saada privaatsõnum",
         "ignoreUser": "Ignoreeri selles ruumis",
         "stopIgnoring": "Lõpeta ignoreerimine",
+        "ignoredUsers": "Eiratud",
         "subject": "Teema",
         "saveSettings": "Salvesta seaded",
         "savingSettings": "Salvestamine...",

@@ -236,6 +236,26 @@ export function OccupantPanel({
     })
   })()
 
+  // Compute ignored users not already visible as online occupants or offline members
+  const hiddenIgnoredUsers = (() => {
+    if (ignoredForRoom.length === 0) return []
+
+    // Collect all identifiers visible in the occupant list
+    const visibleIdentifiers = new Set<string>()
+    for (const occupant of room.occupants.values()) {
+      if (occupant.occupantId) visibleIdentifiers.add(occupant.occupantId)
+      if (occupant.jid) visibleIdentifiers.add(getBareJid(occupant.jid))
+      visibleIdentifiers.add(occupant.nick)
+    }
+    // Also collect offline member JIDs and nicks
+    for (const member of offlineMembers) {
+      visibleIdentifiers.add(member.jid)
+      if (member.nick) visibleIdentifiers.add(member.nick)
+    }
+
+    return ignoredForRoom.filter(u => !visibleIdentifiers.has(u.identifier))
+  })()
+
   const getRoleLabel = (role: string) => {
     switch (role) {
       case 'moderator': return t('rooms.moderators')
@@ -509,6 +529,67 @@ export function OccupantPanel({
                         {getAffiliationBadge(member.affiliation)}
                       </div>
                       <p className="text-xs text-fluux-muted truncate">{member.jid}</p>
+                    </div>
+                  </div>
+                </Tooltip>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Ignored users not currently in room */}
+        {hiddenIgnoredUsers.length > 0 && (
+          <div className="py-2">
+            <div className="px-4 py-1 flex items-center gap-2 text-xs font-semibold text-fluux-muted uppercase">
+              <EyeOff className="w-3 h-3" />
+              <span>{t('rooms.ignoredUsers')}</span>
+              <span className="text-fluux-muted/60">— {hiddenIgnoredUsers.length}</span>
+            </div>
+            {hiddenIgnoredUsers.map((ignoredUser) => {
+              const displayName = ignoredUser.displayName
+              // Determine if identifier is an occupantId (not a JID or nick)
+              const isOccupantId = ignoredUser.identifier !== ignoredUser.jid && ignoredUser.identifier !== displayName
+              const syntheticGroup: GroupedOccupant = {
+                bareJid: ignoredUser.jid,
+                connections: [{
+                  nick: displayName,
+                  affiliation: 'none',
+                  role: 'none',
+                  occupantId: isOccupantId ? ignoredUser.identifier : undefined,
+                } as RoomOccupant],
+                primaryNick: displayName,
+              }
+              return (
+                <Tooltip
+                  key={ignoredUser.identifier}
+                  content={ignoredUser.jid || ignoredUser.displayName}
+                  position="left"
+                  className="block"
+                >
+                  <div
+                    onContextMenu={(e) => handleOccupantContextMenu(e, syntheticGroup)}
+                    onTouchStart={(e) => handleOccupantTouchStart(e, syntheticGroup)}
+                    onTouchEnd={menu.handleTouchEnd}
+                    onTouchMove={menu.handleTouchEnd}
+                    className="px-4 py-1.5 flex items-center gap-2 hover:bg-fluux-hover/50 cursor-default opacity-40"
+                  >
+                    <Avatar
+                      identifier={displayName}
+                      name={displayName}
+                      size="sm"
+                      presence="offline"
+                      presenceBorderColor="border-fluux-sidebar"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="truncate text-sm text-fluux-text">
+                          {displayName}
+                        </span>
+                        <EyeOff className="w-3 h-3 text-fluux-muted" />
+                      </div>
+                      {ignoredUser.jid && (
+                        <p className="text-xs text-fluux-muted truncate">{ignoredUser.jid}</p>
+                      )}
                     </div>
                   </div>
                 </Tooltip>

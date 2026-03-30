@@ -286,6 +286,7 @@
         "sendPrivateMessage": "Send private message",
         "ignoreUser": "Ignore in this room",
         "stopIgnoring": "Stop ignoring",
+        "ignoredUsers": "Ignored",
         "manageOccupant": "Manage",
         "userInfo": "User info",
         "subject": "Subject",

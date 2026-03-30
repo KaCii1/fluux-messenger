@@ -286,6 +286,7 @@
         "sendPrivateMessage": "Надіслати приватне повідомлення",
         "ignoreUser": "Ігнорувати в цій кімнаті",
         "stopIgnoring": "Припинити ігнорування",
+        "ignoredUsers": "Ігноровані",
         "subject": "Тема",
         "saveSettings": "Зберегти налаштування",
         "savingSettings": "Збереження...",

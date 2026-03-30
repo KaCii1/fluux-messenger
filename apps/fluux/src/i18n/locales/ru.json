@@ -286,6 +286,7 @@
         "sendPrivateMessage": "Отправить личное сообщение",
         "ignoreUser": "Игнорировать в этой комнате",
         "stopIgnoring": "Прекратить игнорирование",
+        "ignoredUsers": "Игнорируемые",
         "subject": "Тема",
         "saveSettings": "Сохранить настройки",
         "savingSettings": "Сохранение...",

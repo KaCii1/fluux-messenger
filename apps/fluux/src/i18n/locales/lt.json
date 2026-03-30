@@ -286,6 +286,7 @@
         "sendPrivateMessage": "Siųsti privačią žinutę",
         "ignoreUser": "Ignoruoti šiame kambaryje",
         "stopIgnoring": "Nustoti ignoruoti",
+        "ignoredUsers": "Ignoruojami",
         "subject": "Tema",
         "saveSettings": "Išsaugoti nustatymus",
         "savingSettings": "Saugoma...",

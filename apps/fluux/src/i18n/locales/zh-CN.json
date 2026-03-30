@@ -286,6 +286,7 @@
         "sendPrivateMessage": "发送私信",
         "ignoreUser": "在此房间中忽略",
         "stopIgnoring": "停止忽略",
+        "ignoredUsers": "已忽略",
         "subject": "主题",
         "saveSettings": "保存设置",
         "savingSettings": "保存中...",

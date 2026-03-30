@@ -286,6 +286,7 @@
         "sendPrivateMessage": "Lähetä yksityisviesti",
         "ignoreUser": "Ohita tässä huoneessa",
         "stopIgnoring": "Lopeta ohittaminen",
+        "ignoredUsers": "Ohitetut",
         "subject": "Aihe",
         "saveSettings": "Tallenna asetukset",
         "savingSettings": "Tallennetaan...",

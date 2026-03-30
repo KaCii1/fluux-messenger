@@ -286,6 +286,7 @@
         "sendPrivateMessage": "Send privat besked",
         "ignoreUser": "Ignorér i dette rum",
         "stopIgnoring": "Stop med at ignorere",
+        "ignoredUsers": "Ignorerede",
         "subject": "Emne",
         "saveSettings": "Gem indstillinger",
         "savingSettings": "Gemmer...",

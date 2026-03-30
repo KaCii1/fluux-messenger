@@ -286,6 +286,7 @@
         "sendPrivateMessage": "Send privat melding",
         "ignoreUser": "Ignorer i dette rommet",
         "stopIgnoring": "Slutt å ignorere",
+        "ignoredUsers": "Ignorerte",
         "subject": "Emne",
         "saveSettings": "Lagre innstillinger",
         "savingSettings": "Lagrer...",

@@ -286,6 +286,7 @@
         "sendPrivateMessage": "Senda einkaskilaboð",
         "ignoreUser": "Hunsa í þessu herbergi",
         "stopIgnoring": "Hætta að hunsa",
+        "ignoredUsers": "Hunsaðir",
         "subject": "Efni",
         "saveSettings": "Vista stillingar",
         "savingSettings": "Vista...",

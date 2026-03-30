@@ -288,6 +288,7 @@
         "sendPrivateMessage": "Enviar missatge privat",
         "ignoreUser": "Ignorar en aquesta sala",
         "stopIgnoring": "Deixar d'ignorar",
+        "ignoredUsers": "Ignorats",
         "subject": "Assumpte",
         "saveSettings": "Desar Configuració",
         "savingSettings": "Desant...",

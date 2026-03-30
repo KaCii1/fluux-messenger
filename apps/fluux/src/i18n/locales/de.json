@@ -288,6 +288,7 @@
         "sendPrivateMessage": "Private Nachricht senden",
         "ignoreUser": "In diesem Raum ignorieren",
         "stopIgnoring": "Nicht mehr ignorieren",
+        "ignoredUsers": "Ignoriert",
         "subject": "Betreff",
         "saveSettings": "Einstellungen speichern",
         "savingSettings": "Speichern...",
