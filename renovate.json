@@ -13,7 +13,8 @@
     {
       "groupName": "Rust crates",
       "groupSlug": "rust",
-      "matchManagers": ["cargo"]
+      "matchManagers": ["cargo"],
+      "matchUpdateTypes": ["minor", "patch", "major"]
     },
     {
       "groupName": "GitHub Actions (CI)",
@@ -25,7 +26,8 @@
         "actions/deploy-pages",
         "actions/upload-pages-artifact",
         "softprops/action-gh-release"
-      ]
+      ],
+      "matchUpdateTypes": ["minor", "patch", "major"]
     },
     {
       "groupName": "Tauri plugins",
