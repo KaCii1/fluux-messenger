@@ -11,6 +11,11 @@
   "ignoreDeps": ["@xmpp/client", "@xmpp/debug"],
   "packageRules": [
     {
+      "groupName": "Rust crates",
+      "groupSlug": "rust",
+      "matchManagers": ["cargo"]
+    },
+    {
       "groupName": "GitHub Actions (CI)",
       "groupSlug": "github-actions-ci",
       "matchManagers": ["github-actions"],
