@@ -33,22 +33,16 @@
 
 <div align="center">
 
-*Click on any screenshot to view full size*
+<a href="screenshots/21-chat-light-dark.png"><img src="screenshots/21-chat-light-dark.png" width="600" alt="Light and Dark themes"/></a>
 
-| Chat Room                                                                                                                                | XMPP Console                                                                                                                              |
-|------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
-| <a href="assets/readme/chatroom.png"><img src="assets/readme/chatroom.png" width="250" style="border-radius: 8px;" alt="Chat Room"/></a> | <a href="assets/readme/console.png"><img src="assets/readme/console.png" width="250" style="border-radius: 8px;" alt="XMPP Console"/></a> |
-| *Multi-user Chat*                                                                                                                        | *XMPP Debug Interface*                                                                                                                    |
+*Light and dark modes side by side*
 
-| Language Settings                                                                                                                                  | Login Screen                                                                                                                          | Theme System                                                                                                                          |
-|----------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| <a href="assets/readme/languages.png"><img src="assets/readme/languages.png" width="250" style="border-radius: 8px;" alt="Language Settings"/></a> | <a href="assets/readme/login.png"><img src="assets/readme/login.png" width="250" style="border-radius: 8px;" alt="Login Screen"/></a> | <a href="assets/readme/split.png"><img src="assets/readme/split.png" width="250" style="border-radius: 8px;" alt="Theme System"/></a> |
-| *31 languages including all EU official languages*                                                                                                 | *Simple Login Interface*                                                                                                              | *Light and dark themes, more to come*                                                                                                 |
+| Group Chat | Themes & Customization |
+|------------|----------------------|
+| <a href="screenshots/02-group-chat-dark.png"><img src="screenshots/02-group-chat-dark.png" width="380" alt="Group Chat"/></a> | <a href="screenshots/08-settings-dark.png"><img src="screenshots/08-settings-dark.png" width="380" alt="Themes"/></a> |
+| *Multi-user chat with roles, reactions, and polls* | *14 built-in themes, custom accents, and font settings* |
 
-| Admin Server Commands                                                                                                                                      | Chat Rooms Management                                                                                                                                              | Users Management                                                                                                                                      |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| <a href="assets/readme/admin-other.png"><img src="assets/readme/admin-other.png" width="250" style="border-radius: 8px;" alt="Admin Server Commands"/></a> | <a href="assets/readme/admin-chatrooms.png"><img src="assets/readme/admin-chatrooms.png" width="250" style="border-radius: 8px;" alt="Chat Rooms Management"/></a> | <a href="assets/readme/admin-users.png"><img src="assets/readme/admin-users.png" width="250" style="border-radius: 8px;" alt="Users Management"/></a> |
-| *Manage your server right from your client*                                                                                                                | *Moderate your rooms easily*                                                                                                                                       | *User management in your client*                                                                                                                      |
+[See all screenshots in the visual overview](screenshots/OVERVIEW.md)
 
 </div>
 

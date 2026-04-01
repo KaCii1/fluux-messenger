@@ -20,7 +20,7 @@ import { DemoTutorialProvider } from './demo/tutorial/DemoTutorialProvider'
 import { buildDemoData, buildDemoAnimation } from './demo/demoData'
 import { getDiscoverableRooms } from './demo/rooms'
 import App from './App'
-import './i18n'
+import i18n from './i18n'
 import './index.css'
 
 // Parse URL parameters
@@ -52,6 +52,7 @@ demoClient.setDiscoverableRooms(getDiscoverableRooms())
 ;(window as any).__demoClient = demoClient
 ;(window as any).__adminStore = adminStore
 ;(window as any).__themeStore = useThemeStore
+;(window as any).__i18n = i18n
 
 // Seed admin store so the Admin panel is accessible in demo
 adminStore.getState().setIsAdmin(true)

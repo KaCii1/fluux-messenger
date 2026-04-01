@@ -274,6 +274,33 @@ for (const [i, theme] of themeShowcase.entries()) {
   })
 }
 
+// ── i18n Screenshots ─────────────────────────────────────────────
+
+/** Switch the UI language via the exposed i18n instance. */
+async function setLanguage(page: Page, langCode: string) {
+  await page.evaluate((code) => {
+    const i18n = (window as any).__i18n
+    if (i18n) void i18n.changeLanguage(code)
+  }, langCode)
+  await page.waitForTimeout(800)
+}
+
+test('19 — Chat (French)', async ({ page }) => {
+  await waitForDemoReady(page)
+  await setLanguage(page, 'fr')
+  await navigateTo(page, 'messages')
+  await selectItem(page, 'Emma Wilson')
+  await capture(page, '19-chat-fr')
+})
+
+test('20 — Chat (Greek)', async ({ page }) => {
+  await waitForDemoReady(page)
+  await setLanguage(page, 'el')
+  await navigateTo(page, 'messages')
+  await selectItem(page, 'Emma Wilson')
+  await capture(page, '20-chat-el')
+})
+
 // ── Composite Screenshots ─────────────────────────────────────────
 
 /** Capture the 1:1 chat view and return a PNG buffer. */
@@ -286,7 +313,7 @@ async function captureChatBuffer(page: Page, colorScheme: 'dark' | 'light'): Pro
   return Buffer.from(await page.screenshot({ type: 'png' }))
 }
 
-test('18 — Light/Dark Composite', async ({ page }) => {
+test('21 — Light/Dark Composite', async ({ page }) => {
   // Capture both themes
   const lightBuf = await captureChatBuffer(page, 'light')
   const darkBuf = await captureChatBuffer(page, 'dark')
@@ -334,5 +361,5 @@ test('18 — Light/Dark Composite', async ({ page }) => {
     { light: lightB64, dark: darkB64 }
   )
 
-  writeFileSync(`${OUTPUT_DIR}/18-chat-light-dark.png`, Buffer.from(compositeB64, 'base64'))
+  writeFileSync(`${OUTPUT_DIR}/21-chat-light-dark.png`, Buffer.from(compositeB64, 'base64'))
 })

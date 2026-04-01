@@ -71,16 +71,16 @@
 
   <screenshots>
     <screenshot type="default">
-      <caption>Multi-user chat room</caption>
-      <image>https://raw.githubusercontent.com/processone/fluux-messenger/main/assets/readme/chatroom.png</image>
+      <caption>1:1 chat with reactions, replies, and file sharing</caption>
+      <image>https://raw.githubusercontent.com/processone/fluux-messenger/main/screenshots/01-chat-dark.png</image>
     </screenshot>
     <screenshot>
-      <caption>XMPP debug console</caption>
-      <image>https://raw.githubusercontent.com/processone/fluux-messenger/main/assets/readme/console.png</image>
+      <caption>Group chat with members panel and moderation</caption>
+      <image>https://raw.githubusercontent.com/processone/fluux-messenger/main/screenshots/02-group-chat-dark.png</image>
     </screenshot>
     <screenshot>
-      <caption>Login screen</caption>
-      <image>https://raw.githubusercontent.com/processone/fluux-messenger/main/assets/readme/login.png</image>
+      <caption>14 built-in themes and customization settings</caption>
+      <image>https://raw.githubusercontent.com/processone/fluux-messenger/main/screenshots/08-settings-dark.png</image>
     </screenshot>
   </screenshots>
 

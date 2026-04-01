@@ -27,6 +27,18 @@ export const SOPHIA_MESSAGES: Message[] = [
     timestamp: daysAgo(2), isOutgoing: false, conversationId: conv,
     reactions: { '👍': [SELF_JID] } as Record<string, string[]>,
   },
+  // Outline with markdown headings (shows rich heading rendering)
+  {
+    type: 'chat', id: 'demo-sophia-0f', from: conv,
+    body: 'Here\'s the outline I\'m thinking for the migration guide:\n\n# SDK v2 Migration Guide\n\n## Breaking Changes\n- Store API refactored\n- New event system\n\n## New Features\n- Stream Management\n- Message Carbons\n\nDoes this structure work?',
+    timestamp: daysAgo(1), isOutgoing: false, conversationId: conv,
+  },
+  {
+    type: 'chat', id: 'demo-sophia-0g', from: SELF_JID,
+    body: 'Looks great — clear and easy to follow. Ship it!',
+    timestamp: daysAgo(1), isOutgoing: true, conversationId: conv,
+    reactions: { '🚀': [`sophia@${DOMAIN}`] } as Record<string, string[]>,
+  },
   // Today's conversation
   {
     type: 'chat', id: 'demo-sophia-1', from: conv, body: 'I\'ve finished the API docs for the SDK',
