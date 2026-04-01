@@ -63,10 +63,9 @@ describe('connectionMachine', () => {
       actor.send({ type: 'CONNECTION_ERROR', error: 'some error' })
       expect(actor.getSnapshot().context.lastError).toBe('some error')
 
-      // CONNECT from terminal should clear error
+      // CONNECT from terminal should clear error and go directly to connecting
       actor.send({ type: 'CONNECT' })
-      // Now in idle (after CONNECT from terminal)
-      actor.send({ type: 'CONNECT' })
+      expect(actor.getSnapshot().value).toBe('connecting')
       expect(actor.getSnapshot().context.lastError).toBeNull()
 
       actor.stop()
@@ -605,7 +604,7 @@ describe('connectionMachine', () => {
         actor.send({ type: 'CONFLICT' })
 
         actor.send({ type: 'CONNECT' })
-        expect(actor.getSnapshot().value).toBe('idle')
+        expect(actor.getSnapshot().value).toBe('connecting')
         actor.stop()
       })
     })
@@ -658,7 +657,7 @@ describe('connectionMachine', () => {
         expect(actor.getSnapshot().value).toEqual({ terminal: 'authFailed' })
 
         actor.send({ type: 'CONNECT' })
-        expect(actor.getSnapshot().value).toBe('idle')
+        expect(actor.getSnapshot().value).toBe('connecting')
         expect(actor.getSnapshot().context.lastError).toBeNull()
         actor.stop()
       })
@@ -722,7 +721,7 @@ describe('connectionMachine', () => {
         actor.send({ type: 'CONNECTION_ERROR', error: 'fail' })
 
         actor.send({ type: 'CONNECT' })
-        expect(actor.getSnapshot().value).toBe('idle')
+        expect(actor.getSnapshot().value).toBe('connecting')
         expect(actor.getSnapshot().context.lastError).toBeNull()
         actor.stop()
       })

@@ -575,8 +575,8 @@ export const connectionMachine = setup({
       initial: 'initialFailure',
       on: {
         CONNECT: {
-          target: 'idle',
-          actions: 'resetReconnectState',
+          target: 'connecting',
+          actions: ['resetReconnectState', 'clearError'],
         },
       },
       states: {

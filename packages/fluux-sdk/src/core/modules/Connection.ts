@@ -407,15 +407,18 @@ export class Connection extends BaseModule {
    *   - Desktop with proxy: fast XEP-0156 check only, then fallback to TCP/SRV via proxy
    */
   async connect({ jid, password, server, resource, smState, lang, previouslyJoinedRooms, skipDiscovery, disableSmKeepalive }: ConnectOptions): Promise<void> {
-    // If the machine is not in idle state, reset it first.
-    // This handles the case where connect() is called while already connected
-    // (e.g., user clicks Connect again after a previous session).
+    // Guard: if already connecting, connected, or reconnecting, ignore the call.
+    // This prevents double-connect races (e.g., rapid button clicks, concurrent
+    // auto-connect paths) that would create two XMPP sockets binding the same
+    // resource, leading to a conflict ping-pong loop.
     const currentState = this.getMachineState()
-    if (currentState !== 'idle') {
-      this.sendMachineEvent({ type: 'DISCONNECT' }, 'connect:reset-before-connect')
+    if (currentState === 'connecting' || this.isInConnectedState() || this.isInReconnectingState()) {
+      logInfo(`connect() ignored: already in state ${JSON.stringify(currentState)}`)
+      return
     }
+
     // Signal the machine that a user-initiated connection is starting.
-    // This resets any terminal/disconnected state back to idle, then transitions to connecting.
+    // CONNECT transitions to `connecting` from idle, disconnected, and terminal states.
     this.sendMachineEvent({ type: 'CONNECT' }, 'connect:start')
 
     // Emit SDK event for connection starting
@@ -1676,7 +1679,10 @@ export class Connection extends BaseModule {
         // Recovery fallback: if the machine still believes we're connected
         // when a stale disconnect arrives, force reconnect transition instead
         // of silently staying in a wedged connected state.
-        if (typeof machineState === 'object' && 'connected' in machineState) {
+        // Skip if already in a terminal state (e.g. conflict, authFailed) — the
+        // stale socket close from the conflicted session must not trigger a
+        // reconnect that would create another resource conflict loop.
+        if (typeof machineState === 'object' && 'connected' in machineState && !this.isInTerminalState()) {
           logWarn(`Stale disconnect arrived while machine still connected (state=${JSON.stringify(machineState)}${closeInfo})`)
           this.stores.console.addEvent(
             'Socket closed from stale client while connected, forcing reconnect recovery',

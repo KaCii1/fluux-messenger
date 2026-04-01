@@ -1490,9 +1490,10 @@ describe('XMPPClient', () => {
       // Start health check — this will call waitForSmAck on the current client
       const resultPromise = xmppClient.verifyConnectionHealth()
 
-      // Simulate reconnection: replace the xmpp client before the ack timeout fires.
-      // This is what happens when forceDestroyClient strips listeners on the old client
-      // and a new connection is established via SM resumption.
+      // Simulate reconnection: disconnect first, then reconnect with a new client.
+      // This is what happens when the connection drops and auto-reconnect fires.
+      await xmppClient.disconnect()
+
       const newClient = createMockXmppClient()
       newClient.streamManagement = {
         id: 'sm-456',
@@ -1547,7 +1548,9 @@ describe('XMPPClient', () => {
 
       const resultPromise = xmppClient.verifyConnection()
 
-      // Simulate reconnection mid-verify
+      // Simulate reconnection mid-verify: disconnect first, then reconnect
+      await xmppClient.disconnect()
+
       const newClient = createMockXmppClient()
       newClient.streamManagement = {
         id: 'sm-456',

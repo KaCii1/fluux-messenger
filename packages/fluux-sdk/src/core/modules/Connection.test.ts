@@ -233,6 +233,132 @@ describe('XMPPClient Connection', () => {
     })
   })
 
+  describe('connect() guard against concurrent connections', () => {
+    it('should be a no-op when already connected', async () => {
+      // Connect first
+      const connectPromise = xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'secret',
+        server: 'example.com',
+        skipDiscovery: true,
+      })
+      mockXmppClientInstance._emit('online')
+      await connectPromise
+
+      // Clear calls from initial connect
+      mockClientFactory.mockClear()
+
+      // Second connect call while connected — should be silently ignored
+      await xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'secret',
+        server: 'example.com',
+        skipDiscovery: true,
+      })
+
+      // Should NOT have created a new XMPP client
+      expect(mockClientFactory).not.toHaveBeenCalled()
+    })
+
+    it('should be a no-op when already connecting', async () => {
+      // Start first connect (don't await — it's still connecting)
+      const firstConnect = xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'secret',
+        server: 'example.com',
+        skipDiscovery: true,
+      })
+
+      // Record how many clients were created so far
+      const callsBefore = mockClientFactory.mock.calls.length
+
+      // Second connect call while first is still in progress — should be ignored
+      await xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'secret',
+        server: 'example.com',
+        skipDiscovery: true,
+      })
+
+      // Should NOT have created another XMPP client beyond the first one
+      // (the first connect's async factory call may complete after our snapshot)
+      expect(mockClientFactory.mock.calls.length).toBeLessThanOrEqual(callsBefore + 1)
+
+      // Clean up: let first connect complete
+      mockXmppClientInstance._emit('online')
+      await firstConnect
+
+      // Total: exactly 1 client created
+      expect(mockClientFactory).toHaveBeenCalledTimes(1)
+    })
+
+    it('should allow connect from terminal state', async () => {
+      // Connect first
+      const connectPromise = xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'secret',
+        server: 'example.com',
+        skipDiscovery: true,
+      })
+      mockXmppClientInstance._emit('online')
+      await connectPromise
+
+      // Trigger a conflict → terminal.conflict
+      mockXmppClientInstance._emit('error', new Error('conflict'))
+      mockXmppClientInstance._emit('disconnect', { clean: false })
+
+      // Prepare new client for reconnect
+      const reconnectClient = createMockXmppClient()
+      mockClientFactory.mockClear()
+      mockClientFactory._setInstance(reconnectClient)
+
+      // Connect from terminal state — should work
+      const reconnectPromise = xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'secret',
+        server: 'example.com',
+        skipDiscovery: true,
+      })
+      reconnectClient._emit('online')
+      await reconnectPromise
+
+      // Should have created a new client
+      expect(mockClientFactory).toHaveBeenCalledTimes(1)
+    })
+
+    it('should allow connect from disconnected state', async () => {
+      // Connect first
+      const connectPromise = xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'secret',
+        server: 'example.com',
+        skipDiscovery: true,
+      })
+      mockXmppClientInstance._emit('online')
+      await connectPromise
+
+      // Disconnect
+      await xmppClient.disconnect()
+
+      // Prepare new client
+      const reconnectClient = createMockXmppClient()
+      mockClientFactory.mockClear()
+      mockClientFactory._setInstance(reconnectClient)
+
+      // Connect from disconnected — should work
+      const reconnectPromise = xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'secret',
+        server: 'example.com',
+        skipDiscovery: true,
+      })
+      reconnectClient._emit('online')
+      await reconnectPromise
+
+      expect(mockClientFactory).toHaveBeenCalledTimes(1)
+    })
+  })
+
   describe('disconnect', () => {
     it('should stop the client and update store', async () => {
       // First connect
@@ -928,9 +1054,13 @@ describe('XMPPClient Connection', () => {
       mockXmppClientInstance._emit('online')
       await connectPromise
 
-      // Step 2: Start a fresh connect() that will fail
-      // This simulates the user clicking Connect again after an error screen
-      mockXmppClientInstance.start.mockRejectedValue(new Error('Connection refused'))
+      // Step 1b: Disconnect so we can call connect() again
+      await xmppClient.disconnect()
+
+      // Step 2: Prepare a new client that will fail to start
+      const failClient = createMockXmppClient()
+      mockClientFactory._setInstance(failClient)
+      failClient.start.mockRejectedValue(new Error('Connection refused'))
 
       await expect(
         xmppClient.connect({
@@ -947,7 +1077,7 @@ describe('XMPPClient Connection', () => {
       mockClientFactory.mockClear()
 
       // Step 3: Simulate disconnect event from the failed connection
-      mockXmppClientInstance._emit('disconnect', { clean: false })
+      failClient._emit('disconnect', { clean: false })
 
       // Should NOT auto-reconnect - this is a fresh login attempt that failed
       const statusCalls = vi.mocked(mockStores.connection.setStatus).mock.calls
@@ -1523,6 +1653,48 @@ describe('XMPPClient Connection', () => {
       expect(factoryCalls).toBe(1) // Only the initial connection
     })
 
+    it('should not trigger reconnect from stale disconnect after resource conflict', async () => {
+      // Connect first
+      const connectPromise = xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'secret',
+        server: 'example.com',
+        skipDiscovery: true,
+      })
+      mockXmppClientInstance._emit('online')
+      await connectPromise
+
+      // Clear previous calls
+      vi.mocked(mockStores.connection.setStatus).mockClear()
+      vi.mocked(mockStores.console.addEvent).mockClear()
+
+      // Simulate conflict: the error handler transitions to terminal.conflict
+      // and clears credentials
+      mockXmppClientInstance._emit('error', new Error('conflict'))
+
+      // Now simulate a stale disconnect from the old client.
+      // In the real scenario, this.xmpp was already replaced by a new connection,
+      // so the disconnect comes from a stale client.
+      ;(xmppClient.connection as any).xmpp = null
+
+      mockXmppClientInstance._emit('disconnect', { clean: true })
+
+      // The stale disconnect recovery should NOT fire SOCKET_DIED because
+      // the machine is in terminal.conflict state
+      expect(mockStores.console.addEvent).not.toHaveBeenCalledWith(
+        'Socket closed from stale client while connected, forcing reconnect recovery',
+        'connection'
+      )
+
+      // Should not have transitioned to reconnecting
+      expect(mockStores.connection.setStatus).not.toHaveBeenCalledWith('reconnecting')
+
+      // Advance timers — no reconnect should fire
+      await vi.advanceTimersByTimeAsync(10_000)
+      const factoryCalls = mockClientFactory.mock.calls.length
+      expect(factoryCalls).toBe(1) // Only the initial connection
+    })
+
     it('should detect auth error from error message', async () => {
       // Connect first
       const connectPromise = xmppClient.connect({
@@ -1612,6 +1784,65 @@ describe('XMPPClient Connection', () => {
         'Connection lost unexpectedly, will reconnect',
         'connection'
       )
+    })
+
+    it('should not trigger reconnect from stale disconnect after auth error', async () => {
+      // Connect first
+      const connectPromise = xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'secret',
+        server: 'example.com',
+        skipDiscovery: true,
+      })
+      mockXmppClientInstance._emit('online')
+      await connectPromise
+
+      // Clear previous calls
+      vi.mocked(mockStores.connection.setStatus).mockClear()
+      vi.mocked(mockStores.console.addEvent).mockClear()
+
+      // Auth error → terminal.authFailed
+      mockXmppClientInstance._emit('error', new Error('not-authorized'))
+
+      // Stale disconnect from the old client
+      ;(xmppClient.connection as any).xmpp = null
+      mockXmppClientInstance._emit('disconnect', { clean: false })
+
+      // Should NOT have triggered reconnect recovery
+      expect(mockStores.console.addEvent).not.toHaveBeenCalledWith(
+        'Socket closed from stale client while connected, forcing reconnect recovery',
+        'connection'
+      )
+      expect(mockStores.connection.setStatus).not.toHaveBeenCalledWith('reconnecting')
+    })
+
+    it('should skip handleDeadSocket when in terminal state', async () => {
+      // Connect first
+      const connectPromise = xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'secret',
+        server: 'example.com',
+        skipDiscovery: true,
+      })
+      mockXmppClientInstance._emit('online')
+      await connectPromise
+
+      // Trigger conflict → terminal.conflict
+      mockXmppClientInstance._emit('error', new Error('conflict'))
+
+      // Clear calls
+      vi.mocked(mockStores.console.addEvent).mockClear()
+      vi.mocked(mockStores.connection.setStatus).mockClear()
+
+      // Call handleDeadSocket (e.g., from a stale econnerror)
+      xmppClient.connection.handleDeadSocket({ source: 'test' })
+
+      // Should be skipped
+      expect(mockStores.console.addEvent).toHaveBeenCalledWith(
+        'Dead-socket recovery skipped: machine in terminal state',
+        'connection'
+      )
+      expect(mockStores.connection.setStatus).not.toHaveBeenCalledWith('reconnecting')
     })
   })
 
