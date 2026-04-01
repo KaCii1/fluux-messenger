@@ -396,42 +396,44 @@ export function Sidebar({ onSelectContact, onStartChat, onManageUser, adminCateg
           )}
         </div>
 
-        {/* Content */}
+        {/* Content — outer div carries focus ring, inner div scrolls */}
         <div
           ref={sidebarListRef}
           tabIndex={0}
-          className="focus-zone flex-1 overflow-y-auto py-2 pl-1 pr-2"
+          className="focus-zone flex-1 min-h-0"
         >
-          <SidebarZoneContext.Provider value={sidebarListRef}>
-            <div key={sidebarView} style={{ animation: 'sidebar-view-enter 150ms ease-out' }}>
-            {sidebarView === 'messages' ? (
-              <ConversationList />
-            ) : sidebarView === 'directory' ? (
-              <ContactList onStartChat={onStartChat} onSelectContact={onSelectContact} onManageUser={onManageUser} activeContactJid={activeContactJid} />
-            ) : sidebarView === 'rooms' ? (
-              <RoomsList />
-            ) : sidebarView === 'archive' ? (
-              <ArchiveList />
-            ) : sidebarView === 'admin' ? (
-              <AdminDashboard
-                activeCategory={adminCategory ?? null}
-                onCategoryChange={onAdminCategoryChange ?? (() => {})}
-              />
-            ) : sidebarView === 'search' ? (
-              <SearchView />
-            ) : sidebarView === 'settings' ? (
-              <SettingsSidebar
-                activeCategory={(settingsCategory as SettingsCategory) || DEFAULT_SETTINGS_CATEGORY}
-                onCategoryChange={(category) => navigateToSettings(category)}
-              />
-            ) : (
-              <>
-                <EventsView />
-                <ActivityLogView />
-              </>
-            )}
-            </div>
-          </SidebarZoneContext.Provider>
+          <div className="h-full overflow-y-auto py-1 pl-1 pr-1">
+            <SidebarZoneContext.Provider value={sidebarListRef}>
+              <div key={sidebarView} style={{ animation: 'sidebar-view-enter 150ms ease-out' }}>
+              {sidebarView === 'messages' ? (
+                <ConversationList />
+              ) : sidebarView === 'directory' ? (
+                <ContactList onStartChat={onStartChat} onSelectContact={onSelectContact} onManageUser={onManageUser} activeContactJid={activeContactJid} />
+              ) : sidebarView === 'rooms' ? (
+                <RoomsList />
+              ) : sidebarView === 'archive' ? (
+                <ArchiveList />
+              ) : sidebarView === 'admin' ? (
+                <AdminDashboard
+                  activeCategory={adminCategory ?? null}
+                  onCategoryChange={onAdminCategoryChange ?? (() => {})}
+                />
+              ) : sidebarView === 'search' ? (
+                <SearchView />
+              ) : sidebarView === 'settings' ? (
+                <SettingsSidebar
+                  activeCategory={(settingsCategory as SettingsCategory) || DEFAULT_SETTINGS_CATEGORY}
+                  onCategoryChange={(category) => navigateToSettings(category)}
+                />
+              ) : (
+                <>
+                  <EventsView />
+                  <ActivityLogView />
+                </>
+              )}
+              </div>
+            </SidebarZoneContext.Provider>
+          </div>
         </div>
 
         {/* User Panel - avatar spans both rows */}
