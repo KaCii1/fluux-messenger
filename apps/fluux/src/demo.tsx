@@ -12,7 +12,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { HashRouter } from 'react-router-dom'
 import { XMPPProvider, DemoClient } from '@fluux/sdk'
-import { adminStore } from '@fluux/sdk/stores'
+import { adminStore, ignoreStore } from '@fluux/sdk/stores'
 import { ThemeProvider } from './providers/ThemeProvider'
 import { useThemeStore } from './stores/themeStore'
 import { RenderLoopBoundary } from './components/RenderLoopBoundary'
@@ -157,6 +157,11 @@ adminStore.getState().setRoomList({
 })
 adminStore.getState().setEntityCounts({ users: 8, onlineUsers: 6, rooms: 2 })
 adminStore.getState().setStats({ onlineUsers: 6, registeredUsers: 8, lastFetched: new Date() })
+
+// Seed an ignored user in Team Chat so the occupant panel shows the "Ignored Users" section
+ignoreStore.getState().setIgnoredForRoom('team@conference.fluux.chat', [
+  { identifier: 'alex@fluux.chat', displayName: 'Alex', jid: 'alex@fluux.chat' },
+])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
