@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { chatStore, roomStore } from '@fluux/sdk'
 import { useChatStore, useRoomStore } from '@fluux/sdk/react'
+import { useSettingsStore } from '../stores/settingsStore'
 
 export interface ShortcutDefinition {
   key: string
@@ -350,6 +351,24 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): Shor
       action: onToggleConsole,
     },
     {
+      key: 'l',
+      modifiers: ['meta', 'shift'],
+      description: 'Toggle light/dark mode',
+      category: 'general',
+      action: () => {
+        const { themeMode, setThemeMode } = useSettingsStore.getState()
+        if (themeMode === 'light') {
+          setThemeMode('dark')
+        } else if (themeMode === 'dark') {
+          setThemeMode('light')
+        } else {
+          // 'system' — toggle to the opposite of the current effective mode
+          const isSystemLight = window.matchMedia('(prefers-color-scheme: light)').matches
+          setThemeMode(isSystemLight ? 'dark' : 'light')
+        }
+      },
+    },
+    {
       key: 'i',
       modifiers: ['ctrl', 'alt'],
       description: 'JavaScript Console (if enabled)',
@@ -552,10 +571,13 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): Shor
                          (shortcut.modifiers?.includes('meta') || shortcut.modifiers?.includes('ctrl'))
           const isCmdG = shortcut.key.toLowerCase() === 'g' &&
                          (shortcut.modifiers?.includes('meta') || shortcut.modifiers?.includes('ctrl'))
+          const isCmdShiftL = shortcut.key.toLowerCase() === 'l' &&
+                         (shortcut.modifiers?.includes('meta') || shortcut.modifiers?.includes('ctrl')) &&
+                         shortcut.modifiers?.includes('shift')
           const isCmdQ = shortcut.key.toLowerCase() === 'q' &&
                          (shortcut.modifiers?.includes('meta') || shortcut.modifiers?.includes('ctrl'))
           const isAltNumber = /^[0-9]$/.test(shortcut.key) && shortcut.modifiers?.includes('alt')
-          const allowInInput = shortcut.key === '?' || shortcut.key === 'F12' || shortcut.key === 'Escape' || isAltArrow || isAltNumber || isCmdK || isCmdU || isCmdF || isCmdG || isCmdQ
+          const allowInInput = shortcut.key === '?' || shortcut.key === 'F12' || shortcut.key === 'Escape' || isAltArrow || isAltNumber || isCmdK || isCmdU || isCmdF || isCmdG || isCmdShiftL || isCmdQ
 
           if (!isInputField || allowInInput) {
             e.preventDefault()

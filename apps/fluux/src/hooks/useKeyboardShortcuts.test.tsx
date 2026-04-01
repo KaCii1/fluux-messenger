@@ -2,6 +2,19 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { useKeyboardShortcuts } from './useKeyboardShortcuts'
 
+// Mock settingsStore
+const mockSettingsState = {
+  themeMode: 'system' as 'light' | 'dark' | 'system',
+  setThemeMode: vi.fn((mode: string) => { mockSettingsState.themeMode = mode as 'light' | 'dark' | 'system' }),
+}
+
+vi.mock('../stores/settingsStore', () => ({
+  useSettingsStore: Object.assign(
+    () => mockSettingsState,
+    { getState: () => mockSettingsState }
+  ),
+}))
+
 // Shared mock state that tests can modify
 const mockState = {
   conversations: [] as Array<{ id: string; unreadCount: number }>,
@@ -83,6 +96,8 @@ describe('useKeyboardShortcuts', () => {
     mockState.activeRoomJid = null
     mockState.setActiveRoom = vi.fn()
     mockState.archivedConversations = new Set()
+    mockSettingsState.themeMode = 'system'
+    mockSettingsState.setThemeMode = vi.fn((mode: string) => { mockSettingsState.themeMode = mode as 'light' | 'dark' | 'system' })
   })
 
   const createDefaultOptions = () => ({
@@ -902,6 +917,65 @@ describe('useKeyboardShortcuts', () => {
       )
       alt6!.action()
       expect(options.onSidebarViewChange).toHaveBeenCalledWith('search')
+    })
+  })
+
+  describe('Toggle Light/Dark Mode (Cmd+Shift+L)', () => {
+    it('should include the shortcut in returned definitions', () => {
+      const { result } = renderHook(() => useKeyboardShortcuts(createDefaultOptions()))
+
+      const shortcut = result.current.find(
+        s => s.key === 'l' && s.modifiers?.includes('meta') && s.modifiers?.includes('shift')
+      )
+      expect(shortcut).toBeDefined()
+      expect(shortcut!.description).toBe('Toggle light/dark mode')
+      expect(shortcut!.category).toBe('general')
+    })
+
+    it('should toggle from light to dark', () => {
+      mockSettingsState.themeMode = 'light'
+
+      const { result } = renderHook(() => useKeyboardShortcuts(createDefaultOptions()))
+
+      const shortcut = result.current.find(
+        s => s.key === 'l' && s.modifiers?.includes('meta') && s.modifiers?.includes('shift')
+      )
+      shortcut!.action()
+
+      expect(mockSettingsState.setThemeMode).toHaveBeenCalledWith('dark')
+    })
+
+    it('should toggle from dark to light', () => {
+      mockSettingsState.themeMode = 'dark'
+
+      const { result } = renderHook(() => useKeyboardShortcuts(createDefaultOptions()))
+
+      const shortcut = result.current.find(
+        s => s.key === 'l' && s.modifiers?.includes('meta') && s.modifiers?.includes('shift')
+      )
+      shortcut!.action()
+
+      expect(mockSettingsState.setThemeMode).toHaveBeenCalledWith('light')
+    })
+
+    it('should toggle from system to opposite of effective mode', () => {
+      mockSettingsState.themeMode = 'system'
+
+      // Mock matchMedia to report light system preference
+      const originalMatchMedia = window.matchMedia
+      window.matchMedia = vi.fn().mockReturnValue({ matches: true }) as unknown as typeof window.matchMedia
+
+      const { result } = renderHook(() => useKeyboardShortcuts(createDefaultOptions()))
+
+      const shortcut = result.current.find(
+        s => s.key === 'l' && s.modifiers?.includes('meta') && s.modifiers?.includes('shift')
+      )
+      shortcut!.action()
+
+      // System is light, so should toggle to dark
+      expect(mockSettingsState.setThemeMode).toHaveBeenCalledWith('dark')
+
+      window.matchMedia = originalMatchMedia
     })
   })
 })
