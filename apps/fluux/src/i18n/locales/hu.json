@@ -89,6 +89,7 @@
         "cancelReconnection": "Újracsatlakozás megszakítása"
     },
     "conversations": {
+        "backToConversations": "Vissza a beszélgetésekhez",
         "noConversations": "Még nincsenek beszélgetések",
         "archive": "Archiválás",
         "unarchive": "Visszaállítás archívumból",
@@ -140,6 +141,7 @@
         "blockConfirm": "{{name}} tiltása? Nem fognak tudni kapcsolatba lépni veled."
     },
     "rooms": {
+        "backToRooms": "Vissza a szobákhoz",
         "noRooms": "Még nincsenek szobák",
         "noRoomsHint": "Kattintson a + gombra egy szobához való csatlakozáshoz.",
         "joined": "Csatlakozva",
@@ -495,6 +497,8 @@
         "accentThemeDefault": "Téma alapértelmezett",
         "fontSize": "Betűméret",
         "fontSizeDescription": "Szövegméret módosítása az alkalmazásban",
+        "decreaseFontSize": "Betűméret csökkentése",
+        "increaseFontSize": "Betűméret növelése",
         "language": "Nyelv",
         "languageAndRegion": "Nyelv és régió",
         "languageStreamNote": "A szerver nyelvi beállítása a következő bejelentkezésnél lép érvénybe",
@@ -704,7 +708,30 @@
         "navigation": "Navigáció",
         "actions": "Műveletek",
         "general": "Általános",
-        "pressEscToClose": "Nyomja meg az Esc billentyűt a bezáráshoz"
+        "pressEscToClose": "Nyomja meg az Esc billentyűt a bezáráshoz",
+        "showKeyboardShortcuts": "Billentyűparancsok megjelenítése",
+        "toggleXmppConsole": "XMPP konzol váltása",
+        "toggleLightDarkMode": "Világos/sötét mód váltása",
+        "javascriptConsole": "JavaScript konzol (ha elérhető)",
+        "nextUnread": "Következő olvasatlan beszélgetés",
+        "messagesView": "Üzenetek",
+        "roomsView": "Szobák",
+        "connectionsView": "Kapcsolatok",
+        "archiveView": "Archívum",
+        "eventsView": "Események",
+        "adminView": "Adminisztráció",
+        "findInConversation": "Keresés a beszélgetésben",
+        "nextMatch": "Következő találat",
+        "previousMatch": "Előző találat",
+        "searchView": "Keresés",
+        "previousItem": "Előző beszélgetés/szoba",
+        "nextItem": "Következő beszélgetés/szoba",
+        "settings": "Beállítások",
+        "changeStatus": "Állapot módosítása",
+        "createQuickChat": "Gyors csevegés létrehozása",
+        "goTo": "Ugrás...",
+        "closeModalPanelBlur": "Ablak/panel bezárása/fókusz eltávolítása",
+        "quitApp": "Kilépés az alkalmazásból"
     },
     "upload": {
         "attachFile": "Fájl csatolása",

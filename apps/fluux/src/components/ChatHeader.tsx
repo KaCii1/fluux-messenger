@@ -48,7 +48,7 @@ export function ChatHeader({
         <button
           onClick={onBack}
           className="p-1 -ml-1 rounded hover:bg-fluux-hover md:hidden"
-          aria-label="Back to conversations"
+          aria-label={t('conversations.backToConversations')}
         >
           <ArrowLeft className="w-5 h-5 text-fluux-muted" />
         </button>

@@ -91,6 +91,7 @@
         "cancelReconnection": "Cancel·la la reconnexió"
     },
     "conversations": {
+        "backToConversations": "Torna a les converses",
         "noConversations": "Encara no hi ha converses",
         "archive": "Arxiva",
         "unarchive": "Desarxiva",
@@ -142,6 +143,7 @@
         "blockConfirm": "Bloquejar {{name}}? No podran contactar-te."
     },
     "rooms": {
+        "backToRooms": "Torna a les sales",
         "noRooms": "Encara no hi ha sales",
         "noRoomsHint": "Clica + per unir-te a una sala.",
         "joined": "Unit",
@@ -497,6 +499,8 @@
         "accentThemeDefault": "Per defecte del tema",
         "fontSize": "Mida de la lletra",
         "fontSizeDescription": "Ajusta la mida del text a l'aplicació",
+        "decreaseFontSize": "Redueix la mida de la lletra",
+        "increaseFontSize": "Augmenta la mida de la lletra",
         "language": "Idioma",
         "languageAndRegion": "Idioma i regió",
         "languageStreamNote": "La preferència d'idioma del servidor s'aplicarà al proper inici de sessió",
@@ -706,7 +710,30 @@
         "navigation": "Navegació",
         "actions": "Accions",
         "general": "General",
-        "pressEscToClose": "Prem Esc per tancar"
+        "pressEscToClose": "Prem Esc per tancar",
+        "showKeyboardShortcuts": "Mostra les dreceres de teclat",
+        "toggleXmppConsole": "Commuta la consola XMPP",
+        "toggleLightDarkMode": "Commuta mode clar/fosc",
+        "javascriptConsole": "Consola JavaScript (si disponible)",
+        "nextUnread": "Conversa no llegida següent",
+        "messagesView": "Missatges",
+        "roomsView": "Sales",
+        "connectionsView": "Contactes",
+        "archiveView": "Arxiu",
+        "eventsView": "Esdeveniments",
+        "adminView": "Administració",
+        "findInConversation": "Cerca a la conversa",
+        "nextMatch": "Coincidència següent",
+        "previousMatch": "Coincidència anterior",
+        "searchView": "Cerca",
+        "previousItem": "Conversa/sala anterior",
+        "nextItem": "Conversa/sala següent",
+        "settings": "Configuració",
+        "changeStatus": "Canvia l'estat",
+        "createQuickChat": "Crea un xat ràpid",
+        "goTo": "Ves a...",
+        "closeModalPanelBlur": "Tanca finestra/panell/treu el focus",
+        "quitApp": "Surt de l'aplicació"
     },
     "upload": {
         "attachFile": "Adjunta un fitxer",

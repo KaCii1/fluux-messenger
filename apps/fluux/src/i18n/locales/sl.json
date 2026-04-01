@@ -91,6 +91,7 @@
         "cancelReconnection": "Prekliči ponovno povezavo"
     },
     "conversations": {
+        "backToConversations": "Nazaj na pogovore",
         "noConversations": "Še ni pogovorov",
         "archive": "Arhiviraj",
         "unarchive": "Dearhiviraj",
@@ -142,6 +143,7 @@
         "blockConfirm": "Blokiraj {{name}}? Ne bodo mogli stopiti v stik s tabo."
     },
     "rooms": {
+        "backToRooms": "Nazaj na sobe",
         "noRooms": "Še ni sob",
         "noRoomsHint": "Kliknite + za pridružitev sobi.",
         "joined": "Pridružen",
@@ -497,6 +499,8 @@
         "accentThemeDefault": "Privzeto teme",
         "fontSize": "Velikost pisave",
         "fontSizeDescription": "Prilagodite velikost besedila v aplikaciji",
+        "decreaseFontSize": "Zmanjšaj velikost pisave",
+        "increaseFontSize": "Povečaj velikost pisave",
         "language": "Jezik",
         "languageAndRegion": "Jezik in regija",
         "languageStreamNote": "Nastavitev jezika strežnika bo uporabljena ob naslednji prijavi",
@@ -706,7 +710,30 @@
         "navigation": "Navigacija",
         "actions": "Dejanja",
         "general": "Splošno",
-        "pressEscToClose": "Pritisnite Esc za zaprtje"
+        "pressEscToClose": "Pritisnite Esc za zaprtje",
+        "showKeyboardShortcuts": "Prikaži bližnjice na tipkovnici",
+        "toggleXmppConsole": "Preklopi konzolo XMPP",
+        "toggleLightDarkMode": "Preklopi svetli/temni način",
+        "javascriptConsole": "JavaScript konzola (če je na voljo)",
+        "nextUnread": "Naslednji neprebrani pogovor",
+        "messagesView": "Sporočila",
+        "roomsView": "Sobe",
+        "connectionsView": "Stiki",
+        "archiveView": "Arhiv",
+        "eventsView": "Dogodki",
+        "adminView": "Upravljanje",
+        "findInConversation": "Najdi v pogovoru",
+        "nextMatch": "Naslednje ujemanje",
+        "previousMatch": "Prejšnje ujemanje",
+        "searchView": "Iskanje",
+        "previousItem": "Prejšnji pogovor/soba",
+        "nextItem": "Naslednji pogovor/soba",
+        "settings": "Nastavitve",
+        "changeStatus": "Spremeni stanje",
+        "createQuickChat": "Ustvari hiter klepet",
+        "goTo": "Pojdi na...",
+        "closeModalPanelBlur": "Zapri okno/ploščo/odstrani fokus",
+        "quitApp": "Zapri aplikacijo"
     },
     "upload": {
         "attachFile": "Priloži datoteko",

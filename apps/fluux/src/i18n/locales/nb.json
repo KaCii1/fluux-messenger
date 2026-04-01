@@ -89,6 +89,7 @@
         "cancelReconnection": "Avbryt gjenoppkobling"
     },
     "conversations": {
+        "backToConversations": "Tilbake til samtaler",
         "noConversations": "Ingen samtaler ennå",
         "archive": "Arkiver",
         "unarchive": "Fjern fra arkiv",
@@ -140,6 +141,7 @@
         "blockConfirm": "Blokkere {{name}}? De vil ikke kunne kontakte deg."
     },
     "rooms": {
+        "backToRooms": "Tilbake til rom",
         "noRooms": "Ingen rom ennå",
         "noRoomsHint": "Klikk + for å bli med i et rom.",
         "joined": "Med",
@@ -495,6 +497,8 @@
         "accentThemeDefault": "Temastandard",
         "fontSize": "Skriftstørrelse",
         "fontSizeDescription": "Juster tekststørrelsen i appen",
+        "decreaseFontSize": "Reduser skriftstørrelse",
+        "increaseFontSize": "Øk skriftstørrelse",
         "language": "Språk",
         "languageAndRegion": "Språk og region",
         "languageStreamNote": "Serverspråkpreferanse gjelder ved neste innlogging",
@@ -704,7 +708,30 @@
         "navigation": "Navigering",
         "actions": "Handlinger",
         "general": "Generelt",
-        "pressEscToClose": "Trykk Esc for å lukke"
+        "pressEscToClose": "Trykk Esc for å lukke",
+        "showKeyboardShortcuts": "Vis hurtigtaster",
+        "toggleXmppConsole": "Veksle XMPP-konsoll",
+        "toggleLightDarkMode": "Veksle lys/mørk modus",
+        "javascriptConsole": "JavaScript-konsoll (hvis aktivert)",
+        "nextUnread": "Neste uleste samtale",
+        "messagesView": "Meldinger",
+        "roomsView": "Rom",
+        "connectionsView": "Kontakter",
+        "archiveView": "Arkiv",
+        "eventsView": "Hendelser",
+        "adminView": "Administrasjon",
+        "findInConversation": "Finn i samtale",
+        "nextMatch": "Neste treff",
+        "previousMatch": "Forrige treff",
+        "searchView": "Søk",
+        "previousItem": "Forrige samtale/rom",
+        "nextItem": "Neste samtale/rom",
+        "settings": "Innstillinger",
+        "changeStatus": "Endre status",
+        "createQuickChat": "Opprett hurtigchat",
+        "goTo": "Gå til...",
+        "closeModalPanelBlur": "Lukk vindu/panel/fjern fokus",
+        "quitApp": "Avslutt appen"
     },
     "upload": {
         "attachFile": "Legg ved fil",

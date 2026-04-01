@@ -138,7 +138,7 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): Shor
     ? {
       key: 'q',
       modifiers: ['meta'],
-      description: 'Quit app',
+      description: 'shortcuts.quitApp',
       category: 'general',
       action: onQuitApp,
     }
@@ -339,21 +339,21 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): Shor
     {
       key: '?',
       modifiers: ['ctrl'],
-      description: 'Show keyboard shortcuts',
+      description: 'shortcuts.showKeyboardShortcuts',
       category: 'general',
       action: onToggleShortcutHelp,
     },
     {
       key: 'F12',
       modifiers: [],
-      description: 'Toggle XMPP Console',
+      description: 'shortcuts.toggleXmppConsole',
       category: 'general',
       action: onToggleConsole,
     },
     {
       key: 'l',
       modifiers: ['meta', 'shift'],
-      description: 'Toggle light/dark mode',
+      description: 'shortcuts.toggleLightDarkMode',
       category: 'general',
       action: () => {
         const { themeMode, setThemeMode } = useSettingsStore.getState()
@@ -371,7 +371,7 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): Shor
     {
       key: 'i',
       modifiers: ['ctrl', 'alt'],
-      description: 'JavaScript Console (if enabled)',
+      description: 'shortcuts.javascriptConsole',
       category: 'general',
       action: () => {},
       displayOnly: true, // Handled by browser/Tauri
@@ -379,105 +379,105 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): Shor
     {
       key: 'u',
       modifiers: ['meta'],
-      description: 'Next unread conversation',
+      description: 'shortcuts.nextUnread',
       category: 'navigation',
       action: goToNextUnread,
     },
     {
       key: '1',
       modifiers: ['alt'],
-      description: 'Messages view',
+      description: 'shortcuts.messagesView',
       category: 'navigation',
       action: () => onSidebarViewChange('messages'),
     },
     {
       key: '2',
       modifiers: ['alt'],
-      description: 'Rooms view',
+      description: 'shortcuts.roomsView',
       category: 'navigation',
       action: () => onSidebarViewChange('rooms'),
     },
     {
       key: '3',
       modifiers: ['alt'],
-      description: 'Connections view',
+      description: 'shortcuts.connectionsView',
       category: 'navigation',
       action: () => onSidebarViewChange('directory'),
     },
     {
       key: '4',
       modifiers: ['alt'],
-      description: 'Archive view',
+      description: 'shortcuts.archiveView',
       category: 'navigation',
       action: () => onSidebarViewChange('archive'),
     },
     {
       key: '5',
       modifiers: ['alt'],
-      description: 'Events view',
+      description: 'shortcuts.eventsView',
       category: 'navigation',
       action: () => onSidebarViewChange('events'),
     },
     {
       key: '0',
       modifiers: ['alt'],
-      description: 'Admin view',
+      description: 'shortcuts.adminView',
       category: 'navigation',
       action: () => onSidebarViewChange('admin'),
     },
     {
       key: 'f',
       modifiers: ['meta'],
-      description: 'Find in conversation',
+      description: 'shortcuts.findInConversation',
       category: 'navigation',
       action: () => { onFindOnPage?.() },
     },
     {
       key: 'g',
       modifiers: ['meta'],
-      description: 'Next match',
+      description: 'shortcuts.nextMatch',
       category: 'navigation',
       action: () => { onFindNext?.() },
     },
     {
       key: 'g',
       modifiers: ['meta', 'shift'],
-      description: 'Previous match',
+      description: 'shortcuts.previousMatch',
       category: 'navigation',
       action: () => { onFindPrev?.() },
     },
     {
       key: 'f',
       modifiers: ['meta', 'shift'],
-      description: 'Search view',
+      description: 'shortcuts.searchView',
       category: 'navigation',
       action: () => onSidebarViewChange('search'),
     },
     {
       key: '6',
       modifiers: ['alt'],
-      description: 'Search view',
+      description: 'shortcuts.searchView',
       category: 'navigation',
       action: () => onSidebarViewChange('search'),
     },
     {
       key: 'ArrowUp',
       modifiers: ['alt'],
-      description: 'Previous conversation/room',
+      description: 'shortcuts.previousItem',
       category: 'navigation',
       action: goToPreviousItem,
     },
     {
       key: 'ArrowDown',
       modifiers: ['alt'],
-      description: 'Next conversation/room',
+      description: 'shortcuts.nextItem',
       category: 'navigation',
       action: goToNextItem,
     },
     {
       key: ',',
       modifiers: ['meta'],
-      description: 'Settings',
+      description: 'shortcuts.settings',
       category: 'general',
       action: () => {
         // Navigate to settings view (toggle: go back to messages if already in settings)
@@ -491,7 +491,7 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): Shor
     {
       key: 'y',
       modifiers: ['alt'],
-      description: 'Change status',
+      description: 'shortcuts.changeStatus',
       category: 'actions',
       action: () => {
         // Toggle presence menu - close if open, open if closed
@@ -505,14 +505,14 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): Shor
     {
       key: 'n',
       modifiers: ['meta'],
-      description: 'Create quick chat',
+      description: 'shortcuts.createQuickChat',
       category: 'actions',
       action: onCreateQuickChat,
     },
     {
       key: 'k',
       modifiers: ['meta'],
-      description: 'Go to...',
+      description: 'shortcuts.goTo',
       category: 'general',
       action: () => {
         // Toggle command palette - close if open, open if closed
@@ -527,7 +527,7 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): Shor
     {
       key: 'Escape',
       modifiers: [],
-      description: 'Close modal/panel/blur input',
+      description: 'shortcuts.closeModalPanelBlur',
       category: 'general',
       action: handleEscape,
     },

@@ -89,6 +89,7 @@
         "cancelReconnection": "Скасувати перепідключення"
     },
     "conversations": {
+        "backToConversations": "Назад до розмов",
         "noConversations": "Ще немає розмов",
         "archive": "Архівувати",
         "unarchive": "Розархівувати",
@@ -140,6 +141,7 @@
         "blockConfirm": "Заблокувати {{name}}? Вони не зможуть зв'язатися з вами."
     },
     "rooms": {
+        "backToRooms": "Назад до кімнат",
         "noRooms": "Ще немає кімнат",
         "noRoomsHint": "Натисніть +, щоб приєднатися до кімнати.",
         "joined": "Приєднано",
@@ -495,6 +497,8 @@
         "accentThemeDefault": "За замовчуванням теми",
         "fontSize": "Розмір шрифту",
         "fontSizeDescription": "Налаштувати розмір тексту в додатку",
+        "decreaseFontSize": "Зменшити шрифт",
+        "increaseFontSize": "Збільшити шрифт",
         "language": "Мова",
         "languageAndRegion": "Мова та регіон",
         "languageStreamNote": "Налаштування мови сервера застосуються при наступному вході",
@@ -704,7 +708,30 @@
         "navigation": "Навігація",
         "actions": "Дії",
         "general": "Загальне",
-        "pressEscToClose": "Натисніть Esc, щоб закрити"
+        "pressEscToClose": "Натисніть Esc, щоб закрити",
+        "showKeyboardShortcuts": "Показати комбінації клавіш",
+        "toggleXmppConsole": "Перемкнути консоль XMPP",
+        "toggleLightDarkMode": "Перемкнути світлу/темну тему",
+        "javascriptConsole": "Консоль JavaScript (якщо доступна)",
+        "nextUnread": "Наступна непрочитана розмова",
+        "messagesView": "Повідомлення",
+        "roomsView": "Кімнати",
+        "connectionsView": "Контакти",
+        "archiveView": "Архів",
+        "eventsView": "Події",
+        "adminView": "Адміністрування",
+        "findInConversation": "Знайти в розмові",
+        "nextMatch": "Наступний збіг",
+        "previousMatch": "Попередній збіг",
+        "searchView": "Пошук",
+        "previousItem": "Попередня розмова/кімната",
+        "nextItem": "Наступна розмова/кімната",
+        "settings": "Налаштування",
+        "changeStatus": "Змінити статус",
+        "createQuickChat": "Створити швидкий чат",
+        "goTo": "Перейти до...",
+        "closeModalPanelBlur": "Закрити вікно/панель/зняти фокус",
+        "quitApp": "Вийти з програми"
     },
     "upload": {
         "attachFile": "Прикріпити файл",

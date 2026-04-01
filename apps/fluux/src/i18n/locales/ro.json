@@ -91,6 +91,7 @@
         "cancelReconnection": "Anulează reconectarea"
     },
     "conversations": {
+        "backToConversations": "Înapoi la conversații",
         "noConversations": "Nicio conversație încă",
         "archive": "Arhivează",
         "unarchive": "Dezarhivează",
@@ -142,6 +143,7 @@
         "blockConfirm": "Blochezi {{name}}? Nu te vor mai putea contacta."
     },
     "rooms": {
+        "backToRooms": "Înapoi la camere",
         "noRooms": "Nicio cameră încă",
         "noRoomsHint": "Apasă + pentru a intra într-o cameră.",
         "joined": "Intrat",
@@ -497,6 +499,8 @@
         "accentThemeDefault": "Implicit temă",
         "fontSize": "Dimensiune font",
         "fontSizeDescription": "Ajustați dimensiunea textului în aplicație",
+        "decreaseFontSize": "Micșorează dimensiunea fontului",
+        "increaseFontSize": "Mărește dimensiunea fontului",
         "language": "Limbă",
         "languageAndRegion": "Limbă și regiune",
         "languageStreamNote": "Preferința de limbă a serverului se aplică la următoarea conectare",
@@ -706,7 +710,30 @@
         "navigation": "Navigare",
         "actions": "Acțiuni",
         "general": "General",
-        "pressEscToClose": "Apasă Esc pentru a închide"
+        "pressEscToClose": "Apasă Esc pentru a închide",
+        "showKeyboardShortcuts": "Afișează scurtăturile de tastatură",
+        "toggleXmppConsole": "Comută consola XMPP",
+        "toggleLightDarkMode": "Comută modul luminos/întunecat",
+        "javascriptConsole": "Consolă JavaScript (dacă este activată)",
+        "nextUnread": "Următoarea conversație necitită",
+        "messagesView": "Mesaje",
+        "roomsView": "Camere",
+        "connectionsView": "Contacte",
+        "archiveView": "Arhivă",
+        "eventsView": "Evenimente",
+        "adminView": "Administrare",
+        "findInConversation": "Caută în conversație",
+        "nextMatch": "Următoarea potrivire",
+        "previousMatch": "Potrivirea anterioară",
+        "searchView": "Căutare",
+        "previousItem": "Conversația/camera anterioară",
+        "nextItem": "Următoarea conversație/cameră",
+        "settings": "Setări",
+        "changeStatus": "Schimbă starea",
+        "createQuickChat": "Creează conversație rapidă",
+        "goTo": "Du-te la...",
+        "closeModalPanelBlur": "Închide fereastra/panoul/elimină focusul",
+        "quitApp": "Închide aplicația"
     },
     "upload": {
         "attachFile": "Atașează fișier",

@@ -25,6 +25,20 @@ void i18n.use(initReactI18next).init({
   resources: {
     en: {
       translation: {
+        // Common translations (needed for aria-label tests)
+        common: {
+          dismiss: 'Dismiss',
+        },
+        conversations: {
+          backToConversations: 'Back to conversations',
+        },
+        rooms: {
+          backToRooms: 'Back to rooms',
+        },
+        settings: {
+          decreaseFontSize: 'Decrease font size',
+          increaseFontSize: 'Increase font size',
+        },
         // Typing indicator translations (needed for ChatView/RoomView tests)
         chat: {
           typing: {

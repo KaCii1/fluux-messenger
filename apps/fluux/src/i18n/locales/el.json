@@ -90,6 +90,7 @@
         "cancelReconnection": "Ακύρωση επανασύνδεσης"
     },
     "conversations": {
+        "backToConversations": "Πίσω στις συνομιλίες",
         "noConversations": "Δεν υπάρχουν συνομιλίες ακόμα",
         "archive": "Αρχειοθέτηση",
         "unarchive": "Αναίρεση αρχειοθέτησης",
@@ -141,6 +142,7 @@
         "blockConfirm": "Αποκλεισμός {{name}}; Δεν θα μπορούν να επικοινωνήσουν μαζί σας."
     },
     "rooms": {
+        "backToRooms": "Πίσω στα δωμάτια",
         "noRooms": "Δεν υπάρχουν δωμάτια ακόμα",
         "noRoomsHint": "Πατήστε + για είσοδο σε δωμάτιο.",
         "joined": "Συνδεδεμένος",
@@ -496,6 +498,8 @@
         "accentThemeDefault": "Προεπιλογή θέματος",
         "fontSize": "Μέγεθος γραμματοσειράς",
         "fontSizeDescription": "Ρυθμίστε το μέγεθος κειμένου στην εφαρμογή",
+        "decreaseFontSize": "Μείωση μεγέθους γραμματοσειράς",
+        "increaseFontSize": "Αύξηση μεγέθους γραμματοσειράς",
         "language": "Γλώσσα",
         "languageAndRegion": "Γλώσσα & Περιοχή",
         "languageStreamNote": "Η προτίμηση γλώσσας διακομιστή εφαρμόζεται στην επόμενη σύνδεση",
@@ -705,7 +709,30 @@
         "navigation": "Πλοήγηση",
         "actions": "Ενέργειες",
         "general": "Γενικά",
-        "pressEscToClose": "Πατήστε Esc για κλείσιμο"
+        "pressEscToClose": "Πατήστε Esc για κλείσιμο",
+        "showKeyboardShortcuts": "Εμφάνιση συντομεύσεων πληκτρολογίου",
+        "toggleXmppConsole": "Εναλλαγή κονσόλας XMPP",
+        "toggleLightDarkMode": "Εναλλαγή φωτεινής/σκοτεινής λειτουργίας",
+        "javascriptConsole": "Κονσόλα JavaScript (αν είναι ενεργή)",
+        "nextUnread": "Επόμενη αδιάβαστη συνομιλία",
+        "messagesView": "Μηνύματα",
+        "roomsView": "Δωμάτια",
+        "connectionsView": "Επαφές",
+        "archiveView": "Αρχείο",
+        "eventsView": "Συμβάντα",
+        "adminView": "Διαχείριση",
+        "findInConversation": "Εύρεση στη συνομιλία",
+        "nextMatch": "Επόμενο αποτέλεσμα",
+        "previousMatch": "Προηγούμενο αποτέλεσμα",
+        "searchView": "Αναζήτηση",
+        "previousItem": "Προηγούμενη συνομιλία/δωμάτιο",
+        "nextItem": "Επόμενη συνομιλία/δωμάτιο",
+        "settings": "Ρυθμίσεις",
+        "changeStatus": "Αλλαγή κατάστασης",
+        "createQuickChat": "Δημιουργία γρήγορης συνομιλίας",
+        "goTo": "Μετάβαση σε...",
+        "closeModalPanelBlur": "Κλείσιμο παραθύρου/πάνελ/αφαίρεση εστίασης",
+        "quitApp": "Έξοδος από την εφαρμογή"
     },
     "upload": {
         "attachFile": "Επισύναψη αρχείου",

@@ -89,6 +89,7 @@
         "cancelReconnection": "Cealaigh athcheangal"
     },
     "conversations": {
+        "backToConversations": "Ar ais go comhráite",
         "noConversations": "Níl aon chomhráite fós",
         "archive": "Cartlannaigh",
         "unarchive": "Díchartlannaigh",
@@ -140,6 +141,7 @@
         "blockConfirm": "Cuir bac ar {{name}}? Ní bheidh siad in ann teagmháil a dhéanamh leat."
     },
     "rooms": {
+        "backToRooms": "Ar ais go seomraí",
         "noRooms": "Níl aon seomraí fós",
         "noRoomsHint": "Cliceáil + chun dul isteach i seomra.",
         "joined": "Istigh",
@@ -495,6 +497,8 @@
         "accentThemeDefault": "Réamhshocrú an téama",
         "fontSize": "Méid cló",
         "fontSizeDescription": "Athraigh méid an téacs san aip",
+        "decreaseFontSize": "Laghdaigh méid an chló",
+        "increaseFontSize": "Méadaigh méid an chló",
         "language": "Teanga",
         "languageAndRegion": "Teanga & Réigiún",
         "languageStreamNote": "Cuirtear rogha teanga an fhreastalaí i bhfeidhm ar an gcéad logáil isteach eile",
@@ -704,7 +708,30 @@
         "navigation": "Nascleanúint",
         "actions": "Gníomhartha",
         "general": "Ginearálta",
-        "pressEscToClose": "Brúigh Esc le dúnadh"
+        "pressEscToClose": "Brúigh Esc le dúnadh",
+        "showKeyboardShortcuts": "Taispeáin aicearra méarchláir",
+        "toggleXmppConsole": "Scoránaigh consól XMPP",
+        "toggleLightDarkMode": "Scoránaigh mód geal/dorcha",
+        "javascriptConsole": "Consól JavaScript (má tá sé ar fáil)",
+        "nextUnread": "An chéad chomhrá neamhléite eile",
+        "messagesView": "Teachtaireachtaí",
+        "roomsView": "Seomraí",
+        "connectionsView": "Teagmhálacha",
+        "archiveView": "Cartlann",
+        "eventsView": "Imeachtaí",
+        "adminView": "Riarachán",
+        "findInConversation": "Aimsigh sa chomhrá",
+        "nextMatch": "An chéad mheaitseáil eile",
+        "previousMatch": "An mheaitseáil roimhe",
+        "searchView": "Cuardaigh",
+        "previousItem": "Comhrá/seomra roimhe",
+        "nextItem": "An chéad chomhrá/seomra eile",
+        "settings": "Socruithe",
+        "changeStatus": "Athraigh stádas",
+        "createQuickChat": "Cruthaigh comhrá tapa",
+        "goTo": "Téigh go...",
+        "closeModalPanelBlur": "Dún fuinneog/painéal/bain fócas",
+        "quitApp": "Scoir den aip"
     },
     "upload": {
         "attachFile": "Ceangail comhad",

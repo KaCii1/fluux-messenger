@@ -89,6 +89,7 @@
         "cancelReconnection": "Avbryt återanslutning"
     },
     "conversations": {
+        "backToConversations": "Tillbaka till konversationer",
         "noConversations": "Inga konversationer ännu",
         "archive": "Arkivera",
         "unarchive": "Avarkivera",
@@ -140,6 +141,7 @@
         "blockConfirm": "Blockera {{name}}? De kommer inte kunna kontakta dig."
     },
     "rooms": {
+        "backToRooms": "Tillbaka till rum",
         "noRooms": "Inga rum ännu",
         "noRoomsHint": "Klicka + för att gå med i ett rum.",
         "joined": "Ansluten",
@@ -495,6 +497,8 @@
         "accentThemeDefault": "Temastandard",
         "fontSize": "Teckenstorlek",
         "fontSizeDescription": "Justera textstorleken i appen",
+        "decreaseFontSize": "Minska textstorlek",
+        "increaseFontSize": "Öka textstorlek",
         "language": "Språk",
         "languageAndRegion": "Språk & region",
         "languageStreamNote": "Serverspråkpreferens gäller vid nästa inloggning",
@@ -704,7 +708,30 @@
         "navigation": "Navigering",
         "actions": "Åtgärder",
         "general": "Allmänt",
-        "pressEscToClose": "Tryck Esc för att stänga"
+        "pressEscToClose": "Tryck Esc för att stänga",
+        "showKeyboardShortcuts": "Visa kortkommandon",
+        "toggleXmppConsole": "Växla XMPP-konsol",
+        "toggleLightDarkMode": "Växla ljust/mörkt läge",
+        "javascriptConsole": "JavaScript-konsol (om aktiverad)",
+        "nextUnread": "Nästa olästa konversation",
+        "messagesView": "Meddelanden",
+        "roomsView": "Rum",
+        "connectionsView": "Kontakter",
+        "archiveView": "Arkiv",
+        "eventsView": "Händelser",
+        "adminView": "Administration",
+        "findInConversation": "Sök i konversation",
+        "nextMatch": "Nästa träff",
+        "previousMatch": "Föregående träff",
+        "searchView": "Sök",
+        "previousItem": "Föregående konversation/rum",
+        "nextItem": "Nästa konversation/rum",
+        "settings": "Inställningar",
+        "changeStatus": "Ändra status",
+        "createQuickChat": "Skapa snabbchatt",
+        "goTo": "Gå till...",
+        "closeModalPanelBlur": "Stäng fönster/panel/ta bort fokus",
+        "quitApp": "Avsluta appen"
     },
     "upload": {
         "attachFile": "Bifoga fil",

@@ -89,6 +89,7 @@
         "cancelReconnection": "Atšaukti pakartotinį prisijungimą"
     },
     "conversations": {
+        "backToConversations": "Grįžti prie pokalbių",
         "noConversations": "Kol kas nėra pokalbių",
         "archive": "Archyvuoti",
         "unarchive": "Išarchyvuoti",
@@ -140,6 +141,7 @@
         "blockConfirm": "Blokuoti {{name}}? Jie negalės su jumis susisiekti."
     },
     "rooms": {
+        "backToRooms": "Grįžti prie kambarių",
         "noRooms": "Kol kas nėra kambarių",
         "noRoomsHint": "Spustelėkite + prisijungti prie kambario.",
         "joined": "Prisijungta",
@@ -495,6 +497,8 @@
         "accentThemeDefault": "Temos numatytoji",
         "fontSize": "Šrifto dydis",
         "fontSizeDescription": "Koreguoti teksto dydį programėlėje",
+        "decreaseFontSize": "Sumažinti šrifto dydį",
+        "increaseFontSize": "Padidinti šrifto dydį",
         "language": "Kalba",
         "languageAndRegion": "Kalba ir regionas",
         "languageStreamNote": "Serverio kalbos nuostata įsigalios kitą kartą prisijungus",
@@ -704,7 +708,30 @@
         "navigation": "Navigacija",
         "actions": "Veiksmai",
         "general": "Bendra",
-        "pressEscToClose": "Paspauskite Esc uždaryti"
+        "pressEscToClose": "Paspauskite Esc uždaryti",
+        "showKeyboardShortcuts": "Rodyti klaviatūros sparčiuosius klavišus",
+        "toggleXmppConsole": "Perjungti XMPP konsolę",
+        "toggleLightDarkMode": "Perjungti šviesų/tamsų režimą",
+        "javascriptConsole": "JavaScript konsolė (jei įjungta)",
+        "nextUnread": "Kitas neskaitytas pokalbis",
+        "messagesView": "Žinutės",
+        "roomsView": "Kambariai",
+        "connectionsView": "Kontaktai",
+        "archiveView": "Archyvas",
+        "eventsView": "Įvykiai",
+        "adminView": "Administravimas",
+        "findInConversation": "Ieškoti pokalbyje",
+        "nextMatch": "Kitas atitikmuo",
+        "previousMatch": "Ankstesnis atitikmuo",
+        "searchView": "Paieška",
+        "previousItem": "Ankstesnis pokalbis/kambarys",
+        "nextItem": "Kitas pokalbis/kambarys",
+        "settings": "Nustatymai",
+        "changeStatus": "Keisti būseną",
+        "createQuickChat": "Sukurti greitą pokalbį",
+        "goTo": "Eiti į...",
+        "closeModalPanelBlur": "Uždaryti langą/skydelį/pašalinti fokusą",
+        "quitApp": "Išeiti iš programos"
     },
     "upload": {
         "attachFile": "Prisegti failą",

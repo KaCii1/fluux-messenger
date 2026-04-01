@@ -91,6 +91,7 @@
         "cancelReconnection": "Anuluj ponowne łączenie"
     },
     "conversations": {
+        "backToConversations": "Wróć do rozmów",
         "noConversations": "Brak rozmów",
         "archive": "Archiwizuj",
         "unarchive": "Przywróć z archiwum",
@@ -142,6 +143,7 @@
         "blockConfirm": "Zablokować {{name}}? Nie będą mogli się z Tobą skontaktować."
     },
     "rooms": {
+        "backToRooms": "Wróć do pokojów",
         "noRooms": "Brak pokoi",
         "noRoomsHint": "Kliknij +, aby dołączyć do pokoju.",
         "joined": "Dołączony",
@@ -497,6 +499,8 @@
         "accentThemeDefault": "Domyślny motywu",
         "fontSize": "Rozmiar czcionki",
         "fontSizeDescription": "Dostosuj rozmiar tekstu w aplikacji",
+        "decreaseFontSize": "Zmniejsz rozmiar czcionki",
+        "increaseFontSize": "Zwiększ rozmiar czcionki",
         "language": "Język",
         "languageAndRegion": "Język i region",
         "languageStreamNote": "Preferencja języka serwera zostanie zastosowana przy następnym logowaniu",
@@ -706,7 +710,30 @@
         "navigation": "Nawigacja",
         "actions": "Akcje",
         "general": "Ogólne",
-        "pressEscToClose": "Naciśnij Esc, aby zamknąć"
+        "pressEscToClose": "Naciśnij Esc, aby zamknąć",
+        "showKeyboardShortcuts": "Pokaż skróty klawiszowe",
+        "toggleXmppConsole": "Przełącz konsolę XMPP",
+        "toggleLightDarkMode": "Przełącz tryb jasny/ciemny",
+        "javascriptConsole": "Konsola JavaScript (jeśli dostępna)",
+        "nextUnread": "Następna nieprzeczytana rozmowa",
+        "messagesView": "Wiadomości",
+        "roomsView": "Pokoje",
+        "connectionsView": "Kontakty",
+        "archiveView": "Archiwum",
+        "eventsView": "Zdarzenia",
+        "adminView": "Administracja",
+        "findInConversation": "Szukaj w rozmowie",
+        "nextMatch": "Następne dopasowanie",
+        "previousMatch": "Poprzednie dopasowanie",
+        "searchView": "Wyszukiwanie",
+        "previousItem": "Poprzednia rozmowa/pokój",
+        "nextItem": "Następna rozmowa/pokój",
+        "settings": "Ustawienia",
+        "changeStatus": "Zmień status",
+        "createQuickChat": "Utwórz szybki czat",
+        "goTo": "Przejdź do...",
+        "closeModalPanelBlur": "Zamknij okno/panel/usuń fokus",
+        "quitApp": "Zamknij aplikację"
     },
     "upload": {
         "attachFile": "Dołącz plik",

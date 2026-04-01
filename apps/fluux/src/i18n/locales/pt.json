@@ -91,6 +91,7 @@
         "cancelReconnection": "Cancelar reconexão"
     },
     "conversations": {
+        "backToConversations": "Voltar às conversas",
         "noConversations": "Ainda não há conversas",
         "archive": "Arquivar",
         "unarchive": "Desarquivar",
@@ -142,6 +143,7 @@
         "blockConfirm": "Bloquear {{name}}? Não poderão contactá-lo."
     },
     "rooms": {
+        "backToRooms": "Voltar às salas",
         "noRooms": "Ainda não há salas",
         "noRoomsHint": "Clique em + para entrar numa sala.",
         "joined": "Entrou",
@@ -497,6 +499,8 @@
         "accentThemeDefault": "Padrão do tema",
         "fontSize": "Tamanho da fonte",
         "fontSizeDescription": "Ajustar o tamanho do texto no aplicativo",
+        "decreaseFontSize": "Diminuir tamanho da fonte",
+        "increaseFontSize": "Aumentar tamanho da fonte",
         "language": "Idioma",
         "languageAndRegion": "Idioma e região",
         "languageStreamNote": "A preferência de idioma do servidor aplica-se no próximo login",
@@ -706,7 +710,30 @@
         "navigation": "Navegação",
         "actions": "Ações",
         "general": "Geral",
-        "pressEscToClose": "Prima Esc para fechar"
+        "pressEscToClose": "Prima Esc para fechar",
+        "showKeyboardShortcuts": "Mostrar atalhos de teclado",
+        "toggleXmppConsole": "Alternar consola XMPP",
+        "toggleLightDarkMode": "Alternar modo claro/escuro",
+        "javascriptConsole": "Consola JavaScript (se ativada)",
+        "nextUnread": "Próxima conversa não lida",
+        "messagesView": "Mensagens",
+        "roomsView": "Salas",
+        "connectionsView": "Contactos",
+        "archiveView": "Arquivo",
+        "eventsView": "Eventos",
+        "adminView": "Administração",
+        "findInConversation": "Procurar na conversa",
+        "nextMatch": "Próxima correspondência",
+        "previousMatch": "Correspondência anterior",
+        "searchView": "Pesquisa",
+        "previousItem": "Conversa/sala anterior",
+        "nextItem": "Próxima conversa/sala",
+        "settings": "Definições",
+        "changeStatus": "Alterar estado",
+        "createQuickChat": "Criar conversa rápida",
+        "goTo": "Ir para...",
+        "closeModalPanelBlur": "Fechar janela/painel/remover foco",
+        "quitApp": "Sair da aplicação"
     },
     "upload": {
         "attachFile": "Anexar ficheiro",

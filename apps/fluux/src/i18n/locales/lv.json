@@ -90,6 +90,7 @@
         "cancelReconnection": "Atcelt atkārtoto savienošanos"
     },
     "conversations": {
+        "backToConversations": "Atpakaļ pie sarunām",
         "noConversations": "Vēl nav sarunu",
         "archive": "Arhivēt",
         "unarchive": "Atarhivēt",
@@ -141,6 +142,7 @@
         "blockConfirm": "Bloķēt {{name}}? Viņi nevarēs ar jums sazināties."
     },
     "rooms": {
+        "backToRooms": "Atpakaļ pie istabām",
         "noRooms": "Vēl nav istabu",
         "noRoomsHint": "Noklikšķiniet +, lai pievienotos istabai.",
         "joined": "Pievienojies",
@@ -496,6 +498,8 @@
         "accentThemeDefault": "Tēmas noklusējums",
         "fontSize": "Fonta lielums",
         "fontSizeDescription": "Pielāgojiet teksta lielumu lietotnē",
+        "decreaseFontSize": "Samazināt fonta lielumu",
+        "increaseFontSize": "Palielināt fonta lielumu",
         "language": "Valoda",
         "languageAndRegion": "Valoda un reģions",
         "languageStreamNote": "Servera valodas preference stājas spēkā nākamajā pieteikšanās reizē",
@@ -705,7 +709,30 @@
         "navigation": "Navigācija",
         "actions": "Darbības",
         "general": "Vispārīgi",
-        "pressEscToClose": "Nospiediet Esc, lai aizvērtu"
+        "pressEscToClose": "Nospiediet Esc, lai aizvērtu",
+        "showKeyboardShortcuts": "Rādīt tastatūras īsceļus",
+        "toggleXmppConsole": "Pārslēgt XMPP konsoli",
+        "toggleLightDarkMode": "Pārslēgt gaišo/tumšo režīmu",
+        "javascriptConsole": "JavaScript konsole (ja iespējota)",
+        "nextUnread": "Nākamā nelasītā saruna",
+        "messagesView": "Ziņojumi",
+        "roomsView": "Istabas",
+        "connectionsView": "Kontakti",
+        "archiveView": "Arhīvs",
+        "eventsView": "Notikumi",
+        "adminView": "Administrēšana",
+        "findInConversation": "Meklēt sarunā",
+        "nextMatch": "Nākamā atbilstība",
+        "previousMatch": "Iepriekšējā atbilstība",
+        "searchView": "Meklēšana",
+        "previousItem": "Iepriekšējā saruna/istaba",
+        "nextItem": "Nākamā saruna/istaba",
+        "settings": "Iestatījumi",
+        "changeStatus": "Mainīt statusu",
+        "createQuickChat": "Izveidot ātro tērzēšanu",
+        "goTo": "Doties uz...",
+        "closeModalPanelBlur": "Aizvērt logu/paneli/noņemt fokusu",
+        "quitApp": "Iziet no lietotnes"
     },
     "upload": {
         "attachFile": "Pievienot failu",

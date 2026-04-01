@@ -89,6 +89,7 @@
         "cancelReconnection": "Hætta við endurtengingu"
     },
     "conversations": {
+        "backToConversations": "Til baka í samtöl",
         "noConversations": "Engin samtöl enn",
         "archive": "Safnvista",
         "unarchive": "Fjarlægja úr safni",
@@ -140,6 +141,7 @@
         "blockConfirm": "Loka á {{name}}? Þeir munu ekki geta haft samband við þig."
     },
     "rooms": {
+        "backToRooms": "Til baka í herbergi",
         "noRooms": "Engin herbergi enn",
         "noRoomsHint": "Smelltu á + til að ganga í herbergi.",
         "joined": "Genginn inn",
@@ -495,6 +497,8 @@
         "accentThemeDefault": "Sjálfgefið þema",
         "fontSize": "Leturstærð",
         "fontSizeDescription": "Stilla texastærð í appinu",
+        "decreaseFontSize": "Minnka leturstærð",
+        "increaseFontSize": "Stækka leturstærð",
         "language": "Tungumál",
         "languageAndRegion": "Tungumál og svæði",
         "languageStreamNote": "Tungumálaval þjóns tekur gildi við næstu innskráningu",
@@ -704,7 +708,30 @@
         "navigation": "Fletting",
         "actions": "Aðgerðir",
         "general": "Almennt",
-        "pressEscToClose": "Ýttu á Esc til að loka"
+        "pressEscToClose": "Ýttu á Esc til að loka",
+        "showKeyboardShortcuts": "Sýna flýtilykla",
+        "toggleXmppConsole": "Víxla XMPP ráðstöð",
+        "toggleLightDarkMode": "Víxla ljósu/dökku stillingu",
+        "javascriptConsole": "JavaScript ráðstöð (ef virk)",
+        "nextUnread": "Næsta ólesna samtal",
+        "messagesView": "Skilaboð",
+        "roomsView": "Herbergi",
+        "connectionsView": "Tengiliðir",
+        "archiveView": "Skjalasafn",
+        "eventsView": "Viðburðir",
+        "adminView": "Stjórnun",
+        "findInConversation": "Finna í samtali",
+        "nextMatch": "Næsta niðurstaða",
+        "previousMatch": "Fyrri niðurstaða",
+        "searchView": "Leit",
+        "previousItem": "Fyrra samtal/herbergi",
+        "nextItem": "Næsta samtal/herbergi",
+        "settings": "Stillingar",
+        "changeStatus": "Breyta stöðu",
+        "createQuickChat": "Búa til flýtispjall",
+        "goTo": "Fara í...",
+        "closeModalPanelBlur": "Loka glugga/spjaldi/fjarlægja fókus",
+        "quitApp": "Hætta í forriti"
     },
     "upload": {
         "attachFile": "Hengja við skrá",

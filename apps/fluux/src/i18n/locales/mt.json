@@ -91,6 +91,7 @@
         "cancelReconnection": "Ikkanċella r-rikonnessjoni"
     },
     "conversations": {
+        "backToConversations": "Lura għall-konverżazzjonijiet",
         "noConversations": "Għad m'hemmx konversazzjonijiet",
         "archive": "Arkivja",
         "unarchive": "Oħroġ mill-arkivju",
@@ -142,6 +143,7 @@
         "blockConfirm": "Tibblokka {{name}}? Ma jkunux jistgħu jikkuntattjawk."
     },
     "rooms": {
+        "backToRooms": "Lura għall-kmamar",
         "noRooms": "Għad m'hemmx kmamar",
         "noRoomsHint": "Ikklikkja + biex tidħol f'kamra.",
         "joined": "Dħalt",
@@ -497,6 +499,8 @@
         "accentThemeDefault": "Predefinit tat-tema",
         "fontSize": "Daqs tal-font",
         "fontSizeDescription": "Aġġusta d-daqs tat-test fl-app",
+        "decreaseFontSize": "Naqqas id-daqs tal-font",
+        "increaseFontSize": "Kabbar id-daqs tal-font",
         "language": "Lingwa",
         "languageAndRegion": "Lingwa u Reġjun",
         "languageStreamNote": "Il-preferenza tal-lingwa tas-server tieħu effett fil-login li jmiss",
@@ -706,7 +710,30 @@
         "navigation": "Navigazzjoni",
         "actions": "Azzjonijiet",
         "general": "Ġenerali",
-        "pressEscToClose": "Agħfas Esc biex tagħlaq"
+        "pressEscToClose": "Agħfas Esc biex tagħlaq",
+        "showKeyboardShortcuts": "Uri l-ikkejbord shortcuts",
+        "toggleXmppConsole": "Ibdel il-konsla XMPP",
+        "toggleLightDarkMode": "Ibdel il-modalità ċara/skura",
+        "javascriptConsole": "Konsla JavaScript (jekk disponibbli)",
+        "nextUnread": "Il-konverżazzjoni mhux moqrija li jmiss",
+        "messagesView": "Messaġġi",
+        "roomsView": "Kmamar",
+        "connectionsView": "Kuntatti",
+        "archiveView": "Arkivju",
+        "eventsView": "Avvenimenti",
+        "adminView": "Amministrazzjoni",
+        "findInConversation": "Fittex fil-konverżazzjoni",
+        "nextMatch": "It-taqbila li jmiss",
+        "previousMatch": "It-taqbila ta' qabel",
+        "searchView": "Fittex",
+        "previousItem": "Konverżazzjoni/kamra ta' qabel",
+        "nextItem": "Il-konverżazzjoni/kamra li jmiss",
+        "settings": "Settings",
+        "changeStatus": "Ibdel l-istatus",
+        "createQuickChat": "Oħloq chat malajr",
+        "goTo": "Mur għal...",
+        "closeModalPanelBlur": "Agħlaq tieqa/pannell/neħħi l-fokus",
+        "quitApp": "Oħroġ mill-app"
     },
     "upload": {
         "attachFile": "Ehmeż fajl",

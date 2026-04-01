@@ -143,7 +143,7 @@ export function RoomHeader({
         <button
           onClick={onBack}
           className="p-1 -ml-1 rounded hover:bg-fluux-hover md:hidden"
-          aria-label="Back to rooms"
+          aria-label={t('rooms.backToRooms')}
         >
           <ArrowLeft className="w-5 h-5 text-fluux-muted" />
         </button>

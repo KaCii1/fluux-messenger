@@ -91,6 +91,7 @@
         "cancelReconnection": "Zrušit opětovné připojení"
     },
     "conversations": {
+        "backToConversations": "Zpět ke konverzacím",
         "noConversations": "Zatím žádné konverzace",
         "archive": "Archivovat",
         "unarchive": "Zrušit archivaci",
@@ -142,6 +143,7 @@
         "blockConfirm": "Zablokovat {{name}}? Nebudou vás moci kontaktovat."
     },
     "rooms": {
+        "backToRooms": "Zpět do místností",
         "noRooms": "Zatím žádné místnosti",
         "noRoomsHint": "Klikněte na + pro vstup do místnosti.",
         "joined": "Připojeno",
@@ -497,6 +499,8 @@
         "accentThemeDefault": "Výchozí motiv",
         "fontSize": "Velikost písma",
         "fontSizeDescription": "Upravit velikost textu v aplikaci",
+        "decreaseFontSize": "Zmenšit písmo",
+        "increaseFontSize": "Zvětšit písmo",
         "language": "Jazyk",
         "languageAndRegion": "Jazyk a region",
         "languageStreamNote": "Jazyková preference serveru se použije při příštím přihlášení",
@@ -706,7 +710,30 @@
         "navigation": "Navigace",
         "actions": "Akce",
         "general": "Obecné",
-        "pressEscToClose": "Stiskněte Esc pro zavření"
+        "pressEscToClose": "Stiskněte Esc pro zavření",
+        "showKeyboardShortcuts": "Zobrazit klávesové zkratky",
+        "toggleXmppConsole": "Přepnout XMPP konzoli",
+        "toggleLightDarkMode": "Přepnout světlý/tmavý režim",
+        "javascriptConsole": "JavaScript konzole (pokud je dostupná)",
+        "nextUnread": "Další nepřečtená konverzace",
+        "messagesView": "Zprávy",
+        "roomsView": "Místnosti",
+        "connectionsView": "Kontakty",
+        "archiveView": "Archiv",
+        "eventsView": "Události",
+        "adminView": "Administrace",
+        "findInConversation": "Hledat v konverzaci",
+        "nextMatch": "Další shoda",
+        "previousMatch": "Předchozí shoda",
+        "searchView": "Hledání",
+        "previousItem": "Předchozí konverzace/místnost",
+        "nextItem": "Další konverzace/místnost",
+        "settings": "Nastavení",
+        "changeStatus": "Změnit stav",
+        "createQuickChat": "Vytvořit rychlý chat",
+        "goTo": "Přejít na...",
+        "closeModalPanelBlur": "Zavřít okno/panel/odebrat focus",
+        "quitApp": "Ukončit aplikaci"
     },
     "upload": {
         "attachFile": "Připojit soubor",

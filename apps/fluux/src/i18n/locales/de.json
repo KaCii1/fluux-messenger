@@ -91,6 +91,7 @@
         "cancelReconnection": "Wiederverbindung abbrechen"
     },
     "conversations": {
+        "backToConversations": "Zurück zu Unterhaltungen",
         "noConversations": "Noch keine Unterhaltungen",
         "archive": "Archivieren",
         "unarchive": "Wiederherstellen",
@@ -142,6 +143,7 @@
         "blockConfirm": "{{name}} blockieren? Sie können dich nicht mehr kontaktieren."
     },
     "rooms": {
+        "backToRooms": "Zurück zu Räumen",
         "noRooms": "Noch keine Räume",
         "noRoomsHint": "Klicken Sie auf +, um einem Raum beizutreten.",
         "joined": "Beigetreten",
@@ -497,6 +499,8 @@
         "accentThemeDefault": "Theme-Standard",
         "fontSize": "Schriftgröße",
         "fontSizeDescription": "Textgröße in der App anpassen",
+        "decreaseFontSize": "Schriftgröße verkleinern",
+        "increaseFontSize": "Schriftgröße vergrößern",
         "language": "Sprache",
         "languageAndRegion": "Sprache & Region",
         "languageStreamNote": "Server-Sprachpräferenz gilt ab nächster Anmeldung",
@@ -706,7 +710,30 @@
         "navigation": "Navigation",
         "actions": "Aktionen",
         "general": "Allgemein",
-        "pressEscToClose": "Esc drücken zum Schließen"
+        "pressEscToClose": "Esc drücken zum Schließen",
+        "showKeyboardShortcuts": "Tastenkürzel anzeigen",
+        "toggleXmppConsole": "XMPP-Konsole umschalten",
+        "toggleLightDarkMode": "Hell-/Dunkelmodus umschalten",
+        "javascriptConsole": "JavaScript-Konsole (falls aktiviert)",
+        "nextUnread": "Nächste ungelesene Unterhaltung",
+        "messagesView": "Nachrichten",
+        "roomsView": "Räume",
+        "connectionsView": "Kontakte",
+        "archiveView": "Archiv",
+        "eventsView": "Ereignisse",
+        "adminView": "Verwaltung",
+        "findInConversation": "In Unterhaltung suchen",
+        "nextMatch": "Nächster Treffer",
+        "previousMatch": "Vorheriger Treffer",
+        "searchView": "Suche",
+        "previousItem": "Vorherige Unterhaltung/Raum",
+        "nextItem": "Nächste Unterhaltung/Raum",
+        "settings": "Einstellungen",
+        "changeStatus": "Status ändern",
+        "createQuickChat": "Schnell-Chat erstellen",
+        "goTo": "Gehe zu...",
+        "closeModalPanelBlur": "Fenster/Panel schließen/Fokus entfernen",
+        "quitApp": "App beenden"
     },
     "upload": {
         "attachFile": "Datei anhängen",

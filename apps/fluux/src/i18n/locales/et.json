@@ -91,6 +91,7 @@
         "cancelReconnection": "Tühista taasühendamine"
     },
     "conversations": {
+        "backToConversations": "Tagasi vestluste juurde",
         "noConversations": "Vestlusi veel pole",
         "archive": "Arhiveeri",
         "unarchive": "Taasta arhiivist",
@@ -142,6 +143,7 @@
         "blockConfirm": "Blokeerida {{name}}? Nad ei saa sinuga ühendust võtta."
     },
     "rooms": {
+        "backToRooms": "Tagasi tubade juurde",
         "noRooms": "Tube veel pole",
         "noRoomsHint": "Klõpsa +, et toaga liituda.",
         "joined": "Liitunud",
@@ -497,6 +499,8 @@
         "accentThemeDefault": "Teema vaikeväärtus",
         "fontSize": "Kirjasuurus",
         "fontSizeDescription": "Kohanda teksti suurust rakenduses",
+        "decreaseFontSize": "Vähenda kirja suurust",
+        "increaseFontSize": "Suurenda kirja suurust",
         "language": "Keel",
         "languageAndRegion": "Keel ja piirkond",
         "languageStreamNote": "Serveri keele eelistus rakendub järgmisel sisselogimisel",
@@ -706,7 +710,30 @@
         "navigation": "Navigeerimine",
         "actions": "Tegevused",
         "general": "Üldine",
-        "pressEscToClose": "Vajuta Esc sulgemiseks"
+        "pressEscToClose": "Vajuta Esc sulgemiseks",
+        "showKeyboardShortcuts": "Kuva kiirklahve",
+        "toggleXmppConsole": "Lülita XMPP konsool",
+        "toggleLightDarkMode": "Lülita hele/tume režiim",
+        "javascriptConsole": "JavaScripti konsool (kui lubatud)",
+        "nextUnread": "Järgmine lugemata vestlus",
+        "messagesView": "Sõnumid",
+        "roomsView": "Toad",
+        "connectionsView": "Kontaktid",
+        "archiveView": "Arhiiv",
+        "eventsView": "Sündmused",
+        "adminView": "Haldus",
+        "findInConversation": "Otsi vestlusest",
+        "nextMatch": "Järgmine vaste",
+        "previousMatch": "Eelmine vaste",
+        "searchView": "Otsing",
+        "previousItem": "Eelmine vestlus/tuba",
+        "nextItem": "Järgmine vestlus/tuba",
+        "settings": "Seaded",
+        "changeStatus": "Muuda olekut",
+        "createQuickChat": "Loo kiirvestlus",
+        "goTo": "Mine...",
+        "closeModalPanelBlur": "Sulge aken/paneel/eemalda fookus",
+        "quitApp": "Sulge rakendus"
     },
     "upload": {
         "attachFile": "Lisa fail",

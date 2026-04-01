@@ -69,7 +69,7 @@ export function ShortcutHelp({ shortcuts, onClose }: ShortcutHelpProps) {
                       key={idx}
                       className="flex items-center justify-between py-1.5"
                     >
-                      <span className="text-fluux-text">{shortcut.description}</span>
+                      <span className="text-fluux-text">{t(shortcut.description)}</span>
                       <kbd className="px-2 py-1 bg-fluux-bg rounded text-sm font-mono text-fluux-muted border border-fluux-border">
                         {formatShortcutKey(shortcut)}
                       </kbd>

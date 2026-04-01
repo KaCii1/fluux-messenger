@@ -89,6 +89,7 @@
         "cancelReconnection": "取消重新连接"
     },
     "conversations": {
+        "backToConversations": "返回对话列表",
         "noConversations": "暂无对话",
         "archive": "归档",
         "unarchive": "取消归档",
@@ -140,6 +141,7 @@
         "blockConfirm": "屏蔽 {{name}}？他们将无法联系你。"
     },
     "rooms": {
+        "backToRooms": "返回聊天室列表",
         "noRooms": "暂无房间",
         "noRoomsHint": "点击 + 加入房间。",
         "joined": "已加入",
@@ -495,6 +497,8 @@
         "accentThemeDefault": "主题默认",
         "fontSize": "字体大小",
         "fontSizeDescription": "调整应用中的文字大小",
+        "decreaseFontSize": "减小字体大小",
+        "increaseFontSize": "增大字体大小",
         "language": "语言",
         "languageAndRegion": "语言与地区",
         "languageStreamNote": "下次登录时应用服务器语言首选项",
@@ -704,7 +708,30 @@
         "navigation": "导航",
         "actions": "操作",
         "general": "常规",
-        "pressEscToClose": "按 Esc 键关闭"
+        "pressEscToClose": "按 Esc 键关闭",
+        "showKeyboardShortcuts": "显示键盘快捷键",
+        "toggleXmppConsole": "切换 XMPP 控制台",
+        "toggleLightDarkMode": "切换浅色/深色模式",
+        "javascriptConsole": "JavaScript 控制台（如已启用）",
+        "nextUnread": "下一个未读对话",
+        "messagesView": "消息",
+        "roomsView": "聊天室",
+        "connectionsView": "联系人",
+        "archiveView": "归档",
+        "eventsView": "事件",
+        "adminView": "管理",
+        "findInConversation": "在对话中查找",
+        "nextMatch": "下一个匹配",
+        "previousMatch": "上一个匹配",
+        "searchView": "搜索",
+        "previousItem": "上一个对话/聊天室",
+        "nextItem": "下一个对话/聊天室",
+        "settings": "设置",
+        "changeStatus": "更改状态",
+        "createQuickChat": "创建快速聊天",
+        "goTo": "转到...",
+        "closeModalPanelBlur": "关闭窗口/面板/移除焦点",
+        "quitApp": "退出应用"
     },
     "upload": {
         "attachFile": "附加文件",

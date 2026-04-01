@@ -89,6 +89,7 @@
         "cancelReconnection": "Opnieuw verbinden annuleren"
     },
     "conversations": {
+        "backToConversations": "Terug naar gesprekken",
         "noConversations": "Nog geen gesprekken",
         "archive": "Archiveren",
         "unarchive": "Dearchiveren",
@@ -140,6 +141,7 @@
         "blockConfirm": "{{name}} blokkeren? Ze kunnen geen contact meer met je opnemen."
     },
     "rooms": {
+        "backToRooms": "Terug naar kamers",
         "noRooms": "Nog geen groepen",
         "noRoomsHint": "Klik op + om een groep te joinen.",
         "joined": "Gejoind",
@@ -495,6 +497,8 @@
         "accentThemeDefault": "Themastandaard",
         "fontSize": "Lettergrootte",
         "fontSizeDescription": "Pas de tekstgrootte in de app aan",
+        "decreaseFontSize": "Lettergrootte verkleinen",
+        "increaseFontSize": "Lettergrootte vergroten",
         "language": "Taal",
         "languageAndRegion": "Taal & Regio",
         "languageStreamNote": "Servertaalvoorkeur geldt bij volgende aanmelding",
@@ -704,7 +708,30 @@
         "navigation": "Navigatie",
         "actions": "Acties",
         "general": "Algemeen",
-        "pressEscToClose": "Druk op Esc om te sluiten"
+        "pressEscToClose": "Druk op Esc om te sluiten",
+        "showKeyboardShortcuts": "Sneltoetsen weergeven",
+        "toggleXmppConsole": "XMPP-console wisselen",
+        "toggleLightDarkMode": "Lichte/donkere modus wisselen",
+        "javascriptConsole": "JavaScript-console (indien ingeschakeld)",
+        "nextUnread": "Volgend ongelezen gesprek",
+        "messagesView": "Berichten",
+        "roomsView": "Kamers",
+        "connectionsView": "Contacten",
+        "archiveView": "Archief",
+        "eventsView": "Evenementen",
+        "adminView": "Beheer",
+        "findInConversation": "Zoeken in gesprek",
+        "nextMatch": "Volgend resultaat",
+        "previousMatch": "Vorig resultaat",
+        "searchView": "Zoeken",
+        "previousItem": "Vorig gesprek/kamer",
+        "nextItem": "Volgend gesprek/kamer",
+        "settings": "Instellingen",
+        "changeStatus": "Status wijzigen",
+        "createQuickChat": "Snelle chat aanmaken",
+        "goTo": "Ga naar...",
+        "closeModalPanelBlur": "Venster/paneel sluiten/focus verwijderen",
+        "quitApp": "App afsluiten"
     },
     "upload": {
         "attachFile": "Bestand bijvoegen",

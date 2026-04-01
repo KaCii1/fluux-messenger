@@ -90,6 +90,7 @@
         "cancelReconnection": "Zrušiť opätovné pripojenie"
     },
     "conversations": {
+        "backToConversations": "Späť ku konverzáciám",
         "noConversations": "Zatiaľ žiadne konverzácie",
         "archive": "Archivovať",
         "unarchive": "Odarchivovať",
@@ -141,6 +142,7 @@
         "blockConfirm": "Zablokovať {{name}}? Nebudú vás môcť kontaktovať."
     },
     "rooms": {
+        "backToRooms": "Späť do miestností",
         "noRooms": "Zatiaľ žiadne miestnosti",
         "noRoomsHint": "Kliknutím na + sa pripojíte k miestnosti.",
         "joined": "Pripojený",
@@ -496,6 +498,8 @@
         "accentThemeDefault": "Predvolené témy",
         "fontSize": "Veľkosť písma",
         "fontSizeDescription": "Upraviť veľkosť textu v aplikácii",
+        "decreaseFontSize": "Zmenšiť písmo",
+        "increaseFontSize": "Zväčšiť písmo",
         "language": "Jazyk",
         "languageAndRegion": "Jazyk a región",
         "languageStreamNote": "Preferencia jazyka servera sa uplatní pri ďalšom prihlásení",
@@ -705,7 +709,30 @@
         "navigation": "Navigácia",
         "actions": "Akcie",
         "general": "Všeobecné",
-        "pressEscToClose": "Stlačte Esc pre zatvorenie"
+        "pressEscToClose": "Stlačte Esc pre zatvorenie",
+        "showKeyboardShortcuts": "Zobraziť klávesové skratky",
+        "toggleXmppConsole": "Prepnúť konzolu XMPP",
+        "toggleLightDarkMode": "Prepnúť svetlý/tmavý režim",
+        "javascriptConsole": "Konzola JavaScript (ak je dostupná)",
+        "nextUnread": "Ďalšia neprečítaná konverzácia",
+        "messagesView": "Správy",
+        "roomsView": "Miestnosti",
+        "connectionsView": "Kontakty",
+        "archiveView": "Archív",
+        "eventsView": "Udalosti",
+        "adminView": "Administrácia",
+        "findInConversation": "Hľadať v konverzácii",
+        "nextMatch": "Ďalšia zhoda",
+        "previousMatch": "Predchádzajúca zhoda",
+        "searchView": "Vyhľadávanie",
+        "previousItem": "Predchádzajúca konverzácia/miestnosť",
+        "nextItem": "Ďalšia konverzácia/miestnosť",
+        "settings": "Nastavenia",
+        "changeStatus": "Zmeniť stav",
+        "createQuickChat": "Vytvoriť rýchly chat",
+        "goTo": "Prejsť na...",
+        "closeModalPanelBlur": "Zatvoriť okno/panel/odstrániť fokus",
+        "quitApp": "Ukončiť aplikáciu"
     },
     "upload": {
         "attachFile": "Priložiť súbor",

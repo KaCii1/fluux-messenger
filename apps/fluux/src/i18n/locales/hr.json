@@ -89,6 +89,7 @@
         "cancelReconnection": "Odustani od ponovnog povezivanja"
     },
     "conversations": {
+        "backToConversations": "Natrag na razgovore",
         "noConversations": "Još nema razgovora",
         "archive": "Arhiviraj",
         "unarchive": "Dearhiviraj",
@@ -140,6 +141,7 @@
         "blockConfirm": "Blokirati {{name}}? Neće vas moći kontaktirati."
     },
     "rooms": {
+        "backToRooms": "Natrag na sobe",
         "noRooms": "Još nema soba",
         "noRoomsHint": "Kliknite + za pridruživanje sobi.",
         "joined": "Pridružen",
@@ -495,6 +497,8 @@
         "accentThemeDefault": "Zadano teme",
         "fontSize": "Veličina fonta",
         "fontSizeDescription": "Prilagodite veličinu teksta u aplikaciji",
+        "decreaseFontSize": "Smanji veličinu fonta",
+        "increaseFontSize": "Povećaj veličinu fonta",
         "language": "Jezik",
         "languageAndRegion": "Jezik i regija",
         "languageStreamNote": "Postavka jezika poslužitelja primjenjuje se pri sljedećoj prijavi",
@@ -704,7 +708,30 @@
         "navigation": "Navigacija",
         "actions": "Radnje",
         "general": "Općenito",
-        "pressEscToClose": "Pritisnite Esc za zatvaranje"
+        "pressEscToClose": "Pritisnite Esc za zatvaranje",
+        "showKeyboardShortcuts": "Prikaži tipkovničke prečace",
+        "toggleXmppConsole": "Prebaci XMPP konzolu",
+        "toggleLightDarkMode": "Prebaci svijetli/tamni način",
+        "javascriptConsole": "JavaScript konzola (ako je dostupna)",
+        "nextUnread": "Sljedeći nepročitani razgovor",
+        "messagesView": "Poruke",
+        "roomsView": "Sobe",
+        "connectionsView": "Kontakti",
+        "archiveView": "Arhiva",
+        "eventsView": "Događaji",
+        "adminView": "Administracija",
+        "findInConversation": "Traži u razgovoru",
+        "nextMatch": "Sljedeći rezultat",
+        "previousMatch": "Prethodni rezultat",
+        "searchView": "Pretraga",
+        "previousItem": "Prethodni razgovor/soba",
+        "nextItem": "Sljedeći razgovor/soba",
+        "settings": "Postavke",
+        "changeStatus": "Promijeni status",
+        "createQuickChat": "Stvori brzi razgovor",
+        "goTo": "Idi na...",
+        "closeModalPanelBlur": "Zatvori prozor/panel/ukloni fokus",
+        "quitApp": "Zatvori aplikaciju"
     },
     "upload": {
         "attachFile": "Priloži datoteku",

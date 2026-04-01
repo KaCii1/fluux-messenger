@@ -89,6 +89,7 @@
         "cancelReconnection": "Отмени повторното свързване"
     },
     "conversations": {
+        "backToConversations": "Назад към разговорите",
         "noConversations": "Все още няма разговори",
         "archive": "Архивирай",
         "unarchive": "Извади от архив",
@@ -140,6 +141,7 @@
         "blockConfirm": "Блокиране на {{name}}? Няма да могат да се свържат с вас."
     },
     "rooms": {
+        "backToRooms": "Назад към стаите",
         "noRooms": "Все още няма стаи",
         "noRoomsHint": "Щракнете + за да се присъедините към стая.",
         "joined": "Присъединен",
@@ -495,6 +497,8 @@
         "accentThemeDefault": "По подразбиране на темата",
         "fontSize": "Размер на шрифта",
         "fontSizeDescription": "Настройте размера на текста в приложението",
+        "decreaseFontSize": "Намали шрифта",
+        "increaseFontSize": "Увеличи шрифта",
         "language": "Език",
         "languageAndRegion": "Език и регион",
         "languageStreamNote": "Предпочитанието за език на сървъра се прилага при следващото влизане",
@@ -704,7 +708,30 @@
         "navigation": "Навигация",
         "actions": "Действия",
         "general": "Общи",
-        "pressEscToClose": "Натиснете Esc за затваряне"
+        "pressEscToClose": "Натиснете Esc за затваряне",
+        "showKeyboardShortcuts": "Покажи клавишни комбинации",
+        "toggleXmppConsole": "Превключи XMPP конзолата",
+        "toggleLightDarkMode": "Превключи светъл/тъмен режим",
+        "javascriptConsole": "JavaScript конзола (ако е налична)",
+        "nextUnread": "Следващ непрочетен разговор",
+        "messagesView": "Съобщения",
+        "roomsView": "Стаи",
+        "connectionsView": "Контакти",
+        "archiveView": "Архив",
+        "eventsView": "Събития",
+        "adminView": "Администрация",
+        "findInConversation": "Търсене в разговора",
+        "nextMatch": "Следващо съвпадение",
+        "previousMatch": "Предишно съвпадение",
+        "searchView": "Търсене",
+        "previousItem": "Предишен разговор/стая",
+        "nextItem": "Следващ разговор/стая",
+        "settings": "Настройки",
+        "changeStatus": "Промени статуса",
+        "createQuickChat": "Нов бърз чат",
+        "goTo": "Отиди на...",
+        "closeModalPanelBlur": "Затвори прозорец/панел/премахни фокус",
+        "quitApp": "Затвори приложението"
     },
     "upload": {
         "attachFile": "Прикачи файл",

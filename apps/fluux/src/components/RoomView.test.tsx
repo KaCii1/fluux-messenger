@@ -374,6 +374,7 @@ vi.mock('react-i18next', () => ({
         'chat.typing.two': '{{name1}} and {{name2}} are typing...',
         'chat.typing.three': '{{name1}}, {{name2}}, and {{name3}} are typing...',
         'chat.typing.many': '{{name1}}, {{name2}}, and {{count}} others are typing...',
+        'rooms.backToRooms': 'Back to rooms',
       }
       let result = translations[key] || opts?.defaultValue as string || key
       // Simple interpolation

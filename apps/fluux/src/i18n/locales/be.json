@@ -89,6 +89,7 @@
         "cancelReconnection": "Адмяніць перападключэнне"
     },
     "conversations": {
+        "backToConversations": "Назад да размоў",
         "noConversations": "Яшчэ няма размоў",
         "archive": "Архіваваць",
         "unarchive": "Разархіваваць",
@@ -140,6 +141,7 @@
         "blockConfirm": "Заблакіраваць {{name}}? Яны не змогуць звязацца з вамі."
     },
     "rooms": {
+        "backToRooms": "Назад да пакояў",
         "noRooms": "Яшчэ няма пакояў",
         "noRoomsHint": "Націсніце +, каб далучыцца да пакоя.",
         "joined": "Далучана",
@@ -495,6 +497,8 @@
         "accentThemeDefault": "Стандартны тэмы",
         "fontSize": "Памер шрыфту",
         "fontSizeDescription": "Наладзіць памер тэксту ў праграме",
+        "decreaseFontSize": "Паменшыць шрыфт",
+        "increaseFontSize": "Павялічыць шрыфт",
         "language": "Мова",
         "languageAndRegion": "Мова і рэгіён",
         "languageStreamNote": "Налады мовы сервера будуць ужытыя пры наступным уваходзе",
@@ -704,7 +708,30 @@
         "navigation": "Навігацыя",
         "actions": "Дзеянні",
         "general": "Агульнае",
-        "pressEscToClose": "Націсніце Esc, каб закрыць"
+        "pressEscToClose": "Націсніце Esc, каб закрыць",
+        "showKeyboardShortcuts": "Паказаць спалучэнні клавіш",
+        "toggleXmppConsole": "Пераключыць кансоль XMPP",
+        "toggleLightDarkMode": "Пераключыць светлы/цёмны рэжым",
+        "javascriptConsole": "Кансоль JavaScript (калі ўключана)",
+        "nextUnread": "Наступная непрачытаная размова",
+        "messagesView": "Паведамленні",
+        "roomsView": "Пакоі",
+        "connectionsView": "Кантакты",
+        "archiveView": "Архіў",
+        "eventsView": "Падзеі",
+        "adminView": "Адміністраванне",
+        "findInConversation": "Знайсці ў размове",
+        "nextMatch": "Наступны вынік",
+        "previousMatch": "Папярэдні вынік",
+        "searchView": "Пошук",
+        "previousItem": "Папярэдняя размова/пакой",
+        "nextItem": "Наступная размова/пакой",
+        "settings": "Налады",
+        "changeStatus": "Змяніць статус",
+        "createQuickChat": "Стварыць хуткі чат",
+        "goTo": "Перайсці да...",
+        "closeModalPanelBlur": "Закрыць акно/панэль/зняць фокус",
+        "quitApp": "Выйсці з праграмы"
     },
     "upload": {
         "attachFile": "Прымацаваць файл",

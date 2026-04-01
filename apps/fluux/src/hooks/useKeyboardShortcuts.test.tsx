@@ -575,7 +575,7 @@ describe('useKeyboardShortcuts', () => {
       expect(escapeShortcut).toBeDefined()
       expect(escapeShortcut!.modifiers).toEqual([])
       expect(escapeShortcut!.category).toBe('general')
-      expect(escapeShortcut!.description).toBe('Close modal/panel/blur input')
+      expect(escapeShortcut!.description).toBe('shortcuts.closeModalPanelBlur')
     })
   })
 
@@ -736,7 +736,7 @@ describe('useKeyboardShortcuts', () => {
         s => s.key === 'k' && s.modifiers?.includes('meta')
       )
       expect(cmdKShortcut).toBeDefined()
-      expect(cmdKShortcut!.description).toBe('Go to...')
+      expect(cmdKShortcut!.description).toBe('shortcuts.goTo')
       expect(cmdKShortcut!.category).toBe('general')
 
       cmdKShortcut!.action()
@@ -810,7 +810,7 @@ describe('useKeyboardShortcuts', () => {
         s => s.key === 'f' && s.modifiers?.includes('meta')
       )
       expect(cmdF).toBeDefined()
-      expect(cmdF!.description).toMatch(/find in conversation/i)
+      expect(cmdF!.description).toBe('shortcuts.findInConversation')
     })
 
     it('should call onFindOnPage when Cmd+F is triggered', () => {
@@ -835,7 +835,7 @@ describe('useKeyboardShortcuts', () => {
         s => s.key === 'g' && s.modifiers?.includes('meta') && !s.modifiers?.includes('shift')
       )
       expect(cmdG).toBeDefined()
-      expect(cmdG!.description).toMatch(/next match/i)
+      expect(cmdG!.description).toBe('shortcuts.nextMatch')
     })
 
     it('should call onFindNext when Cmd+G is triggered', () => {
@@ -858,7 +858,7 @@ describe('useKeyboardShortcuts', () => {
         s => s.key === 'g' && s.modifiers?.includes('meta') && s.modifiers?.includes('shift')
       )
       expect(cmdShiftG).toBeDefined()
-      expect(cmdShiftG!.description).toMatch(/previous match/i)
+      expect(cmdShiftG!.description).toBe('shortcuts.previousMatch')
     })
 
     it('should call onFindPrev when Cmd+Shift+G is triggered', () => {
@@ -883,7 +883,7 @@ describe('useKeyboardShortcuts', () => {
         s => s.key === 'f' && s.modifiers?.includes('meta') && s.modifiers?.includes('shift')
       )
       expect(cmdShiftF).toBeDefined()
-      expect(cmdShiftF!.description).toMatch(/search/i)
+      expect(cmdShiftF!.description).toBe('shortcuts.searchView')
     })
 
     it('should switch to search sidebar view via Cmd+Shift+F', () => {
@@ -905,7 +905,7 @@ describe('useKeyboardShortcuts', () => {
         s => s.key === '6' && s.modifiers?.includes('alt')
       )
       expect(alt6).toBeDefined()
-      expect(alt6!.description).toMatch(/search/i)
+      expect(alt6!.description).toBe('shortcuts.searchView')
     })
 
     it('should switch to search sidebar view via Alt+6', () => {
@@ -928,7 +928,7 @@ describe('useKeyboardShortcuts', () => {
         s => s.key === 'l' && s.modifiers?.includes('meta') && s.modifiers?.includes('shift')
       )
       expect(shortcut).toBeDefined()
-      expect(shortcut!.description).toBe('Toggle light/dark mode')
+      expect(shortcut!.description).toBe('shortcuts.toggleLightDarkMode')
       expect(shortcut!.category).toBe('general')
     })
 

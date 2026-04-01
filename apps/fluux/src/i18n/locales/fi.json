@@ -89,6 +89,7 @@
         "cancelReconnection": "Peruuta uudelleenyhdistäminen"
     },
     "conversations": {
+        "backToConversations": "Takaisin keskusteluihin",
         "noConversations": "Ei keskusteluja vielä",
         "archive": "Arkistoi",
         "unarchive": "Palauta arkistosta",
@@ -140,6 +141,7 @@
         "blockConfirm": "Estetäänkö {{name}}? He eivät voi ottaa sinuun yhteyttä."
     },
     "rooms": {
+        "backToRooms": "Takaisin huoneisiin",
         "noRooms": "Ei huoneita vielä",
         "noRoomsHint": "Napsauta + liittyäksesi huoneeseen.",
         "joined": "Liitytty",
@@ -495,6 +497,8 @@
         "accentThemeDefault": "Teeman oletus",
         "fontSize": "Fonttikoko",
         "fontSizeDescription": "Säädä tekstin kokoa sovelluksessa",
+        "decreaseFontSize": "Pienennä kirjasinkokoa",
+        "increaseFontSize": "Suurenna kirjasinkokoa",
         "language": "Kieli",
         "languageAndRegion": "Kieli ja alue",
         "languageStreamNote": "Palvelimen kieliasetus otetaan käyttöön seuraavassa kirjautumisessa",
@@ -704,7 +708,30 @@
         "navigation": "Navigointi",
         "actions": "Toiminnot",
         "general": "Yleinen",
-        "pressEscToClose": "Paina Esc sulkeaksesi"
+        "pressEscToClose": "Paina Esc sulkeaksesi",
+        "showKeyboardShortcuts": "Näytä pikanäppäimet",
+        "toggleXmppConsole": "Vaihda XMPP-konsoli",
+        "toggleLightDarkMode": "Vaihda vaalea/tumma tila",
+        "javascriptConsole": "JavaScript-konsoli (jos käytössä)",
+        "nextUnread": "Seuraava lukematon keskustelu",
+        "messagesView": "Viestit",
+        "roomsView": "Huoneet",
+        "connectionsView": "Yhteystiedot",
+        "archiveView": "Arkisto",
+        "eventsView": "Tapahtumat",
+        "adminView": "Hallinta",
+        "findInConversation": "Etsi keskustelusta",
+        "nextMatch": "Seuraava osuma",
+        "previousMatch": "Edellinen osuma",
+        "searchView": "Haku",
+        "previousItem": "Edellinen keskustelu/huone",
+        "nextItem": "Seuraava keskustelu/huone",
+        "settings": "Asetukset",
+        "changeStatus": "Vaihda tila",
+        "createQuickChat": "Luo pikakeskustelu",
+        "goTo": "Siirry...",
+        "closeModalPanelBlur": "Sulje ikkuna/paneeli/poista tarkennus",
+        "quitApp": "Sulje sovellus"
     },
     "upload": {
         "attachFile": "Liitä tiedosto",

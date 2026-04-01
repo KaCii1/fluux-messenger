@@ -89,6 +89,7 @@
         "cancelReconnection": "Cancel reconnection"
     },
     "conversations": {
+        "backToConversations": "Back to conversations",
         "noConversations": "No conversations yet",
         "archive": "Archive",
         "unarchive": "Unarchive",
@@ -140,6 +141,7 @@
         "pressEnterToAdd": "Press Enter to add"
     },
     "rooms": {
+        "backToRooms": "Back to rooms",
         "noRooms": "No rooms yet",
         "noRoomsHint": "Click + to join a room.",
         "joined": "Joined",
@@ -495,6 +497,8 @@
         "accentThemeDefault": "Theme Default",
         "fontSize": "Font Size",
         "fontSizeDescription": "Adjust the size of text across the app",
+        "decreaseFontSize": "Decrease font size",
+        "increaseFontSize": "Increase font size",
         "language": "Language",
         "languageAndRegion": "Language & Region",
         "languageStreamNote": "Server language preference applies on next login",
@@ -704,7 +708,30 @@
         "navigation": "Navigation",
         "actions": "Actions",
         "general": "General",
-        "pressEscToClose": "Press Esc to close"
+        "pressEscToClose": "Press Esc to close",
+        "showKeyboardShortcuts": "Show keyboard shortcuts",
+        "toggleXmppConsole": "Toggle XMPP Console",
+        "toggleLightDarkMode": "Toggle light/dark mode",
+        "javascriptConsole": "JavaScript Console (if enabled)",
+        "nextUnread": "Next unread conversation",
+        "messagesView": "Messages view",
+        "roomsView": "Rooms view",
+        "connectionsView": "Connections view",
+        "archiveView": "Archive view",
+        "eventsView": "Events view",
+        "adminView": "Admin view",
+        "findInConversation": "Find in conversation",
+        "nextMatch": "Next match",
+        "previousMatch": "Previous match",
+        "searchView": "Search view",
+        "previousItem": "Previous conversation/room",
+        "nextItem": "Next conversation/room",
+        "settings": "Settings",
+        "changeStatus": "Change status",
+        "createQuickChat": "Create quick chat",
+        "goTo": "Go to...",
+        "closeModalPanelBlur": "Close modal/panel/blur input",
+        "quitApp": "Quit app"
     },
     "upload": {
         "attachFile": "Attach file",

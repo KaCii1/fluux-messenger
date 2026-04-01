@@ -91,6 +91,7 @@
         "cancelReconnection": "Annulla riconnessione"
     },
     "conversations": {
+        "backToConversations": "Torna alle conversazioni",
         "noConversations": "Nessuna conversazione",
         "archive": "Archivia",
         "unarchive": "Ripristina",
@@ -142,6 +143,7 @@
         "blockConfirm": "Bloccare {{name}}? Non potranno contattarti."
     },
     "rooms": {
+        "backToRooms": "Torna alle stanze",
         "noRooms": "Nessuna stanza",
         "noRoomsHint": "Clicca + per entrare in una stanza.",
         "joined": "Entrato",
@@ -497,6 +499,8 @@
         "accentThemeDefault": "Predefinito del tema",
         "fontSize": "Dimensione carattere",
         "fontSizeDescription": "Regola la dimensione del testo nell'app",
+        "decreaseFontSize": "Riduci dimensione carattere",
+        "increaseFontSize": "Aumenta dimensione carattere",
         "language": "Lingua",
         "languageAndRegion": "Lingua e regione",
         "languageStreamNote": "La preferenza lingua del server si applica al prossimo accesso",
@@ -706,7 +710,30 @@
         "navigation": "Navigazione",
         "actions": "Azioni",
         "general": "Generale",
-        "pressEscToClose": "Premi Esc per chiudere"
+        "pressEscToClose": "Premi Esc per chiudere",
+        "showKeyboardShortcuts": "Mostra scorciatoie da tastiera",
+        "toggleXmppConsole": "Attiva/disattiva console XMPP",
+        "toggleLightDarkMode": "Attiva/disattiva modalità chiara/scura",
+        "javascriptConsole": "Console JavaScript (se abilitata)",
+        "nextUnread": "Prossima conversazione non letta",
+        "messagesView": "Messaggi",
+        "roomsView": "Stanze",
+        "connectionsView": "Contatti",
+        "archiveView": "Archivio",
+        "eventsView": "Eventi",
+        "adminView": "Amministrazione",
+        "findInConversation": "Cerca nella conversazione",
+        "nextMatch": "Corrispondenza successiva",
+        "previousMatch": "Corrispondenza precedente",
+        "searchView": "Ricerca",
+        "previousItem": "Conversazione/stanza precedente",
+        "nextItem": "Conversazione/stanza successiva",
+        "settings": "Impostazioni",
+        "changeStatus": "Cambia stato",
+        "createQuickChat": "Crea chat rapida",
+        "goTo": "Vai a...",
+        "closeModalPanelBlur": "Chiudi finestra/pannello/rimuovi focus",
+        "quitApp": "Esci dall'app"
     },
     "upload": {
         "attachFile": "Allega file",

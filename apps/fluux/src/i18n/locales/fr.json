@@ -90,6 +90,7 @@
         "cancelReconnection": "Annuler la reconnexion"
     },
     "conversations": {
+        "backToConversations": "Retour aux conversations",
         "noConversations": "Aucune conversation",
         "archive": "Archiver",
         "unarchive": "Désarchiver",
@@ -141,6 +142,7 @@
         "pressEnterToAdd": "Appuyez sur Entrée pour ajouter"
     },
     "rooms": {
+        "backToRooms": "Retour aux salons",
         "noRooms": "Aucun salon",
         "noRoomsHint": "Cliquez sur + pour rejoindre un salon.",
         "joined": "Rejoint",
@@ -496,6 +498,8 @@
         "accentThemeDefault": "Défaut du thème",
         "fontSize": "Taille de police",
         "fontSizeDescription": "Ajuster la taille du texte dans l'application",
+        "decreaseFontSize": "Réduire la taille de la police",
+        "increaseFontSize": "Augmenter la taille de la police",
         "language": "Langue",
         "languageAndRegion": "Langue et région",
         "languageStreamNote": "La préférence de langue serveur s'applique à la prochaine connexion",
@@ -705,7 +709,30 @@
         "navigation": "Navigation",
         "actions": "Actions",
         "general": "Général",
-        "pressEscToClose": "Appuyez sur Échap pour fermer"
+        "pressEscToClose": "Appuyez sur Échap pour fermer",
+        "showKeyboardShortcuts": "Afficher les raccourcis clavier",
+        "toggleXmppConsole": "Basculer la console XMPP",
+        "toggleLightDarkMode": "Basculer le mode clair/sombre",
+        "javascriptConsole": "Console JavaScript (si activée)",
+        "nextUnread": "Prochaine conversation non lue",
+        "messagesView": "Messages",
+        "roomsView": "Salons",
+        "connectionsView": "Contacts",
+        "archiveView": "Archives",
+        "eventsView": "Événements",
+        "adminView": "Administration",
+        "findInConversation": "Rechercher dans la conversation",
+        "nextMatch": "Résultat suivant",
+        "previousMatch": "Résultat précédent",
+        "searchView": "Recherche",
+        "previousItem": "Conversation/salon précédent",
+        "nextItem": "Conversation/salon suivant",
+        "settings": "Paramètres",
+        "changeStatus": "Changer le statut",
+        "createQuickChat": "Créer une discussion rapide",
+        "goTo": "Aller à...",
+        "closeModalPanelBlur": "Fermer fenêtre/panneau/retirer le focus",
+        "quitApp": "Quitter l'application"
     },
     "upload": {
         "attachFile": "Joindre un fichier",

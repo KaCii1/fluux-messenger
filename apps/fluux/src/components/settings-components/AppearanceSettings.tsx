@@ -282,7 +282,7 @@ export function AppearanceSettings() {
               type="button"
               onClick={() => setFontSize(fontSize - FONT_SIZE_STEP)}
               className="text-xs text-fluux-muted shrink-0 cursor-pointer hover:text-fluux-text transition-colors"
-              aria-label="Decrease font size"
+              aria-label={t('settings.decreaseFontSize')}
             >A</button>
             <input
               type="range"
@@ -297,7 +297,7 @@ export function AppearanceSettings() {
               type="button"
               onClick={() => setFontSize(fontSize + FONT_SIZE_STEP)}
               className="text-base font-medium text-fluux-muted shrink-0 cursor-pointer hover:text-fluux-text transition-colors"
-              aria-label="Increase font size"
+              aria-label={t('settings.increaseFontSize')}
             >A</button>
           </div>
           <p className="text-xs text-fluux-muted">

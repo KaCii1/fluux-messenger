@@ -89,6 +89,7 @@
         "cancelReconnection": "Отменить переподключение"
     },
     "conversations": {
+        "backToConversations": "Назад к разговорам",
         "noConversations": "Пока нет бесед",
         "archive": "Архивировать",
         "unarchive": "Разархивировать",
@@ -140,6 +141,7 @@
         "blockConfirm": "Заблокировать {{name}}? Они не смогут связаться с вами."
     },
     "rooms": {
+        "backToRooms": "Назад к комнатам",
         "noRooms": "Пока нет конференций",
         "noRoomsHint": "Нажмите +, чтобы войти в конференцию.",
         "joined": "Присоединился",
@@ -495,6 +497,8 @@
         "accentThemeDefault": "По умолчанию темы",
         "fontSize": "Размер шрифта",
         "fontSizeDescription": "Настроить размер текста в приложении",
+        "decreaseFontSize": "Уменьшить шрифт",
+        "increaseFontSize": "Увеличить шрифт",
         "language": "Язык",
         "languageAndRegion": "Язык и регион",
         "languageStreamNote": "Серверный выбор языка применится при следующем входе",
@@ -704,7 +708,30 @@
         "navigation": "Навигация",
         "actions": "Действия",
         "general": "Общие",
-        "pressEscToClose": "Нажмите Esc для закрытия"
+        "pressEscToClose": "Нажмите Esc для закрытия",
+        "showKeyboardShortcuts": "Показать сочетания клавиш",
+        "toggleXmppConsole": "Переключить консоль XMPP",
+        "toggleLightDarkMode": "Переключить светлую/тёмную тему",
+        "javascriptConsole": "Консоль JavaScript (если доступна)",
+        "nextUnread": "Следующий непрочитанный разговор",
+        "messagesView": "Сообщения",
+        "roomsView": "Комнаты",
+        "connectionsView": "Контакты",
+        "archiveView": "Архив",
+        "eventsView": "События",
+        "adminView": "Администрирование",
+        "findInConversation": "Найти в разговоре",
+        "nextMatch": "Следующее совпадение",
+        "previousMatch": "Предыдущее совпадение",
+        "searchView": "Поиск",
+        "previousItem": "Предыдущий разговор/комната",
+        "nextItem": "Следующий разговор/комната",
+        "settings": "Настройки",
+        "changeStatus": "Изменить статус",
+        "createQuickChat": "Создать быстрый чат",
+        "goTo": "Перейти к...",
+        "closeModalPanelBlur": "Закрыть окно/панель/убрать фокус",
+        "quitApp": "Выйти из приложения"
     },
     "upload": {
         "attachFile": "Прикрепить файл",

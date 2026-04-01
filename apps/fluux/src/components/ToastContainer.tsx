@@ -1,4 +1,5 @@
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import { X, CheckCircle2, AlertCircle, Info } from 'lucide-react'
 import { useToastStore, type ToastType } from '@/stores/toastStore'
 
@@ -15,6 +16,7 @@ const colorMap: Record<ToastType, { border: string; icon: string }> = {
 }
 
 export function ToastContainer() {
+  const { t } = useTranslation()
   const toasts = useToastStore((s) => s.toasts)
   const removeToast = useToastStore((s) => s.removeToast)
 
@@ -40,7 +42,7 @@ export function ToastContainer() {
             <button
               onClick={() => removeToast(toast.id)}
               className="p-0.5 rounded hover:bg-fluux-hover text-fluux-muted hover:text-fluux-text shrink-0"
-              aria-label="Dismiss"
+              aria-label={t('common.dismiss')}
             >
               <X className="w-4 h-4" />
             </button>
