@@ -58,7 +58,7 @@ const ConsoleEntry = React.memo(function ConsoleEntry({ entry, isSelected, expan
   const isEvent = entry.type === 'event'
   const isIncoming = entry.type === 'incoming'
 
-  const selectedClass = isSelected ? 'bg-fluux-hover ring-1 ring-fluux-brand/50' : 'hover:bg-fluux-bg/30'
+  const selectedClass = isSelected ? 'bg-fluux-hover border border-fluux-brand' : 'border border-transparent hover:bg-fluux-bg/30'
 
   // Different styling for events vs packets
   if (isEvent) {

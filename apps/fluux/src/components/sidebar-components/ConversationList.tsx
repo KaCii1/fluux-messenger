@@ -266,14 +266,14 @@ export const ConversationItem = memo(function ConversationItem({
         onClick={handleClick}
         onMouseEnter={onMouseEnter}
         onMouseMove={onMouseMove}
-        className={`w-full px-2 py-1.5 rounded flex items-center gap-3 text-left cursor-pointer
+        className={`w-full px-2 py-1.5 rounded border flex items-center gap-3 text-left cursor-pointer
                     transition-colors ${isActive
-                      ? 'bg-fluux-active text-fluux-text'
+                      ? 'bg-fluux-active text-fluux-text border-transparent'
                       : isSelected
-                        ? 'bg-fluux-hover text-fluux-text ring-1 ring-fluux-brand/50'
+                        ? 'bg-fluux-hover text-fluux-text border-fluux-brand'
                         : isKeyboardNav
-                          ? 'text-fluux-muted'
-                          : 'text-fluux-muted hover:bg-fluux-hover hover:text-fluux-text'}`}
+                          ? 'text-fluux-muted border-transparent'
+                          : 'text-fluux-muted border-transparent hover:bg-fluux-hover hover:text-fluux-text'}`}
       >
         {isGroupChat ? (
           room?.avatar ? (

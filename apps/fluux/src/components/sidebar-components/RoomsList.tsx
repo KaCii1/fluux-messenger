@@ -365,29 +365,29 @@ const RoomItem = memo(function RoomItem({
           onTouchMove={menu.handleTouchEnd}
           onMouseEnter={onMouseEnter}
           onMouseMove={onMouseMove}
-          className={`w-full px-2 py-1.5 rounded flex items-center gap-3
+          className={`w-full px-2 py-1.5 rounded border flex items-center gap-3
                    transition-colors cursor-pointer group
                    ${room.isJoining
                      ? isSelected
-                       ? 'bg-fluux-hover text-fluux-text ring-1 ring-fluux-brand/50 opacity-70'
+                       ? 'bg-fluux-hover text-fluux-text border-fluux-brand opacity-70'
                        : isKeyboardNav
-                         ? 'text-fluux-muted opacity-70'
-                         : 'text-fluux-muted hover:bg-fluux-hover hover:text-fluux-text opacity-70'
+                         ? 'text-fluux-muted border-transparent opacity-70'
+                         : 'text-fluux-muted border-transparent hover:bg-fluux-hover hover:text-fluux-text opacity-70'
                      : room.joined
                        ? isActive
-                         ? 'bg-fluux-active text-fluux-text'
+                         ? 'bg-fluux-active text-fluux-text border-transparent'
                          : isSelected
-                           ? 'bg-fluux-hover text-fluux-text ring-1 ring-fluux-brand/50'
+                           ? 'bg-fluux-hover text-fluux-text border-fluux-brand'
                            : isKeyboardNav
-                             ? 'text-fluux-muted'
-                             : 'text-fluux-muted hover:bg-fluux-hover hover:text-fluux-text'
+                             ? 'text-fluux-muted border-transparent'
+                             : 'text-fluux-muted border-transparent hover:bg-fluux-hover hover:text-fluux-text'
                        : isActive
-                         ? 'bg-fluux-active text-fluux-text opacity-80'
+                         ? 'bg-fluux-active text-fluux-text border-transparent opacity-80'
                          : isSelected
-                           ? 'bg-fluux-hover text-fluux-text ring-1 ring-fluux-brand/50 opacity-80'
+                           ? 'bg-fluux-hover text-fluux-text border-fluux-brand opacity-80'
                            : isKeyboardNav
-                             ? 'text-fluux-muted opacity-60'
-                             : 'text-fluux-muted hover:bg-fluux-hover hover:text-fluux-text opacity-60 hover:opacity-100'
+                             ? 'text-fluux-muted border-transparent opacity-60'
+                             : 'text-fluux-muted border-transparent hover:bg-fluux-hover hover:text-fluux-text opacity-60 hover:opacity-100'
                    }`}
       >
         {/* Room avatar or icon */}

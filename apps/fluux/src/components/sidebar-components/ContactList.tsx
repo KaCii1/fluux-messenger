@@ -313,13 +313,13 @@ const ContactItem = memo(function ContactItem({
           onTouchMove={menu.handleTouchEnd}
           onMouseEnter={onMouseEnter}
           onMouseMove={onMouseMove}
-          className={`w-full px-2 py-1.5 rounded flex items-center gap-3 text-left
+          className={`w-full px-2 py-1.5 rounded border flex items-center gap-3 text-left
                      transition-colors cursor-pointer ${
                        isSelected
-                         ? 'bg-fluux-hover text-fluux-text ring-1 ring-fluux-brand/50'
+                         ? 'bg-fluux-hover text-fluux-text border-fluux-brand'
                          : isKeyboardNav
-                           ? 'text-fluux-muted'
-                           : 'text-fluux-muted hover:bg-fluux-hover hover:text-fluux-text'
+                           ? 'text-fluux-muted border-transparent'
+                           : 'text-fluux-muted border-transparent hover:bg-fluux-hover hover:text-fluux-text'
                      }`}
         >
           {/* Avatar with presence indicator */}

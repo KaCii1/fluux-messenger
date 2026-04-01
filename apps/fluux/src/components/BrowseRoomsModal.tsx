@@ -411,10 +411,10 @@ export function BrowseRoomsModal({ onClose }: BrowseRoomsModalProps) {
                     {...getItemAttribute(index)}
                     {...getItemProps(index)}
                     onClick={() => handleSelectRoom(room)}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer group transition-colors
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg border cursor-pointer group transition-colors
                                ${isSelected
-                                 ? 'bg-fluux-hover ring-1 ring-fluux-brand/50'
-                                 : 'hover:bg-fluux-hover'}`}
+                                 ? 'bg-fluux-hover border-fluux-brand'
+                                 : 'border-transparent hover:bg-fluux-hover'}`}
                   >
                     <div
                       className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
