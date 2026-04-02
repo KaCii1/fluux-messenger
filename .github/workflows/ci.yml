@@ -36,3 +36,63 @@ jobs:
 
       - name: Lint App
         run: npm run lint --workspace=@xmpp/fluux
+
+      - name: Check for unstable Zustand selectors
+        run: |
+          # Zustand selectors passed to useStore/useSyncExternalStore MUST return
+          # referentially stable values. If a selector creates a new object, array,
+          # Set, or closure on every call, Object.is() comparison fails and React
+          # enters an infinite re-render loop (error #185: Maximum update depth
+          # exceeded).
+          #
+          # Dangerous patterns detected by this check:
+          #
+          # 1. Closure-returning selectors — a new function is created on every call:
+          #      useRoomStore((s) => (jid) => s.rooms.has(jid))   // BAD
+          #    Fix: use imperative store access instead:
+          #      useCallback((jid) => roomStore.getState().rooms.has(jid), [])
+          #
+          # 2. Fallback with || [] — creates a new empty array each time:
+          #      useIgnoreStore((s) => s.ignoredUsers[jid] || [])  // BAD
+          #    Fix: use a module-level stable reference:
+          #      const EMPTY: T[] = []
+          #      useIgnoreStore((s) => s.ignoredUsers[jid] ?? EMPTY)
+          #
+          # 3. Fallback with new Set()/new Map() — same issue with non-primitives:
+          #      return get().votedPollIds.get(jid) ?? new Set()   // BAD
+          #    Fix: const EMPTY_SET = new Set<string>()
+          #      return get().votedPollIds.get(jid) ?? EMPTY_SET
+
+          ERRORS=0
+
+          # Pattern 1: Closure-returning selectors (arrow function inside selector)
+          if grep -rn --include='*.ts' --include='*.tsx' \
+            -E 'use\w+Store\(\(s\) => \(' \
+            packages/ apps/ \
+            | grep -v 'node_modules' | grep -v '.test.' | grep -v '// '; then
+            echo "::error::Found closure-returning Zustand selector(s). These create a new function on every store update, causing infinite re-render loops."
+            ERRORS=1
+          fi
+
+          # Pattern 2: || [] fallback in store selectors
+          if grep -rn --include='*.ts' --include='*.tsx' \
+            -E 'use\w+Store\(\(s\) =>.*\|\| \[\]' \
+            packages/ apps/ \
+            | grep -v 'node_modules' | grep -v '.test.'; then
+            echo "::error::Found || [] fallback in Zustand selector(s). Use a stable empty reference (const EMPTY = []) with ?? instead."
+            ERRORS=1
+          fi
+
+          # Pattern 3: ?? new Set/Map/Array in store getters used as selectors
+          if grep -rn --include='*.ts' --include='*.tsx' \
+            -E '\?\? new (Set|Map|Array)\(\)' \
+            packages/fluux-sdk/src/stores/ \
+            | grep -v 'node_modules' | grep -v '.test.'; then
+            echo "::error::Found ?? new Set/Map/Array() in store code. Use a module-level EMPTY constant instead."
+            ERRORS=1
+          fi
+
+          if [ "$ERRORS" -ne 0 ]; then
+            exit 1
+          fi
+          echo "No unstable Zustand selector patterns found."
