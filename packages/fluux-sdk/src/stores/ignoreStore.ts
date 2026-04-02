@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 import { getResource } from '../core/jid'
 
 const STORAGE_KEY = 'fluux-ignored-users'
+const EMPTY_IGNORED_ARRAY: IgnoredUser[] = []
 
 /**
  * An ignored user entry, stored per room.
@@ -95,7 +96,7 @@ export const ignoreStore = createStore<IgnoreState>()(
       },
 
       getIgnoredForRoom: (roomJid) => {
-        return get().ignoredUsers[roomJid] || []
+        return get().ignoredUsers[roomJid] ?? EMPTY_IGNORED_ARRAY
       },
 
       reset: () => {

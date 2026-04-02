@@ -64,6 +64,9 @@ interface RoomViewProps {
 // Max room size for sending typing indicators (to avoid noise in large rooms)
 const MAX_ROOM_SIZE_FOR_TYPING = 30
 
+// Stable empty array for useIgnoreStore selector to prevent infinite re-render loops
+const EMPTY_IGNORED_ARRAY: import('@fluux/sdk/stores').IgnoredUser[] = []
+
 export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = false, onShowOccupantsChange, onStartChat, onShowProfile, findOnPageRef, onSearchInConversation }: RoomViewProps) {
   detectRenderLoop('RoomView')
   const { t } = useTranslation()
@@ -93,7 +96,9 @@ export function RoomView({ onBack, mainContentRef, composerRef, showOccupants = 
   })()
 
   // Filter out messages from ignored users and replies quoting them (client-side ignore)
-  const ignoredForRoom = useIgnoreStore((s) => activeRoom ? (s.ignoredUsers[activeRoom.jid] || []) : [])
+  // IMPORTANT: Use stable empty array reference to prevent infinite re-renders.
+  // Zustand uses Object.is to compare selector results — a new [] each time causes re-render loops.
+  const ignoredForRoom = useIgnoreStore((s) => activeRoom ? (s.ignoredUsers[activeRoom.jid] ?? EMPTY_IGNORED_ARRAY) : EMPTY_IGNORED_ARRAY)
   const displayMessages = (() => {
     if (ignoredForRoom.length === 0) return activeMessages
     const cache = activeRoom?.nickToJidCache
