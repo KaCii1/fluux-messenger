@@ -8,7 +8,7 @@ import {
   type ReactionReceivedPayload,
   getBareJid,
 } from '@fluux/sdk'
-import { useRoomStore } from '@fluux/sdk/react'
+import { roomStore } from '@fluux/sdk'
 import { useNavigateToTarget } from '@/hooks/useNavigateToTarget'
 import { getNavigationTarget } from './activityNavigation'
 import { Avatar } from '../Avatar'
@@ -95,7 +95,9 @@ export function ActivityLogView() {
   } = useActivityLog()
   const { pendingCount } = useEvents()
   const { navigateToConversation, navigateToRoom } = useNavigateToTarget()
-  const hasRoom = useRoomStore((s) => (jid: string) => s.rooms.has(jid))
+  // Read room existence imperatively — subscribing via selector would return
+  // a new closure on every store update, causing an infinite render loop.
+  const hasRoom = useCallback((jid: string) => roomStore.getState().rooms.has(jid), [])
 
   const handleNavigate = useCallback((event: ActivityEvent) => {
     // For reaction events, show inline context preview instead of navigating away
