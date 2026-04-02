@@ -239,6 +239,7 @@
         "banned": "Estetyt",
         "addMember": "Lisää",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Jäsenyysrooli",
         "removeAffiliation": "Poista kuuluvuus",
         "kick": "Potkaise",
         "ban": "Estä",

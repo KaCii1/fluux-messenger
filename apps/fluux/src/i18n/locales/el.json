@@ -240,6 +240,7 @@
         "banned": "Αποκλεισμένοι",
         "addMember": "Προσθήκη",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Ρόλος συσχέτισης",
         "removeAffiliation": "Αφαίρεση συνεργασίας",
         "kick": "Αποβολή",
         "ban": "Αποκλεισμός",

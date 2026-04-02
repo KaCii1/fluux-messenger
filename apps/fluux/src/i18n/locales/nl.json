@@ -238,6 +238,7 @@
         "banned": "Verbannen",
         "addMember": "Toevoegen",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Affiliatierol",
         "removeAffiliation": "Affiliatie verwijderen",
         "kick": "Verwijderen",
         "ban": "Verbannen",

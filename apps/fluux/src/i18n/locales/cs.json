@@ -241,6 +241,7 @@
         "banned": "Zablokovaní",
         "addMember": "Přidat",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Role příslušnosti",
         "removeAffiliation": "Odebrat příslušnost",
         "kick": "Vyhodit",
         "ban": "Zablokovat",

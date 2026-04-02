@@ -240,6 +240,7 @@
         "banned": "Banidos",
         "addMember": "Adicionar",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Função de afiliação",
         "removeAffiliation": "Remover afiliação",
         "kick": "Expulsar",
         "ban": "Banir",

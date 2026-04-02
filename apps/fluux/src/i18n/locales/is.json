@@ -239,6 +239,7 @@
         "banned": "Bannaðir",
         "addMember": "Bæta við",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Aðildarhlutverk",
         "removeAffiliation": "Fjarlægja aðild",
         "kick": "Reka",
         "ban": "Banna",

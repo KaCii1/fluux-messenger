@@ -241,6 +241,7 @@
         "banned": "Prepovedani",
         "addMember": "Dodaj",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Vloga pripadnosti",
         "removeAffiliation": "Odstrani pripadnost",
         "kick": "Vrzi ven",
         "ban": "Prepovej",
