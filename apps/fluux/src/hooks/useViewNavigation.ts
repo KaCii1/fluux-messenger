@@ -9,7 +9,7 @@
  * - Clearing conflicting state on view switch
  * - Auto-select first item when switching to content views
  */
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { chatStore, roomStore, searchStore, activityLogStore, type Contact } from '@fluux/sdk'
 import { useChatStore, useRoomStore } from '@fluux/sdk/react'
 import { useRouteSync, type NavigateOptions } from './useRouteSync'
@@ -134,7 +134,7 @@ export function useViewNavigation(selectedContact: Contact | null): ViewNavigati
    * Navigate to a view with per-tab memory and side effects.
    * Auto-selects the first item if no previous selection exists.
    */
-  const navigateToView = (newView: SidebarView) => {
+  const navigateToView = useCallback((newView: SidebarView) => {
     // Skip if we're already on this view (prevents duplicate navigation)
     if (sidebarView === newView) return
 
@@ -263,7 +263,10 @@ export function useViewNavigation(selectedContact: Contact | null): ViewNavigati
         navigateToSearch({ replace: true })
         break
     }
-  }
+  }, [sidebarView, selectedContact, lastMessagesConversation, lastRoomsRoom, lastDirectoryContact,
+      setActiveConversation, setActiveRoom,
+      navigateToMessages, navigateToRooms, navigateToContacts, navigateToArchive,
+      navigateToEvents, navigateToAdmin, navigateToSettings, navigateToSearch])
 
   const perTabMemory: PerTabMemory = {
     lastMessagesConversation,

@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import react, { reactCompilerPreset } from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import { VitePWA } from 'vite-plugin-pwa'
 import { execSync } from 'child_process'
@@ -33,7 +33,7 @@ export default defineConfig({
   plugins: [
     react(),
     babel({
-      presets: [reactCompilerPreset()],
+      plugins: [['babel-plugin-react-compiler', {}]],
     }),
     // Remove demo assets (public/demo/, demo.html) from production builds
     {
