@@ -1241,7 +1241,15 @@ export class Connection extends BaseModule {
         const creds: Record<string, unknown> = { username }
         if (password) creds.password = password
         if (fast) {
-          creds.token ??= await fast.fetch()
+          const token = await fast.fetch()
+          if (token) {
+            creds.token = token
+            logInfo('FAST token available, will attempt token-based auth')
+          } else {
+            logInfo('FAST token not available, falling back to password')
+          }
+        } else {
+          logInfo('FAST module not present on this connection')
         }
 
         // Detect auth method explicitly
@@ -1261,10 +1269,16 @@ export class Connection extends BaseModule {
           'connection'
         )
         logInfo(`Auth: ${authMethod} (SASL: ${mechanism}, offered: ${mechanisms.join(', ')})`)
+        const saslStart = Date.now()
         await Promise.race([
-          authenticate(creds, mechanism),
+          Promise.resolve(authenticate(creds, mechanism)).then(() => {
+            logInfo(`SASL complete (${Date.now() - saslStart}ms)`)
+          }),
           new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error('SASL authentication timed out')), SASL_AUTH_TIMEOUT_MS)
+            setTimeout(() => {
+              logErr(`SASL timeout after ${SASL_AUTH_TIMEOUT_MS}ms`)
+              reject(new Error('SASL authentication timed out'))
+            }, SASL_AUTH_TIMEOUT_MS)
           ),
         ])
       },
@@ -1277,8 +1291,14 @@ export class Connection extends BaseModule {
     if (fastModule) {
       const bareJid = getBareJid(jid)
       fastModule.fetchToken = () => fetchFastToken(bareJid)
-      fastModule.saveToken = (t: { mechanism: string; token: string; expiry?: string }) => { saveFastToken(bareJid, t) }
-      fastModule.deleteToken = () => { deleteFastToken(bareJid) }
+      fastModule.saveToken = (t: { mechanism: string; token: string; expiry?: string }) => {
+        logInfo(`FAST token saved (mechanism: ${t.mechanism}, expiry: ${t.expiry ?? 'none'})`)
+        saveFastToken(bareJid, t)
+      }
+      fastModule.deleteToken = () => {
+        logInfo('FAST token invalidated/deleted')
+        deleteFastToken(bareJid)
+      }
     }
 
     this.disableBuiltInReconnect(xmppClient)
@@ -1431,6 +1451,7 @@ export class Connection extends BaseModule {
           }
         }, 0)
 
+        logInfo(`Connection handshake complete: SM resumed (resolved=${resolved})`)
         handleResult(true)
       }
     })
@@ -1441,10 +1462,12 @@ export class Connection extends BaseModule {
     // Note: When SM resume succeeds, xmpp.js does NOT emit 'online', only 'resumed'
     // Therefore, whenever 'online' fires, it's a new session.
     this.xmpp.on('online', () => {
+      logInfo(`Connection handshake complete: online (resolved=${resolved})`)
       handleResult(false)
     })
 
     this.xmpp.on('error', (err: Error) => {
+      logInfo(`Connection handshake error: ${err.message} (resolved=${resolved})`)
       if (resolved) return
       // If handleDeadSocket already initiated recovery (e.g., econnerror handled
       // by setupHandlers' error handler first), don't reject the promise — that
@@ -1462,12 +1485,14 @@ export class Connection extends BaseModule {
     // connect failed, network not ready after wake), reject immediately instead
     // of waiting for the 30s reconnect attempt timeout.
     ;(this.xmpp as any).on('disconnect', () => {
+      logInfo(`Connection handshake disconnect (resolved=${resolved})`)
       if (resolved) return
       resolved = true
       onError(new Error('Socket disconnected during connection handshake'))
     })
 
     this.xmpp.start().catch((err: Error) => {
+      logInfo(`Connection start() rejected: ${err.message} (resolved=${resolved})`)
       if (resolved) return
       resolved = true
       onError(err)
