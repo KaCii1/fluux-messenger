@@ -156,6 +156,7 @@ let _cachedAllRoomsSource: Map<string, Room> | null = null
 let _cachedQuickChatRooms: Room[] = EMPTY_ROOM_ARRAY
 let _cachedQuickChatRoomsSource: Map<string, Room> | null = null
 const EMPTY_MESSAGE_ARRAY: RoomMessage[] = []
+const EMPTY_SET: Set<string> = new Set()
 
 /**
  * Extract deduplication keys from a room message.
@@ -1515,7 +1516,7 @@ export const roomStore = createStore<RoomState>()(
   },
 
   getVotedPollIds: (roomJid) => {
-    return get().votedPollIds.get(roomJid) ?? new Set()
+    return get().votedPollIds.get(roomJid) ?? EMPTY_SET
   },
 
   dismissPoll: (roomJid, messageId) => {
@@ -1530,7 +1531,7 @@ export const roomStore = createStore<RoomState>()(
   },
 
   getDismissedPollIds: (roomJid) => {
-    return get().dismissedPollIds.get(roomJid) ?? new Set()
+    return get().dismissedPollIds.get(roomJid) ?? EMPTY_SET
   },
 
   // IndexedDB cache loading
