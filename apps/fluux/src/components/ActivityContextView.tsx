@@ -17,7 +17,8 @@ import {
   type RoomMessage,
   type ReactionReceivedPayload,
 } from '@fluux/sdk'
-import { useConnectionStore, useRoomStore } from '@fluux/sdk/react'
+import { useConnectionStore } from '@fluux/sdk/react'
+import { roomStore } from '@fluux/sdk'
 import { SearchContextMessageList } from './SearchContextView'
 import { useNavigateToTarget } from '@/hooks/useNavigateToTarget'
 import { useWindowDrag, useMode } from '@/hooks'
@@ -33,7 +34,7 @@ export function ActivityContextView({ onBack }: { onBack?: () => void }) {
   const { titleBarClass, dragRegionProps } = useWindowDrag()
   const { resolvedMode } = useMode()
   const isDarkMode = resolvedMode === 'dark'
-  const hasRoom = useRoomStore((s) => (jid: string) => s.rooms.has(jid))
+  const hasRoom = useCallback((jid: string) => roomStore.getState().rooms.has(jid), [])
 
   // Connection state for own messages
   const jid = useConnectionStore((s) => s.jid)

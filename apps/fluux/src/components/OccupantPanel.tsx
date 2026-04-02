@@ -45,6 +45,9 @@ export interface OccupantPanelProps {
   fullScreen?: boolean
 }
 
+// Stable empty array for useIgnoreStore selector to prevent infinite re-render loops
+const EMPTY_IGNORED_ARRAY: IgnoredUser[] = []
+
 export function OccupantPanel({
   room,
   contactsByJid,
@@ -58,7 +61,7 @@ export function OccupantPanel({
   const connectionStatus = useConnectionStore((s) => s.status)
   const forceOffline = connectionStatus !== 'online'
   const { titleBarClass } = useWindowDrag()
-  const ignoredForRoom = useIgnoreStore((s) => s.ignoredUsers[room.jid] || [])
+  const ignoredForRoom = useIgnoreStore((s) => s.ignoredUsers[room.jid] ?? EMPTY_IGNORED_ARRAY)
 
   // Context menu state
   const menu = useContextMenu()
