@@ -68,7 +68,7 @@ import type {
   RoomMAMSearchOptions,
   MAMPagingSearchOptions,
 } from '../types'
-import { parseMessageContent, parseOgpFastening, applyRetraction, applyCorrection } from './messagingUtils'
+import { parseMessageContent, parseOgpFastening, applyRetraction, applyCorrection, parseStanzaId } from './messagingUtils'
 import { getDomain } from '../jid'
 import { logInfo, logError as logErr } from '../logger'
 import { parseSearchQuery, tokenize } from '../../utils/searchIndex'
@@ -78,7 +78,7 @@ import { parseSearchQuery, tokenize } from '../../utils/searchIndex'
  */
 interface MAMModifications {
   retractions: { targetId: string; from: string }[]
-  corrections: { targetId: string; from: string; body: string; messageEl: Element }[]
+  corrections: { targetId: string; from: string; body: string; messageEl: Element; correctionStanzaId?: string }[]
   fastenings: { targetId: string; applyToEl: Element }[]
   reactions: { targetId: string; from: string; emojis: string[] }[]
 }
@@ -89,7 +89,7 @@ interface MAMModifications {
  */
 interface UnresolvedModifications {
   retractions: { targetId: string; from: string }[]
-  corrections: { targetId: string; from: string; body: string; messageEl: Element }[]
+  corrections: { targetId: string; from: string; body: string; messageEl: Element; correctionStanzaId?: string }[]
   fastenings: { targetId: string; applyToEl: Element }[]
   reactions: { targetId: string; from: string; emojis: string[] }[]
 }
@@ -1258,11 +1258,15 @@ export class MAM extends BaseModule {
     if (replaceEl?.attrs.id) {
       const bodyText = messageEl.getChildText('body')
       if (bodyText) {
+        // Capture the correction stanza's own stanza-id so replies referencing
+        // the corrected version's archive entry can resolve to the original message
+        const correctionStanzaId = parseStanzaId(messageEl)
         modifications.corrections.push({
           targetId: replaceEl.attrs.id,
           from: normalizeFrom(from),
           body: bodyText,
           messageEl,
+          correctionStanzaId,
         })
       }
       return true
@@ -1334,6 +1338,10 @@ export class MAM extends BaseModule {
         target.originalBody = correctionData.originalBody
         if (correctionData.attachment) {
           target.attachment = correctionData.attachment
+        }
+        // Track the correction's stanza-id so replies referencing it can resolve
+        if (correction.correctionStanzaId) {
+          target.correctionStanzaIds = [...(target.correctionStanzaIds ?? []), correction.correctionStanzaId]
         }
       } else if (!target) {
         unresolved.corrections.push(correction)
@@ -1418,6 +1426,10 @@ export class MAM extends BaseModule {
       const cachedMessage = this.deps.stores?.chat.getMessage(conversationId, correction.targetId)
       const originalBody = cachedMessage?.originalBody ?? cachedMessage?.body ?? ''
       const correctionData = applyCorrection(correction.messageEl, correction.body, originalBody)
+      const existingIds = cachedMessage?.correctionStanzaIds ?? []
+      const correctionStanzaIds = correction.correctionStanzaId
+        ? [...existingIds, correction.correctionStanzaId]
+        : existingIds.length > 0 ? existingIds : undefined
       this.deps.emitSDK('chat:message-updated', {
         conversationId,
         messageId: correction.targetId,
@@ -1426,6 +1438,7 @@ export class MAM extends BaseModule {
           isEdited: correctionData.isEdited,
           originalBody: correctionData.originalBody,
           ...(correctionData.attachment ? { attachment: correctionData.attachment } : {}),
+          ...(correctionStanzaIds ? { correctionStanzaIds } : {}),
         },
       })
     }
@@ -1472,6 +1485,11 @@ export class MAM extends BaseModule {
       const cachedMessage = this.deps.stores?.room.getMessage(roomJid, correction.targetId)
       const originalBody = cachedMessage?.originalBody ?? cachedMessage?.body ?? ''
       const correctionData = applyCorrection(correction.messageEl, correction.body, originalBody)
+      // Accumulate correction stanza-ids for reply lookup
+      const existingIds = cachedMessage?.correctionStanzaIds ?? []
+      const correctionStanzaIds = correction.correctionStanzaId
+        ? [...existingIds, correction.correctionStanzaId]
+        : existingIds.length > 0 ? existingIds : undefined
       this.deps.emitSDK('room:message-updated', {
         roomJid,
         messageId: correction.targetId,
@@ -1480,6 +1498,7 @@ export class MAM extends BaseModule {
           isEdited: correctionData.isEdited,
           originalBody: correctionData.originalBody,
           ...(correctionData.attachment ? { attachment: correctionData.attachment } : {}),
+          ...(correctionStanzaIds ? { correctionStanzaIds } : {}),
         },
       })
     }

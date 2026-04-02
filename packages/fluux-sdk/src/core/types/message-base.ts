@@ -122,6 +122,14 @@ export interface BaseMessage {
   isEdited?: boolean
   /** XEP-0308: Original body before correction */
   originalBody?: string
+  /**
+   * XEP-0308 + XEP-0359: Stanza-IDs from correction stanzas.
+   * When a message is corrected, the MUC service archives the correction as a
+   * new stanza with its own stanza-id. Other clients may reference this
+   * correction stanza-id in replies (XEP-0461), so we track them to ensure
+   * reply lookups resolve correctly.
+   */
+  correctionStanzaIds?: string[]
   /** XEP-0424: Message has been retracted (deleted) */
   isRetracted?: boolean
   /** XEP-0424: When the message was retracted */

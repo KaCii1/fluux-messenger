@@ -72,6 +72,69 @@ describe('createMessageLookup', () => {
     expect(lookup.get('msg-1')).toEqual(messages[0])
     expect(lookup.get('undefined')).toBeUndefined()
   })
+
+  it('should index corrected message by correction stanza-ids', () => {
+    // When a message is corrected in a MUC room, the correction gets a new
+    // stanza-id from the MUC service. Other clients may reference this
+    // correction stanza-id in replies.
+    const correctedMessage = {
+      id: 'client-uuid-1',
+      stanzaId: 'original-stanza-id',
+      correctionStanzaIds: ['correction-stanza-id-1', 'correction-stanza-id-2'],
+      body: 'Corrected body',
+    }
+
+    const lookup = createMessageLookup([correctedMessage])
+
+    // Findable by client id
+    expect(lookup.get('client-uuid-1')).toEqual(correctedMessage)
+    // Findable by original stanza-id
+    expect(lookup.get('original-stanza-id')).toEqual(correctedMessage)
+    // Findable by correction stanza-ids (reply references)
+    expect(lookup.get('correction-stanza-id-1')).toEqual(correctedMessage)
+    expect(lookup.get('correction-stanza-id-2')).toEqual(correctedMessage)
+  })
+
+  it('should allow reply lookup by correction stanza-id (XEP-0308 + XEP-0461)', () => {
+    // Real-world scenario: debacle sends a message, edits it, taba replies
+    // to the edited version. Taba's client references the correction's stanza-id.
+    const originalMessage = {
+      id: '77a43044-1980-4490-939e-debacle-uuid',
+      stanzaId: '2026-04-02-original-id',
+      correctionStanzaIds: ['2026-04-02-04dc7d1dd7596361'],
+      nick: 'debacle',
+      body: 'Corrected message body',
+    }
+
+    const replyMessage = {
+      id: '2f052c83-taba-uuid',
+      stanzaId: '2026-04-02-taba-stanza',
+      nick: 'taba',
+      body: 'A rough estimate would be nice',
+      replyTo: { id: '2026-04-02-04dc7d1dd7596361' }, // References correction stanza-id
+    }
+
+    const lookup = createMessageLookup([originalMessage, replyMessage])
+
+    // Reply can find original by correction stanza-id
+    const found = lookup.get(replyMessage.replyTo.id)
+    expect(found).toEqual(originalMessage)
+    expect(found?.nick).toBe('debacle')
+  })
+
+  it('should handle messages without correctionStanzaIds', () => {
+    const messages = [
+      { id: 'msg-1', stanzaId: 'stanza-1', body: 'No corrections' },
+      { id: 'msg-2', body: 'No stanza-id either' },
+    ]
+
+    const lookup = createMessageLookup(messages)
+
+    expect(lookup.size).toBe(3) // msg-1, stanza-1, msg-2
+    expect(lookup.get('msg-1')).toEqual(messages[0])
+    expect(lookup.get('stanza-1')).toEqual(messages[0])
+    expect(lookup.get('msg-2')).toEqual(messages[1])
+  })
 })
 
 describe('findMessageById', () => {
@@ -113,5 +176,33 @@ describe('findMessageById', () => {
     // because find() returns the first match
     const found = findMessageById(messages, 'stanza-1')
     expect(found?.body).toBe('First')
+  })
+
+  it('should find message by correction stanza-id', () => {
+    const messages = [
+      {
+        id: 'client-id',
+        stanzaId: 'original-stanza',
+        correctionStanzaIds: ['correction-stanza-1'],
+        body: 'Edited message',
+      },
+    ]
+
+    const found = findMessageById(messages, 'correction-stanza-1')
+    expect(found).toEqual(messages[0])
+  })
+
+  it('should return undefined when correction stanza-id does not match', () => {
+    const messages = [
+      {
+        id: 'client-id',
+        stanzaId: 'original-stanza',
+        correctionStanzaIds: ['correction-stanza-1'],
+        body: 'Edited message',
+      },
+    ]
+
+    const found = findMessageById(messages, 'nonexistent-correction')
+    expect(found).toBeUndefined()
   })
 })

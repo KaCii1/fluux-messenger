@@ -39,7 +39,7 @@ import type {
   RoomMAMResult,
   PollClosedData,
 } from '../types'
-import { parseMessageContent, parseOgpFastening, applyRetraction, applyCorrection, createOriginIdElement } from './messagingUtils'
+import { parseMessageContent, parseOgpFastening, applyRetraction, applyCorrection, createOriginIdElement, parseStanzaId } from './messagingUtils'
 import { checkForMention } from '../mentionDetection'
 import { parsePollElement, parsePollClosedElement } from '../poll'
 import { logWarn } from '../logger'
@@ -1142,11 +1142,18 @@ export class Chat extends BaseModule {
     const conversationId = isOutgoing ? bareTo : bareFrom
     if (!conversationId) return false
 
+    // Capture the correction stanza's own stanza-id so replies referencing
+    // the corrected version's archive entry can resolve to the original message
+    const correctionStanzaId = parseStanzaId(stanza)
+
     // SDK events only - bindings call store methods
     if (type === 'groupchat') {
       const original = this.deps.stores?.room.getMessage(conversationId, originalId)
       if (original && original.from === from) {
         const correctionData = applyCorrection(stanza, body, original.originalBody ?? original.body)
+        if (correctionStanzaId) {
+          correctionData.correctionStanzaIds = [...(original.correctionStanzaIds ?? []), correctionStanzaId]
+        }
         this.deps.emitSDK('room:message-updated', { roomJid: conversationId, messageId: originalId, updates: correctionData })
         return true
       }
@@ -1154,6 +1161,9 @@ export class Chat extends BaseModule {
       const original = this.deps.stores?.chat.getMessage(conversationId, originalId)
       if (original && original.from === bareFrom) {
         const correctionData = applyCorrection(stanza, body, original.originalBody ?? original.body)
+        if (correctionStanzaId) {
+          correctionData.correctionStanzaIds = [...(original.correctionStanzaIds ?? []), correctionStanzaId]
+        }
         this.deps.emitSDK('chat:message-updated', { conversationId, messageId: originalId, updates: correctionData })
         return true
       }

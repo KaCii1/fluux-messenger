@@ -369,6 +369,8 @@ export interface CorrectionResult {
   isEdited: true
   originalBody: string
   attachment?: FileAttachment
+  /** Accumulated stanza-IDs from correction stanzas (for reply lookup) */
+  correctionStanzaIds?: string[]
 }
 
 /**
