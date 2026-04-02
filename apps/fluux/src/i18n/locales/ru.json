@@ -239,6 +239,7 @@
         "banned": "Забаненные",
         "addMember": "Добавить",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Роль принадлежности",
         "removeAffiliation": "Удалить принадлежность",
         "kick": "Кикнуть",
         "ban": "Забанить",

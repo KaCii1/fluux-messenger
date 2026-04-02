@@ -239,6 +239,7 @@
         "banned": "Bannlysta",
         "addMember": "Lägg till",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Tillhörighetsroll",
         "removeAffiliation": "Ta bort tillhörighet",
         "kick": "Sparka",
         "ban": "Bannlys",

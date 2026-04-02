@@ -239,6 +239,7 @@
         "banned": "Utestengte",
         "addMember": "Legg til",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Tilknytningsrolle",
         "removeAffiliation": "Fjern tilknytning",
         "kick": "Spark",
         "ban": "Utesteng",

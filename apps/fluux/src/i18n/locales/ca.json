@@ -241,6 +241,7 @@
         "banned": "Bandejats",
         "addMember": "Afegeix",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Rol d'afiliació",
         "removeAffiliation": "Elimina l'afiliació",
         "kick": "Expulsa",
         "ban": "Bandeja",

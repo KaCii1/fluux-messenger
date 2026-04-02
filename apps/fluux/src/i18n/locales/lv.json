@@ -240,6 +240,7 @@
         "banned": "Bloķētie",
         "addMember": "Pievienot",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Piederības loma",
         "removeAffiliation": "Noņemt piederību",
         "kick": "Izmest",
         "ban": "Bloķēt",

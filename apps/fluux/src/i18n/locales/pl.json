@@ -240,6 +240,7 @@
         "banned": "Zablokowani",
         "addMember": "Dodaj",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Rola przynależności",
         "removeAffiliation": "Usuń przynależność",
         "kick": "Wyrzuć",
         "ban": "Zablokuj",

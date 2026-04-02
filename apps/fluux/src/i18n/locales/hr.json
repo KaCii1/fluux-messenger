@@ -239,6 +239,7 @@
         "banned": "Zabranjeni",
         "addMember": "Dodaj",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Uloga članstva",
         "removeAffiliation": "Ukloni pripadnost",
         "kick": "Izbaci",
         "ban": "Zabrani",

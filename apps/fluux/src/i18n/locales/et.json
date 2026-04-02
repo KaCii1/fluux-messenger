@@ -241,6 +241,7 @@
         "banned": "Blokeeritud",
         "addMember": "Lisa",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Kuuluvuse roll",
         "removeAffiliation": "Eemalda kuuluvus",
         "kick": "Viska välja",
         "ban": "Blokeeri",

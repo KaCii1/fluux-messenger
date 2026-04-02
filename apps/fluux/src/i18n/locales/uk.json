@@ -239,6 +239,7 @@
         "banned": "Заблоковані",
         "addMember": "Додати",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Роль належності",
         "removeAffiliation": "Видалити належність",
         "kick": "Вигнати",
         "ban": "Заблокувати",

@@ -239,6 +239,7 @@
         "banned": "已封禁",
         "addMember": "添加",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "从属角色",
         "removeAffiliation": "移除归属",
         "kick": "踢出",
         "ban": "封禁",

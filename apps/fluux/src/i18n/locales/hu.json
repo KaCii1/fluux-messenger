@@ -239,6 +239,7 @@
         "banned": "Kitiltottak",
         "addMember": "Hozzáadás",
         "jidPlaceholder": "user@example.com",
+        "affiliationRole": "Tagság szerepe",
         "removeAffiliation": "Tagság eltávolítása",
         "kick": "Kirúgás",
         "ban": "Kitiltás",
