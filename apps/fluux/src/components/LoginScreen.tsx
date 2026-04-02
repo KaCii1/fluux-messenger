@@ -233,7 +233,7 @@ export function LoginScreen({ claimConnection }: LoginScreenProps) {
         // Check if another tab already holds this JID
         if (claimConnection && !(await claimConnection(jid))) return
         const resource = getResource()
-        await connect(jid, password, actualServer, undefined, resource, i18n.language, isTauri())
+        await connect(jid, password, actualServer, undefined, resource, i18n.language, isTauri(), true)
         // Save session for auto-reconnect on page reload
         saveSession(jid, password, actualServer)
       } catch {
@@ -276,11 +276,16 @@ export function LoginScreen({ claimConnection }: LoginScreenProps) {
       }
     }
 
+    // Delete FAST token when user opts out of "Remember Me"
+    if (!rememberMe && jid) {
+      deleteFastToken(jid)
+    }
+
     try {
       // Check if another tab already holds this JID
       if (claimConnection && !(await claimConnection(jid))) return
       const resource = getResource()
-      await connect(jid, password, actualServer, undefined, resource, i18n.language, isTauri())
+      await connect(jid, password, actualServer, undefined, resource, i18n.language, isTauri(), rememberMe)
       // Save session for auto-reconnect on page reload
       saveSession(jid, password, actualServer)
 
@@ -420,26 +425,29 @@ export function LoginScreen({ claimConnection }: LoginScreenProps) {
             )}
           </div>
 
-          {/* Remember Me (Desktop app only) */}
-          {isDesktopApp && (
-            <div className="flex items-center gap-3">
-              <input
-                id="remember"
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                disabled={isLoading}
-                className="w-4 h-4 rounded border border-fluux-border bg-fluux-bg
-                           checked:bg-fluux-brand checked:border-fluux-brand
-                           focus:ring-fluux-brand focus:ring-offset-0"
-              />
-              <label htmlFor="remember" className="text-sm text-fluux-text flex items-center gap-2">
-                <KeyRound className="w-4 h-4 text-fluux-muted" />
-                {t('login.rememberMe')}
+          {/* Remember Me */}
+          <div className="flex items-center gap-3">
+            <input
+              id="remember"
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              disabled={isLoading}
+              className="w-4 h-4 rounded border border-fluux-border bg-fluux-bg
+                         checked:bg-fluux-brand checked:border-fluux-brand
+                         focus:ring-fluux-brand focus:ring-offset-0"
+            />
+            <label htmlFor="remember" className="text-sm text-fluux-text flex items-center gap-2">
+              <KeyRound className="w-4 h-4 text-fluux-muted" />
+              {t('login.rememberMe')}
+              {isDesktopApp && (
                 <span className="text-xs text-fluux-muted">{t('login.storedInKeychain')}</span>
-              </label>
-            </div>
-          )}
+              )}
+              {!isDesktopApp && (
+                <span className="text-xs text-fluux-muted">{t('login.staySignedIn')}</span>
+              )}
+            </label>
+          </div>
 
           {/* Keychain indicator */}
           {loadedFromKeychain && (

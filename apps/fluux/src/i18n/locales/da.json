@@ -30,6 +30,7 @@
         "serverHintDesktop": "Efterlad tom for automatisk opdagelse. Understøtter domæne, tls://vært:port, tcp://vært:port",
         "rememberMe": "Husk mig",
         "storedInKeychain": "(gemt i nøglering)",
+        "staySignedIn": "(forbliv logget ind)",
         "credentialsLoaded": "Legitimationsoplysninger indlæst fra nøglering",
         "connecting": "Opretter forbindelse...",
         "connect": "Opret forbindelse",

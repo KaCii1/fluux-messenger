@@ -30,6 +30,7 @@
         "serverHintDesktop": "Hagyja üresen az automatikus felismeréshez. Támogatott: domain, tls://host:port, tcp://host:port",
         "rememberMe": "Emlékezz rám",
         "storedInKeychain": "(Kulcskarikában tárolva)",
+        "staySignedIn": "(bejelentkezve maradás)",
         "credentialsLoaded": "Hitelesítő adatok betöltve a Kulcskarikából",
         "connecting": "Csatlakozás...",
         "connect": "Csatlakozás",

@@ -30,6 +30,7 @@
         "serverHintDesktop": "Leer lassen für automatische Erkennung. Unterstützt Domain, tls://host:port, tcp://host:port",
         "rememberMe": "Angemeldet bleiben",
         "storedInKeychain": "(im Schlüsselbund gespeichert)",
+        "staySignedIn": "(angemeldet bleiben)",
         "credentialsLoaded": "Anmeldedaten aus Schlüsselbund geladen",
         "connecting": "Verbinden...",
         "connect": "Verbinden",

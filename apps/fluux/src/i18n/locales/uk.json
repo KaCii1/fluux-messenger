@@ -30,6 +30,7 @@
         "serverHintDesktop": "Залиште поле порожнім для автоматичного визначення. Підтримує домен, tls://host:port, tcp://host:port",
         "rememberMe": "Запам'ятати мене",
         "storedInKeychain": "(збережено в Keychain)",
+        "staySignedIn": "(залишатися в системі)",
         "credentialsLoaded": "Облікові дані завантажені з Keychain",
         "connecting": "Підключення...",
         "connect": "Підключитися",

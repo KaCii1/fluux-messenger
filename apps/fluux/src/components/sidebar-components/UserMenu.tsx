@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { useClickOutside, useIsMobileWeb } from '@/hooks'
 import { useModals } from '@/contexts'
 import { useConsole } from '@fluux/sdk'
-import { isTauri } from '@/utils/tauri'
 import { AboutModal } from '../AboutModal'
 import { ChangelogModal } from '../ChangelogModal'
 import { Tooltip } from '../Tooltip'
@@ -28,9 +27,7 @@ export function UserMenu({ onLogout }: UserMenuProps) {
   const [showChangelog, setShowChangelog] = useState(false)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const [cleanLocalData, setCleanLocalData] = useState(() => {
-    // On web: always default to cleaning (no remember-me available)
-    if (!isTauri()) return true
-    // On desktop: clean if remember-me was NOT checked
+    // Default to cleaning local data unless "Remember Me" was checked
     return localStorage.getItem('xmpp-remember-me') !== 'true'
   })
   const menuRef = useRef<HTMLDivElement>(null)

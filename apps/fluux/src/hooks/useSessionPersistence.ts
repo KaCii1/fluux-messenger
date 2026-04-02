@@ -477,12 +477,13 @@ export function useSessionPersistence(claimConnection?: (jid: string) => Promise
     smState?: { id: string; inbound: number },
     resource?: string,
     lang?: string,
-    disableSmKeepalive?: boolean
+    disableSmKeepalive?: boolean,
+    rememberSession?: boolean
   ) => {
     connectionStore.getState().setStatus('connecting')
     connectionStore.getState().setError(null)
     try {
-      await client.connect({ jid, password, server, resource, smState, lang, disableSmKeepalive })
+      await client.connect({ jid, password, server, resource, smState, lang, disableSmKeepalive, rememberSession })
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Connection failed'
       connectionStore.getState().setStatus('error')
@@ -604,18 +605,20 @@ export function useSessionPersistence(claimConnection?: (jid: string) => Promise
     // ── Path B: FAST token auto-connect (new tab, no sessionStorage) ──
     // When the user closed the tab, sessionStorage is lost but a FAST token
     // may persist in localStorage (valid for up to 14 days).
+    // Only attempt this when the user previously opted in via "Remember Me".
     // hasFastToken() only checks client-side token existence + expiry.
     // Server-side FAST/SASL2 support is verified during negotiation by xmpp.js —
     // if the server doesn't support SASL2/FAST, the token auth path is skipped,
     // no password fallback is available, and we show the login screen.
+    const rememberMe = localStorage.getItem('xmpp-remember-me') === 'true'
     const savedJid = localStorage.getItem('xmpp-last-jid')
     const savedServer = localStorage.getItem('xmpp-last-server')
-    if (savedJid && savedServer && hasFastToken(savedJid)) {
+    if (rememberMe && savedJid && savedServer && hasFastToken(savedJid)) {
       const resource = getResource()
       console.log('[Auth] Attempting FAST token auto-connect (no password)')
 
       const attemptFastConnect = () => {
-        connect(savedJid, undefined, savedServer, undefined, resource, i18n.language, false).then(() => {
+        connect(savedJid, undefined, savedServer, undefined, resource, i18n.language, false, true).then(() => {
           // Save session for subsequent in-tab reconnects (no password needed —
           // FAST token in localStorage handles auth on future reconnects too)
           saveSession(savedJid, '', savedServer)

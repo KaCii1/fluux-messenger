@@ -30,6 +30,7 @@
         "serverHintDesktop": "Lascia vuoto per il rilevamento automatico. Supporta dominio, tls://host:porta, tcp://host:porta",
         "rememberMe": "Ricordami",
         "storedInKeychain": "(memorizzato nel portachiavi)",
+        "staySignedIn": "(resta connesso)",
         "credentialsLoaded": "Credenziali caricate dal portachiavi",
         "connecting": "Connessione...",
         "connect": "Connetti",

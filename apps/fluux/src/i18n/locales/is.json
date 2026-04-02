@@ -30,6 +30,7 @@
         "serverHintDesktop": "Skildu eftir autt fyrir sjálfvirka greiningu. Styður lén, tls://hýsill:tengi, tcp://hýsill:tengi",
         "rememberMe": "Muna eftir mér",
         "storedInKeychain": "(vistað í lyklakippu)",
+        "staySignedIn": "(vera áfram innskráður)",
         "credentialsLoaded": "Skilríki hlaðin úr lyklakippu",
         "connecting": "Tengist...",
         "connect": "Tengjast",

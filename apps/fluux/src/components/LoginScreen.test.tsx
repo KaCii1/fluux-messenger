@@ -237,6 +237,7 @@ describe('LoginScreen', () => {
                     undefined,
                     'test-resource',
                     'en',
+                    false,
                     false
                 )
             })
@@ -264,6 +265,7 @@ describe('LoginScreen', () => {
                     undefined,
                     'test-resource',
                     'en',
+                    false,
                     false
                 )
             })

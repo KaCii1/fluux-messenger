@@ -120,12 +120,13 @@ export function useConnection() {
       smState?: { id: string; inbound: number },
       resource?: string,
       lang?: string,
-      disableSmKeepalive?: boolean
+      disableSmKeepalive?: boolean,
+      rememberSession?: boolean
     ) => {
       connectionStore.getState().setStatus('connecting')
       connectionStore.getState().setError(null)
       try {
-        await client.connect({ jid, password, server, resource, smState, lang, disableSmKeepalive })
+        await client.connect({ jid, password, server, resource, smState, lang, disableSmKeepalive, rememberSession })
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Connection failed'
         connectionStore.getState().setStatus('error')

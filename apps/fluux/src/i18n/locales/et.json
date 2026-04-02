@@ -30,6 +30,7 @@
         "serverHintDesktop": "Jäta tühjaks automaatseks tuvastamiseks. Toetab domeeni, tls://host:port, tcp://host:port",
         "rememberMe": "Jäta mind meelde",
         "storedInKeychain": "(salvestatud võtmehoidlasse)",
+        "staySignedIn": "(jää sisselogituks)",
         "credentialsLoaded": "Mandaadid laaditud võtmehoidlast",
         "connecting": "Ühendamine...",
         "connect": "Ühenda",

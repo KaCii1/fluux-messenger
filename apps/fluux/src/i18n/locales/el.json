@@ -30,6 +30,7 @@
         "serverHintDesktop": "Αφήστε κενό για αυτόματη ανίχνευση. Υποστηρίζει τομέα, tls://host:port, tcp://host:port",
         "rememberMe": "Να με θυμάσαι",
         "storedInKeychain": "(αποθηκευμένο στο Keychain)",
+        "staySignedIn": "(παραμείνετε συνδεδεμένοι)",
         "credentialsLoaded": "Τα διαπιστευτήρια φορτώθηκαν από το Keychain",
         "connecting": "Σύνδεση...",
         "connect": "Σύνδεση",

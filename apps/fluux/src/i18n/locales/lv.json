@@ -30,6 +30,7 @@
         "serverHintDesktop": "Atstājiet tukšu automātiskai noteikšanai. Atbalsta domēnu, tls://serveris:ports, tcp://serveris:ports",
         "rememberMe": "Atcerēties mani",
         "storedInKeychain": "(saglabāts Keychain)",
+        "staySignedIn": "(palikt pieslēgtam)",
         "credentialsLoaded": "Akreditācijas dati ielādēti no Keychain",
         "connecting": "Savienojas...",
         "connect": "Savienoties",

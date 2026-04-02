@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useConnection, useXMPPContext } from '@fluux/sdk'
+import { useConnection, useXMPPContext, hasFastToken } from '@fluux/sdk'
 import { detectRenderLoop } from '@/utils/renderLoopDetector'
 import { LoginScreen } from './components/LoginScreen'
 import { ChatLayout } from './components/ChatLayout'
@@ -124,7 +124,12 @@ function App() {
   // This prevents flashing LoginScreen on page reload
   const [isAutoReconnecting, setIsAutoReconnecting] = useState(() => {
     // Check synchronously on first render if we have a saved session
-    return getSession() !== null
+    if (getSession() !== null) return true
+    // FAST token can auto-connect without password when "Remember Me" was checked
+    const rememberMe = localStorage.getItem('xmpp-remember-me') === 'true'
+    const savedJid = localStorage.getItem('xmpp-last-jid')
+    const savedServer = localStorage.getItem('xmpp-last-server')
+    return !!(rememberMe && savedJid && savedServer && hasFastToken(savedJid))
   })
 
   // Track if we've ever been online this session

@@ -30,6 +30,7 @@
         "serverHintDesktop": "Palikite tuščią automatiniam aptikimui. Palaiko domeną, tls://hostas:portas, tcp://hostas:portas",
         "rememberMe": "Prisiminti mane",
         "storedInKeychain": "(saugoma raktų grandinėje)",
+        "staySignedIn": "(likti prisijungus)",
         "credentialsLoaded": "Prisijungimo duomenys įkelti iš raktų grandinės",
         "connecting": "Jungiamasi...",
         "connect": "Prisijungti",

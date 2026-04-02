@@ -116,4 +116,11 @@ export interface ConnectOptions {
    * (e.g., Rust-side timer in Tauri that's immune to JS timer throttling).
    */
   disableSmKeepalive?: boolean
+  /**
+   * Persist FAST tokens (XEP-0484) to localStorage for password-less reconnection.
+   * When true, the SDK saves tokens received during SASL2 negotiation, enabling
+   * auto-login on subsequent sessions for up to 14 days without a password.
+   * When false (default), tokens are not persisted and each session requires a password.
+   */
+  rememberSession?: boolean
 }

@@ -30,6 +30,7 @@
         "serverHintDesktop": "Deixa-ho buit per autodetectar. Suporta domini, tls://servidor:port, tcp://servidor:port",
         "rememberMe": "Recorda'm",
         "storedInKeychain": "(desat al clauer)",
+        "staySignedIn": "(mantenir la sessió)",
         "credentialsLoaded": "Credencials carregades del clauer",
         "connecting": "Connectant...",
         "connect": "Connecta",

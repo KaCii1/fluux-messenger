@@ -30,6 +30,7 @@
         "serverHintDesktop": "Lämna tomt för automatisk identifiering. Stöder domän, tls://värd:port, tcp://värd:port",
         "rememberMe": "Kom ihåg mig",
         "storedInKeychain": "(lagrat i nyckelringen)",
+        "staySignedIn": "(förbli inloggad)",
         "credentialsLoaded": "Inloggningsuppgifter laddade från nyckelringen",
         "connecting": "Ansluter...",
         "connect": "Anslut",

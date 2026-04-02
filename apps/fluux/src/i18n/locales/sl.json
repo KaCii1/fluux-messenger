@@ -30,6 +30,7 @@
         "serverHintDesktop": "Pustite prazno za samodejno zaznavo. Podpira domeno, tls://gostitelj:vrata, tcp://gostitelj:vrata",
         "rememberMe": "Zapomni si me",
         "storedInKeychain": "(shranjeno v obesku za ključe)",
+        "staySignedIn": "(ostani prijavljen)",
         "credentialsLoaded": "Poverilnice naložene iz obeska za ključe",
         "connecting": "Povezovanje...",
         "connect": "Poveži se",

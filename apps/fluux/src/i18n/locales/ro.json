@@ -30,6 +30,7 @@
         "serverHintDesktop": "Lasă gol pentru detectare automată. Suportă domeniu, tls://host:port, tcp://host:port",
         "rememberMe": "Ține-mă minte",
         "storedInKeychain": "(stocat în Keychain)",
+        "staySignedIn": "(rămâi conectat)",
         "credentialsLoaded": "Credențiale încărcate din Keychain",
         "connecting": "Se conectează...",
         "connect": "Conectare",

@@ -30,6 +30,7 @@
         "serverHintDesktop": "Ostavite prazno za automatsko otkrivanje. Podržava domenu, tls://domaćin:port, tcp://domaćin:port",
         "rememberMe": "Zapamti me",
         "storedInKeychain": "(spremljeno u privjesak)",
+        "staySignedIn": "(ostani prijavljen)",
         "credentialsLoaded": "Vjerodajnice učitane iz privjeska",
         "connecting": "Povezivanje...",
         "connect": "Poveži se",

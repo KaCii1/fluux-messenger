@@ -30,6 +30,7 @@
         "serverHintDesktop": "Deixe em branco para detectar automaticamente. Suporta domínio, tls://host:porta, tcp://host:porta",
         "rememberMe": "Lembrar-me",
         "storedInKeychain": "(guardado no Keychain)",
+        "staySignedIn": "(manter sessão)",
         "credentialsLoaded": "Credenciais carregadas do Keychain",
         "connecting": "A ligar...",
         "connect": "Ligar",

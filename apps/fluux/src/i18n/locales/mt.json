@@ -30,6 +30,7 @@
         "serverHintDesktop": "Ħalli vojt għal detezzjoni awtomatika. Jappoġġja dominju, tls://host:port, tcp://host:port",
         "rememberMe": "Ftakarni",
         "storedInKeychain": "(maħżun fil-Keychain)",
+        "staySignedIn": "(ibqa' konness)",
         "credentialsLoaded": "Kredenzjali mgħobbija mill-Keychain",
         "connecting": "Qed jikkonnettja...",
         "connect": "Ikkonnettja",

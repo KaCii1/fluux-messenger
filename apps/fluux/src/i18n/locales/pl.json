@@ -30,6 +30,7 @@
         "serverHintDesktop": "Pozostaw puste, aby wykryć automatycznie. Obsługuje domenę, tls://host:port, tcp://host:port",
         "rememberMe": "Zapamiętaj mnie",
         "storedInKeychain": "(przechowywane w pęku kluczy)",
+        "staySignedIn": "(pozostań zalogowany)",
         "credentialsLoaded": "Dane logowania załadowane z pęku kluczy",
         "connecting": "Łączenie...",
         "connect": "Połącz",

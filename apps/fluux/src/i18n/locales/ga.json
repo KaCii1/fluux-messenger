@@ -30,6 +30,7 @@
         "serverHintDesktop": "Fág folamh le haghaidh uathbhrath. Tacaíonn le fearann, tls://óstach:port, tcp://óstach:port",
         "rememberMe": "Cuimhnigh orm",
         "storedInKeychain": "(stóráilte i Keychain)",
+        "staySignedIn": "(fan logáilte isteach)",
         "credentialsLoaded": "Dintiúir luchtaithe ó Keychain",
         "connecting": "Ag ceangal...",
         "connect": "Ceangail",

@@ -406,7 +406,7 @@ export class Connection extends BaseModule {
    *   - Web/no-proxy: XEP-0156 discovery, then fallback to wss://{domain}/ws
    *   - Desktop with proxy: fast XEP-0156 check only, then fallback to TCP/SRV via proxy
    */
-  async connect({ jid, password, server, resource, smState, lang, previouslyJoinedRooms, skipDiscovery, disableSmKeepalive }: ConnectOptions): Promise<void> {
+  async connect({ jid, password, server, resource, smState, lang, previouslyJoinedRooms, skipDiscovery, disableSmKeepalive, rememberSession }: ConnectOptions): Promise<void> {
     // Guard: if already connecting, connected, or reconnecting, ignore the call.
     // This prevents double-connect races (e.g., rapid button clicks, concurrent
     // auto-connect paths) that would create two XMPP sockets binding the same
@@ -489,8 +489,8 @@ export class Connection extends BaseModule {
 
     const attemptConnection = async (resolvedServer: string, connectionMethod: ConnectionMethod): Promise<void> => {
       this.stores.connection.setConnectionMethod(connectionMethod)
-      this.credentials = { jid, password, server: resolvedServer, resource, lang, disableSmKeepalive }
-      this.xmpp = this.createXmppClient({ jid, password, server: resolvedServer, resource, lang })
+      this.credentials = { jid, password, server: resolvedServer, resource, lang, disableSmKeepalive, rememberSession }
+      this.xmpp = this.createXmppClient({ jid, password, server: resolvedServer, resource, lang, rememberSession })
       this.hydrateStreamManagement(effectiveSmState)
       this.setupHandlers()
 
@@ -1289,14 +1289,17 @@ export class Connection extends BaseModule {
     // Wire FAST token persistence to localStorage (XEP-0484)
     // xmpp.js default storage is in-memory only — tokens would be lost on page reload.
     // This enables password-less reconnection for up to 14 days on web.
+    // Token saving is gated on rememberSession — users must opt in via "Remember Me".
     const fastModule = (xmppClient as any).fast
     if (fastModule) {
       const bareJid = getBareJid(jid)
       fastModule.fetchToken = () => fetchFastToken(bareJid)
-      fastModule.saveToken = (t: { mechanism: string; token: string; expiry?: string }) => {
-        logInfo(`FAST token saved (mechanism: ${t.mechanism}, expiry: ${t.expiry ?? 'none'})`)
-        saveFastToken(bareJid, t)
-      }
+      fastModule.saveToken = options.rememberSession
+        ? (t: { mechanism: string; token: string; expiry?: string }) => {
+            logInfo(`FAST token saved (mechanism: ${t.mechanism}, expiry: ${t.expiry ?? 'none'})`)
+            saveFastToken(bareJid, t)
+          }
+        : () => { /* rememberSession disabled — do not persist FAST token */ }
       fastModule.deleteToken = () => {
         logInfo('FAST token invalidated/deleted')
         deleteFastToken(bareJid)

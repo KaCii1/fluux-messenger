@@ -30,6 +30,7 @@
         "serverHintDesktop": "La stå tom for automatisk oppdagelse. Støtter domene, tls://vert:port, tcp://vert:port",
         "rememberMe": "Husk meg",
         "storedInKeychain": "(lagret i nøkkelring)",
+        "staySignedIn": "(forbli innlogget)",
         "credentialsLoaded": "Legitimasjon lastet fra nøkkelring",
         "connecting": "Kobler til...",
         "connect": "Koble til",

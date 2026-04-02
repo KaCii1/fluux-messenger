@@ -30,6 +30,7 @@
         "serverHintDesktop": "Laisser vide pour détecter automatiquement. Supporte domaine, tls://hôte:port, tcp://hôte:port",
         "rememberMe": "Se souvenir de moi",
         "storedInKeychain": "(stocké dans le Trousseau)",
+        "staySignedIn": "(rester connecté)",
         "credentialsLoaded": "Identifiants chargés depuis le Trousseau",
         "connecting": "Connexion...",
         "connect": "Se connecter",

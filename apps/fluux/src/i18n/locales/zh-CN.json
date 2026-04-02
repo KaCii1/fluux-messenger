@@ -30,6 +30,7 @@
         "serverHintDesktop": "留空则自动检测。支持域名、tls://host:port、tcp://host:port",
         "rememberMe": "记住我",
         "storedInKeychain": "（存储在密钥链中）",
+        "staySignedIn": "(保持登录)",
         "credentialsLoaded": "从密钥链加载凭据",
         "connecting": "正在连接…",
         "connect": "连接",
