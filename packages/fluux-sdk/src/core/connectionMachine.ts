@@ -104,6 +104,7 @@ export type ConnectionMachineEvent =
   | { type: 'AUTH_ERROR' }
   | { type: 'CANCEL_RECONNECT' }
   | { type: 'TRIGGER_RECONNECT' }
+  | { type: 'SET_RETRY_INITIAL'; retry: boolean }
 
 /**
  * Context (extended state) for the connection machine.
@@ -126,6 +127,12 @@ export interface ConnectionMachineContext {
   /** When the system entered sleep (ms since epoch), null when awake.
    *  Used to compute sleep duration when SOCKET_DIED arrives before WAKE. */
   sleepStartTime: number | null
+  /** When true, CONNECTION_ERROR in the `connecting` state routes into the
+   *  reconnecting/backoff loop instead of terminal.initialFailure. Set via
+   *  SET_RETRY_INITIAL before CONNECT by callers that already have a
+   *  known-good session (e.g., page-reload auto-reconnect). Reset on
+   *  DISCONNECT and on entry to connected/terminal states. */
+  retryInitialFailure: boolean
 }
 
 /**
@@ -188,6 +195,15 @@ export const connectionMachine = setup({
       lastError: null,
       smResumeViable: true,
       sleepStartTime: null,
+      retryInitialFailure: false,
+    }),
+
+    // Set the retryInitialFailure flag from a SET_RETRY_INITIAL event
+    setRetryInitialFailure: assign(({ event }) => {
+      if (event.type === 'SET_RETRY_INITIAL') {
+        return { retryInitialFailure: event.retry }
+      }
+      return {}
     }),
 
     // Increment attempt counter and compute next backoff delay.
@@ -273,6 +289,10 @@ export const connectionMachine = setup({
       if (context.sleepStartTime == null) return false
       return (Date.now() - context.sleepStartTime) > SM_SESSION_TIMEOUT_MS
     },
+
+    // Should CONNECTION_ERROR in the `connecting` state route into the
+    // reconnecting loop instead of terminal.initialFailure?
+    shouldRetryInitialFailure: ({ context }) => context.retryInitialFailure,
   },
   delays: {
     reconnectDelay: ({ context }) => context.nextRetryDelayMs,
@@ -291,8 +311,17 @@ export const connectionMachine = setup({
     lastError: null,
     smResumeViable: true,
     sleepStartTime: null,
+    retryInitialFailure: false,
   },
   initial: 'idle',
+  // Top-level event handlers apply to all states.
+  // SET_RETRY_INITIAL is typically sent right before CONNECT and is harmless
+  // in any other state — it just updates context.
+  on: {
+    SET_RETRY_INITIAL: {
+      actions: 'setRetryInitialFailure',
+    },
+  },
   states: {
     /**
      * Fresh client — no connection has been attempted.
@@ -318,10 +347,23 @@ export const connectionMachine = setup({
           target: 'connected',
           actions: 'resetReconnectState',
         },
-        CONNECTION_ERROR: {
-          target: 'terminal.initialFailure',
-          actions: 'setError',
-        },
+        CONNECTION_ERROR: [
+          {
+            // Transient transport failure during initial connect with a
+            // known-good session (e.g., page-reload auto-reconnect right
+            // after wake from sleep). Route into the reconnecting/backoff
+            // loop instead of dying in terminal.initialFailure.
+            guard: 'shouldRetryInitialFailure',
+            target: '#connection.reconnecting.waiting',
+            actions: ['setError', 'incrementAttempt'],
+          },
+          {
+            // Default: first-time login / unknown-session — surface the
+            // error to the user immediately.
+            target: 'terminal.initialFailure',
+            actions: 'setError',
+          },
+        ],
         // User can disconnect during initial connection
         DISCONNECT: {
           target: 'disconnected',

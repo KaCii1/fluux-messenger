@@ -1147,6 +1147,7 @@ describe('connectionMachine', () => {
           lastError: 'some error',
           smResumeViable: true,
           sleepStartTime: null,
+          retryInitialFailure: false,
         }
         const info = getReconnectInfoFromContext(context)
         expect(info.attempt).toBe(3)
@@ -1162,6 +1163,7 @@ describe('connectionMachine', () => {
           lastError: null,
           smResumeViable: true,
           sleepStartTime: null,
+          retryInitialFailure: false,
         }
         const info = getReconnectInfoFromContext(context)
         expect(info.attempt).toBe(0)
@@ -1368,6 +1370,208 @@ describe('connectionMachine', () => {
       expect(RECONNECT_MULTIPLIER).toBe(2)
       expect(DEFAULT_MAX_RECONNECT_ATTEMPTS).toBe(10)
       expect(SM_SESSION_TIMEOUT_MS).toBe(600_000)
+    })
+  })
+
+  describe('retryInitialFailure (auto-retry transient transport errors during connecting)', () => {
+    it('should default retryInitialFailure to false', () => {
+      const actor = createActor(connectionMachine).start()
+      expect(actor.getSnapshot().context.retryInitialFailure).toBe(false)
+      actor.stop()
+    })
+
+    it('should go to terminal.initialFailure on CONNECTION_ERROR when retryInitialFailure=false (default)', () => {
+      const actor = createActor(connectionMachine).start()
+      actor.send({ type: 'CONNECT' })
+      expect(actor.getSnapshot().value).toBe('connecting')
+
+      actor.send({ type: 'CONNECTION_ERROR', error: 'ECONNERROR' })
+      expect(actor.getSnapshot().value).toEqual({ terminal: 'initialFailure' })
+      expect(actor.getSnapshot().context.lastError).toBe('ECONNERROR')
+      actor.stop()
+    })
+
+    it('should go to reconnecting.waiting on CONNECTION_ERROR when retryInitialFailure=true', () => {
+      const actor = createActor(connectionMachine).start()
+      actor.send({ type: 'SET_RETRY_INITIAL', retry: true })
+      actor.send({ type: 'CONNECT' })
+      expect(actor.getSnapshot().value).toBe('connecting')
+      expect(actor.getSnapshot().context.retryInitialFailure).toBe(true)
+
+      actor.send({ type: 'CONNECTION_ERROR', error: 'ECONNERROR' })
+      expect(actor.getSnapshot().value).toEqual({ reconnecting: 'waiting' })
+      expect(actor.getSnapshot().context.lastError).toBe('ECONNERROR')
+      expect(actor.getSnapshot().context.reconnectAttempt).toBe(1)
+      expect(actor.getSnapshot().context.nextRetryDelayMs).toBe(INITIAL_RECONNECT_DELAY)
+      expect(actor.getSnapshot().context.reconnectTargetTime).not.toBeNull()
+      actor.stop()
+    })
+
+    it('should still reach connected on a subsequent CONNECTION_SUCCESS after retry path', () => {
+      vi.useFakeTimers()
+      const actor = createActor(connectionMachine).start()
+      actor.send({ type: 'SET_RETRY_INITIAL', retry: true })
+      actor.send({ type: 'CONNECT' })
+      actor.send({ type: 'CONNECTION_ERROR', error: 'ECONNERROR' })
+      expect(actor.getSnapshot().value).toEqual({ reconnecting: 'waiting' })
+
+      // Advance through the backoff timer to reach attempting
+      vi.advanceTimersByTime(INITIAL_RECONNECT_DELAY + 10)
+      expect(actor.getSnapshot().value).toEqual({ reconnecting: 'attempting' })
+
+      actor.send({ type: 'CONNECTION_SUCCESS' })
+      expect(actor.getSnapshot().value).toEqual({ connected: 'healthy' })
+      // Flag should have been reset on successful connect
+      expect(actor.getSnapshot().context.retryInitialFailure).toBe(false)
+      actor.stop()
+      vi.useRealTimers()
+    })
+
+    it('should reset retryInitialFailure on DISCONNECT from the retry path', () => {
+      const actor = createActor(connectionMachine).start()
+      actor.send({ type: 'SET_RETRY_INITIAL', retry: true })
+      actor.send({ type: 'CONNECT' })
+      actor.send({ type: 'CONNECTION_ERROR', error: 'ECONNERROR' })
+      expect(actor.getSnapshot().value).toEqual({ reconnecting: 'waiting' })
+
+      actor.send({ type: 'DISCONNECT' })
+      expect(actor.getSnapshot().value).toBe('disconnected')
+      expect(actor.getSnapshot().context.retryInitialFailure).toBe(false)
+      actor.stop()
+    })
+
+    it('should still honor AUTH_ERROR as terminal during retry path', () => {
+      vi.useFakeTimers()
+      const actor = createActor(connectionMachine).start()
+      actor.send({ type: 'SET_RETRY_INITIAL', retry: true })
+      actor.send({ type: 'CONNECT' })
+      actor.send({ type: 'CONNECTION_ERROR', error: 'ECONNERROR' })
+      expect(actor.getSnapshot().value).toEqual({ reconnecting: 'waiting' })
+
+      actor.send({ type: 'AUTH_ERROR' })
+      expect(actor.getSnapshot().value).toEqual({ terminal: 'authFailed' })
+      actor.stop()
+      vi.useRealTimers()
+    })
+
+    it('should not affect first-time login when flag is explicitly set to false', () => {
+      const actor = createActor(connectionMachine).start()
+      actor.send({ type: 'SET_RETRY_INITIAL', retry: true })
+      actor.send({ type: 'SET_RETRY_INITIAL', retry: false })
+      actor.send({ type: 'CONNECT' })
+      actor.send({ type: 'CONNECTION_ERROR', error: 'bad password' })
+      expect(actor.getSnapshot().value).toEqual({ terminal: 'initialFailure' })
+      actor.stop()
+    })
+
+    it('should reset the flag when transitioning to connected (via resetReconnectState)', () => {
+      const actor = createActor(connectionMachine).start()
+      actor.send({ type: 'SET_RETRY_INITIAL', retry: true })
+      actor.send({ type: 'CONNECT' })
+      actor.send({ type: 'CONNECTION_SUCCESS' })
+      expect(actor.getSnapshot().context.retryInitialFailure).toBe(false)
+      actor.stop()
+    })
+
+    it('should still honor CONFLICT as terminal during retry path', () => {
+      const actor = createActor(connectionMachine).start()
+      actor.send({ type: 'SET_RETRY_INITIAL', retry: true })
+      actor.send({ type: 'CONNECT' })
+      actor.send({ type: 'CONNECTION_ERROR', error: 'ECONNERROR' })
+      expect(actor.getSnapshot().value).toEqual({ reconnecting: 'waiting' })
+
+      actor.send({ type: 'CONFLICT' })
+      expect(actor.getSnapshot().value).toEqual({ terminal: 'conflict' })
+      actor.stop()
+    })
+
+    it('should grow backoff across repeated CONNECTION_ERRORs in the retry loop', () => {
+      vi.useFakeTimers()
+      const actor = createActor(connectionMachine).start()
+      actor.send({ type: 'SET_RETRY_INITIAL', retry: true })
+      actor.send({ type: 'CONNECT' })
+
+      // First failure: attempt 1, delay 1s
+      actor.send({ type: 'CONNECTION_ERROR', error: 'ECONNERROR' })
+      expect(actor.getSnapshot().value).toEqual({ reconnecting: 'waiting' })
+      expect(actor.getSnapshot().context.reconnectAttempt).toBe(1)
+      expect(actor.getSnapshot().context.nextRetryDelayMs).toBe(INITIAL_RECONNECT_DELAY)
+
+      // Fire the waiting timer to reach attempting
+      vi.advanceTimersByTime(INITIAL_RECONNECT_DELAY + 10)
+      expect(actor.getSnapshot().value).toEqual({ reconnecting: 'attempting' })
+
+      // Second failure (in reconnecting.attempting): attempt 2, delay 2s
+      actor.send({ type: 'CONNECTION_ERROR', error: 'ECONNERROR' })
+      expect(actor.getSnapshot().value).toEqual({ reconnecting: 'waiting' })
+      expect(actor.getSnapshot().context.reconnectAttempt).toBe(2)
+      expect(actor.getSnapshot().context.nextRetryDelayMs).toBe(INITIAL_RECONNECT_DELAY * RECONNECT_MULTIPLIER)
+
+      // Third failure: attempt 3, delay 4s
+      vi.advanceTimersByTime(INITIAL_RECONNECT_DELAY * RECONNECT_MULTIPLIER + 10)
+      expect(actor.getSnapshot().value).toEqual({ reconnecting: 'attempting' })
+      actor.send({ type: 'CONNECTION_ERROR', error: 'ECONNERROR' })
+      expect(actor.getSnapshot().context.reconnectAttempt).toBe(3)
+      expect(actor.getSnapshot().context.nextRetryDelayMs).toBe(INITIAL_RECONNECT_DELAY * RECONNECT_MULTIPLIER * RECONNECT_MULTIPLIER)
+
+      actor.stop()
+      vi.useRealTimers()
+    })
+
+    it('should clear retryInitialFailure when DISCONNECT fires during connecting before any error', () => {
+      const actor = createActor(connectionMachine).start()
+      actor.send({ type: 'SET_RETRY_INITIAL', retry: true })
+      actor.send({ type: 'CONNECT' })
+      expect(actor.getSnapshot().value).toBe('connecting')
+      expect(actor.getSnapshot().context.retryInitialFailure).toBe(true)
+
+      actor.send({ type: 'DISCONNECT' })
+      expect(actor.getSnapshot().value).toBe('disconnected')
+      expect(actor.getSnapshot().context.retryInitialFailure).toBe(false)
+      actor.stop()
+    })
+
+    it('should allow SET_RETRY_INITIAL from disconnected state (reconnect scenario)', () => {
+      const actor = createActor(connectionMachine).start()
+      // Get into disconnected state
+      actor.send({ type: 'CONNECT' })
+      actor.send({ type: 'CONNECTION_SUCCESS' })
+      actor.send({ type: 'DISCONNECT' })
+      expect(actor.getSnapshot().value).toBe('disconnected')
+
+      // Set flag from disconnected
+      actor.send({ type: 'SET_RETRY_INITIAL', retry: true })
+      expect(actor.getSnapshot().context.retryInitialFailure).toBe(true)
+
+      // CONNECT and fail — should retry
+      actor.send({ type: 'CONNECT' })
+      actor.send({ type: 'CONNECTION_ERROR', error: 'ECONNERROR' })
+      expect(actor.getSnapshot().value).toEqual({ reconnecting: 'waiting' })
+      actor.stop()
+    })
+
+    it('should preserve retryInitialFailure when set AFTER CONNECT from terminal (Connection.ts pattern)', () => {
+      // Verifies the order Connection.ts actually uses:
+      //   sendMachineEvent({ CONNECT })
+      //   sendMachineEvent({ SET_RETRY_INITIAL, retry: true })
+      //   <later> sendMachineEvent({ CONNECTION_ERROR })
+      // This is the order that survives terminal.CONNECT's resetReconnectState.
+      const actor = createActor(connectionMachine).start()
+      actor.send({ type: 'CONNECT' })
+      actor.send({ type: 'CONNECTION_ERROR', error: 'first' })
+      expect(actor.getSnapshot().value).toEqual({ terminal: 'initialFailure' })
+
+      // User retries with retry enabled: CONNECT first (clobbers flag via
+      // resetReconnectState), then SET_RETRY_INITIAL (restores flag)
+      actor.send({ type: 'CONNECT' })
+      actor.send({ type: 'SET_RETRY_INITIAL', retry: true })
+      expect(actor.getSnapshot().value).toBe('connecting')
+      expect(actor.getSnapshot().context.retryInitialFailure).toBe(true)
+
+      // A transient failure should now route to reconnecting
+      actor.send({ type: 'CONNECTION_ERROR', error: 'ECONNERROR' })
+      expect(actor.getSnapshot().value).toEqual({ reconnecting: 'waiting' })
+      actor.stop()
     })
   })
 })
