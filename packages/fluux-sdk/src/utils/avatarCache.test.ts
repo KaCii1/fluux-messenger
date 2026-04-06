@@ -7,6 +7,7 @@ import {
   getCachedAvatar,
   cacheAvatar,
   revokeAllBlobUrls,
+  refreshAllBlobUrls,
   clearAllAvatarData,
   _resetBlobUrlPoolForTesting,
   _resetDBForTesting,
@@ -129,6 +130,45 @@ describe('avatarCache blob URL pool', () => {
     it('is a no-op when pool is empty', () => {
       revokeAllBlobUrls()
       expect(revokeSpy).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('refreshAllBlobUrls', () => {
+    it('re-creates blob URLs from IndexedDB for all cached avatars', async () => {
+      await cacheAvatar('hash-a', btoa('imgA'), 'image/png')
+      await cacheAvatar('hash-b', btoa('imgB'), 'image/png')
+      createSpy.mockClear()
+
+      // Simulate stale pool (clear without revoking, as WebKit would)
+      _resetBlobUrlPoolForTesting()
+
+      const freshUrls = await refreshAllBlobUrls()
+
+      expect(freshUrls.size).toBe(2)
+      expect(freshUrls.has('hash-a')).toBe(true)
+      expect(freshUrls.has('hash-b')).toBe(true)
+      // Should have created 2 new blob URLs
+      expect(createSpy).toHaveBeenCalledTimes(2)
+    })
+
+    it('returns empty map when no avatars are cached', async () => {
+      const freshUrls = await refreshAllBlobUrls()
+      expect(freshUrls.size).toBe(0)
+    })
+
+    it('makes getCachedAvatar return fresh URLs after refresh', async () => {
+      await cacheAvatar('hash-x', btoa('data'), 'image/png')
+      const originalUrl = await getCachedAvatar('hash-x')
+
+      // Simulate stale pool
+      _resetBlobUrlPoolForTesting()
+
+      await refreshAllBlobUrls()
+      const freshUrl = await getCachedAvatar('hash-x')
+
+      // Should be a new blob URL, not the stale one
+      expect(freshUrl).toBeTruthy()
+      expect(freshUrl).not.toBe(originalUrl)
     })
   })
 

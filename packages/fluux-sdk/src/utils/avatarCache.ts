@@ -545,6 +545,37 @@ export function revokeAllBlobUrls(): void {
 }
 
 /**
+ * Refresh all avatar blob URLs by re-creating them from IndexedDB.
+ * Call after events that invalidate blob URLs (e.g., WebKit reclaiming
+ * memory during sleep). Returns a map of hash → fresh blob URL.
+ */
+export async function refreshAllBlobUrls(): Promise<Map<string, string>> {
+  // Clear stale blob URLs (already revoked by the browser)
+  blobUrlPool.clear()
+
+  const freshUrls = new Map<string, string>()
+  try {
+    const db = await getDB()
+    const transaction = db.transaction(STORE_NAME, 'readonly')
+    const store = transaction.objectStore(STORE_NAME)
+    const allAvatars: CachedAvatar[] = await new Promise((resolve, reject) => {
+      const request = store.getAll()
+      request.onerror = () => reject(request.error)
+      request.onsuccess = () => resolve(request.result as CachedAvatar[])
+    })
+
+    for (const avatar of allAvatars) {
+      const url = URL.createObjectURL(avatar.data)
+      blobUrlPool.set(avatar.hash, url)
+      freshUrls.set(avatar.hash, url)
+    }
+  } catch {
+    // Silently fail — avatars will show fallback initials
+  }
+  return freshUrls
+}
+
+/**
  * Reset the blob URL pool without revoking URLs.
  * For test isolation only.
  */

@@ -54,6 +54,7 @@ vi.mock('../../utils/avatarCache', () => ({
   saveAvatarHash: vi.fn().mockResolvedValue(undefined),
   getAvatarHash: vi.fn().mockResolvedValue(null),
   getAllAvatarHashes: vi.fn().mockResolvedValue([]),
+  refreshAllBlobUrls: vi.fn().mockResolvedValue(new Map()),
   // Negative cache functions
   hasNoAvatar: vi.fn().mockResolvedValue(false),
   markNoAvatar: vi.fn().mockResolvedValue(undefined),
@@ -845,6 +846,77 @@ describe('XMPPClient Own Avatar', () => {
 
       // Should NOT emit room:updated for rooms with existing hash
       expect(emitSDKSpy).not.toHaveBeenCalledWith('room:updated', expect.anything())
+    })
+  })
+
+  describe('refreshAllAvatarBlobUrls', () => {
+    beforeEach(async () => {
+      const connectPromise = xmppClient.connect({
+        jid: 'user@example.com',
+        password: 'secret',
+        server: 'example.com',
+        skipDiscovery: true,
+      })
+      mockXmppClientInstance._emit('online', { jid: { toString: () => 'user@example.com/resource' } })
+      await connectPromise
+    })
+
+    it('should refresh stale blob URLs for contacts and rooms', async () => {
+      emitSDKSpy.mockClear()
+
+      const { refreshAllBlobUrls, getAllAvatarHashes } = await import('../../utils/avatarCache')
+      vi.mocked(refreshAllBlobUrls).mockResolvedValue(new Map([
+        ['hash-c1', 'blob:fresh-contact1'],
+        ['hash-r1', 'blob:fresh-room1'],
+      ]))
+      vi.mocked(getAllAvatarHashes).mockResolvedValue([
+        { jid: 'alice@example.com', hash: 'hash-c1', type: 'contact' },
+        { jid: 'room@conference.example.com', hash: 'hash-r1', type: 'room' },
+      ])
+
+      mockStores.roster.getContact.mockReturnValue({ jid: 'alice@example.com', name: 'Alice', presence: 'offline', subscription: 'both', avatarHash: 'hash-c1' })
+      mockStores.room.getRoom.mockReturnValue({
+        jid: 'room@conference.example.com', name: 'Room', nickname: '',
+        joined: true, isBookmarked: false, occupants: new Map(),
+        messages: [], unreadCount: 0, mentionsCount: 0, typingUsers: new Set<string>(),
+        avatarHash: 'hash-r1',
+      })
+
+      await xmppClient.profile.refreshAllAvatarBlobUrls()
+
+      expect(emitSDKSpy).toHaveBeenCalledWith('roster:avatar', {
+        jid: 'alice@example.com', avatar: 'blob:fresh-contact1', avatarHash: 'hash-c1',
+      })
+      expect(emitSDKSpy).toHaveBeenCalledWith('room:updated', {
+        roomJid: 'room@conference.example.com',
+        updates: { avatar: 'blob:fresh-room1', avatarHash: 'hash-r1' },
+      })
+    })
+
+    it('should skip entities not in store', async () => {
+      emitSDKSpy.mockClear()
+
+      const { refreshAllBlobUrls, getAllAvatarHashes } = await import('../../utils/avatarCache')
+      vi.mocked(refreshAllBlobUrls).mockResolvedValue(new Map([['hash1', 'blob:url']]))
+      vi.mocked(getAllAvatarHashes).mockResolvedValue([
+        { jid: 'unknown@example.com', hash: 'hash1', type: 'contact' },
+      ])
+      mockStores.roster.getContact.mockReturnValue(undefined)
+
+      await xmppClient.profile.refreshAllAvatarBlobUrls()
+
+      expect(emitSDKSpy).not.toHaveBeenCalledWith('roster:avatar', expect.anything())
+    })
+
+    it('should be a no-op when no cached avatars exist', async () => {
+      emitSDKSpy.mockClear()
+
+      const { refreshAllBlobUrls } = await import('../../utils/avatarCache')
+      vi.mocked(refreshAllBlobUrls).mockResolvedValue(new Map())
+
+      await xmppClient.profile.refreshAllAvatarBlobUrls()
+
+      expect(emitSDKSpy).not.toHaveBeenCalled()
     })
   })
 

@@ -478,12 +478,13 @@ export function useSessionPersistence(claimConnection?: (jid: string) => Promise
     resource?: string,
     lang?: string,
     disableSmKeepalive?: boolean,
-    rememberSession?: boolean
+    rememberSession?: boolean,
+    autoRetryOnTransientFailure?: boolean
   ) => {
     connectionStore.getState().setStatus('connecting')
     connectionStore.getState().setError(null)
     try {
-      await client.connect({ jid, password, server, resource, smState, lang, disableSmKeepalive, rememberSession })
+      await client.connect({ jid, password, server, resource, smState, lang, disableSmKeepalive, rememberSession, autoRetryOnTransientFailure })
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Connection failed'
       connectionStore.getState().setStatus('error')
@@ -569,6 +570,13 @@ export function useSessionPersistence(claimConnection?: (jid: string) => Promise
       const disableSmKeepalive = isTauri()
       console.log('[Auth] Reconnecting on page reload with password (SDK will attempt SM resumption first)')
 
+      // Auto-retry transient transport failures (e.g., WebSocket ECONNERROR
+      // right after wake from sleep). The SDK will route those into its
+      // normal reconnect/backoff loop instead of going to terminal.initialFailure.
+      // Auth failures and server conflicts still surface immediately via the
+      // machine's AUTH_ERROR / CONFLICT events.
+      const autoRetry = true
+
       // Check if another tab already holds this JID (web only)
       if (claimConnection) {
         claimConnection(session.jid).then((canConnect) => {
@@ -577,14 +585,14 @@ export function useSessionPersistence(claimConnection?: (jid: string) => Promise
             isResumptionRef.current = false
             return
           }
-          connect(session.jid, session.password, session.server, undefined, resource, i18n.language, disableSmKeepalive).catch((err) => {
+          connect(session.jid, session.password, session.server, undefined, resource, i18n.language, disableSmKeepalive, undefined, autoRetry).catch((err) => {
             console.log('[Auth] Reconnection failed:', err?.message || err)
             clearSession()
             isResumptionRef.current = false
           })
         }).catch(() => {
           // Claim check failed, try connecting anyway
-          connect(session.jid, session.password, session.server, undefined, resource, i18n.language, disableSmKeepalive).catch((err) => {
+          connect(session.jid, session.password, session.server, undefined, resource, i18n.language, disableSmKeepalive, undefined, autoRetry).catch((err) => {
             console.log('[Auth] Reconnection failed:', err?.message || err)
             clearSession()
             isResumptionRef.current = false
@@ -593,7 +601,7 @@ export function useSessionPersistence(claimConnection?: (jid: string) => Promise
         return
       }
 
-      connect(session.jid, session.password, session.server, undefined, resource, i18n.language, disableSmKeepalive).catch((err) => {
+      connect(session.jid, session.password, session.server, undefined, resource, i18n.language, disableSmKeepalive, undefined, autoRetry).catch((err) => {
         console.log('[Auth] Reconnection failed:', err?.message || err)
         // If auto-reconnect fails, clear session
         clearSession()
@@ -618,7 +626,11 @@ export function useSessionPersistence(claimConnection?: (jid: string) => Promise
       console.log('[Auth] Attempting FAST token auto-connect (no password)')
 
       const attemptFastConnect = () => {
-        connect(savedJid, undefined, savedServer, undefined, resource, i18n.language, false, true).then(() => {
+        // Auto-retry transient transport failures: FAST token auto-connect
+        // after a fresh tab open faces the same wake-from-sleep network
+        // flakiness as page-reload. Auth failures (bad/expired token) still
+        // surface via the machine's AUTH_ERROR path and delete the token.
+        connect(savedJid, undefined, savedServer, undefined, resource, i18n.language, false, true, true).then(() => {
           // Save session for subsequent in-tab reconnects (no password needed —
           // FAST token in localStorage handles auth on future reconnects too)
           saveSession(savedJid, '', savedServer)

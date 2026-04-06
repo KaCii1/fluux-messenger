@@ -412,7 +412,7 @@ export class Connection extends BaseModule {
    *   - Web/no-proxy: XEP-0156 discovery, then fallback to wss://{domain}/ws
    *   - Desktop with proxy: fast XEP-0156 check only, then fallback to TCP/SRV via proxy
    */
-  async connect({ jid, password, server, resource, smState, lang, previouslyJoinedRooms, skipDiscovery, disableSmKeepalive, rememberSession }: ConnectOptions): Promise<void> {
+  async connect({ jid, password, server, resource, smState, lang, previouslyJoinedRooms, skipDiscovery, disableSmKeepalive, rememberSession, autoRetryOnTransientFailure }: ConnectOptions): Promise<void> {
     // Guard: if already connecting, connected, or reconnecting, ignore the call.
     // This prevents double-connect races (e.g., rapid button clicks, concurrent
     // auto-connect paths) that would create two XMPP sockets binding the same
@@ -426,6 +426,16 @@ export class Connection extends BaseModule {
     // Signal the machine that a user-initiated connection is starting.
     // CONNECT transitions to `connecting` from idle, disconnected, and terminal states.
     this.sendMachineEvent({ type: 'CONNECT' }, 'connect:start')
+
+    // Tell the machine whether to auto-retry transient transport failures
+    // during the initial `connecting` state. Sent AFTER CONNECT so the flag
+    // survives resetReconnectState actions that fire on terminal→connecting
+    // or similar transitions. The guard reads retryInitialFailure from
+    // context when CONNECTION_ERROR is eventually dispatched.
+    this.sendMachineEvent(
+      { type: 'SET_RETRY_INITIAL', retry: autoRetryOnTransientFailure === true },
+      'connect:set-retry-initial'
+    )
 
     // Emit SDK event for connection starting
     this.deps.emitSDK('connection:status', { status: 'connecting' })
@@ -610,12 +620,24 @@ export class Connection extends BaseModule {
       const error = err instanceof Error ? err : new Error(String(err))
       logError('Connection error:', error.message)
       logErr(`Connection error: ${error.message}`)
-      // Signal machine: initial connection failed → terminal.initialFailure
+      // Signal machine: initial connection failed. The machine's `connecting`
+      // state routes CONNECTION_ERROR either to terminal.initialFailure
+      // (default), to reconnecting.waiting (when SET_RETRY_INITIAL was set
+      // to true by the caller), or — if a CONFLICT/AUTH_ERROR fired
+      // synchronously from the stream-error handler — the machine is
+      // already in a terminal state and CONNECTION_ERROR is ignored.
       this.sendMachineEvent({ type: 'CONNECTION_ERROR', error: error.message }, 'connect:connection-error')
       this.stores.console.addEvent(`Connection error: ${error.message}`, 'error')
       // Emit SDK event for connection error
       this.deps.emitSDK('connection:status', { status: 'error', error: error.message })
       this.emit('error', error)
+      // Decide whether to throw based on the machine's POST-event state.
+      // If the machine is in reconnecting.* the retry loop owns the outcome
+      // and callers should not clear credentials. For terminal states or
+      // disconnected, throw so callers see the failure.
+      if (this.isInReconnectingState()) {
+        return
+      }
       throw error
     }
   }

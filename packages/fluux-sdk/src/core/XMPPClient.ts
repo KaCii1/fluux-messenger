@@ -1486,6 +1486,9 @@ export class XMPPClient {
       }
     } catch { /* ignore storage errors (e.g., SSR environments) */ }
 
+    // Refresh avatar blob URLs — WebKit may have revoked them during sleep
+    this.profile.refreshAllAvatarBlobUrls().catch(() => {})
+
     await this.roster.sendInitialPresence()
     if (this.isSessionSuperseded(gen, 'SM resumption aborted after sendInitialPresence')) return
 

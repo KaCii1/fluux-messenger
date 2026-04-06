@@ -4,7 +4,7 @@ import { BaseModule } from './BaseModule'
 import { getBareJid, getLocalPart, getDomain } from '../jid'
 import type { VCardInfo } from '../types/roster'
 import { generateUUID } from '../../utils/uuid'
-import { getCachedAvatar, getAvatarHash, cacheAvatar, saveAvatarHash, getAllAvatarHashes, hasNoAvatar, markNoAvatar, clearNoAvatar } from '../../utils/avatarCache'
+import { getCachedAvatar, getAvatarHash, cacheAvatar, saveAvatarHash, getAllAvatarHashes, hasNoAvatar, markNoAvatar, clearNoAvatar, refreshAllBlobUrls } from '../../utils/avatarCache'
 import {
   NS_PUBSUB,
   NS_NICK,
@@ -972,6 +972,41 @@ export class Profile extends BaseModule {
     } catch (error) {
       // Silently fail - avatar cache is optional
       console.warn('Failed to restore room avatar hashes:', error)
+    }
+  }
+
+  /**
+   * Refresh all avatar blob URLs after events that invalidate them
+   * (e.g., WebKit reclaiming memory during sleep/SM resumption).
+   * Re-creates fresh blob URLs from IndexedDB and updates stores.
+   */
+  async refreshAllAvatarBlobUrls(): Promise<void> {
+    try {
+      const freshUrls = await refreshAllBlobUrls()
+      if (freshUrls.size === 0) return
+
+      const hashMappings = await getAllAvatarHashes()
+      for (const mapping of hashMappings) {
+        const url = freshUrls.get(mapping.hash)
+        if (!url) continue
+
+        if (mapping.type === 'contact') {
+          const contact = this.deps.stores?.roster.getContact(mapping.jid)
+          if (contact) {
+            this.deps.emitSDK('roster:avatar', { jid: mapping.jid, avatar: url, avatarHash: mapping.hash })
+          }
+        } else if (mapping.type === 'room') {
+          const room = this.deps.stores?.room.getRoom(mapping.jid)
+          if (room) {
+            this.deps.emitSDK('room:updated', {
+              roomJid: mapping.jid,
+              updates: { avatar: url, avatarHash: mapping.hash },
+            })
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to refresh avatar blob URLs:', error)
     }
   }
 

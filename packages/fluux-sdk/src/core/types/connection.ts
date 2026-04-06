@@ -123,4 +123,25 @@ export interface ConnectOptions {
    * When false (default), tokens are not persisted and each session requires a password.
    */
   rememberSession?: boolean
+  /**
+   * Auto-retry the initial connection on transient transport failures (e.g.,
+   * WebSocket ECONNERROR right after wake from sleep).
+   *
+   * When true, a CONNECTION_ERROR during the initial `connecting` state routes
+   * the machine into the normal reconnecting/backoff loop instead of going to
+   * terminal.initialFailure. Auth failures and server conflicts still surface
+   * immediately (they use separate machine events).
+   *
+   * Callers should set this only when the credentials are known-good (e.g.,
+   * page-reload reconnection after a previous successful session). First-time
+   * login should leave this false so bad credentials/servers surface to the
+   * user immediately.
+   *
+   * When true, connect() does not throw on transient transport errors — the
+   * retry loop owns the outcome. Terminal states (maxRetries, authFailed,
+   * conflict) still surface via the machine's terminal transitions.
+   *
+   * @default false
+   */
+  autoRetryOnTransientFailure?: boolean
 }
