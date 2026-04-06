@@ -413,7 +413,7 @@ export function Sidebar({ onSelectContact, onStartChat, onManageUser, adminCateg
                       setShowRoomDropdown(false)
                       if (isCatchingUpRooms) return
                       setIsCatchingUpRooms(true)
-                      client.mam.forceCatchUpAllRooms().finally(() => setIsCatchingUpRooms(false))
+                      void client.mam.forceCatchUpAllRooms().finally(() => setIsCatchingUpRooms(false))
                     }}
                     disabled={isCatchingUpRooms}
                     className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
