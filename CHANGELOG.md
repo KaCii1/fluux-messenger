@@ -5,6 +5,19 @@ All notable changes to Fluux Messenger are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.1] - 2026-04-06
+
+### Changed
+
+- Skip PEP avatar requests for domains that block PubSub access (reduces unnecessary traffic)
+
+### Fixed
+
+- Blank screen during initial connection sync caused by render loop
+- False reconnections triggered by macOS timer throttling after sleep
+- MUC MAM catch-up gaps after long offline periods
+- Added a temporary button in the rooms sidebar, under the + menu to force catch up all joined rooms.
+
 ## [0.15.0] - 2026-03-26
 
 ### Added

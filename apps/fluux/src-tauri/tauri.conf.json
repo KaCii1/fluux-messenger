@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Fluux Messenger",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "identifier": "com.processone.fluux",
   "plugins": {
     "deep-link": {
@@ -68,7 +68,7 @@
     ],
     "macOS": {
       "minimumSystemVersion": "10.13",
-      "bundleVersion": "7b5ecf1",
+      "bundleVersion": "ad2d8db",
       "entitlements": "Entitlements.plist",
       "signingIdentity": null
     },

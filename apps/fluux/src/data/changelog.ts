@@ -29,6 +29,7 @@ export const changelog: ChangelogEntry[] = [
           'Blank screen during initial connection sync caused by render loop',
           'False reconnections triggered by macOS timer throttling after sleep',
           'MUC MAM catch-up gaps after long offline periods',
+          'Added a temporary button in the rooms sidebar, under the + menu to force catch up all joined rooms.'
         ],
       },
     ],
