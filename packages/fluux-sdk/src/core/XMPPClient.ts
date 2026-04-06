@@ -1720,31 +1720,37 @@ export class XMPPClient {
     const roster = this.stores?.roster
     if (!chat) return
 
-    for (const serverConv of serverConvs) {
-      if (chat.hasConversation(serverConv.jid)) {
-        // Existing conversation: sync archived status from server
-        if (serverConv.archived) {
-          chat.archiveConversation?.(serverConv.jid)
-        } else {
-          chat.unarchiveConversation?.(serverConv.jid)
-        }
-      } else {
-        // Server-only conversation: create locally
-        const contact = roster?.getContact(serverConv.jid)
-        const name = contact?.name || getLocalPart(serverConv.jid)
+    // Build batch: resolve names upfront, then apply all in a single store update
+    const batch = serverConvs.map((serverConv) => {
+      const contact = roster?.getContact(serverConv.jid)
+      const name = contact?.name || getLocalPart(serverConv.jid)
+      return {
+        id: serverConv.jid,
+        name,
+        type: 'chat' as const,
+        archived: serverConv.archived,
+      }
+    })
 
-        chat.addConversation({
-          id: serverConv.jid,
-          name,
-          type: 'chat',
-          unreadCount: 0,
-        })
-        if (serverConv.archived) {
-          chat.archiveConversation?.(serverConv.jid)
+    if (chat.mergeServerConversations) {
+      chat.mergeServerConversations(batch)
+    } else {
+      // Fallback: add individually (for custom store implementations)
+      for (const entry of batch) {
+        if (chat.hasConversation(entry.id)) {
+          if (entry.archived) {
+            chat.archiveConversation?.(entry.id)
+          } else {
+            chat.unarchiveConversation?.(entry.id)
+          }
+        } else {
+          chat.addConversation({ id: entry.id, name: entry.name, type: entry.type, unreadCount: 0 })
+          if (entry.archived) {
+            chat.archiveConversation?.(entry.id)
+          }
         }
       }
     }
-
     logInfo(`Conversation sync: merged ${serverConvs.length} conversations from server`)
   }
 

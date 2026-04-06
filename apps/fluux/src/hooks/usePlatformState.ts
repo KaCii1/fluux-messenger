@@ -3,7 +3,7 @@ import type { UnlistenFn } from '@tauri-apps/api/event'
 import { useXMPP, useSystemState, usePresence, consoleStore } from '@fluux/sdk'
 import { useConnectionStore } from '@fluux/sdk/react'
 import { isTauri } from '../utils/tauri'
-import { startWakeGracePeriod } from '../utils/renderLoopDetector'
+import { startWakeGracePeriod, startSyncGracePeriod } from '../utils/renderLoopDetector'
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -472,6 +472,11 @@ export function usePlatformState() {
 
   useEffect(() => {
     if (status === 'online') {
+      // Background sync (MAM, roster, rooms) causes many legitimate store
+      // updates in the first seconds — raise the render loop error threshold
+      // so the detector doesn't trigger on normal connection activity.
+      startSyncGracePeriod()
+
       // Transition presence machine to connected state
       presenceConnect()
 

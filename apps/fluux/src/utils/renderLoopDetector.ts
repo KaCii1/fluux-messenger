@@ -46,9 +46,13 @@ const TIME_WINDOW_MS = 1000         // Time window in milliseconds
 const COOLDOWN_MS = 5000            // Cooldown before resetting after trigger
 const MAX_RENDER_HISTORY = 20       // Keep last N renders per component for debugging
 const WAKE_GRACE_PERIOD_MS = 3000   // Suppress warnings for this long after wake
+const SYNC_GRACE_PERIOD_MS = 5000   // Raise error threshold after fresh connection
+const SYNC_GRACE_THRESHOLD = 500    // Error threshold during sync grace period
 
 // Track if we're in a grace period (e.g., after wake from sleep)
 let wakeGraceUntil = 0
+// Track sync grace period (raised error threshold during initial connection sync)
+let syncGraceUntil = 0
 
 function getComponentState(componentName: string): ComponentState {
   let state = componentStates.get(componentName)
@@ -152,7 +156,8 @@ export function detectRenderLoop(componentName: string): void {
     }
   }
 
-  if (state.renderCount > MAX_RENDERS_PER_WINDOW) {
+  const effectiveThreshold = now < syncGraceUntil ? SYNC_GRACE_THRESHOLD : MAX_RENDERS_PER_WINDOW
+  if (state.renderCount > effectiveThreshold) {
     state.hasTriggered = true
 
     // Collect debugging information
@@ -283,6 +288,7 @@ export function logRenderSummary(): void {
 export function resetRenderLoopDetector(): void {
   componentStates.clear()
   wakeGraceUntil = 0
+  syncGraceUntil = 0
 }
 
 /**
@@ -292,6 +298,18 @@ export function resetRenderLoopDetector(): void {
  */
 export function startWakeGracePeriod(): void {
   wakeGraceUntil = Date.now() + WAKE_GRACE_PERIOD_MS
+}
+
+/**
+ * Start a sync grace period during which the render loop error threshold is
+ * raised. Use on fresh XMPP connection when background sync will trigger
+ * many legitimate store updates (MAM queries, roster load, room joins) that
+ * cause rapid component re-renders.
+ */
+export function startSyncGracePeriod(): void {
+  syncGraceUntil = Date.now() + SYNC_GRACE_PERIOD_MS
+  // Also suppress warnings during sync
+  wakeGraceUntil = Math.max(wakeGraceUntil, syncGraceUntil)
 }
 
 /**

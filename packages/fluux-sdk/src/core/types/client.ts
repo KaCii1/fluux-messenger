@@ -105,6 +105,8 @@ export interface StoreBindings {
     archiveConversation?: (id: string) => void
     unarchiveConversation?: (id: string) => void
     getLastMessage?: (conversationId: string) => Message | undefined
+    /** Batch-add/update conversations from server sync in a single state update. */
+    mergeServerConversations?: (convs: Array<{ id: string; name: string; type: 'chat' | 'groupchat'; archived: boolean }>) => void
   }
   roster: {
     setContacts: (contacts: Contact[]) => void

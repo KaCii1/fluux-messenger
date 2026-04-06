@@ -48,6 +48,7 @@ vi.mock('@tauri-apps/api/event', () => ({
 
 vi.mock('@/utils/renderLoopDetector', () => ({
   startWakeGracePeriod: vi.fn(),
+  startSyncGracePeriod: vi.fn(),
 }))
 
 vi.mock('@fluux/sdk/react', () => ({

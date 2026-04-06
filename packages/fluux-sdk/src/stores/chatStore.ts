@@ -124,6 +124,8 @@ interface ChatState {
   hasConversation: (id: string) => boolean
   archiveConversation: (id: string) => void
   unarchiveConversation: (id: string) => void
+  /** Batch-add/update conversations from server sync in a single state update. */
+  mergeServerConversations: (convs: Array<{ id: string; name: string; type: 'chat' | 'groupchat'; archived: boolean }>) => void
   setTyping: (conversationId: string, jid: string, isTyping: boolean) => void
   clearAllTyping: () => void
   updateReactions: (conversationId: string, messageId: string, reactorJid: string, emojis: string[]) => void
@@ -827,6 +829,52 @@ export const chatStore = createStore<ChatState>()(
           const newArchived = new Set(state.archivedConversations)
           newArchived.delete(id)
           return { archivedConversations: newArchived }
+        })
+      },
+
+      mergeServerConversations: (convs) => {
+        set((state) => {
+          const newEntities = new Map(state.conversationEntities)
+          const newMeta = new Map(state.conversationMeta)
+          const newConversations = new Map(state.conversations)
+          const newArchived = new Set(state.archivedConversations)
+
+          for (const serverConv of convs) {
+            if (newConversations.has(serverConv.id)) {
+              // Existing conversation: sync archived status
+              if (serverConv.archived) {
+                newArchived.add(serverConv.id)
+              } else {
+                newArchived.delete(serverConv.id)
+              }
+            } else {
+              // New conversation: add to all maps
+              const entity: ConversationEntity = {
+                id: serverConv.id,
+                name: serverConv.name,
+                type: serverConv.type,
+              }
+              const meta: ConversationMetadata = {
+                unreadCount: 0,
+              }
+              const conv: Conversation = { ...entity, ...meta }
+
+              newEntities.set(serverConv.id, entity)
+              newMeta.set(serverConv.id, meta)
+              newConversations.set(serverConv.id, conv)
+
+              if (serverConv.archived) {
+                newArchived.add(serverConv.id)
+              }
+            }
+          }
+
+          return {
+            conversationEntities: newEntities,
+            conversationMeta: newMeta,
+            conversations: newConversations,
+            archivedConversations: newArchived,
+          }
         })
       },
 
