@@ -14,6 +14,26 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.15.1',
+    date: '2026-04-06',
+    sections: [
+      {
+        type: 'changed',
+        items: [
+          'Skip PEP avatar requests for domains that block PubSub access (reduces unnecessary traffic)',
+        ],
+      },
+      {
+        type: 'fixed',
+        items: [
+          'Blank screen during initial connection sync caused by render loop',
+          'False reconnections triggered by macOS timer throttling after sleep',
+          'MUC MAM catch-up gaps after long offline periods',
+        ],
+      },
+    ],
+  },
+  {
     version: '0.15.0',
     date: '2026-03-26',
     sections: [
