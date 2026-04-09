@@ -102,11 +102,21 @@
             mkdir -p $out/bin
 
             ${lib.optionalString pkgs.stdenv.isLinux ''
+              if [ -d "apps/fluux/src-tauri/target/release/bundle/deb" ]; then
+                cd apps/fluux/src-tauri/target/release/bundle/deb
+                for debfile in *.deb; do
+                  if [ -f "$debfile" ]; then
+                    ar p "$debfile" data.tar.gz | tar xz -C $out --strip-components=1 || true
+                  fi
+                done
+                cd - > /dev/null
+              fi
+
               if [ -f "apps/fluux/src-tauri/target/release/fluux" ]; then
-                install -Dm755 apps/fluux/src-tauri/target/release/fluux $out/bin/.fluux-messenger-unwrapped
+                install -Dm755 apps/fluux/src-tauri/target/release/fluux $out/bin/.fluux-unwrapped
                 
                 # set LD_LIBRARY_PATH 
-                makeWrapper $out/bin/.fluux-messenger-unwrapped $out/bin/fluux-messenger \
+                makeWrapper $out/bin/.fluux-unwrapped $out/bin/fluux \
                   --prefix LD_LIBRARY_PATH : ${
                     lib.makeLibraryPath [
                       pkgs.libayatana-appindicator
@@ -117,16 +127,6 @@
                   --prefix XDG_DATA_DIRS : "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}" \
                   --prefix XDG_DATA_DIRS : "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}" \
                   --prefix GIO_EXTRA_MODULES : "${pkgs.glib-networking}/lib/gio/modules"
-              fi
-
-              # desktop file etc
-              if [ -d "apps/fluux/src-tauri/target/release/bundle/deb" ]; then
-                cd apps/fluux/src-tauri/target/release/bundle/deb
-                for debfile in *.deb; do
-                  if [ -f "$debfile" ]; then
-                    ar p "$debfile" data.tar.gz | tar xz -C $out --strip-components=1 || true
-                  fi
-                done
               fi
             ''}
 
